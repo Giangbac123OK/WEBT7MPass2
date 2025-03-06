@@ -13,6 +13,10 @@ app.config(function($routeProvider){
             templateUrl: "./Views/dangky.html",
             controller: "dangkyController"
           })
+          .when("/Sanpham", {
+            templateUrl: "./Views/Sanpham.html",
+            controller: "SanphamController"
+          })
         .when('/giang',{
              template: '<h1>Giang</h1>'
          })
