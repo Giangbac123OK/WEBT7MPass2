@@ -3,15 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>T7M Sneaker</title>
+    <title>Document</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    
-  <link rel="icon" href="./Images/logo.png" type="image/x-icon" />
   </head>
 <body ng-app="myApp">
-  <header class="mb-3 border-bottom" style="background-color: rgb(240, 240, 240);">
+  <header class="mb-3" style="background-color: rgb(240, 240, 240);">
     <div class="container">
       <div class="row pt-3" style="border-bottom: 1px solid black;">
         <div class="col-6">
@@ -28,7 +26,7 @@
                 <a class="nav-link" href="#!login"><i class="bi bi-box-arrow-in-right"></i> Đăng nhập</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#!signup"><i class="bi bi-person-plus-fill"></i> Đăng ký</a>
+                <a class="nav-link" href="#!dangky"><i class="bi bi-person-plus-fill"></i> Đăng ký</a>
               </li>
             </ul>
           </nav>
@@ -53,241 +51,113 @@
                       <li><a class="dropdown-item" href="#">Đăng xuất</a></li>
                     </ul>
                   </li>
-
-  <div class="bg-light py-2">
-    <div class="container d-flex justify-content-between align-items-center">
-        <div class="social-links">
-            Theo dõi:
-            <a href="#"><i class="bi bi-facebook"></i></a>
-            <a href="#"><i class="bi bi-instagram"></i></a>
-            <a href="#"><i class="bi bi-youtube"></i></a>
-            <a href="#"><i class="bi bi-twitter"></i></a>
-        </div>
-        <div>
-            <!-- Hiển thị "Đăng nhập" và "Đăng ký" nếu chưa đăng nhập -->
-            <span ng-if="!isLoggedIn">
-                <a href="#!login" class="text-dark text-decoration-none me-3">
-                    <i class="bi bi-person-circle"></i> Đăng nhập
-                </a>
-                <a href="#!dangky" class="text-dark text-decoration-none">Đăng ký</a>
-            </span>
-            
-            <!-- Hiển thị thông tin người dùng và "Đăng xuất" nếu đã đăng nhập -->
-            <div class="dropdown" ng-if="isLoggedIn">
-                <a class="text-dark text-decoration-none dropdown-toggle" href="#" id="userDropdown" role="button"
-                    data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="bi bi-person-circle"></i> {{userInfo.ten}}
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                    <li><a class="dropdown-item" href="#!thongtintaikhoan">
-                        <i class="bi bi-person-badge"></i> Thông tin tài khoản
-                    </a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><button class="dropdown-item text-danger" ng-click="dangxuat()">
-                        <i class="bi bi-box-arrow-right"></i> Đăng xuất
-                    </button></li>
-
                 </ul>
+              </div>
             </div>
-        </div>
-    </div>
-</div>
-
-<!-- Main Navigation -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
-    <div class="container">
-        <!-- Logo -->
-        <a class="navbar-brand" href="#">
-            <img src="/TemplateKhachHang/image/logo.png" alt="P&T Logo" height="50">
-        </a>
-
-        <!-- Search Bar -->
-        <div class="search-box mx-auto">
-            <div class="input-group">
-                <input class="form-control" type="search" placeholder="Search" ng-model="search" aria-label="Search">
-                <button class="btn btn-dark" type="submit" ng-click="btntimkiem()">
-                    <i class="bi bi-search"></i>
-                    <!-- Biểu tượng tìm kiếm -->
-                </button>
-            </div>
-        </div>
-
-        <!-- Cart Icon -->
-        <div class="cart-icon">
-            <a href="#" class="text-dark">
-                <i class="bi bi-cart fs-4"></i>
-                <span class="cart-badge">3</span>
-            </a>
-        </div>
-    </div>
-</nav>
-
-<!-- Menu Bar -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white ">
-    <div class="container">
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link px-4" href="#/!">TRANG CHỦ</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link px-4" href="#!bantin">GIỚI THIỆU</a>
-                </li>
-                <li class="nav-item dropdown has-megamenu position-static">
-                  <a class="nav-link dropdown-toggle px-4" href="#!Sanpham" data-bs-toggle="dropdown">
-                      SẢN PHẨM
-                  </a>
-                  <div class="dropdown-menu megamenu" role="menu">
-                      <div class="container">
-                          <div class="row g-4">
-                              <div class="col-lg-3">
-                                  <div class="category-section">
-                                      <h6 class="dropdown-header">TẤT CẢ SẢN PHẨM</h6>
-                                      <a href="#" class="dropdown-item">Xem tất cả</a>
-                                  </div>
-                              </div>
-                              <div class="col-lg-3">
-                                  <div class="category-section">
-                                      <h6 class="dropdown-header">GIÀY, DÉP</h6>
-                                      <a href="#" class="dropdown-item">Bóng đá</a>
-                                      <a href="#" class="dropdown-item">Chạy</a>
-                                      <a href="#" class="dropdown-item">Cầu lông</a>
-                                      <a href="#" class="dropdown-item">Bóng rổ</a>
-                                      <a href="#" class="dropdown-item">Quần vợt</a>
-                                  </div>
-                              </div>
-                              <div class="col-lg-3">
-                                  <div class="category-section">
-                                      <h6 class="dropdown-header">QUẦN, ÁO</h6>
-                                      <a href="#" class="dropdown-item">Bóng đá</a>
-                                      <a href="#" class="dropdown-item">Chạy</a>
-                                      <a href="#" class="dropdown-item">Cầu lông</a>
-                                      <a href="#" class="dropdown-item">Bóng rổ</a>
-                                      <a href="#" class="dropdown-item">Quần vợt</a>
-                                  </div>
-                              </div>
-                              <div class="col-lg-3">
-                                  <div class="category-section">
-                                      <h6 class="dropdown-header">PHỤ KIỆN</h6>
-                                      <a href="#" class="dropdown-item">Bóng đá</a>
-                                      <a href="#" class="dropdown-item">Chạy</a>
-                                      <a href="#" class="dropdown-item">Cầu lông</a>
-                                      <a href="#" class="dropdown-item">Bơi lội</a>
-                                      <a href="#" class="dropdown-item">Golf</a>
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-              </li>
-                <li class="nav-item">
-                    <a class="nav-link px-4" href="#!lienhe">SALE</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link px-4" href="#!lienhe">LIÊN HỆ</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
-
-            <!-- Search bar -->
-              <!-- Biểu tượng tìm kiếm -->
-            <!-- <form class="d-flex ms-auto align-items-center" role="search">
-                <div class="input-group" ng-controller="mainController">
-                    <input class="form-control" type="search" placeholder="Search" ng-model="search" aria-label="Search">
-                    <button class="btn btn-outline-light" type="submit" ng-click="btntimkiem()">
-                        <i class="bi bi-search"></i>
-                       
-                    </button>
-                </div>
-            </form> -->
-
-            <!-- Icons bên phải -->
-               <!-- Icon giỏ hàng -->
-            <!-- <div class="d-flex align-items-center ms-3">
-              
-                <div class="nav-item " id="cartContainer">
-                    
-                </div>
-            </div> -->
-            <!-- Icon người dùng với dropdown -->
-      
-  
-    <div ng-view style="max-width: 1500px;" class="container-fluid"></div>
-</div>
-<footer class="footer mt-3 border-top text-dark  py-5 " style="background: white;">
-    <div class="container-fluid" style="max-width: 1500px;" >
-      <div class="row">
-        <!-- Logo Section -->
-        <a href="#" class="col-md-3 mb-4 mb-md-0 text-decoration-none text-dark">
-          <h2 class="h3 mb-2 text-center">Sneaker T7M</h2>
-          <p class="text-muted d-flex justify-content-center"><img src="/image/logo.png" alt="" style="max-width: 100px;"></p>
-        </a>
-  
-        <!-- Headquarters Section -->
-        <div class="col-md-3 mb-4 mb-md-0">
-          <h3 class="h5 mb-3 text-primary">Trụ sở chính</h3>
-          <a href="https://maps.app.goo.gl/t4cRHdpG2qyGr4rf9" class="mb-1 text-decoration-none text-secondary"><i class="bi bi-geo-alt-fill me-2 text-primary"></i>Số 1, đường Độc Lập, phường Quán Thánh, quận Ba Đình, thành phố Hà Nội</a><br> 
-          <a href="tel:0867812085" class="mb-1 text-decoration-none text-secondary"><i class="bi bi-telephone-fill me-2 text-primary"></i>0867 812 085</a><br>
-          <a href="mailto:hoangthanhgiang22@gmail.com" class="mb-0 text-decoration-none text-secondary"><i class="bi bi-envelope-fill me-2 text-primary"></i>hoangthanhgiang22@gmail.com</a>
-        </div>
-  
-        <!-- Social Media Section -->
-        <div class="col-md-3 mb-4 mb-md-0">
-          <h3 class="h5 mb-3 text-primary">Mạng xã hội</h3>
-          <ul class="list-unstyled">
-            <li class="mb-2">
-              <a href="https://www.facebook.com/thnh.giag24" class="text-decoration-none text-muted d-flex align-items-center text-secondary">
-                <i class="bi bi-facebook me-2 text-primary" style="font-size: 1.2rem;"></i>Facebook
-              </a>
-            </li>
-            <li class="mb-2">
-              <a href="https://www.instagram.com/thnh.giag24/" class="text-decoration-none text-muted d-flex align-items-center text-secondary">
-                <i class="bi bi-instagram me-2 text-primary" style="font-size: 1.2rem;"></i>Instagram
-              </a>
-            </li>
-          </ul>
-        </div>
-  
-        <!-- Contact Section -->
-        <div class="col-md-3">
-          <h3 class="h5 mb-3 text-primary">Liên hệ</h3>
-          <p class="text-muted">Nếu có bất kỳ thắc mắc, câu hỏi hoặc nhận xét, vui lòng gọi:</p>
-          <a href="tel:0867812085" class="fw-bold text-primary text-decoration-none">0867 812 085</a>
+          </nav>
         </div>
       </div>
-  
-      <!-- Bottom Section -->
-      <div class="row mt-4 pt-4 border-top">
-        <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-          <small class="text-muted">
-            © 2035 bản quyền của T7M. Tự hào tạo ra với 
-            <a href="https://wix.com" class="text-decoration-none text-primary">T7MSneaker.com</a>
-          </small>
+      <div class="row">
+        <div class="col-3 ps-0 ms-0">
+          <img src="./Images/logo.png" class="bg-white" width="100px" height="100px" alt="" srcset="">
         </div>
-        <div class="col-md-6 text-center text-md-end">
-          <a href="#" class="text-decoration-none text-muted">
-            <small>Chính sách Quyền riêng tư</small>
-          </a>
+        <div class="col-6">
+          <form class="d-flex" role="search">
+            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+          </form>
+        </div>
+        <div class="col-3">
+          <a href="#" class="d-flex justify-content-end position-relative me-3">
+            <i class="bi bi-cart-fill" style="font-size: 24px;"></i>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+              99+
+              <span class="visually-hidden">unread messages</span>
+            </span>
+          </button>
+        </div>
+      </div>
+      <div class="row">
+        <nav class="navbar navbar-expand-lg">
+          <div class="container-fluid">
+            <div class="collapse navbar-collapse" id="navbarText">
+              <ul class="navbar-nav m-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                  <a class="nav-link fs-5 fw-semibold" aria-current="page" href="#">TRANG CHỦ</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link fs-5 fw-semibold" href="#">GIỚI THIỆU</a>
+                </li>
+                <li class="nav-item fs-5 fw-semibold">
+                  <a class="nav-link fs-5 fw-semibold" href="#!Sanpham">SẢN PHẨM</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link fs-5 fw-semibold" href="#">SALE</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+  </header>
+  <div ng-view></div>
+  <footer class="py-3 mt-3" style="border-top: 5px solid black;background-color: rgb(240, 240, 240);">
+    <div class="container">
+      <div class="row">
+        <div class="col-3">
+          <img src="./Images/logo.png" class="bg-white rounded-circle" style="border: 3px solid black;" width="100px" height="100px" alt="" srcset="">
+          <div>
+            <i class="bi bi-pin-map-fill"></i> Address: <a class="text-decoration-none" href="https://maps.app.goo.gl/ACaaAckroJ3bHwBa8" target="_blank">1 Đ. Độc Lập, Quán Thánh, Ba Đình, Hà Nội</a>
+          </div>
+          <div>
+            <i class="bi bi-telephone-fill"></i> Phone: <a class="text-decoration-none" href="tel:0867812095">0867812095</a>
+          </div>
+          <div>
+            <i class="bi bi-envelope-fill"></i> Email: <a class="text-decoration-none" href="mailto:giangnthy@gmail.com">giangnthy@gmail.com</a>
+          </div>
+          <div>
+            <a href="#" class="mx-1"><i class="bi bi-facebook" style="font-size: 24px;"></i></a>
+            <a href="#" class="mx-1"><i class="bi bi-instagram" style="color: pink;font-size: 24px;"></i></a>
+            <a href="#" class="mx-1"><i class="bi bi-youtube" style="color: red;font-size: 24px;"></i></a>
+            <a href="#" class="mx-1"><i class="bi bi-twitter" style="font-size: 24px;"></i></a>
+          </div>
+          
+        </div>
+        <div class="col-md-3">
+          <p class="fw-bolder">THÔNG TIN CỦA CHÚNG TÔI</p>
+          <a class="text-decoration-none" href="https://maps.app.goo.gl/ACaaAckroJ3bHwBa8" target="_blank">CS duy nhất: 1 Đ. Độc Lập, Quán Thánh, Ba Đình, Hà Nội</a>
+          <br>
+          <a class="text-decoration-none" href="">Lĩnh vực kinh doanh</a>
+        </div>
+        <div class="col-md-3">
+          <p class="fw-bolder">CHÍNH SÁCH</p>
+          <a class="text-decoration-none" href="">Chính sách bảo hành</a>
+          <br>
+          <a class="text-decoration-none" href="">Chính sách đổi trả</a>
+          <br>
+          <a class="text-decoration-none" href="">Chính sách thanh toán</a>
+          <br>
+          <a class="text-decoration-none" href="">Chính sách giao nhận hàng</a>
+          <br>
+          <a class="text-decoration-none" href="">Chính sách bảo mật</a>
+        </div>
+        <div class="col-md-3"><p class="fw-bolder">HỖ TRỢ CHUNG</p>
+          <a class="text-decoration-none" href="#">Trang chủ</a>
+          <br>
+          <a class="text-decoration-none" href="">Giới thiệu</a>
+          <br>
+          <a class="text-decoration-none" href="#!Sanpham">Sản phẩm</a>
+          <br>
+          <a class="text-decoration-none" href="">Sale</a>
         </div>
       </div>
     </div>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
-
-  <script src="https://cdnjs.cloudfl
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-route/1.8.3/angular-route.min.js"></script>
   <script src="./app.js"></script>
-  <script src="./js/dangkyController.js"></script>
-  <script src="./js/LoginController.js"></script>
-  <script src="./js/SanphamController.js"></script>
-
 </body>
 </html>
 
