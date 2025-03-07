@@ -1,5 +1,5 @@
 const app = angular.module("myApp",['ngRoute']);
-//ifan
+//ifanfgf
 app.config(function($routeProvider){
     $routeProvider
         .when('/',{
