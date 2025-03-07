@@ -1,0 +1,112 @@
+
+<style>
+    .container{
+         margin: 20px;
+    }
+     html, body {
+         height: 100%;
+         
+     }
+   
+     .register-form {
+         background-color: white;
+         padding: 2rem;
+         border-radius: 1rem;
+         box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+         max-width: 500px;
+         width: 100%;
+       
+         margin: auto;
+     }
+     .btn-register {
+         background-color: #6a11cb;
+         border-color: #6a11cb;
+         
+     }
+     .btn-register:hover {
+         background-color: #5a0cb2;
+         border-color: #5a0cb2;
+         
+     }
+     
+ </style>
+</head>
+
+ <div class="container">
+     <div class="row justify-content-center">
+         <div class="col-12">
+             <div class="register-form">
+                 <h2 class="text-center mb-4">Đăng ký</h2>
+                 <form ng-submit="register()">
+                     <div class="mb-3">
+                         <label for="ten" class="form-label">Họ và tên</label>
+                         <input type="text" class="form-control" id="ten" ng-model="user.ten" placeholder="Nguyễn Văn A" required>
+                     </div>
+                     <div class="mb-3">
+                         <label for="sdt" class="form-label">Số điện thoại</label>
+                         <input type="tel" class="form-control" id="sdt" ng-model="user.sdt" placeholder="0123456789" required>
+                     </div>
+                     <div class="mb-3">
+                         <label for="ngaysinh" class="form-label">Ngày sinh</label>
+                         <input type="date" class="form-control" id="ngaysinh" ng-model="user.ngaysinh" required>
+                     </div>
+                     <div class="mb-3">
+                         <label for="email" class="form-label">Email</label>
+                         <input type="email" class="form-control" id="email" ng-model="user.email" placeholder="example@gmail.com" required>
+                     </div>
+                     <div class="mb-3">
+                         <label for="diachi" class="form-label">Địa chỉ</label>
+                         <input type="text" class="form-control" id="diachi" ng-model="user.diachi" placeholder="123 ABC Street" required>
+                     </div>
+                     <div class="mb-3">
+                         <label for="password" class="form-label">Mật khẩu</label>
+                         <div class="input-group">
+                             <input 
+                                 type="{{showPassword ? 'text' : 'password'}}" 
+                                 class="form-control" 
+                                 id="password" 
+                                 ng-model="user.password" 
+                                 placeholder="••••••••" 
+                                 required>
+                             <span class="input-group-text" ng-click="showPassword = !showPassword" style="cursor: pointer;">
+                                 <i ng-class="{'bi bi-eye': !showPassword, 'bi bi-eye-slash': showPassword}"></i>
+                             </span>
+                         </div>
+                     </div>
+                     
+                     <div class="mb-3">
+                         <label for="confirm-password" class="form-label">Xác nhận mật khẩu</label>
+                         <div class="input-group">
+                             <input 
+                                 type="{{showConfirmPassword ? 'text' : 'password'}}" 
+                                 class="form-control" 
+                                 id="confirm-password" 
+                                 ng-model="user.confirmPassword" 
+                                 placeholder="••••••••" 
+                                 required>
+                             <span class="input-group-text" ng-click="showConfirmPassword = !showConfirmPassword" style="cursor: pointer;">
+                                 <i ng-class="{'bi bi-eye': !showConfirmPassword, 'bi bi-eye-slash': showConfirmPassword}"></i>
+                             </span>
+                         </div>
+                     </div>
+                     
+                     
+                     <div class="mb-3 form-check">
+                         <input type="checkbox" class="form-check-input" id="agree-terms" ng-model="user.agreeTerms" required>
+                         <label class="form-check-label" for="agree-terms">Tôi đồng ý với các điều khoản và điều kiện</label>
+                     </div>
+                     <div class="alert alert-danger" ng-if="errorMessage">{{errorMessage}}</div>
+                     <div class="alert alert-success" ng-if="successMessage">{{successMessage}}</div>
+                     <div class="d-grid">
+                         <button type="submit" class="btn btn-primary btn-register" ng-disabled="!user.agreeTerms">Đăng ký</button>
+                     </div>
+                 </form>
+                 <div class="text-center mt-4">
+                     <p>Đã có tài khoản? <a href="#!login" class="text-primary">Đăng nhập ngay</a></p>
+                 </div>
+             </div>
+         </div>
+     </div>
+ </div>
+
+ 
