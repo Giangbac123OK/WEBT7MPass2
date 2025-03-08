@@ -1,0 +1,153 @@
+<style>
+    .login-form {
+        background-color: white;
+        padding: 50px;
+        border-radius: 1rem;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        max-width: 400px;
+        width: 100%;
+        margin: auto;
+    }
+
+    .btn-login {
+        background-color: #6a11cb;
+        border-color: #6a11cb;
+    }
+
+    .btn-login:hover {
+        background-color: #5a0cb2;
+        border-color: #5a0cb2;
+    }
+
+    .loading-spinner {
+        display: inline-block;
+        width: 1rem;
+        height: 1rem;
+        margin-right: 0.5rem;
+        border: 0.2em solid currentColor;
+        border-right-color: transparent;
+        border-radius: 50%;
+        animation: spinner-border .75s linear infinite;
+    }
+    /* Màu sắc khi hover lên biểu tượng mắt */
+.input-group-text i:hover {
+    color: #0056b3;
+}
+.login-form {
+    max-width: 400px;
+    margin: 50px auto; /* Đặt form vào giữa trang */
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 12px; /* Bo góc cho form */
+    border: 2px solid #007bff; /* Đường viền màu xanh dương cho form */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Tạo bóng đổ nhẹ cho form */
+}
+
+/* Tiêu đề của form */
+h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+/* Các trường input */
+.form-control {
+    border-radius: 8px; /* Bo góc cho các trường input */
+    padding: 10px;
+    font-size: 16px;
+    border: 2px solid #ccc; /* Đặt đường viền mặc định màu xám nhạt */
+    transition: all 0.3s ease; /* Hiệu ứng chuyển đổi khi người dùng tương tác */
+}
+
+/* Tạo hiệu ứng focus cho các trường input */
+.form-control:focus {
+    border-color: #007bff; /* Đổi màu đường viền thành xanh dương khi người dùng chọn input */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Hiệu ứng bóng nhẹ */
+}
+
+/* Thông báo lỗi */
+.text-danger {
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+/* Checkbox "Nhớ mật khẩu" */
+.form-check-label {
+    font-size: 14px;
+}
+
+/* Nút Đăng nhập */
+.btn-primary {
+    background-color: #007bff;
+    border: 2px solid #007bff; /* Đặt đường viền màu xanh dương cho nút */
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 8px;
+    color: #fff;
+    transition: all 0.3s ease;
+}
+
+/* Hiệu ứng hover cho nút đăng nhập */
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3; /* Đổi màu đường viền khi hover */
+    
+}
+
+/* Biểu tượng mắt */
+
+.input-group-text i {
+    font-size: 20px;
+    color: #007bff;
+    transition: color 0.3s ease;
+}
+.input-group{
+    border-radius: 12px;
+}
+</style>
+<div class="container">
+    <div class="row mb-3">
+        <div class="col-4">
+            <img src="./Images/user.png" class="rounded-circle border border-dark" width="50px" height="50px" alt="" srcset="">
+            <span class="fw-bold">Quốc trung</span>
+            <hr>
+            <div>
+                <a href="#!thongtintaikhoan" class="fs-5 text-decoration-none text-dark"><i class="bi bi-person-fill"></i> Hồ sơ của tôi</a><br>
+                <a href="#!donhangcuaban" class="fs-5 text-decoration-none text-dark"><i class="bi bi-bag-fill"></i> Đơn hàng của tôi</a><br>
+                <a href="#!quenmatkhau" class="fs-5 text-decoration-none text-danger"><i class="bi bi-key-fill"></i> Quên mật khẩu</a>
+            </div>
+        </div>
+        <div class="col-8">
+            <div class="login-form">
+                <h2 class="text-center mb-4">Đăng ký mật khẩu mới</h2>
+                <form ng-submit="registerPassword()" name="passwordForm" novalidate>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Mật khẩu mới</label>
+                        <input type="password" class="form-control" id="password" placeholder="Nhập mật khẩu"
+                            ng-model="password" required>
+                        <div class="text-danger" ng-show="passwordForm.password.$dirty && passwordForm.password.$invalid">
+                            <small ng-show="passwordForm.password.$error.required">Mật khẩu là bắt buộc</small>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label">Xác nhận mật khẩu</label>
+                        <input type="password" class="form-control" id="confirmPassword" placeholder="Xác nhận mật khẩu"
+                            ng-model="confirmPassword" required>
+                        <div class="text-danger" ng-show="password !== confirmPassword">
+                            <small>Mật khẩu không khớp</small>
+                        </div>
+                    </div>
+                    <div class="alert alert-danger" ng-if="errorMessage">
+                        {{errorMessage}}
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary" ng-disabled="passwordForm.$invalid || password !== confirmPassword">
+                            Đăng ký mật khẩu
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+</div>
