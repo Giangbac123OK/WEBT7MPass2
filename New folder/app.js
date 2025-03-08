@@ -17,6 +17,16 @@ app.config(function($routeProvider){
             templateUrl: "./Views/Sanpham.html",
             controller: "SanphamController"
           })
+          
+          .when("/quenmatkhau", {
+            templateUrl: "./Views/quenmatkhau.html"
+          })
+          .when("/thongtintaikhoan", {
+            templateUrl: "./Views/thongtintaikhoan.html"
+          })
+          .when("/donhangcuaban", {
+            templateUrl: "./Views/donhangcuaban.html"
+          })
         .when('/giang',{
              template: '<h1>Giang</h1>'
          })
