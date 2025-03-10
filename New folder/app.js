@@ -2,8 +2,9 @@ const app = angular.module("myApp",['ngRoute']);
 //ifanfgf
 app.config(function($routeProvider){
     $routeProvider
-        .when('/',{
-            templateUrl: './Views/home.html'
+        .when("/",{
+            templateUrl: "./Views/home.html",
+            controller :'homeController'
         })
         .when("/login", {
             templateUrl: "./Views/login.html",
@@ -27,8 +28,5 @@ app.config(function($routeProvider){
           .when("/donhangcuaban", {
             templateUrl: "./Views/donhangcuaban.html"
           })
-        .when('/giang',{
-             template: '<h1>Giang</h1>'
-         })
-        .otherwise('/')
+          .otherwise("/")
 })
