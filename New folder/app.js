@@ -18,7 +18,10 @@ app.config(function($routeProvider){
             templateUrl: "./Views/Sanpham.html",
             controller: "SanphamController"
           })
-          
+          .when("/sale", {
+            templateUrl: "./Views/sale.html",
+            controller: "saleController"
+          })
           .when("/quenmatkhau", {
             templateUrl: "./Views/quenmatkhau.html"
           })
