@@ -7,20 +7,16 @@ app.config(function($routeProvider){
             controller :'homeController'
         })
         .when("/login", {
-            templateUrl: "./Views/login.html",
-            controller: "LoginController"
+            templateUrl: "./Views/login.html"
           })
           .when("/dangky", {
-            templateUrl: "./Views/dangky.html",
-            controller: "dangkyController"
+            templateUrl: "./Views/dangky.html"
           })
           .when("/Sanpham", {
-            templateUrl: "./Views/Sanpham.html",
-            controller: "SanphamController"
+            templateUrl: "./Views/Sanpham.html"
           })
           .when("/sale", {
-            templateUrl: "./Views/sale.html",
-            controller: "saleController"
+            templateUrl: "./Views/sale.html"
           })
           .when("/quenmatkhau", {
             templateUrl: "./Views/quenmatkhau.html"
@@ -30,6 +26,9 @@ app.config(function($routeProvider){
           })
           .when("/donhangcuaban", {
             templateUrl: "./Views/donhangcuaban.html"
+          })
+          .when("/giohang", {
+            templateUrl: "./Views/giohang.html"
           })
           .otherwise("/")
 })
