@@ -9,7 +9,7 @@ app.controller('dangkyController', function($scope, $http) {
         var age = today.getFullYear() - dob.getFullYear();
         var m = today.getMonth() - dob.getMonth();
     
-        // Điều chỉnh nếu ngày sinh chưa đến tháng hiện tại
+        // Điều chỉnh nếu ngày sinh chưa đến tháng hiện tạiok
         if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
             age--;
         }
