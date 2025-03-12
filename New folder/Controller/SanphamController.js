@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // Hover effect for desktop
+    // Hover effect for desktop ok
     if (window.innerWidth > 992) {
       const dropdownToggle = document.querySelector(".has-megamenu .dropdown-toggle")
       const dropdownMenu = document.querySelector(".has-megamenu .dropdown-menu")

@@ -1,5 +1,5 @@
 app.controller('LoginController', function ($scope, $http, $rootScope, $location, $timeout) {
-    $scope.step = 1; // Bước hiện tại
+    $scope.step = 1; // Bước hiện tạiok
     $scope.user = {};
     $scope.isLoading = false;
     $scope.errorMessage = '';

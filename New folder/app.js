@@ -7,13 +7,16 @@ app.config(function($routeProvider){
             controller :'homeController'
         })
         .when("/login", {
-            templateUrl: "./Views/login.html"
+            templateUrl: "./Views/login.html",
+            controller: "./Controller/LoginController.js"
           })
           .when("/dangky", {
-            templateUrl: "./Views/dangky.html"
+            templateUrl: "./Views/dangky.html",
+            controller: "./Controller/dangkyController.js"
           })
           .when("/Sanpham", {
-            templateUrl: "./Views/Sanpham.html"
+            templateUrl: "./Views/Sanpham.html",
+            controller: "./Controller/SanphamController.js"
           })
           .when("/sale", {
             templateUrl: "./Views/sale.html"
