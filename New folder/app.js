@@ -36,8 +36,12 @@ app.config(function($routeProvider){
           .when("/giohang", {
             templateUrl: "./Views/giohang.html"
           })
+          .when("/gioithieu", {
+            templateUrl: "./Views/gioithieu.html"
+          })
           .when("/SanpDetail", {
             templateUrl: "./Views/SanphamDetail.html"
           })
+          
           .otherwise("/")
 })
