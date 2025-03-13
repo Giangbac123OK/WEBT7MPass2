@@ -36,5 +36,8 @@ app.config(function($routeProvider){
           .when("/giohang", {
             templateUrl: "./Views/giohang.html"
           })
+          .when("/SanpDetail", {
+            templateUrl: "./Views/SanphamDetail.html"
+          })
           .otherwise("/")
 })
