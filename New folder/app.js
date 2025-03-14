@@ -24,8 +24,11 @@ app.config(function($routeProvider){
           .when("/diachi", {
             templateUrl: "./Views/diachi.html"
           })
-          .when("/quenmatkhau", {
-            templateUrl: "./Views/quenmatkhau.html"
+          .when("/voucher", {
+            templateUrl: "./Views/voucher.html"
+          })
+          .when("/doimatkhau", {
+            templateUrl: "./Views/doimatkhau.html"
           })
           .when("/thongtintaikhoan", {
             templateUrl: "./Views/thongtintaikhoan.html"
