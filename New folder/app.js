@@ -34,7 +34,8 @@ app.config(function($routeProvider){
             templateUrl: "./Views/thongtintaikhoan.html"
           })
           .when("/donhangcuaban", {
-            templateUrl: "./Views/donhangcuaban.html"
+            templateUrl: "./Views/donhangcuaban.html",
+            controller: 'donhangcuabanController'
           })
           .when("/giohang", {
             templateUrl: "./Views/giohang.html"
