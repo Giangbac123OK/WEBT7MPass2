@@ -98,7 +98,7 @@
                           <div class="p-2 bd-highlight text-secondary">Đã hủy bởi bạn</div>
                           <div class="p-2 bd-highlight">
                             <button class="btn btn-danger">Mua lại</button>
-                            <button class="btn btn-outline-dark">Chi tiết</button>
+                            <button class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#chitietModal">Chi tiết</button>
                             <a href="tel:0987654321" class="btn btn-outline-dark">Liên hệ người bán</a>
                           </div>
                         </div>
@@ -362,6 +362,22 @@
                     <a data-bs-toggle="tooltip" data-bs-placement="bottom" title="Giang">
                       <i class="bi bi-question-circle"></i>
                     </a>
+                  </div>
+                </div>
+                <div class="row border-bottom py-3"> 
+                  <div class="col-3">
+                    <img src="./Images/1.jpg" width="100%" height="120px">
+                  </div>
+                  <div class="col-7">
+                    <p class="fs-5">Giayf</p>
+                    <p class="text-secondary">Phân loại: Da độn - Đen - 38</p>
+                    <p>x1</p>
+                  </div>
+                  <div class="col-2 d-flex justify-content-center align-items-center">
+                    <div class="text-center">
+                        <span class="text-secondary text-decoration-line-through">₫30.000 </span>
+                        <span style="color: orangered;">₫12.900</span>
+                    </div>
                   </div>
                 </div>
                 <div class="row border-bottom py-3"> 
@@ -745,5 +761,19 @@
             </div>
         </div>
       </div>
+  </div>
+</div>
+<!-- Chi tiết đơn hàng -->
+<div class="modal fade" id="chitietModal" tabindex="-1" aria-labelledby="chitietModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="chitietModalLabel">Chi tiết đơn hàng</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+    </div>
   </div>
 </div>
