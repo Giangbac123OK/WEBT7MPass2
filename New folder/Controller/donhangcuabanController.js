@@ -7,5 +7,14 @@ app.controller('donhangcuabanController', function($scope, $http) {
         .catch(function(error){
             console.error(error)
         })
+        
+        $http.get('http://localhost:36106/api/Trahangs')
+        .then(function(response){
+            $scope.dataTraHang = response.data
+            console.log($scope.dataTraHang)
+        })
+        .catch(function(error){
+            console.error(error)
+        })
 });
 
