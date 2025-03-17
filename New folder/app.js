@@ -46,6 +46,9 @@ app.config(function($routeProvider){
           .when("/hoadn", {
             templateUrl: "./Views/hoadon.html"
           })
+          .when("/doidiem", {
+            templateUrl: "./Views/doidiem.html"
+          })
           .when("/gioithieu", {
             templateUrl: "./Views/gioithieu.html"
           })
