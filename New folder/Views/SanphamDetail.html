@@ -1,715 +1,443 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chi Tiết Sản Phẩm Giày</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        .rating-filter {
-    background: #fff7f2;
-    padding: 15px;
-    border-radius: 8px;
-}
+<style>
+    .rating-filter {
+        background: #fff7f2;
+        padding: 15px;
+        border-radius: 8px;
+    }
 
-.rating-summary {
-    font-size: 18px;
-    margin-bottom: 10px;
-}
+    .rating-summary {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
 
-.filter-buttons button {
-    border: 1px solid #ccc;
-    padding: 8px 12px;
-    margin: 5px;
-    cursor: pointer;
-}
+    .filter-buttons button {
+        border: 1px solid #ccc;
+        padding: 8px 12px;
+        margin: 5px;
+        cursor: pointer;
+    }
 
-.filter-buttons .active {
-    background: #ff5a3c;
-    color: white;
-    border: none;
-}
+    .filter-buttons .active {
+        background: #ff5a3c;
+        color: white;
+        border: none;
+    }
 
-        :root {
-            --primary-color: #dc3545;
-            --secondary-color: #f8f9fa;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        .product-title {
-            font-weight: 700;
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
-        
-        .product-info {
-            margin-bottom: 0.5rem;
-        }
-        
-        .product-info span {
-            font-weight: 600;
-        }
-        
-        .price-original {
-            text-decoration: line-through;
-            color: #6c757d;
+    :root {
+        --primary-color: #dc3545;
+        --secondary-color: #f8f9fa;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .product-title {
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .product-info {
+        margin-bottom: 0.5rem;
+    }
+
+    .product-info span {
+        font-weight: 600;
+    }
+
+    .price-original {
+        text-decoration: line-through;
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .price-current {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+    }
+
+    .discount-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: #ffc107;
+        color: #000;
+        padding: 5px 10px;
+        font-weight: bold;
+        border-radius: 3px;
+    }
+
+    .color-option {
+        transition: all 0.2s ease;
+    }
+
+    .color-option.active {
+        background-color: #000;
+        color: #fff;
+        border-color: #000;
+    }
+
+    .color-cyan {
+        background-color: #17a2b8;
+    }
+
+    .color-pink {
+        background-color: #e83e8c;
+    }
+
+    .color-purple {
+        background-color: #6f42c1;
+    }
+
+    .size-option {
+        width: 45px;
+        height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 10px;
+        cursor: pointer;
+        border: 1px solid #dee2e6;
+        background-color: #fff;
+    }
+
+    .size-option.active {
+        border-color: #000;
+        background-color: #f8f9fa;
+        font-weight: bold;
+    }
+
+    .quantity-selector {
+        display: flex;
+        align-items: center;
+    }
+
+    .quantity-btn {
+        width: 40px;
+        height: 40px;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+
+    .quantity-input {
+        width: 60px;
+        height: 40px;
+        border: 1px solid #dee2e6;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .btn-add-cart {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        font-weight: bold;
+    }
+
+    .btn-buy-now {
+        background-color: #000;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        font-weight: bold;
+    }
+
+    .btn-wishlist {
+        background-color: transparent;
+        border: none;
+        font-size: 1.5rem;
+        color: #6c757d;
+    }
+
+    .btn-wishlist:hover,
+    .btn-wishlist.active {
+        color: var(--primary-color);
+    }
+
+    .thumbnail-img {
+        width: 100%;
+        height: 100px;
+        object-fit: cover;
+        cursor: pointer;
+        border: 1px solid #dee2e6;
+        margin-bottom: 10px;
+    }
+
+    .thumbnail-img:hover,
+    .thumbnail-img.active {
+        border: 2px solid #000;
+    }
+
+    .main-img {
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+    }
+
+    .product-description {
+        margin-top: 2rem;
+    }
+
+    .product-description h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid #dee2e6;
+        padding-bottom: 0.5rem;
+    }
+
+    /* Comments section styles */
+    .rating i {
+        cursor: pointer;
+        margin-right: 2px;
+    }
+
+    .comment-item {
+        transition: all 0.2s ease;
+    }
+
+    .comment-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    /* Related products styles */
+    .related-products .card {
+        border: 1px solid #dee2e6;
+        transition: all 0.3s ease;
+    }
+
+    .related-products .card:hover {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .related-products .card-img-top {
+        object-fit: cover;
+        height: 200px;
+    }
+
+    .related-products .card-title {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .related-products .card-title {
             font-size: 0.9rem;
-        }
-        
-        .price-current {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-        
-        .discount-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: #ffc107;
-            color: #000;
-            padding: 5px 10px;
-            font-weight: bold;
-            border-radius: 3px;
-        }
-        
-        .color-option {
-            transition: all 0.2s ease;
-        }
-        
-        .color-option.active {
-            background-color: #000;
-            color: #fff;
-            border-color: #000;
-        }
-        
-        .color-cyan {
-            background-color: #17a2b8;
-        }
-        
-        .color-pink {
-            background-color: #e83e8c;
-        }
-        
-        .color-purple {
-            background-color: #6f42c1;
-        }
-        
-        .size-option {
-            width: 45px;
-            height: 40px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 10px;
-            cursor: pointer;
-            border: 1px solid #dee2e6;
-            background-color: #fff;
-        }
-        
-        .size-option.active {
-            border-color: #000;
-            background-color: #f8f9fa;
-            font-weight: bold;
-        }
-        
-        .quantity-selector {
-            display: flex;
-            align-items: center;
-        }
-        
-        .quantity-btn {
-            width: 40px;
-            height: 40px;
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-        
-        .quantity-input {
-            width: 60px;
-            height: 40px;
-            border: 1px solid #dee2e6;
-            text-align: center;
-            font-weight: bold;
-        }
-        
-        .btn-add-cart {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            font-weight: bold;
-        }
-        
-        .btn-buy-now {
-            background-color: #000;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            font-weight: bold;
-        }
-        
-        .btn-wishlist {
-            background-color: transparent;
-            border: none;
-            font-size: 1.5rem;
-            color: #6c757d;
-        }
-        
-        .btn-wishlist:hover, .btn-wishlist.active {
-            color: var(--primary-color);
-        }
-        
-        .thumbnail-img {
-            width: 100%;
-            height: 100px;
-            object-fit: cover;
-            cursor: pointer;
-            border: 1px solid #dee2e6;
-            margin-bottom: 10px;
-        }
-        
-        .thumbnail-img:hover, .thumbnail-img.active {
-            border: 2px solid #000;
-        }
-        
-        .main-img {
-            width: 100%;
-            height: auto;
-            object-fit: contain;
-        }
-        
-        .product-description {
-            margin-top: 2rem;
-        }
-        
-        .product-description h3 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            border-bottom: 1px solid #dee2e6;
-            padding-bottom: 0.5rem;
-        }
-
-        /* Comments section styles */
-        .rating i {
-            cursor: pointer;
-            margin-right: 2px;
         }
 
         .comment-item {
-            transition: all 0.2s ease;
+            padding: 0.5rem !important;
         }
+    }
+</style>
+<div class="container py-5">
+    <div class="row">
+        <!-- Thumbnails -->
+        <div class="col-md-1 d-none d-md-block">
+            <div class="thumbnail-container">
+                <img src="/placeholder.svg?height=100&width=100" class="thumbnail-img active" data-img-id="1"
+                    alt="Thumbnail 1">
+                <img src="/placeholder.svg?height=100&width=100" class="thumbnail-img" data-img-id="2"
+                    alt="Thumbnail 2">
+                <img src="/placeholder.svg?height=100&width=100" class="thumbnail-img" data-img-id="3"
+                    alt="Thumbnail 3">
+                <img src="/placeholder.svg?height=100&width=100" class="thumbnail-img" data-img-id="4"
+                    alt="Thumbnail 4">
+            </div>
+        </div>
 
-        .comment-item:hover {
-            background-color: #f8f9fa;
-        }
+        <!-- Main Image -->
+        <div class="col-md-5">
+            <div class="position-relative">
+                <div class="discount-badge">20% GIẢM</div>
+                <img src="/placeholder.svg?height=500&width=500" class="main-img" id="main-product-image"
+                    alt="NIKE MERCURIAL SUPERFLY 8 ACADEMY TF">
+            </div>
+        </div>
 
-        /* Related products styles */
-        .related-products .card {
-            border: 1px solid #dee2e6;
-            transition: all 0.3s ease;
-        }
+        <!-- Product Details -->
+        <div class="col-md-6" id="dưlieusanpham">
+            <h1 class="product-title">NIKE MERCURIAL SUPERFLY 8 ACADEMY TF – CV0953-107 - TRẮNG/BẠC SAFARI</h1>
 
-        .related-products .card:hover {
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
+            <div class="product-info">
+                <span>Trạng thái:</span> Còn hàng
+            </div>
 
-        .related-products .card-img-top {
-            object-fit: cover;
-            height: 200px;
-        }
+            <div class="product-info">
+                <span>Loại sản phẩm:</span> Giày đép
+            </div>
 
-        .related-products .card-title {
-            font-size: 1rem;
-            margin-bottom: 0.5rem;
-        }
+            <div class="mb-3">
+                <div class="price-current">550.000đ</div>
+                <div class="price-original">Giá gốc: 650.000đ (-20%)</div>
+            </div>
 
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .related-products .card-title {
-                font-size: 0.9rem;
-            }
-            
-            .comment-item {
-                padding: 0.5rem !important;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container py-5">
-        <div class="row">
-            <!-- Thumbnails -->
-            <div class="col-md-1 d-none d-md-block">
-                <div class="thumbnail-container">
-                    <img src="/placeholder.svg?height=100&width=100" class="thumbnail-img active" data-img-id="1" alt="Thumbnail 1">
-                    <img src="/placeholder.svg?height=100&width=100" class="thumbnail-img" data-img-id="2" alt="Thumbnail 2">
-                    <img src="/placeholder.svg?height=100&width=100" class="thumbnail-img" data-img-id="3" alt="Thumbnail 3">
-                    <img src="/placeholder.svg?height=100&width=100" class="thumbnail-img" data-img-id="4" alt="Thumbnail 4">
+            <div class="mb-3">
+                <div class="product-info mb-2">
+                    <span>Màu:</span>
+                </div>
+                <div class="color-options">
+                    <button class="btn btn-outline-secondary me-2 color-option active" data-color="red">Màu
+                        đỏ</button>
+                    <button class="btn btn-outline-secondary me-2 color-option" data-color="pink">Màu hồng</button>
+                    <button class="btn btn-outline-secondary me-2 color-option" data-color="black">Màu đen</button>
                 </div>
             </div>
-            
-            <!-- Main Image -->
-            <div class="col-md-5">
-                <div class="position-relative">
-                    <div class="discount-badge">20% GIẢM</div>
-                    <img src="/placeholder.svg?height=500&width=500" class="main-img" id="main-product-image" alt="NIKE MERCURIAL SUPERFLY 8 ACADEMY TF">
+
+            <div class="mb-3">
+                <div class="product-info mb-2">
+                    <span>Kích thước:</span>
+                </div>
+                <div class="size-options">
+                    <span class="size-option" data-size="38">38</span>
+                    <span class="size-option active" data-size="39">39</span>
+                    <span class="size-option" data-size="40">40</span>
                 </div>
             </div>
-            
-            <!-- Product Details -->
-            <div class="col-md-6">
-                <h1 class="product-title">NIKE MERCURIAL SUPERFLY 8 ACADEMY TF – CV0953-107 - TRẮNG/BẠC SAFARI</h1>
-                
-                <div class="product-info">
-                    <span>Trạng thái:</span> Còn hàng
+
+            <div class="mb-4">
+                <div class="product-info mb-2">
+                    <span>Số lượng:</span>
                 </div>
-                
-                <div class="product-info">
-                    <span>Loại sản phẩm:</span> Giày đép
+                <div class="d-flex align-items-center">
+                    <div class="quantity-selector me-3">
+                        <div class="quantity-btn" id="decrease-quantity">-</div>
+                        <input type="text" class="quantity-input" id="quantity" value="1" readonly>
+                        <div class="quantity-btn" id="increase-quantity">+</div>
+                    </div>
+
+                    <button class="btn btn-add-cart me-2" id="add-to-cart">Thêm vào giỏ</button>
+                    <button class="btn btn-buy-now me-2" id="buy-now">Mua ngay</button>
+                    <button class="btn btn-wishlist" id="add-to-wishlist">
+                        <i class="far fa-heart"></i>
+                    </button>
                 </div>
-                
-                <div class="mb-3">
-                    <div class="price-current">550.000đ</div>
-                    <div class="price-original">Giá gốc: 650.000đ (-20%)</div>
+            </div>
+
+            <div class="product-description">
+                <h3>Mô tả</h3>
+                <div>
+                    <p><strong>NIKE MERCURIAL SUPERFLY 8 ACADEMY TF</strong></p>
+                    <p><strong>Thông số kĩ thuật:</strong></p>
+                    <p>Phân khúc: Academy (tầm trung).</p>
+                    <p>Upper: Synthetic - Da tổng hợp cao cấp.</p>
+                    <p>Thiết kế đính giày: Các đinh cao su hình chữ nhật, xếp chồng chéo với nhau. Theo đánh giá của
+                        nhiều người chơi thì những đinh TF hình chữ nhật làm này giúp đôi giày có thể trụ vững hơn
+                        trên sân.</p>
+                    <p>Độ ôm chân: Cao</p>
                 </div>
-                
-                <div class="mb-3">
-                    <div class="product-info mb-2">
-                        <span>Màu:</span>
-                    </div>
-                    <div class="color-options">
-                        <button class="btn btn-outline-secondary me-2 color-option active" data-color="red">Màu đỏ</button>
-                        <button class="btn btn-outline-secondary me-2 color-option" data-color="pink">Màu hồng</button>
-                        <button class="btn btn-outline-secondary me-2 color-option" data-color="black">Màu đen</button>
-                    </div>
+            </div>
+
+            <!-- Comments Section -->
+            <div class="rating-filter">
+                <h3>ĐÁNH GIÁ SẢN PHẨM</h3>
+                <div class="rating-summary">
+                    <span class="rating-score">4.9 trên 5</span>
+                    <span class="stars">★★★★★</span>
                 </div>
-                
-                <div class="mb-3">
-                    <div class="product-info mb-2">
-                        <span>Kích thước:</span>
-                    </div>
-                    <div class="size-options">
-                        <span class="size-option" data-size="38">38</span>
-                        <span class="size-option active" data-size="39">39</span>
-                        <span class="size-option" data-size="40">40</span>
-                    </div>
+                <div class="filter-buttons">
+                    <button class="active" data-filter="all">Tất Cả</button>
+                    <button data-filter="5">5 Sao (6k)</button>
+                    <button data-filter="4">4 Sao (332)</button>
+                    <button data-filter="3">3 Sao (60)</button>
+                    <button data-filter="2">2 Sao (21)</button>
+                    <button data-filter="1">1 Sao (16)</button>
+                    <button data-filter="comment">Có Bình Luận (2,5k)</button>
+                    <button data-filter="media">Có Hình Ảnh / Video (1,2k)</button>
+                    <button data-filter="local">Trong Nước (6,4k)</button>
                 </div>
-                
-                <div class="mb-4">
-                    <div class="product-info mb-2">
-                        <span>Số lượng:</span>
-                    </div>
-                    <div class="d-flex align-items-center">
-                        <div class="quantity-selector me-3">
-                            <div class="quantity-btn" id="decrease-quantity">-</div>
-                            <input type="text" class="quantity-input" id="quantity" value="1" readonly>
-                            <div class="quantity-btn" id="increase-quantity">+</div>
+            </div>
+            <div id="reviews">
+                <!-- Danh sách đánh giá sẽ được hiển thị ở đây -->
+                <div class="review" data-rating="5" data-comment="true" data-media="true" data-local="true">
+                    <p>Đánh giá 5 sao - Có bình luận & hình ảnh</p>
+                </div>
+                <div class="review" data-rating="4" data-comment="false" data-media="true" data-local="false">
+                    <p>Đánh giá 4 sao - Có hình ảnh</p>
+                </div>
+
+            </div>
+
+
+        </div>
+        <!-- Related Products Section -->
+        <div class="related-products mt-5">
+            <h3 class="mb-4">Sản phẩm liên quan</h3>
+            <div class="row">
+                <!-- Related Product Item -->
+                <div class="col-md-3 col-6 mb-4">
+                    <div class="card h-100 position-relative">
+                        <div class="position-absolute top-0 end-0 bg-warning text-dark p-2 m-2 small">
+                            20% GIẢM
                         </div>
-                        
-                        <button class="btn btn-add-cart me-2" id="add-to-cart">Thêm vào giỏ</button>
-                        <button class="btn btn-buy-now me-2" id="buy-now">Mua ngay</button>
-                        <button class="btn btn-wishlist" id="add-to-wishlist">
-                            <i class="far fa-heart"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="product-description">
-                    <h3>Mô tả</h3>
-                    <div>
-                        <p><strong>NIKE MERCURIAL SUPERFLY 8 ACADEMY TF</strong></p>
-                        <p><strong>Thông số kĩ thuật:</strong></p>
-                        <p>Phân khúc: Academy (tầm trung).</p>
-                        <p>Upper: Synthetic - Da tổng hợp cao cấp.</p>
-                        <p>Thiết kế đính giày: Các đinh cao su hình chữ nhật, xếp chồng chéo với nhau. Theo đánh giá của nhiều người chơi thì những đinh TF hình chữ nhật làm này giúp đôi giày có thể trụ vững hơn trên sân.</p>
-                        <p>Độ ôm chân: Cao</p>
-                    </div>
-                </div>
-
-                <!-- Comments Section -->
-                <div class="rating-filter">
-                    <h3>ĐÁNH GIÁ SẢN PHẨM</h3>
-                    <div class="rating-summary">
-                        <span class="rating-score">4.9 trên 5</span>
-                        <span class="stars">★★★★★</span>
-                    </div>
-                    <div class="filter-buttons">
-                        <button class="active" data-filter="all">Tất Cả</button>
-                        <button data-filter="5">5 Sao (6k)</button>
-                        <button data-filter="4">4 Sao (332)</button>
-                        <button data-filter="3">3 Sao (60)</button>
-                        <button data-filter="2">2 Sao (21)</button>
-                        <button data-filter="1">1 Sao (16)</button>
-                        <button data-filter="comment">Có Bình Luận (2,5k)</button>
-                        <button data-filter="media">Có Hình Ảnh / Video (1,2k)</button>
-                        <button data-filter="local">Trong Nước (6,4k)</button>
-                    </div>
-                </div>
-                <div id="reviews">
-                    <!-- Danh sách đánh giá sẽ được hiển thị ở đây -->
-                    <div class="review" data-rating="5" data-comment="true" data-media="true" data-local="true">
-                        <p>Đánh giá 5 sao - Có bình luận & hình ảnh</p>
-                    </div>
-                    <div class="review" data-rating="4" data-comment="false" data-media="true" data-local="false">
-                        <p>Đánh giá 4 sao - Có hình ảnh</p>
-                    </div>
-                    
-                </div>
-                
-
-                <!-- Related Products Section -->
-                <div class="related-products mt-5">
-                    <h3 class="mb-4">Sản phẩm liên quan</h3>
-                    <div class="row">
-                        <!-- Related Product Item -->
-                        <div class="col-md-3 col-6 mb-4">
-                            <div class="card h-100 position-relative">
-                                <div class="position-absolute top-0 end-0 bg-warning text-dark p-2 m-2 small">
-                                    20% GIẢM
-                                </div>
-                                <img src="/placeholder.svg?height=300&width=300" class="card-img-top" alt="Related Product">
-                                <div class="card-body">
-                                    <h5 class="card-title">Giày Nike Air Max</h5>
-                                    <p class="card-text">
-                                        <span class="text-danger fw-bold">550.000đ</span>
-                                        <small class="text-muted text-decoration-line-through ms-2">650.000đ</small>
-                                    </p>
-                                </div>
-                            </div>
+                        <img src="/placeholder.svg?height=300&width=300" class="card-img-top" alt="Related Product">
+                        <div class="card-body">
+                            <h5 class="card-title">Giày Nike Air Max</h5>
+                            <p class="card-text">
+                                <span class="text-danger fw-bold">550.000đ</span>
+                                <small class="text-muted text-decoration-line-through ms-2">650.000đ</small>
+                            </p>
                         </div>
+                    </div>
+                </div>
 
-                        <!-- More Related Products -->
-                        <div class="col-md-3 col-6 mb-4">
-                            <div class="card h-100 position-relative">
-                                <div class="position-absolute top-0 end-0 bg-warning text-dark p-2 m-2 small">
-                                    20% GIẢM
-                                </div>
-                                <img src="/placeholder.svg?height=300&width=300" class="card-img-top" alt="Related Product">
-                                <div class="card-body">
-                                    <h5 class="card-title">Giày Nike Zoom</h5>
-                                    <p class="card-text">
-                                        <span class="text-danger fw-bold">480.000đ</span>
-                                        <small class="text-muted text-decoration-line-through ms-2">600.000đ</small>
-                                    </p>
-                                </div>
-                            </div>
+                <!-- More Related Products -->
+                <div class="col-md-3 col-6 mb-4">
+                    <div class="card h-100 position-relative">
+                        <div class="position-absolute top-0 end-0 bg-warning text-dark p-2 m-2 small">
+                            20% GIẢM
                         </div>
-
-                        <div class="col-md-3 col-6 mb-4">
-                            <div class="card h-100 position-relative">
-                                <div class="position-absolute top-0 end-0 bg-warning text-dark p-2 m-2 small">
-                                    20% GIẢM
-                                </div>
-                                <img src="/placeholder.svg?height=300&width=300" class="card-img-top" alt="Related Product">
-                                <div class="card-body">
-                                    <h5 class="card-title">Giày Nike React</h5>
-                                    <p class="card-text">
-                                        <span class="text-danger fw-bold">520.000đ</span>
-                                        <small class="text-muted text-decoration-line-through ms-2">650.000đ</small>
-                                    </p>
-                                </div>
-                            </div>
+                        <img src="/placeholder.svg?height=300&width=300" class="card-img-top" alt="Related Product">
+                        <div class="card-body">
+                            <h5 class="card-title">Giày Nike Zoom</h5>
+                            <p class="card-text">
+                                <span class="text-danger fw-bold">480.000đ</span>
+                                <small class="text-muted text-decoration-line-through ms-2">600.000đ</small>
+                            </p>
                         </div>
+                    </div>
+                </div>
 
-                        <div class="col-md-3 col-6 mb-4">
-                            <div class="card h-100 position-relative">
-                                <div class="position-absolute top-0 end-0 bg-warning text-dark p-2 m-2 small">
-                                    20% GIẢM
-                                </div>
-                                <img src="/placeholder.svg?height=300&width=300" class="card-img-top" alt="Related Product">
-                                <div class="card-body">
-                                    <h5 class="card-title">Giày Nike Free Run</h5>
-                                    <p class="card-text">
-                                        <span class="text-danger fw-bold">490.000đ</span>
-                                        <small class="text-muted text-decoration-line-through ms-2">610.000đ</small>
-                                    </p>
-                                </div>
-                            </div>
+                <div class="col-md-3 col-6 mb-4">
+                    <div class="card h-100 position-relative">
+                        <div class="position-absolute top-0 end-0 bg-warning text-dark p-2 m-2 small">
+                            20% GIẢM
+                        </div>
+                        <img src="/placeholder.svg?height=300&width=300" class="card-img-top" alt="Related Product">
+                        <div class="card-body">
+                            <h5 class="card-title">Giày Nike React</h5>
+                            <p class="card-text">
+                                <span class="text-danger fw-bold">520.000đ</span>
+                                <small class="text-muted text-decoration-line-through ms-2">650.000đ</small>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 col-6 mb-4">
+                    <div class="card h-100 position-relative">
+                        <div class="position-absolute top-0 end-0 bg-warning text-dark p-2 m-2 small">
+                            20% GIẢM
+                        </div>
+                        <img src="/placeholder.svg?height=300&width=300" class="card-img-top" alt="Related Product">
+                        <div class="card-body">
+                            <h5 class="card-title">Giày Nike Free Run</h5>
+                            <p class="card-text">
+                                <span class="text-danger fw-bold">490.000đ</span>
+                                <small class="text-muted text-decoration-line-through ms-2">610.000đ</small>
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    
-    <!-- Bootstrap JS Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <script>
-        document.querySelectorAll(".filter-buttons button").forEach(button => {
-    button.addEventListener("click", function() {
-        document.querySelector(".active").classList.remove("active");
-        this.classList.add("active");
-        
-        let filter = this.getAttribute("data-filter");
-        filterReviews(filter);
-    });
-});
-
-function filterReviews(filter) {
-    let reviews = document.querySelectorAll("#reviews .review");
-    
-    reviews.forEach(review => {
-        let rating = review.getAttribute("data-rating");
-        let hasComment = review.getAttribute("data-comment");
-        let hasMedia = review.getAttribute("data-media");
-        let isLocal = review.getAttribute("data-local");
-        
-        if (filter === "all" ||
-            (filter === "comment" && hasComment === "true") ||
-            (filter === "media" && hasMedia === "true") ||
-            (filter === "local" && isLocal === "true") ||
-            rating === filter) {
-            review.style.display = "block";
-        } else {
-            review.style.display = "none";
-        }
-    });
-}
-
-        document.addEventListener('DOMContentLoaded', function() {
-            // Quantity selector
-            const quantityInput = document.getElementById('quantity');
-            const decreaseBtn = document.getElementById('decrease-quantity');
-            const increaseBtn = document.getElementById('increase-quantity');
-            
-            decreaseBtn.addEventListener('click', function() {
-                let currentValue = parseInt(quantityInput.value);
-                if (currentValue > 1) {
-                    quantityInput.value = currentValue - 1;
-                }
-            });
-            
-            increaseBtn.addEventListener('click', function() {
-                let currentValue = parseInt(quantityInput.value);
-                quantityInput.value = currentValue + 1;
-            });
-            
-            // Color selection
-            document.querySelectorAll('.color-option').forEach(button => {
-                button.addEventListener('click', function() {
-                    // Remove active class from all buttons
-                    document.querySelectorAll('.color-option').forEach(btn => {
-                        btn.classList.remove('active');
-                    });
-                    // Add active class to clicked button
-                    this.classList.add('active');
-                    
-                    const selectedColor = this.getAttribute('data-color');
-                    console.log('Selected color:', selectedColor);
-                });
-            });
-            
-            // Size selection
-            const sizeOptions = document.querySelectorAll('.size-option');
-            sizeOptions.forEach(option => {
-                option.addEventListener('click', function() {
-                    sizeOptions.forEach(opt => opt.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    const selectedSize = this.getAttribute('data-size');
-                    console.log('Selected size:', selectedSize);
-                });
-            });
-            
-            // Thumbnail image selection
-            const thumbnails = document.querySelectorAll('.thumbnail-img');
-            thumbnails.forEach(thumbnail => {
-                thumbnail.addEventListener('click', function() {
-                    thumbnails.forEach(thumb => thumb.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    const imgId = this.getAttribute('data-img-id');
-                    console.log('Selected image:', imgId);
-                    
-                    // Example of how you might update the main product image
-                    // document.getElementById('main-product-image').src = `/images/product-large-${imgId}.jpg`;
-                });
-            });
-            
-            // Wishlist toggle
-            const wishlistBtn = document.getElementById('add-to-wishlist');
-            wishlistBtn.addEventListener('click', function() {
-                this.classList.toggle('active');
-                const icon = this.querySelector('i');
-                if (icon.classList.contains('far')) {
-                    icon.classList.remove('far');
-                    icon.classList.add('fas');
-                } else {
-                    icon.classList.remove('fas');
-                    icon.classList.add('far');
-                }
-            });
-            
-            // Add to cart button
-            document.getElementById('add-to-cart').addEventListener('click', function() {
-                const quantity = parseInt(document.getElementById('quantity').value);
-                const selectedColor = document.querySelector('.color-option.active').getAttribute('data-color');
-                const selectedSize = document.querySelector('.size-option.active').getAttribute('data-size');
-                
-                // Here you would typically make an AJAX call to your backend
-                console.log('Adding to cart:', {
-                    productId: 'CV0953-107',
-                    quantity: quantity,
-                    color: selectedColor,
-                    size: selectedSize
-                });
-                
-                // Example of how you might call your backend
-                addToCart('CV0953-107', quantity, selectedColor, selectedSize);
-            });
-            
-            // Buy now button
-            document.getElementById('buy-now').addEventListener('click', function() {
-                const quantity = parseInt(document.getElementById('quantity').value);
-                const selectedColor = document.querySelector('.color-option.active').getAttribute('data-color');
-                const selectedSize = document.querySelector('.size-option.active').getAttribute('data-size');
-                
-                // Here you would typically redirect to checkout page
-                console.log('Buy now:', {
-                    productId: 'CV0953-107',
-                    quantity: quantity,
-                    color: selectedColor,
-                    size: selectedSize
-                });
-                
-                // Example of how you might call your backend
-                buyNow('CV0953-107', quantity, selectedColor, selectedSize);
-            });
-            
-            // Function to add product to cart (would connect to your C# backend)
-            function addToCart(productId, quantity, color, size) {
-                // Example AJAX call to your C# backend
-                fetch('/api/cart/add', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        productId: productId,
-                        quantity: quantity,
-                        color: color,
-                        size: size
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Sản phẩm đã được thêm vào giỏ hàng!');
-                        // Update cart count in UI if needed
-                    } else {
-                        alert('Có lỗi xảy ra: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.');
-                });
-            }
-            
-            // Function to proceed to checkout (would connect to your C# backend)
-            function buyNow(productId, quantity, color, size) {
-                // Example AJAX call to your C# backend
-                fetch('/api/checkout/buynow', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        productId: productId,
-                        quantity: quantity,
-                        color: color,
-                        size: size
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Redirect to checkout page
-                        window.location.href = data.checkoutUrl;
-                    } else {
-                        alert('Có lỗi xảy ra: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Có lỗi xảy ra khi xử lý đơn hàng.');
-                });
-            }
-
-            // Rating functionality
-            document.querySelectorAll('.rating i').forEach(star => {
-                star.addEventListener('click', function() {
-                    const rating = this.getAttribute('data-rating');
-                    const stars = this.parentElement.children;
-                    
-                    for (let i = 0; i < stars.length; i++) {
-                        if (i < rating) {
-                            stars[i].classList.remove('far');
-                            stars[i].classList.add('fas');
-                        } else {
-                            stars[i].classList.remove('fas');
-                            stars[i].classList.add('far');
-                        }
-                    }
-                });
-            });
-
-            // Comment form submission
-            document.querySelector('.comment-form button').addEventListener('click', function() {
-                const commentText = document.querySelector('.comment-form textarea').value;
-                const rating = document.querySelectorAll('.comment-form .rating .fas').length;
-                
-                if (commentText.trim() === '') {
-                    alert('Vui lòng nhập nội dung bình luận');
-                    return;
-                }
-                
-                // Here you would typically send this to your backend
-                console.log('New comment:', {
-                    text: commentText,
-                    rating: rating
-                });
-                
-                // Clear the form
-                document.querySelector('.comment-form textarea').value = '';
-                // Reset rating
-                document.querySelectorAll('.comment-form .rating i').forEach((star, index) => {
-                    if (index < 4) {
-                        star.classList.remove('far');
-                        star.classList.add('fas');
-                    } else {
-                        star.classList.remove('fas');
-                        star.classList.add('far');
-                    }
-                });
-            });
-
-            // Related products hover effect
-            document.querySelectorAll('.related-products .card').forEach(card => {
-                card.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-5px)';
-                    this.style.transition = 'transform 0.3s ease';
-                });
-                
-                card.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateY(0)';
-                });
-            });
-        });
-    </script>
-</body>
-</html>
+</div>

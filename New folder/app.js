@@ -8,15 +8,15 @@ app.config(function($routeProvider){
         })
         .when("/login", {
             templateUrl: "./Views/login.html",
-            controller: "./Controller/LoginController.js"
+            controller: "LoginController"
           })
           .when("/dangky", {
             templateUrl: "./Views/dangky.html",
-            controller: "./Controller/dangkyController.js"
+            controller: "dangkyController"
           })
           .when("/Sanpham", {
             templateUrl: "./Views/Sanpham.html",
-            controller: "./Controller/SanphamController.js"
+            controller: "Sanpham"
           })
           .when("/sale", {
             templateUrl: "./Views/sale.html"
@@ -53,7 +53,8 @@ app.config(function($routeProvider){
             templateUrl: "./Views/gioithieu.html"
           })
           .when("/SanpDetail", {
-            templateUrl: "./Views/SanphamDetail.html"
+            templateUrl: "./Views/SanphamDetail.html",
+            controller: "SanphamDetail"
           })
           
           .otherwise("/")
