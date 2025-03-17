@@ -48,7 +48,7 @@ app.controller('LoginController', function ($scope, $http, $rootScope, $location
 
             if (response.data && response.data.message === "Đăng nhập thành công") {
                 // Cập nhật trạng thái đăng nhập
-                console.log("data: " + data);
+              
                 $rootScope.isLoggedIn = true;
                 $rootScope.userInfo = {
                     id: response.data.khachHangId,
@@ -69,7 +69,7 @@ app.controller('LoginController', function ($scope, $http, $rootScope, $location
             }
         }).catch(function (error) {
             $scope.isLoading = false;
-            $scope.errorMessage = "Không thể đăng nhập. Vui lòng thử lại.";
+          
         });
     };
     
@@ -77,14 +77,7 @@ app.controller('LoginController', function ($scope, $http, $rootScope, $location
         const userInfo = JSON.parse(localStorage.getItem('userInfo'));
         const lastLoginTime = localStorage.getItem('lastLoginTime');
     
-        // Kiểm tra thời gian session
-        if (lastLoginTime && (Date.now() - lastLoginTime > SESSION_TIMEOUT)) {
-            $rootScope.isLoggedIn = false;
-            localStorage.removeItem('userInfo');
-            localStorage.removeItem('lastLoginTime');
-            $location.path('/login');
-            return;
-        }
+     
     
         // Kiểm tra trạng thái tài khoản
         if (userInfo) {
