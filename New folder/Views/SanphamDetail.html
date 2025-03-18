@@ -69,28 +69,6 @@
         border-radius: 3px;
     }
 
-    .color-option {
-        transition: all 0.2s ease;
-    }
-
-    .color-option.active {
-        background-color: #000;
-        color: #fff;
-        border-color: #000;
-    }
-
-    .color-cyan {
-        background-color: #17a2b8;
-    }
-
-    .color-pink {
-        background-color: #e83e8c;
-    }
-
-    .color-purple {
-        background-color: #6f42c1;
-    }
-
     .size-option {
         width: 45px;
         height: 40px;
@@ -101,9 +79,29 @@
         cursor: pointer;
         border: 1px solid #dee2e6;
         background-color: #fff;
+        transition: all 0.3s ease;
     }
 
     .size-option.active {
+        border-color: #000 !important;
+        background-color: #f8f9fa;
+        font-weight: bold;
+    }
+
+    .chatlieu-option {
+        width: 45px;
+        height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 10px;
+        cursor: pointer;
+        border: 1px solid #dee2e6;
+        background-color: #fff;
+        transition: all 0.3s ease;
+    }
+
+    .chatlieu-option.active {
         border-color: #000;
         background-color: #f8f9fa;
         font-weight: bold;
@@ -237,47 +235,65 @@
             padding: 0.5rem !important;
         }
     }
+
+    .color-option {
+        position: relative;
+        width: 40px;
+        /* Độ rộng cố định */
+        height: 40px;
+        /* Độ cao cố định */
+        border-radius: 50%;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        border: 2px solid #ccc;
+        cursor: pointer;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .color-option.active {
+        border-color: #000;
+    }
+
+    .color-option .color-check {
+        display: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 18px;
+        font-weight: bold;
+        color: white;
+        /* Màu chữ của dấu tích */
+    }
 </style>
 <div class="container py-5">
     <div class="row">
         <!-- Thumbnails -->
-        <div class="col-md-1 d-none d-md-block">
+        <div class="col-md-1 d-none d-md-block" id="anhsanpham">
             <div class="thumbnail-container">
-                <img src="/placeholder.svg?height=100&width=100" class="thumbnail-img active" data-img-id="1"
-                    alt="Thumbnail 1">
-                <img src="/placeholder.svg?height=100&width=100" class="thumbnail-img" data-img-id="2"
-                    alt="Thumbnail 2">
-                <img src="/placeholder.svg?height=100&width=100" class="thumbnail-img" data-img-id="3"
-                    alt="Thumbnail 3">
-                <img src="/placeholder.svg?height=100&width=100" class="thumbnail-img" data-img-id="4"
-                    alt="Thumbnail 4">
+                <!-- Ảnh sản phẩm sẽ được thêm vào đây bằng JavaScript -->
             </div>
         </div>
 
-        <!-- Main Image -->
         <div class="col-md-5">
             <div class="position-relative">
-                <div class="discount-badge">20% GIẢM</div>
                 <img src="/placeholder.svg?height=500&width=500" class="main-img" id="main-product-image"
-                    alt="NIKE MERCURIAL SUPERFLY 8 ACADEMY TF">
+                    alt="Sản phẩm">
             </div>
         </div>
 
         <!-- Product Details -->
-        <div class="col-md-6" id="dưlieusanpham">
-            <h1 class="product-title">NIKE MERCURIAL SUPERFLY 8 ACADEMY TF – CV0953-107 - TRẮNG/BẠC SAFARI</h1>
+        <div class="col-md-6" id="dulieusanpham">
+            <h1 class="product-title">Tên sản phẩm</h1>
 
-            <div class="product-info">
-                <span>Trạng thái:</span> Còn hàng
-            </div>
-
-            <div class="product-info">
-                <span>Loại sản phẩm:</span> Giày đép
+            <div class="product-info"><span>Trạng thái:</span> <span id="product-status">Đang cập nhật...</span></div>
+            <div class="product-info"><span>Thương hiệu:</span> <span id="product-category">Đang cập nhật...</span>
             </div>
 
             <div class="mb-3">
-                <div class="price-current">550.000đ</div>
-                <div class="price-original">Giá gốc: 650.000đ (-20%)</div>
+                <div class="price-current" id="price-current">0đ</div>
+                <div class="price-original" id="price-original">Giá gốc: 0đ (-0%)</div>
             </div>
 
             <div class="mb-3">
@@ -285,10 +301,6 @@
                     <span>Màu:</span>
                 </div>
                 <div class="color-options">
-                    <button class="btn btn-outline-secondary me-2 color-option active" data-color="red">Màu
-                        đỏ</button>
-                    <button class="btn btn-outline-secondary me-2 color-option" data-color="pink">Màu hồng</button>
-                    <button class="btn btn-outline-secondary me-2 color-option" data-color="black">Màu đen</button>
                 </div>
             </div>
 
@@ -297,9 +309,14 @@
                     <span>Kích thước:</span>
                 </div>
                 <div class="size-options">
-                    <span class="size-option" data-size="38">38</span>
-                    <span class="size-option active" data-size="39">39</span>
-                    <span class="size-option" data-size="40">40</span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <div class="product-info mb-2">
+                    <span>Chất Liệu:</span>
+                </div>
+                <div class="chatlieu-options">
                 </div>
             </div>
 
@@ -365,8 +382,6 @@
                 </div>
 
             </div>
-
-
         </div>
         <!-- Related Products Section -->
         <div class="related-products mt-5">
