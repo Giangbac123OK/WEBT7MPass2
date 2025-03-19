@@ -4,12 +4,15 @@ app.controller('LoginController', function ($scope, $http, $rootScope, $location
     $scope.isLoading = false;
     $scope.errorMessage = '';
 
+    
+
     // Hàm reset mật khẩu khi email thay đổi
     $scope.resetPasswordInput = function () {
         $scope.step = 1;
         $scope.user.password = '';
         $scope.errorMessage = '';
     };
+    
 
     // Kiểm tra email
     $scope.checkEmail = function () {
@@ -65,12 +68,14 @@ app.controller('LoginController', function ($scope, $http, $rootScope, $location
                 Swal.fire("Thành Công", "Đăng nhập thành công.", "success");
                 $location.path('/');
             } else {
-                $scope.errorMessage = response.data.message || "Đăng nhập thất bại";
-            }
-        }).catch(function (error) {
-            $scope.isLoading = false;
-          
-        });
+                // Thay đổi thông báo lỗi khi đăng nhập thất bại
+                $scope.errorMessage = "Tài khoản không đúng hoặc mật khẩu không đúng"
+              }
+            })
+            .catch((error) => {
+              $scope.isLoading = false
+              $scope.errorMessage = "Tài khoản không đúng hoặc mật khẩu không đúng"
+            })
     };
     
     const checkSession = function () {
