@@ -1,96 +1,108 @@
 <style>
     body {
-            background-color: #f8f9fa;
-        }
-        .card {
-            transition: 0.3s;
-            border: none;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 12px;
-            overflow: hidden;
-            position: relative;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.15);
-        }
-        .card-img-container {
-            position: relative;
-            width: 100%;
-        }
-        .card img {
-            width: 100%;
-            height: 250px;
-            object-fit: cover;
-        }
-        .flash-sale-badge {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: linear-gradient(45deg, #ff416c, #ff4b2b);
-            color: white;
-            padding: 6px 12px;
-            font-size: 14px;
-            font-weight: bold;
-            border-radius: 5px;
-            z-index: 10;
-        }
-        .discount-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #ffcc00;
-            color: #222;
-            padding: 6px 12px;
-            font-size: 14px;
-            font-weight: bold;
-            border-radius: 5px;
-            z-index: 10;
-        }
-        .countdown {
-            font-size: 14px;
-            font-weight: bold;
-            color: white;
-        }
-        .showall{
-            color: black;
-        }
-        .showall:hover{
-            color: red;
-        }
+        background-color: #f8f9fa;
+    }
+
+    .card {
+        transition: 0.3s;
+        border: none;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-img-container {
+        position: relative;
+        width: 100%;
+    }
+
+    .card img {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+    }
+
+    .flash-sale-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: linear-gradient(45deg, #ff416c, #ff4b2b);
+        color: white;
+        padding: 6px 12px;
+        font-size: 14px;
+        font-weight: bold;
+        border-radius: 5px;
+        z-index: 10;
+    }
+
+    .discount-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: #ffcc00;
+        color: #222;
+        padding: 6px 12px;
+        font-size: 14px;
+        font-weight: bold;
+        border-radius: 5px;
+        z-index: 10;
+    }
+
+    .countdown {
+        font-size: 14px;
+        font-weight: bold;
+        color: white;
+    }
+
+    .showall {
+        color: black;
+    }
+
+    .showall:hover {
+        color: red;
+    }
+
     /* Giới hạn chiều cao tbody và thêm thanh cuộn */
     .table-container {
-            max-height: 400px; /* Điều chỉnh phù hợp với chiều cao 20 hàng */
-            overflow-y: auto;
-            display: block;
-        }
+        max-height: 400px;
+        /* Điều chỉnh phù hợp với chiều cao 20 hàng */
+        overflow-y: auto;
+        display: block;
+    }
 
-        /* Cố định tiêu đề bảng */
-        thead {
-            position: sticky;
-            top: 0;
-            background: white;
-            z-index: 2;
-        }
+    /* Cố định tiêu đề bảng */
+    thead {
+        position: sticky;
+        top: 0;
+        background: white;
+        z-index: 2;
+    }
 
-        /* Định dạng bảng */
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+    /* Định dạng bảng */
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
 
-        .table th, .table td {
-            vertical-align: middle;
-        }
+    .table th,
+    .table td {
+        vertical-align: middle;
+    }
 
-        /* Hình ảnh user */
-        .user-img {
-            border-radius: 50%;
-            border: 2px solid black;
-            width: 50px;
-            height: 50px;
-            margin-right: 10px;
-        }
+    /* Hình ảnh user */
+    .user-img {
+        border-radius: 50%;
+        border: 2px solid black;
+        width: 50px;
+        height: 50px;
+        margin-right: 10px;
+    }
 </style>
 <div id="carouselExampleInterval" class="container carousel slide mb-3" data-bs-ride="carousel">
     <div class="carousel-inner">
@@ -117,7 +129,8 @@
 <div class="row" style="height: 500px;">
     <div class="col-md-4">
         <div class="card rounded-0">
-            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" height="400px" class="card-img-top  rounded-0" alt="...">
+            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60"
+                height="400px" class="card-img-top  rounded-0" alt="...">
             <div class="card-body">
                 <h5 class="card-title">Card title</h5>
                 <div class="d-flex justify-content-between">
@@ -125,7 +138,8 @@
                     <div class="p-2 text-end text-danger">1,000,000đ</div>
                 </div>
                 <div class="d-flex justify-content-between">
-                    <div class="p-2 text-decoration-line-through text-start text-danger"><i class="bi bi-heart-fill"></i></div>
+                    <div class="p-2 text-decoration-line-through text-start text-danger"><i
+                            class="bi bi-heart-fill"></i></div>
                     <div class="p-2 text-end" style="font-size: 12px;">
                         <i class="bi bi-star-fill text-warning"></i>
                         <i class="bi bi-star-fill text-warning"></i>
@@ -135,13 +149,14 @@
                         <i>79 sản phẩm đã bán</i>
                     </div>
                 </div>
-                <a href="#"  class="fs-4 w-50 btn btn-outline-dark">Mua ngay <i class="bi bi-arrow-right"></i></a>
+                <a href="#" class="fs-4 w-50 btn btn-outline-dark">Mua ngay <i class="bi bi-arrow-right"></i></a>
             </div>
         </div>
     </div>
     <div class="col-md-4">
         <div class="card rounded-0">
-            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" height="400px" class="card-img-top  rounded-0" alt="...">
+            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60"
+                height="400px" class="card-img-top  rounded-0" alt="...">
             <div class="card-body">
                 <h5 class="card-title">Card title</h5>
                 <div class="d-flex justify-content-between">
@@ -149,7 +164,8 @@
                     <div class="p-2 text-end text-danger">1,000,000đ</div>
                 </div>
                 <div class="d-flex justify-content-between">
-                    <div class="p-2 text-decoration-line-through text-start text-danger"><i class="bi bi-heart-fill"></i></div>
+                    <div class="p-2 text-decoration-line-through text-start text-danger"><i
+                            class="bi bi-heart-fill"></i></div>
                     <div class="p-2 text-end" style="font-size: 12px;">
                         <i class="bi bi-star-fill text-warning"></i>
                         <i class="bi bi-star-fill text-warning"></i>
@@ -159,13 +175,14 @@
                         <i>79 sản phẩm đã bán</i>
                     </div>
                 </div>
-                <a href="#"  class="fs-4 w-50 btn btn-outline-dark">Mua ngay <i class="bi bi-arrow-right"></i></a>
+                <a href="#" class="fs-4 w-50 btn btn-outline-dark">Mua ngay <i class="bi bi-arrow-right"></i></a>
             </div>
         </div>
     </div>
     <div class="col-md-4">
         <div class="card rounded-0">
-            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" height="400px" class="card-img-top  rounded-0" alt="...">
+            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60"
+                height="400px" class="card-img-top  rounded-0" alt="...">
             <div class="card-body">
                 <h5 class="card-title">Card title</h5>
                 <div class="d-flex justify-content-between">
@@ -173,7 +190,8 @@
                     <div class="p-2 text-end text-danger">1,000,000đ</div>
                 </div>
                 <div class="d-flex justify-content-between">
-                    <div class="p-2 text-decoration-line-through text-start text-danger"><i class="bi bi-heart-fill"></i></div>
+                    <div class="p-2 text-decoration-line-through text-start text-danger"><i
+                            class="bi bi-heart-fill"></i></div>
                     <div class="p-2 text-end" style="font-size: 12px;">
                         <i class="bi bi-star-fill text-warning"></i>
                         <i class="bi bi-star-fill text-warning"></i>
@@ -183,7 +201,7 @@
                         <i>79 sản phẩm đã bán</i>
                     </div>
                 </div>
-                <a href="#"  class="fs-4 w-50 btn btn-outline-dark">Mua ngay <i class="bi bi-arrow-right"></i></a>
+                <a href="#" class="fs-4 w-50 btn btn-outline-dark">Mua ngay <i class="bi bi-arrow-right"></i></a>
             </div>
         </div>
     </div>
@@ -200,7 +218,8 @@
                     </div>
                     <!-- Giảm giá % -->
                     <div class="discount-badge">-20%</div>
-                    <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" class="card-img-top" alt="Product Image">
+                    <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60"
+                        class="card-img-top" alt="Product Image">
                 </div>
                 <div class="card-body">
                     <h5 class="card-title">Sản phẩm siêu hot</h5>
@@ -233,7 +252,8 @@
                     </div>
                     <!-- Giảm giá % -->
                     <div class="discount-badge">-20%</div>
-                    <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" class="card-img-top" alt="Product Image">
+                    <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60"
+                        class="card-img-top" alt="Product Image">
                 </div>
                 <div class="card-body">
                     <h5 class="card-title">Sản phẩm siêu hot</h5>
@@ -266,7 +286,8 @@
                     </div>
                     <!-- Giảm giá % -->
                     <div class="discount-badge">-20%</div>
-                    <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" class="card-img-top" alt="Product Image">
+                    <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60"
+                        class="card-img-top" alt="Product Image">
                 </div>
                 <div class="card-body">
                     <h5 class="card-title">Sản phẩm siêu hot</h5>
@@ -299,7 +320,8 @@
                     </div>
                     <!-- Giảm giá % -->
                     <div class="discount-badge">-20%</div>
-                    <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" class="card-img-top" alt="Product Image">
+                    <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60"
+                        class="card-img-top" alt="Product Image">
                 </div>
                 <div class="card-body">
                     <h5 class="card-title">Sản phẩm siêu hot</h5>
@@ -324,105 +346,55 @@
     </div>
 </div>
 <p class="mb-3" style="font-weight: bold;font-size: 24px; text-decoration: underline;">SẢN PHẨM MỚI</p>
-<div class="row" style="height: 450px;">
-    <a href="#" style="text-decoration: none;" class="col-md-3">
-        <div class="card rounded-0">
-            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" height="300px" class="card-img-top  rounded-0" alt="...">
-            <div class="card-body">
-                <h5 class="card-title">Card title</h5>
-                <div class="d-flex justify-content-between">
-                    <div class="p-2 text-decoration-line-through text-start">1,000,000đ</div>
-                    <div class="p-2 text-end text-danger">1,000,000đ</div>
-                </div>
-                <div class="d-flex justify-content-between">
-                    <div class="p-2 text-decoration-line-through text-start text-danger"><i class="bi bi-heart-fill"></i></div>
-                    <div class="p-2 text-end" style="font-size: 12px;">
-                        <i class="bi bi-star-fill text-warning"></i>
-                        <i class="bi bi-star-fill text-warning"></i>
-                        <i class="bi bi-star-fill text-warning"></i>
-                        <i class="bi bi-star-fill text-warning"></i>
-                        <i class="bi bi-star-fill text-body-secondary"></i>
-                        <i>79 sản phẩm đã bán</i>
+<div class="row" >
+    <div style="height: 450px;" class="col-6 col-md-4 col-lg-3" ng-repeat="product in sanPhamMoi">
+        <a href="#" style="text-decoration: none;" >
+            <div class="card rounded-0">
+                <img ng-src="{{product.hinhAnh}}" 
+                alt="Ảnh sản phẩm" height="300px" class="card-img-top  rounded-0" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title">{{product.tensp}}</h5>
+                    <div class="d-flex justify-content-between">
+                        <!-- Nếu có giảm giá thì hiển thị giá gốc gạch ngang -->
+                        <div class="p-2 text-decoration-line-through text-start" ng-if="product.giaban > product.giasale">
+                            {{product.giaban}}đ
+                        </div>
+                    
+                        <!-- Nếu giá bán và giá sale bằng nhau thì chỉ hiển thị một giá -->
+                        <div class="p-2 text-end text-danger ms-auto" ng-if="product.giaban === product.giasale">
+                            {{product.giaban}}đ
+                        </div>
+                    
+                        <!-- Hiển thị giá sale nếu có giảm giá -->
+                        <div class="p-2 text-end text-danger" ng-if="product.giaban > product.giasale">
+                            {{product.giasale}}đ
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <div class="p-2 text-decoration-line-through text-start text-danger"><i
+                                class="bi bi-heart-fill"></i></div>
+                        <div class="p-2 text-end" style="font-size: 12px;">
+                            <i class="bi bi-star-fill text-warning"></i>
+                            <i class="bi bi-star-fill text-warning"></i>
+                            <i class="bi bi-star-fill text-warning"></i>
+                            <i class="bi bi-star-fill text-warning"></i>
+                            <i class="bi bi-star-fill text-body-secondary"></i>
+                            <i> {{ getTotalSPCT(product) }} đã bán</i>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </a>
-    <a href="#" style="text-decoration: none;" class="col-md-3">
-        <div class="card rounded-0">
-            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" height="300px" class="card-img-top  rounded-0" alt="...">
-            <div class="card-body">
-                <h5 class="card-title">Card title</h5>
-                <div class="d-flex justify-content-between">
-                    <div class="p-2 text-decoration-line-through text-start">1,000,000đ</div>
-                    <div class="p-2 text-end text-danger">1,000,000đ</div>
-                </div>
-                <div class="d-flex justify-content-between">
-                    <div class="p-2 text-decoration-line-through text-start text-danger"><i class="bi bi-heart-fill"></i></div>
-                    <div class="p-2 text-end" style="font-size: 12px;">
-                        <i class="bi bi-star-fill text-warning"></i>
-                        <i class="bi bi-star-fill text-warning"></i>
-                        <i class="bi bi-star-fill text-warning"></i>
-                        <i class="bi bi-star-fill text-warning"></i>
-                        <i class="bi bi-star-fill text-body-secondary"></i>
-                        <i>79 sản phẩm đã bán</i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </a>
-    <a href="#" style="text-decoration: none;" class="col-md-3">
-        <div class="card rounded-0">
-            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" height="300px" class="card-img-top  rounded-0" alt="...">
-            <div class="card-body">
-                <h5 class="card-title">Card title</h5>
-                <div class="d-flex justify-content-between">
-                    <div class="p-2 text-decoration-line-through text-start">1,000,000đ</div>
-                    <div class="p-2 text-end text-danger">1,000,000đ</div>
-                </div>
-                <div class="d-flex justify-content-between">
-                    <div class="p-2 text-decoration-line-through text-start text-danger"><i class="bi bi-heart-fill"></i></div>
-                    <div class="p-2 text-end" style="font-size: 12px;">
-                        <i class="bi bi-star-fill text-warning"></i>
-                        <i class="bi bi-star-fill text-warning"></i>
-                        <i class="bi bi-star-fill text-warning"></i>
-                        <i class="bi bi-star-fill text-warning"></i>
-                        <i class="bi bi-star-fill text-body-secondary"></i>
-                        <i>79 sản phẩm đã bán</i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </a>
-    <a href="#" style="text-decoration: none;" class="col-md-3">
-        <div class="card rounded-0">
-            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" height="300px" class="card-img-top  rounded-0" alt="...">
-            <div class="card-body">
-                <h5 class="card-title">Card title</h5>
-                <div class="d-flex justify-content-between">
-                    <div class="p-2 text-decoration-line-through text-start">1,000,000đ</div>
-                    <div class="p-2 text-end text-danger">1,000,000đ</div>
-                </div>
-                <div class="d-flex justify-content-between">
-                    <div class="p-2 text-decoration-line-through text-start text-danger"><i class="bi bi-heart-fill"></i></div>
-                    <div class="p-2 text-end" style="font-size: 12px;">
-                        <i class="bi bi-star-fill text-warning"></i>
-                        <i class="bi bi-star-fill text-warning"></i>
-                        <i class="bi bi-star-fill text-warning"></i>
-                        <i class="bi bi-star-fill text-warning"></i>
-                        <i class="bi bi-star-fill text-body-secondary"></i>
-                        <i>79 sản phẩm đã bán</i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </a>
+        </a>
+    </div>
 </div>
-<p class="mb-3" style="font-weight: bold;font-size: 24px; text-decoration: underline;">NIKE<img style="padding: 5px;" src="https://cdn4.iconfinder.com/data/icons/flat-brand-logo-2/512/nike-1024.png" width="50px"></p>
+<p class="mb-3" style="font-weight: bold;font-size: 24px; text-decoration: underline;">NIKE<img style="padding: 5px;"
+        src="https://cdn4.iconfinder.com/data/icons/flat-brand-logo-2/512/nike-1024.png" width="50px"></p>
 <div class="row" style="height: 450px;">
     <a href="#" style="text-decoration: none;" class="col-md-3">
         <div class="card rounded-0">
-            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" height="300px" class="card-img-top  rounded-0" alt="...">
+            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60"
+                height="300px" class="card-img-top  rounded-0" alt="...">
             <div class="card-body">
                 <h5 class="card-title">Card title</h5>
                 <div class="d-flex justify-content-between">
@@ -430,7 +402,8 @@
                     <div class="p-2 text-end text-danger">1,000,000đ</div>
                 </div>
                 <div class="d-flex justify-content-between">
-                    <div class="p-2 text-decoration-line-through text-start text-danger"><i class="bi bi-heart-fill"></i></div>
+                    <div class="p-2 text-decoration-line-through text-start text-danger"><i
+                            class="bi bi-heart-fill"></i></div>
                     <div class="p-2 text-end" style="font-size: 12px;">
                         <i class="bi bi-star-fill text-warning"></i>
                         <i class="bi bi-star-fill text-warning"></i>
@@ -445,7 +418,8 @@
     </a>
     <a href="#" style="text-decoration: none;" class="col-md-3">
         <div class="card rounded-0">
-            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" height="300px" class="card-img-top  rounded-0" alt="...">
+            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60"
+                height="300px" class="card-img-top  rounded-0" alt="...">
             <div class="card-body">
                 <h5 class="card-title">Card title</h5>
                 <div class="d-flex justify-content-between">
@@ -453,7 +427,8 @@
                     <div class="p-2 text-end text-danger">1,000,000đ</div>
                 </div>
                 <div class="d-flex justify-content-between">
-                    <div class="p-2 text-decoration-line-through text-start text-danger"><i class="bi bi-heart-fill"></i></div>
+                    <div class="p-2 text-decoration-line-through text-start text-danger"><i
+                            class="bi bi-heart-fill"></i></div>
                     <div class="p-2 text-end" style="font-size: 12px;">
                         <i class="bi bi-star-fill text-warning"></i>
                         <i class="bi bi-star-fill text-warning"></i>
@@ -468,7 +443,8 @@
     </a>
     <a href="#" style="text-decoration: none;" class="col-md-3">
         <div class="card rounded-0">
-            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" height="300px" class="card-img-top  rounded-0" alt="...">
+            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60"
+                height="300px" class="card-img-top  rounded-0" alt="...">
             <div class="card-body">
                 <h5 class="card-title">Card title</h5>
                 <div class="d-flex justify-content-between">
@@ -476,7 +452,8 @@
                     <div class="p-2 text-end text-danger">1,000,000đ</div>
                 </div>
                 <div class="d-flex justify-content-between">
-                    <div class="p-2 text-decoration-line-through text-start text-danger"><i class="bi bi-heart-fill"></i></div>
+                    <div class="p-2 text-decoration-line-through text-start text-danger"><i
+                            class="bi bi-heart-fill"></i></div>
                     <div class="p-2 text-end" style="font-size: 12px;">
                         <i class="bi bi-star-fill text-warning"></i>
                         <i class="bi bi-star-fill text-warning"></i>
@@ -491,7 +468,8 @@
     </a>
     <a href="#" style="text-decoration: none;" class="col-md-3">
         <div class="card rounded-0">
-            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" height="300px" class="card-img-top  rounded-0" alt="...">
+            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60"
+                height="300px" class="card-img-top  rounded-0" alt="...">
             <div class="card-body">
                 <h5 class="card-title">Card title</h5>
                 <div class="d-flex justify-content-between">
@@ -499,7 +477,8 @@
                     <div class="p-2 text-end text-danger">1,000,000đ</div>
                 </div>
                 <div class="d-flex justify-content-between">
-                    <div class="p-2 text-decoration-line-through text-start text-danger"><i class="bi bi-heart-fill"></i></div>
+                    <div class="p-2 text-decoration-line-through text-start text-danger"><i
+                            class="bi bi-heart-fill"></i></div>
                     <div class="p-2 text-end" style="font-size: 12px;">
                         <i class="bi bi-star-fill text-warning"></i>
                         <i class="bi bi-star-fill text-warning"></i>
@@ -512,13 +491,16 @@
             </div>
         </div>
     </a>
-    <a href="#" class="text-decoration-underline text-center showall fs-5">XEM THÊM <i class="bi bi-chevron-right"></i></a>
+    <a href="#" class="text-decoration-underline text-center showall fs-5">XEM THÊM <i
+            class="bi bi-chevron-right"></i></a>
 </div>
-<p class="mb-3" style="font-weight: bold;font-size: 24px; text-decoration: underline;">ADDIDAS<img style="padding: 5px;" src="https://cdn2.iconfinder.com/data/icons/css-vol-1/24/adidas-512.png" width="35px"></p>
+<p class="mb-3" style="font-weight: bold;font-size: 24px; text-decoration: underline;">ADDIDAS<img style="padding: 5px;"
+        src="https://cdn2.iconfinder.com/data/icons/css-vol-1/24/adidas-512.png" width="35px"></p>
 <div class="row" style="height: 450px;">
     <a href="#" style="text-decoration: none;" class="col-md-3">
         <div class="card rounded-0">
-            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" height="300px" class="card-img-top  rounded-0" alt="...">
+            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60"
+                height="300px" class="card-img-top  rounded-0" alt="...">
             <div class="card-body">
                 <h5 class="card-title">Card title</h5>
                 <div class="d-flex justify-content-between">
@@ -526,7 +508,8 @@
                     <div class="p-2 text-end text-danger">1,000,000đ</div>
                 </div>
                 <div class="d-flex justify-content-between">
-                    <div class="p-2 text-decoration-line-through text-start text-danger"><i class="bi bi-heart-fill"></i></div>
+                    <div class="p-2 text-decoration-line-through text-start text-danger"><i
+                            class="bi bi-heart-fill"></i></div>
                     <div class="p-2 text-end" style="font-size: 12px;">
                         <i class="bi bi-star-fill text-warning"></i>
                         <i class="bi bi-star-fill text-warning"></i>
@@ -541,7 +524,8 @@
     </a>
     <a href="#" style="text-decoration: none;" class="col-md-3">
         <div class="card rounded-0">
-            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" height="300px" class="card-img-top  rounded-0" alt="...">
+            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60"
+                height="300px" class="card-img-top  rounded-0" alt="...">
             <div class="card-body">
                 <h5 class="card-title">Card title</h5>
                 <div class="d-flex justify-content-between">
@@ -549,7 +533,8 @@
                     <div class="p-2 text-end text-danger">1,000,000đ</div>
                 </div>
                 <div class="d-flex justify-content-between">
-                    <div class="p-2 text-decoration-line-through text-start text-danger"><i class="bi bi-heart-fill"></i></div>
+                    <div class="p-2 text-decoration-line-through text-start text-danger"><i
+                            class="bi bi-heart-fill"></i></div>
                     <div class="p-2 text-end" style="font-size: 12px;">
                         <i class="bi bi-star-fill text-warning"></i>
                         <i class="bi bi-star-fill text-warning"></i>
@@ -564,7 +549,8 @@
     </a>
     <a href="#" style="text-decoration: none;" class="col-md-3">
         <div class="card rounded-0">
-            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" height="300px" class="card-img-top  rounded-0" alt="...">
+            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60"
+                height="300px" class="card-img-top  rounded-0" alt="...">
             <div class="card-body">
                 <h5 class="card-title">Card title</h5>
                 <div class="d-flex justify-content-between">
@@ -572,7 +558,8 @@
                     <div class="p-2 text-end text-danger">1,000,000đ</div>
                 </div>
                 <div class="d-flex justify-content-between">
-                    <div class="p-2 text-decoration-line-through text-start text-danger"><i class="bi bi-heart-fill"></i></div>
+                    <div class="p-2 text-decoration-line-through text-start text-danger"><i
+                            class="bi bi-heart-fill"></i></div>
                     <div class="p-2 text-end" style="font-size: 12px;">
                         <i class="bi bi-star-fill text-warning"></i>
                         <i class="bi bi-star-fill text-warning"></i>
@@ -587,7 +574,8 @@
     </a>
     <a href="#" style="text-decoration: none;" class="col-md-3">
         <div class="card rounded-0">
-            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" height="300px" class="card-img-top  rounded-0" alt="...">
+            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60"
+                height="300px" class="card-img-top  rounded-0" alt="...">
             <div class="card-body">
                 <h5 class="card-title">Card title</h5>
                 <div class="d-flex justify-content-between">
@@ -595,7 +583,8 @@
                     <div class="p-2 text-end text-danger">1,000,000đ</div>
                 </div>
                 <div class="d-flex justify-content-between">
-                    <div class="p-2 text-decoration-line-through text-start text-danger"><i class="bi bi-heart-fill"></i></div>
+                    <div class="p-2 text-decoration-line-through text-start text-danger"><i
+                            class="bi bi-heart-fill"></i></div>
                     <div class="p-2 text-end" style="font-size: 12px;">
                         <i class="bi bi-star-fill text-warning"></i>
                         <i class="bi bi-star-fill text-warning"></i>
@@ -608,13 +597,16 @@
             </div>
         </div>
     </a>
-    <a href="#" class="text-decoration-underline text-center showall fs-5">XEM THÊM <i class="bi bi-chevron-right"></i></a>
+    <a href="#" class="text-decoration-underline text-center showall fs-5">XEM THÊM <i
+            class="bi bi-chevron-right"></i></a>
 </div>
-<p class="mb-3" style="font-weight: bold;font-size: 24px; text-decoration: underline;">GUCCI<img style="padding: 5px;" src="https://cdn0.iconfinder.com/data/icons/logos-21/40/Gucci-128.png" width="35px"></p>
+<p class="mb-3" style="font-weight: bold;font-size: 24px; text-decoration: underline;">GUCCI<img style="padding: 5px;"
+        src="https://cdn0.iconfinder.com/data/icons/logos-21/40/Gucci-128.png" width="35px"></p>
 <div class="row" style="height: 450px;">
     <a href="#" style="text-decoration: none;" class="col-md-3">
         <div class="card rounded-0">
-            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" height="300px" class="card-img-top  rounded-0" alt="...">
+            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60"
+                height="300px" class="card-img-top  rounded-0" alt="...">
             <div class="card-body">
                 <h5 class="card-title">Card title</h5>
                 <div class="d-flex justify-content-between">
@@ -622,7 +614,8 @@
                     <div class="p-2 text-end text-danger">1,000,000đ</div>
                 </div>
                 <div class="d-flex justify-content-between">
-                    <div class="p-2 text-decoration-line-through text-start text-danger"><i class="bi bi-heart-fill"></i></div>
+                    <div class="p-2 text-decoration-line-through text-start text-danger"><i
+                            class="bi bi-heart-fill"></i></div>
                     <div class="p-2 text-end" style="font-size: 12px;">
                         <i class="bi bi-star-fill text-warning"></i>
                         <i class="bi bi-star-fill text-warning"></i>
@@ -637,7 +630,8 @@
     </a>
     <a href="#" style="text-decoration: none;" class="col-md-3">
         <div class="card rounded-0">
-            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" height="300px" class="card-img-top  rounded-0" alt="...">
+            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60"
+                height="300px" class="card-img-top  rounded-0" alt="...">
             <div class="card-body">
                 <h5 class="card-title">Card title</h5>
                 <div class="d-flex justify-content-between">
@@ -645,7 +639,8 @@
                     <div class="p-2 text-end text-danger">1,000,000đ</div>
                 </div>
                 <div class="d-flex justify-content-between">
-                    <div class="p-2 text-decoration-line-through text-start text-danger"><i class="bi bi-heart-fill"></i></div>
+                    <div class="p-2 text-decoration-line-through text-start text-danger"><i
+                            class="bi bi-heart-fill"></i></div>
                     <div class="p-2 text-end" style="font-size: 12px;">
                         <i class="bi bi-star-fill text-warning"></i>
                         <i class="bi bi-star-fill text-warning"></i>
@@ -660,7 +655,8 @@
     </a>
     <a href="#" style="text-decoration: none;" class="col-md-3">
         <div class="card rounded-0">
-            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" height="300px" class="card-img-top  rounded-0" alt="...">
+            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60"
+                height="300px" class="card-img-top  rounded-0" alt="...">
             <div class="card-body">
                 <h5 class="card-title">Card title</h5>
                 <div class="d-flex justify-content-between">
@@ -668,7 +664,8 @@
                     <div class="p-2 text-end text-danger">1,000,000đ</div>
                 </div>
                 <div class="d-flex justify-content-between">
-                    <div class="p-2 text-decoration-line-through text-start text-danger"><i class="bi bi-heart-fill"></i></div>
+                    <div class="p-2 text-decoration-line-through text-start text-danger"><i
+                            class="bi bi-heart-fill"></i></div>
                     <div class="p-2 text-end" style="font-size: 12px;">
                         <i class="bi bi-star-fill text-warning"></i>
                         <i class="bi bi-star-fill text-warning"></i>
@@ -683,7 +680,8 @@
     </a>
     <a href="#" style="text-decoration: none;" class="col-md-3">
         <div class="card rounded-0">
-            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" height="300px" class="card-img-top  rounded-0" alt="...">
+            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60"
+                height="300px" class="card-img-top  rounded-0" alt="...">
             <div class="card-body">
                 <h5 class="card-title">Card title</h5>
                 <div class="d-flex justify-content-between">
@@ -691,7 +689,8 @@
                     <div class="p-2 text-end text-danger">1,000,000đ</div>
                 </div>
                 <div class="d-flex justify-content-between">
-                    <div class="p-2 text-decoration-line-through text-start text-danger"><i class="bi bi-heart-fill"></i></div>
+                    <div class="p-2 text-decoration-line-through text-start text-danger"><i
+                            class="bi bi-heart-fill"></i></div>
                     <div class="p-2 text-end" style="font-size: 12px;">
                         <i class="bi bi-star-fill text-warning"></i>
                         <i class="bi bi-star-fill text-warning"></i>
@@ -704,7 +703,8 @@
             </div>
         </div>
     </a>
-    <a href="#" class="text-decoration-underline text-center showall fs-5">XEM THÊM <i class="bi bi-chevron-right"></i></a>
+    <a href="#" class="text-decoration-underline text-center showall fs-5">XEM THÊM <i
+            class="bi bi-chevron-right"></i></a>
 </div>
 <div class="row border-top border-bottom mb-3">
     <div class="col-md-3">
@@ -841,11 +841,13 @@
         </table>
     </div>
 </div>
-<p class="mb-3" style="font-weight: bold;font-size: 24px; text-decoration: underline;">TOP SẢN PHẨM CÓ LƯỢT ĐÁNH GIÁ CAO</p>
+<p class="mb-3" style="font-weight: bold;font-size: 24px; text-decoration: underline;">TOP SẢN PHẨM CÓ LƯỢT ĐÁNH GIÁ CAO
+</p>
 <div class="row" style="height: 450px;">
     <a href="#" style="text-decoration: none;" class="col-md-3">
         <div class="card rounded-0">
-            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" height="300px" class="card-img-top  rounded-0" alt="...">
+            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60"
+                height="300px" class="card-img-top  rounded-0" alt="...">
             <div class="card-body">
                 <h5 class="card-title">Card title</h5>
                 <div class="d-flex justify-content-between">
@@ -853,7 +855,8 @@
                     <div class="p-2 text-end text-danger">1,000,000đ</div>
                 </div>
                 <div class="d-flex justify-content-between">
-                    <div class="p-2 text-decoration-line-through text-start text-danger"><i class="bi bi-heart-fill"></i></div>
+                    <div class="p-2 text-decoration-line-through text-start text-danger"><i
+                            class="bi bi-heart-fill"></i></div>
                     <div class="p-2 text-end" style="font-size: 12px;">
                         <i class="bi bi-star-fill text-warning"></i>
                         <i class="bi bi-star-fill text-warning"></i>
@@ -868,7 +871,8 @@
     </a>
     <a href="#" style="text-decoration: none;" class="col-md-3">
         <div class="card rounded-0">
-            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" height="300px" class="card-img-top  rounded-0" alt="...">
+            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60"
+                height="300px" class="card-img-top  rounded-0" alt="...">
             <div class="card-body">
                 <h5 class="card-title">Card title</h5>
                 <div class="d-flex justify-content-between">
@@ -876,7 +880,8 @@
                     <div class="p-2 text-end text-danger">1,000,000đ</div>
                 </div>
                 <div class="d-flex justify-content-between">
-                    <div class="p-2 text-decoration-line-through text-start text-danger"><i class="bi bi-heart-fill"></i></div>
+                    <div class="p-2 text-decoration-line-through text-start text-danger"><i
+                            class="bi bi-heart-fill"></i></div>
                     <div class="p-2 text-end" style="font-size: 12px;">
                         <i class="bi bi-star-fill text-warning"></i>
                         <i class="bi bi-star-fill text-warning"></i>
@@ -891,7 +896,8 @@
     </a>
     <a href="#" style="text-decoration: none;" class="col-md-3">
         <div class="card rounded-0">
-            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" height="300px" class="card-img-top  rounded-0" alt="...">
+            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60"
+                height="300px" class="card-img-top  rounded-0" alt="...">
             <div class="card-body">
                 <h5 class="card-title">Card title</h5>
                 <div class="d-flex justify-content-between">
@@ -899,7 +905,8 @@
                     <div class="p-2 text-end text-danger">1,000,000đ</div>
                 </div>
                 <div class="d-flex justify-content-between">
-                    <div class="p-2 text-decoration-line-through text-start text-danger"><i class="bi bi-heart-fill"></i></div>
+                    <div class="p-2 text-decoration-line-through text-start text-danger"><i
+                            class="bi bi-heart-fill"></i></div>
                     <div class="p-2 text-end" style="font-size: 12px;">
                         <i class="bi bi-star-fill text-warning"></i>
                         <i class="bi bi-star-fill text-warning"></i>
@@ -914,7 +921,8 @@
     </a>
     <a href="#" style="text-decoration: none;" class="col-md-3">
         <div class="card rounded-0">
-            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" height="300px" class="card-img-top  rounded-0" alt="...">
+            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60"
+                height="300px" class="card-img-top  rounded-0" alt="...">
             <div class="card-body">
                 <h5 class="card-title">Card title</h5>
                 <div class="d-flex justify-content-between">
@@ -922,7 +930,8 @@
                     <div class="p-2 text-end text-danger">1,000,000đ</div>
                 </div>
                 <div class="d-flex justify-content-between">
-                    <div class="p-2 text-decoration-line-through text-start text-danger"><i class="bi bi-heart-fill"></i></div>
+                    <div class="p-2 text-decoration-line-through text-start text-danger"><i
+                            class="bi bi-heart-fill"></i></div>
                     <div class="p-2 text-end" style="font-size: 12px;">
                         <i class="bi bi-star-fill text-warning"></i>
                         <i class="bi bi-star-fill text-warning"></i>

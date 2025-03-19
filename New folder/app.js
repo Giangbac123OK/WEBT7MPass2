@@ -1,57 +1,56 @@
-const app = angular.module("myApp",['ngRoute']);
-//ifanfgf
-app.config(function($routeProvider){
+const app = angular.module("myApp", ['ngRoute']);
+
+app.config(function($routeProvider) {
     $routeProvider
-        .when("/",{
+        .when("/", {
             templateUrl: "./Views/home.html",
-            controller :'homeController'
+            controller: 'homeController' // ✅ Chỉ dùng tên controller
         })
         .when("/login", {
             templateUrl: "./Views/login.html",
-            controller: "./Controller/LoginController.js"
-          })
-          .when("/dangky", {
+            controller: "LoginController"
+        })
+        .when("/dangky", {
             templateUrl: "./Views/dangky.html",
-            controller: "./Controller/dangkyController.js"
-          })
-          .when("/Sanpham", {
+            controller: "dangkyController"
+        })
+        .when("/Sanpham", {
             templateUrl: "./Views/Sanpham.html",
-            controller: "./Controller/SanphamController.js"
-          })
-          .when("/sale", {
+            controller: "SanphamController"
+        })
+        .when("/sale", {
             templateUrl: "./Views/sale.html"
-          })
-          .when("/diachi", {
+        })
+        .when("/diachi", {
             templateUrl: "./Views/diachi.html"
-          })
-          .when("/voucher", {
+        })
+        .when("/voucher", {
             templateUrl: "./Views/voucher.html"
-          })
-          .when("/doimatkhau", {
+        })
+        .when("/doimatkhau", {
             templateUrl: "./Views/doimatkhau.html"
-          })
-          .when("/thongtintaikhoan", {
+        })
+        .when("/thongtintaikhoan", {
             templateUrl: "./Views/thongtintaikhoan.html"
-          })
-          .when("/donhangcuaban", {
+        })
+        .when("/donhangcuaban", {
             templateUrl: "./Views/donhangcuaban.html",
-            controller: 'donhangcuabanController'
-          })
-          .when("/giohang", {
+            controller: "donhangcuabanController"
+        })
+        .when("/giohang", {
             templateUrl: "./Views/giohang.html"
-          })
-          .when("/trahang", {
+        })
+        .when("/trahang", {
             templateUrl: "./Views/trahang.html"
-          })
-          .when("/hoadn", {
+        })
+        .when("/hoadon", {
             templateUrl: "./Views/hoadon.html"
-          })
-          .when("/gioithieu", {
+        })
+        .when("/gioithieu", {
             templateUrl: "./Views/gioithieu.html"
-          })
-          .when("/SanpDetail", {
+        })
+        .when("/SanpDetail", {
             templateUrl: "./Views/SanphamDetail.html"
-          })
-          
-          .otherwise("/")
-})
+        })
+        .otherwise("/");
+});
