@@ -17,30 +17,50 @@
             <div class="row">
                 <div class="col-md-8">
                     <div class="mb-3 fw-bolder">
-                        <label for="" class="form-label">Tên đầy đủ</label>
-                        <input type="text" class="form-control">
+                        <label for="ten" class="form-label">Tên đầy đủ</label>
+                        <input type="text" class="form-control" id="ten" ng-model="dataTttk.ten">
                     </div>
+                
                     <div class="mb-3 fw-bolder">
-                        <label for="" class="form-label">Email</label>
-                        <input type="email" class="form-control">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" ng-model="dataTttk.email">
                     </div>
+                
                     <div class="mb-3 fw-bolder">
-                        <label for="" class="form-label">Địa chỉ</label>
-                        <input type="text" class="form-control">
+                        <label for="sdt" class="form-label">Số điện thoại</label>
+                        <input type="tel" class="form-control" id="sdt" ng-model="dataTttk.sdt">
                     </div>
+                
+                    <div class="mb-3">
+                        <label for="gioitinh" class="form-label">Giới tính</label>
+                        <div class="d-flex align-items-center">
+                            <div class="form-check me-3">
+                                <input class="form-check-input" type="radio" name="gioitinh" id="gioitinhNam" ng-model="dataTttk.gioitinh" ng-value="true">
+                                <label class="form-check-label" for="gioitinhNam">Nam</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="gioitinh" id="gioitinhNu" ng-model="dataTttk.gioitinh" ng-value="false">
+                                <label class="form-check-label" for="gioitinhNu">Nữ</label>
+                            </div>
+                        </div>
+                    </div>
+                
                     <div class="mb-3 fw-bolder">
-                        <label for="" class="form-label">Số điện thoại</label>
-                        <input type="tel" class="form-control">
+                        <label for="ngaysinh" class="form-label">Ngày sinh</label>
+                        <input type="date" class="form-control" ng-model="dataTttk.ngaysinh">
                     </div>
+                
                     <div class="mb-3 fw-bolder">
-                        <label for="" class="form-label">Avatar</label>
-                        <input type="file" class="form-control"  accept="image/*">
+                        <label for="diachi" class="form-label">Địa chỉ</label>
+                        <input type="text" class="form-control" id="diachi" ng-model="dataTttk.diachi">
                     </div>
-                    <button class="btn btn-primary">Lưu</button>
-                </div>
-                <div class="col-md-4">
-                    <img class="border rounded-circle mb-3" style="display: flex; padding: auto;margin: auto;" width="200px" height="200px" src="./Images/IMG_3271.jpg">
-                    <button style="display: flex; padding: auto;margin: auto;" type="button" class="btn btn-outline-dark">Chọn ảnh</button>
+                
+                    <div class="mb-3 fw-bolder">
+                        <label for="avatarInput" class="form-label">Avatar</label>
+                        <input type="file" class="form-control" accept="image/*" ng-model="dataTttk.avatar">
+                    </div>
+                
+                    <button class="btn btn-primary" ng-click="updateTK()">Lưu</button>
                 </div>
             </div>
         </div>

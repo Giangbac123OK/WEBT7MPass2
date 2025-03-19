@@ -79,7 +79,7 @@ function isValidEmail(email) {
         }
 
         // Gửi yêu cầu đăng ký
-        $http.post('https://localhost:7297/api/Login/_KhachHang/register', {
+        $http.post('https://localhost:36106/api/Login/_KhachHang/register', {
             Ten: $scope.user.ten,
             Sdt: $scope.user.sdt,
             Ngaysinh: $scope.user.ngaysinh,
