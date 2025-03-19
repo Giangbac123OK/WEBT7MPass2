@@ -22,7 +22,8 @@ app.config(function($routeProvider){
             templateUrl: "./Views/sale.html"
           })
           .when("/diachi", {
-            templateUrl: "./Views/diachi.html"
+            templateUrl: "./Views/diachi.html",
+            controller: 'diachiController'
           })
           .when("/voucher", {
             templateUrl: "./Views/voucher.html"
