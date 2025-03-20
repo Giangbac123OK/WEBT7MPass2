@@ -37,7 +37,8 @@ app.config(function($routeProvider){
             controller: 'donhangcuabanController'
           })
           .when("/giohang", {
-            templateUrl: "./Views/giohang.html"
+            templateUrl: "./Views/giohang.html",
+            controller: "GiohangCtrl"
           })
           .when("/trahang", {
             templateUrl: "./Views/trahang.html"
