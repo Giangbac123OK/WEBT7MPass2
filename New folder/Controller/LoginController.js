@@ -4,17 +4,20 @@ app.controller('LoginController', function ($scope, $http, $rootScope, $location
     $scope.isLoading = false;
     $scope.errorMessage = '';
 
+    
+
     // Hàm reset mật khẩu khi email thay đổi
     $scope.resetPasswordInput = function () {
         $scope.step = 1;
         $scope.user.password = '';
         $scope.errorMessage = '';
     };
+    
 
     // Kiểm tra email
     $scope.checkEmail = function () {
         $scope.isLoading = true;
-        $http.post(`https://localhost:36106/api/Login/_KhachHang/checkemail?checkEmail=${$scope.user.email}`,)
+        $http.post(`https://localhost:7196/api/Login/_KhachHang/checkemail?checkEmail=${$scope.user.email}`,)
         .then(function (response) {
             $scope.isLoading = false;
 
@@ -36,7 +39,7 @@ app.controller('LoginController', function ($scope, $http, $rootScope, $location
     // Đăng nhập
     $scope.login = function () {
         $scope.isLoading = true;
-        $http.post('https://localhost:36106/api/Login/_KhachHang/login', {
+        $http.post('https://localhost:7196/api/Login/_KhachHang/login', {
             Email: $scope.user.email,
             Password: $scope.user.password
         }).then(function (response) {
@@ -65,12 +68,14 @@ app.controller('LoginController', function ($scope, $http, $rootScope, $location
                 Swal.fire("Thành Công", "Đăng nhập thành công.", "success");
                 $location.path('/');
             } else {
-                $scope.errorMessage = response.data.message || "Đăng nhập thất bại";
-            }
-        }).catch(function (error) {
-            $scope.isLoading = false;
-          
-        });
+                // Thay đổi thông báo lỗi khi đăng nhập thất bại
+                $scope.errorMessage = "Tài khoản không đúng hoặc mật khẩu không đúng"
+              }
+            })
+            .catch((error) => {
+              $scope.isLoading = false
+              $scope.errorMessage = "Tài khoản không đúng hoặc mật khẩu không đúng"
+            })
     };
     
     const checkSession = function () {
@@ -81,7 +86,7 @@ app.controller('LoginController', function ($scope, $http, $rootScope, $location
     
         // Kiểm tra trạng thái tài khoản
         if (userInfo) {
-            $http.get(`https://localhost:36106/api/Khachhangs/${userInfo.id}`)
+            $http.get(`https://localhost:7196/api/Khachhangs/${userInfo.id}`)
                 .then(function (response) {
                     if (response.data.Trangthai === 1) {
                         alert("Tài khoản này đã bị khóa. Vui lòng liên hệ quản trị viên.");
