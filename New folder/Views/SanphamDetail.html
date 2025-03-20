@@ -327,6 +327,36 @@
         cursor: pointer;
     }
 
+        .review {
+        border: 2px solid #ccc;
+        padding: 10px;
+        margin: 7px;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+    }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .review-user {
+            color: #333;
+        }
+
+        .review-rating {
+            color: #ff9800; /* Màu sao vàng */
+        }
+
+        .review-content {
+            font-size: 14px;
+            color: #555;
+        }
+
     /* Ảnh nhỏ */
     .review-img {
         width: 80px;
@@ -339,6 +369,47 @@
 
     .review-img:hover {
         transform: scale(1.1);
+    }
+
+    .collapse-content {
+    display: none; /* Mặc định ẩn */
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out;
+    }
+    .collapse-btn {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px;
+        cursor: pointer;
+        width: 100%;
+        text-align: center;
+    }
+    .collapse-btn.active::after {
+        content: "▲";
+    }
+    .pagination-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    }
+
+    .pagination-container button {
+        background-color: #f1f1f1;
+        border: 1px solid #ccc;
+        padding: 5px 10px;
+        margin: 2px;
+        cursor: pointer;
+    }
+
+    .pagination-container button.active {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .pagination-container button:disabled {
+        background-color: #ddd;
+        cursor: not-allowed;
     }
 </style>
 <div class="container py-5">
@@ -405,7 +476,7 @@
                         <div class="quantity-btn" id="increase-quantity">+</div>
                     </div>
 
-                    <button class="btn btn-add-cart me-2" id="add-to-cart">Thêm vào giỏ</button>
+                    <button class="btn btn-add-cart me-2" id="addtocart">Thêm vào giỏ</button>
                     <button class="btn btn-buy-now me-2" id="buynow">Mua ngay</button>
                     <button id="btnResetSelections" class="btn btn-sm btn-danger">
                         <i class="fas fa-times"></i> Đặt lại
@@ -427,86 +498,26 @@
                     <span class="rating-score" id="avgRating">Đang tính...</span>
                     <span class="stars" id="starDisplay">★★★★★</span>
                 </div>
-                <div class="filter-buttons" id="filterContainer">
-                    <!-- Nút lọc sẽ được thêm bằng JavaScript -->
-                </div>
-                
-                <div id="reviews">
+                <div class="filter-buttons" id="filterContainer"></div>
+            
+                <!-- Nút thu gọn/mở rộng -->
+                <button id="toggleReviews" class="collapse-btn">Xem đánh giá ▼</button>
+            
+                <div id="reviews" class="collapse-content">
                     <!-- Đánh giá sẽ được hiển thị ở đây -->
                 </div>
-            </div>
+            
+                <!-- Khu vực phân trang -->
+                <div id="pagination" class="pagination-container"></div>
+            </div>                   
         </div>
         <!-- Related Products Section -->
         <div class="related-products mt-5">
             <h3 class="mb-4">Sản phẩm liên quan</h3>
-            <div class="row">
-                <!-- Related Product Item -->
-                <div class="col-md-3 col-6 mb-4">
-                    <div class="card h-100 position-relative">
-                        <div class="position-absolute top-0 end-0 bg-warning text-dark p-2 m-2 small">
-                            20% GIẢM
-                        </div>
-                        <img src="/placeholder.svg?height=300&width=300" class="card-img-top" alt="Related Product">
-                        <div class="card-body">
-                            <h5 class="card-title">Giày Nike Air Max</h5>
-                            <p class="card-text">
-                                <span class="text-danger fw-bold">550.000đ</span>
-                                <small class="text-muted text-decoration-line-through ms-2">650.000đ</small>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- More Related Products -->
-                <div class="col-md-3 col-6 mb-4">
-                    <div class="card h-100 position-relative">
-                        <div class="position-absolute top-0 end-0 bg-warning text-dark p-2 m-2 small">
-                            20% GIẢM
-                        </div>
-                        <img src="/placeholder.svg?height=300&width=300" class="card-img-top" alt="Related Product">
-                        <div class="card-body">
-                            <h5 class="card-title">Giày Nike Zoom</h5>
-                            <p class="card-text">
-                                <span class="text-danger fw-bold">480.000đ</span>
-                                <small class="text-muted text-decoration-line-through ms-2">600.000đ</small>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-3 col-6 mb-4">
-                    <div class="card h-100 position-relative">
-                        <div class="position-absolute top-0 end-0 bg-warning text-dark p-2 m-2 small">
-                            20% GIẢM
-                        </div>
-                        <img src="/placeholder.svg?height=300&width=300" class="card-img-top" alt="Related Product">
-                        <div class="card-body">
-                            <h5 class="card-title">Giày Nike React</h5>
-                            <p class="card-text">
-                                <span class="text-danger fw-bold">520.000đ</span>
-                                <small class="text-muted text-decoration-line-through ms-2">650.000đ</small>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-3 col-6 mb-4">
-                    <div class="card h-100 position-relative">
-                        <div class="position-absolute top-0 end-0 bg-warning text-dark p-2 m-2 small">
-                            20% GIẢM
-                        </div>
-                        <img src="/placeholder.svg?height=300&width=300" class="card-img-top" alt="Related Product">
-                        <div class="card-body">
-                            <h5 class="card-title">Giày Nike Free Run</h5>
-                            <p class="card-text">
-                                <span class="text-danger fw-bold">490.000đ</span>
-                                <small class="text-muted text-decoration-line-through ms-2">610.000đ</small>
-                            </p>
-                        </div>
-                    </div>
-                </div>
+            <div class="row" id="related-products-container">
+                <!-- Dữ liệu sản phẩm sẽ được tải động từ JavaScript -->
             </div>
-        </div>
+        </div>        
     </div>
 </div>
 <!-- Modal hiển thị ảnh lớn -->
