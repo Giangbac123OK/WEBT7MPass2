@@ -1,11 +1,13 @@
 app.controller('donhangcuabanController', function($scope, $http) {
     // select hóa đơn theo mã khách hàng
-
-    const baseUrl = "http://localhost:36106/api/Hoadons/hoa-don-theo-ma-kh-1";
+    
+    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+    console.log(userInfo);
+    let idkh = userInfo.id;
 
     // Hàm gọi API lấy dữ liệu hóa đơn
     $scope.loadHoaDon = function () {
-        let api = baseUrl;
+        let api = "https://localhost:7196/api/Hoadons/hoa-don-theo-ma-kh-"+idkh;
         if ($scope.searchText && $scope.searchText.trim() !== "") {
             api += `?search=${encodeURIComponent($scope.searchText)}`;
         }
@@ -31,7 +33,7 @@ app.controller('donhangcuabanController', function($scope, $http) {
     $scope.loadHoaDon();
     //select hóa đơn chi tiết theo mã hóa đơn
     
-    $http.get('http://localhost:36106/api/Hoadonchitiets')
+    $http.get('https://localhost:7196/api/Hoadonchitiets')
         .then(function(response){
             $scope.dataHoaDonCT = response.data
             console.log($scope.dataHoaDonCT)
@@ -40,7 +42,7 @@ app.controller('donhangcuabanController', function($scope, $http) {
             console.error(error)
         })
 
-    $http.get('http://localhost:36106/api/Trahangs')
+    $http.get('https://localhost:7196/api/Trahangs')
         .then(function(response){
             $scope.dataTraHang = response.data
             console.log($scope.dataTraHang)
