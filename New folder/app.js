@@ -28,9 +28,7 @@ app.config(function($routeProvider){
           .when("/voucher", {
             templateUrl: "./Views/voucher.html"
           })
-          .when("/doimatkhau", {
-            templateUrl: "./Views/doimatkhau.html"
-          })
+          
           .when("/thongtintaikhoan", {
             templateUrl: "./Views/thongtintaikhoan.html",
             controller: 'thongtintaikhoanController'
@@ -40,7 +38,8 @@ app.config(function($routeProvider){
             controller: 'donhangcuabanController'
           })
           .when("/giohang", {
-            templateUrl: "./Views/giohang.html"
+            templateUrl: "./Views/giohang.html",
+            controller: "GiohangCtrl"
           })
           .when("/trahang", {
             templateUrl: "./Views/trahang.html"
@@ -58,7 +57,22 @@ app.config(function($routeProvider){
             templateUrl: "./Views/SanphamDetail.html",
             controller: "SanphamDetail"
           })
-          
+          .when('/doimatkhau', {
+            templateUrl: './Views/resetpassword.html',
+            controller: 'PasswordResetController'
+        })
+        .when('/quenmatkhau', {
+          templateUrl: './Views/quenmatkhau.html',
+          controller: 'quenmatkhauController'
+      })
+      .when('/trahang', {
+        templateUrl: './Views/trahang.html',
+        
+    })
+      .when('/doimatkhau22', {
+        templateUrl: './Views/doimatkhau22.html',
+        controller: 'doimatkhau2'
+    })
           .otherwise("/")
 })
 
