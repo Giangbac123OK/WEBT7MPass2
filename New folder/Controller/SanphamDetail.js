@@ -1,5 +1,5 @@
 
-app.controller('SanphamDetail', function ($scope, $http) {
+app.controller('SanphamDetail', function ($scope, $http, $location) {
     const apiSPCTUrl = "https://localhost:7196/api/Sanphamchitiets";
     const apiSPUrl = "https://localhost:7196/api/Sanphams";
     const apiSize = "https://localhost:7196/api/size";
@@ -57,80 +57,86 @@ app.controller('SanphamDetail', function ($scope, $http) {
         try {
             const danhSachSPCT = await fetchSanPhamChiTiet(sanPhamId);
             if (!danhSachSPCT.length) return;
-
+    
             const container = document.querySelector("#anhsanpham .thumbnail-container");
             const mainImage = document.querySelector("#main-product-image");
-
+    
             let allImages = [];
             let colorIds = new Set();
             let chatlieuIds = new Set();
             let sizeIds = new Set();
-
-            // Lặp qua tất cả sản phẩm chi tiết để lấy ảnh
+            let allGiaSale = [];
+    
+            // Lặp qua tất cả sản phẩm chi tiết
             for (const spct of danhSachSPCT) {
                 var thuonghieu = await fetchThuonghieu(spct.idThuongHieu);
                 document.querySelector(".product-title").textContent = spct.tensp;
                 document.querySelector("#product-detail").textContent = spct.mota;
                 document.querySelector("#product-status").textContent = convertStatus(spct.trangThai);
-
-                if (spct.giasale != null) {
-                    document.querySelector("#price-current").textContent = `${spct.giasale.toLocaleString("vi-VN")} VNĐ`;
-                    document.querySelector("#price-original").textContent = `${spct.giaban.toLocaleString("vi-VN")} VNĐ`;
-                } else {
-                    document.querySelector("#price-current").textContent = `${spct.giaban.toLocaleString("vi-VN")} VNĐ`;
-                    document.querySelector("#price-original").style.display = "none";
-                }
-
                 document.querySelector("#product-category").textContent = thuonghieu.tenthuonghieu;
-
+    
+                // Thu thập giá của sản phẩm chi tiết
                 for (const anhspct of spct.sanphamchitiets) {
+                    if (anhspct.giaSaleSanPhamChiTiet != null) {
+                        allGiaSale.push(anhspct.giaSaleSanPhamChiTiet);
+                    } else {
+                        allGiaSale.push(anhspct.giaBanSanPhamChiTiet);
+                    }
+    
                     // Xử lý hình ảnh
                     const response = await fetch(`${apiSPCTUrl}/GetImageById/${anhspct.id}`);
                     if (!response.ok) continue;
-
+    
                     const blob = await response.blob();
                     const imageUrl = URL.createObjectURL(blob);
-
-                    allImages.push({
-                        url: imageUrl,
-                        id: anhspct.id
-                    });
-
+                    allImages.push({ url: imageUrl, id: anhspct.id });
+    
                     // Lấy tất cả color, chất liệu, size
                     colorIds.add(anhspct.idMau);
                     chatlieuIds.add(anhspct.idChatLieu);
                     sizeIds.add(anhspct.idSize);
                 }
-
+    
                 // Thêm tất cả sản phẩm chi tiết vào danh sách chung
                 dataspct.push(...spct.sanphamchitiets);
             }
-
+    
             if (!allImages.length) return;
-
+    
+            // Sắp xếp giá từ thấp đến cao
+            allGiaSale.sort((a, b) => a - b);
+    
+            // Hiển thị giá từ thấp đến cao
+            if (allGiaSale.length > 0) {
+                document.querySelector("#price-current").textContent = `${allGiaSale[0].toLocaleString("vi-VN")} VNĐ - ${allGiaSale[allGiaSale.length - 1].toLocaleString("vi-VN")} VNĐ`;
+                document.querySelector("#price-original").style.display = "none";
+            } else {
+                document.querySelector("#price-current").textContent = "Chưa có giá";
+            }
+    
             // Hiển thị ảnh vào thumbnail-container
             container.innerHTML = allImages.map((img, index) =>
                 `<img src="${img.url}" class="thumbnail-img ${index === 0 ? 'active' : ''}" 
                 data-img-url="${img.url}" data-id-spct="${img.id}" 
                 alt="Thumbnail ${index + 1}">`
             ).join('');
-
+    
             // Hiển thị ảnh đầu tiên vào position-relative
             mainImage.src = allImages[0].url;
-
+    
             // Thêm sự kiện click vào từng thumbnail
             document.querySelectorAll(".thumbnail-img").forEach(thumbnail => {
                 thumbnail.addEventListener("click", function () {
                     changeMainImage(this.dataset.imgUrl, this);
                 });
             });
-
+    
             await fetchAndDisplayColors([...colorIds]);
             await fetchAndDisplayChatlieus([...chatlieuIds]);
             await fetchAndDisplaySize([...sizeIds]);
-
+    
             console.log("Dữ liệu sản phẩm chi tiết:", dataspct); // Debug kiểm tra dữ liệu lấy ra
-
+    
             await hienThiDanhGia();
             for (const spct of datasanpham) {
                 LoadSanPhamTuongTu(spct.idThuongHieu, spct.id);
@@ -138,7 +144,8 @@ app.controller('SanphamDetail', function ($scope, $http) {
         } catch (error) {
             console.error("Lỗi khi lấy ảnh sản phẩm chi tiết:", error);
         }
-    }
+    }    
+    
 
     let currentPage = 1;
     const reviewsPerPage = 5;
@@ -659,35 +666,45 @@ app.controller('SanphamDetail', function ($scope, $http) {
         selectedColorId = null;
         selectedSizeId = null;
         selectedChatlieuId = null;
-
-        // Xóa sự kiện click cũ và thêm lại sự kiện mới
+    
+        // Xóa trạng thái active của các button
         document.querySelectorAll(".color-option, .size-option, .chatlieu-option").forEach(button => {
             button.classList.remove("active");
-        });
-
-        // Đặt lại trạng thái của các nút (cho phép chọn lại)
-        document.querySelectorAll(".color-option, .size-option, .chatlieu-option").forEach(button => {
             button.disabled = false;
             button.style.opacity = "1";
             button.style.pointerEvents = "auto";
         });
-
+    
+        let allGiaSale = [];
+    
         for (const spct of datasanpham) {
             document.querySelector("#product-detail").textContent = spct.mota;
             document.querySelector("#product-status").textContent = convertStatus(spct.trangThai);
-
-            if (spct.giasale != null) {
-                document.querySelector("#price-current").textContent = `${spct.giasale.toLocaleString("vi-VN")} VNĐ`;
-                document.querySelector("#price-original").textContent = `${spct.giaban.toLocaleString("vi-VN")} VNĐ`;
-            } else {
-                document.querySelector("#price-current").textContent = `${spct.giaban.toLocaleString("vi-VN")} VNĐ`;
-                document.querySelector("#price-original").style.display = "none";
+    
+            for (const spctItem of spct.sanphamchitiets) {
+                if (spctItem.giaSaleSanPhamChiTiet != null) {
+                    allGiaSale.push(spctItem.giaSaleSanPhamChiTiet);
+                } else {
+                    allGiaSale.push(spctItem.giaBanSanPhamChiTiet);
+                }
             }
         }
+    
+        // Sắp xếp giá từ thấp đến cao
+        allGiaSale.sort((a, b) => a - b);
+        document.querySelector("#price-original").style.display = "none";
 
+        // Hiển thị giá theo khoảng từ thấp nhất đến cao nhất
+        if (allGiaSale.length > 0) {
+            document.querySelector("#price-current").textContent = `${allGiaSale[0].toLocaleString("vi-VN")} VNĐ - ${allGiaSale[allGiaSale.length - 1].toLocaleString("vi-VN")} VNĐ`;
+        } else {
+            document.querySelector("#price-current").textContent = "Chưa có giá";
+        }
+    
         updateQuantity();
         console.log("Đã đặt lại các lựa chọn về mặc định.");
     }
+    
 
     document.getElementById("increase-quantity").addEventListener("click", function () {
         if (!selectedColorId || !selectedSizeId || !selectedChatlieuId) return;
@@ -748,9 +765,10 @@ app.controller('SanphamDetail', function ($scope, $http) {
                 if (giaThoiDiemHienTai > giaSaleSanPhamChiTiet) {
                     priceCurrent.textContent = `${giaSaleSanPhamChiTiet.toLocaleString("vi-VN")} VNĐ`;
                     priceOriginal.textContent = `${giaThoiDiemHienTai.toLocaleString("vi-VN")} VNĐ`;
+                    priceOriginal.style.display = ""
                 } else {
                     priceCurrent.textContent = `${giaThoiDiemHienTai.toLocaleString("vi-VN")} VNĐ`;
-                    priceOriginal.style.display = "none"; // Ẩn giá gốc nếu 2 giá bằng nhau
+                    document.querySelector("#price-original").style.display = "none"; // Ẩn giá gốc nếu 2 giá bằng nhau
                 }
             }
         } else {
@@ -901,7 +919,19 @@ app.controller('SanphamDetail', function ($scope, $http) {
                 return;
             }
     
-            Swal.fire("Thành công", "Sản phẩm đã được thêm vào giỏ hàng.", "success");
+            Swal.fire({
+                title: "Thành công",
+                text: "Sản phẩm đã được thêm vào giỏ hàng.",
+                icon: "success",
+                confirmButtonText: "OK"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $scope.$apply(() => {
+                        $location.path('/giohang'); // Chuyển hướng đến trang "Giỏ hàng"
+                    });
+                }
+                $scope.isLoading = false; // Kết thúc tải (nếu cần)
+            });            
     
         } catch (error) {
             console.error("Lỗi khi thêm vào giỏ hàng:", error);
@@ -938,30 +968,65 @@ app.controller('SanphamDetail', function ($scope, $http) {
         }
     }
     
-    // Hàm hiển thị danh sách sản phẩm tương tự lên giao diện
-    function hienThiSanPhamTuongTu(sanPhams) {
+    async function hienThiSanPhamTuongTu(datasanPhams) {
+        let sanPhams = [];
+    
+        for (const data of datasanPhams) {
+            try {
+                const spctList = await fetchSanPhamChiTiet(data.id); // Lấy danh sách sản phẩm chi tiết
+    
+                if (spctList.length > 0) {
+                    for (const spctGroup of spctList) { // Duyệt từng nhóm sản phẩm chi tiết
+                        const spct = spctGroup.sanphamchitiets?.[0]; // Chỉ lấy phần tử đầu tiên
+    
+                        if (spct) { // Nếu có sản phẩm chi tiết
+                            const response = await fetch(`${apiSPCTUrl}/GetImageById/${spct.id}`);
+                            if (!response.ok) continue;
+    
+                            const blob = await response.blob();
+                            const imageUrl = URL.createObjectURL(blob);
+    
+                            sanPhams.push({
+                                tensp: data.tensp,
+                                giaban: data.giaban,
+                                giasale: data.giasale,
+                                anh: imageUrl || "default-image.jpg" // Sử dụng ảnh hoặc ảnh mặc định
+                            });
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error(`Lỗi khi lấy chi tiết sản phẩm ${data.id}:`, error);
+            }
+        }
+    
         const container = document.querySelector(".related-products .row");
         if (!container) return;
     
         container.innerHTML = sanPhams.map(sp => `
             <div class="col-md-3 col-6 mb-4">
                 <div class="card h-100 position-relative">
-                    ${sp.giasale ? `<div class="position-absolute top-0 end-0 bg-warning text-dark p-2 m-2 small">
-                        ${Math.round(((sp.giaban - sp.giasale) / sp.giaban) * 100)}% GIẢM
-                    </div>` : ""}
-                    <img src="${sp.anh}" class="card-img-top" alt="${sp.tensp}">
+                    ${sp.giasale && sp.giasale < sp.giaban ? `
+                        <div class="position-absolute top-0 end-0 bg-warning text-dark p-2 m-2 small">
+                            ${Math.round(((sp.giaban - sp.giasale) / sp.giaban) * 100)}% GIẢM
+                        </div>` 
+                    : ""}
+                    <img src="${sp.anh}" class="card-img-top product-image" alt="${sp.tensp}">
                     <div class="card-body">
                         <h5 class="card-title">${sp.tensp}</h5>
                         <p class="card-text">
-                            <span class="text-danger fw-bold">${sp.giasale ? sp.giasale : sp.giaban}đ</span>
-                            ${sp.giasale ? `<small class="text-muted text-decoration-line-through ms-2">${sp.giaban}đ</small>` : ""}
+                            <span class="text-danger fw-bold">${sp.giasale.toLocaleString("vi-VN")}đ</span>
+                            ${sp.giasale < sp.giaban ? 
+                                `<small class="text-muted text-decoration-line-through ms-2">${sp.giaban.toLocaleString("vi-VN")}đ</small>` 
+                            : ""}
                         </p>
                     </div>
                 </div>
             </div>
-        `).join('');
+        `).join('');        
     }
     
+        
     // Hàm chọn ngẫu nhiên sản phẩm
     function randomizeProducts(products, maxItems) {
         if (products.length > maxItems) {
