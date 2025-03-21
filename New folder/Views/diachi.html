@@ -1,3 +1,13 @@
+<style>
+    .btnfunction{
+        color: blue;
+        text-decoration: none;
+    }
+    .btnfunction:hover{
+        color: black;
+        text-decoration: underline;cursor: pointer;
+    }
+</style>
 <div class="container">
     <div class="row mb-3">
         <div class="col-3">
@@ -17,56 +27,130 @@
                 <div class="d-flex justify-content-between">
                     <div class="p-2 bd-highlight">Địa chỉ của tôi</div>
                     <div class="p-2 bd-highlight">
-                        <button type="button" style="background-color: orangered; color: white;" class="btn rounded-0"><i class="bi bi-plus"></i> Thêm địa chỉ mới</button>
+                        <button type="button" style="background-color: orangered; color: white;" class="btn rounded-0" data-bs-toggle="modal" data-bs-target="#AddAddressModal"><i class="bi bi-plus"></i> Thêm địa chỉ mới</button>
                     </div>
                 </div>
             </div>
             <div class="row p-3">
                 <p>Địa chỉ</p>
-                <div class="d-flex justify-content-between mt-3 border-bottom">
+                <div class="d-flex justify-content-between mt-3 border-bottom" ng-repeat="x in dataDiachi">
                     <div class="p-2 bd-highlight">
                         <p>
-                            <span class="border-end">Hoàng Thanh Giang</span>
-                            <span>0987654321</span>
+                            <span class="border-end">{{x.tennguoinhan}}</span>
+                            <span>{{x.sdtnguoinhan}}</span>
                         </p>
                         <p class="text-secondary">
-                            9 Đình Quán
-                            Phường Phúc Diễn, Quận Bắc Từ Liêm, Hà Nội
+                            {{x.diachicuthe}}
+                            {{x.phuongxa}}, {{x.quanhuyen}}, {{x.thanhpho}}
                         </p>
                         <div>
                             <span class="p-1" style="border: 1px solid orangered; color: orangered;">Mặc định</span>
                         </div>
                     </div>
                     <div class="p-2 bd-highlight">
-                        <div class="mb-3 text-center text-decoration-none">
-                            <a href="#" style="text-decoration: none;">Cập nhật</a>
-                            <a href="#" style="text-decoration: none;">Xóa</a>
-                        </div>
-                        <button type="button" class="btn btn-outline-dark rounded-0 border-1">Thiết lập mặc định</button>
-                    </div>
-                </div>
-                <div class="d-flex justify-content-between mt-3 border-bottom">
-                    <div class="p-2 bd-highlight">
-                        <p>
-                            <span class="border-end">Hoàng Thanh Giang</span>
-                            <span>0987654321</span>
-                        </p>
-                        <p class="text-secondary">
-                            9 Đình Quán
-                            Phường Phúc Diễn, Quận Bắc Từ Liêm, Hà Nội
-                        </p>
-                        <div>
-                            <span class="p-1" style="border: 1px solid gray; color: gray;">Địa chỉ lấy hàng</span>
-                        </div>
-                    </div>
-                    <div class="p-2 bd-highlight">
                         <div class="mb-3 text-center">
-                            <a href="#" style="text-decoration: none;">Cập nhật</a>
-                            <a href="#" style="text-decoration: none;">Xóa</a>
+                            <a class="btnfunction" ng-click="LoadviewEdit(x.id)">Cập nhật</a>
+                            <a class="btnfunction" ng-click="DeleteBtn(x.id)">Xóa</a>
                         </div>
                         <button type="button" class="btn btn-outline-dark rounded-0 border-1">Thiết lập mặc định</button>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Add Address-->
+<div class="modal fade" id="AddAddressModal" tabindex="-1" aria-labelledby="AddAddressModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="AddAddressModalLabel">Thêm địa chỉ mới</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class=" row mb-3">
+                    <div class="col-md">
+                        <input type="text" ng-model="add.tennguoinhan" placeholder="Họ và tên" class="form-control">
+                    </div>
+                    <div class="col-md">
+                        <input type="tel" ng-model="add.sdtnguoinhan" placeholder="Số điện thoại" class="form-control">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <select ng-model="add.thanhpho" ng-change="loadQuanHuyen()" class="form-select">
+                        <option selected value="">Chọn Tỉnh Thành</option>
+                        <option ng-repeat="tinh in tinhList" value="{{tinh.id}}">{{tinh.full_name}}</option>
+                    </select>
+                </div>
+                <div class=" row mb-3">
+                    <div class="col-md">
+                        <select ng-model="add.quanhuyen" ng-change="loadPhuongXa()" class="form-select">
+                            <option selected value="">Chọn Quận Huyện</option>
+                            <option ng-repeat="quan in quanList" value="{{quan.id}}">{{quan.full_name}}</option>
+                        </select>
+                    </div>
+                    <div class="col-md">
+                        <select ng-model="add.phuongxa" class="form-select">
+                            <option selected value="">Chọn Phường Xã</option>
+                            <option ng-repeat="phuong in phuongList" value="{{phuong.id}}">{{phuong.full_name}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <input ng-model="add.diachicuthe" type="text" placeholder="Địa chỉ cụ thể" class="form-control">
+                </div>
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            <button type="button" class="btn btn-primary" ng-click="AddBtn()">Lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Edit Address Modal -->
+<div class="modal fade" id="EditAddressModal" tabindex="-1" aria-labelledby="EditAddressModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="EditAddressModalLabel">Cập nhật địa chỉ</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-3">
+                    <div class="col-md">
+                        <input type="text" ng-model="edit.tennguoinhan" placeholder="Họ và tên" class="form-control">
+                    </div>
+                    <div class="col-md">
+                        <input type="tel" ng-model="edit.sdtnguoinhan" placeholder="Số điện thoại" class="form-control">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <select ng-model="edit.thanhpho" ng-change="loadQuanHuyenEdit()" class="form-select">
+                        <option value="">Chọn Tỉnh Thành</option>
+                        <option ng-repeat="tinh in tinhList" value="{{tinh.id}}">{{tinh.full_name}}</option>
+                    </select> 
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md">
+                        <select ng-model="edit.quanhuyen" ng-change="loadPhuongXaEdit()" class="form-select">
+                            <option value="">Chọn Quận Huyện</option>
+                            <option ng-repeat="quan in quanList" value="{{quan.id}}">{{quan.full_name}}</option>
+                        </select> 
+                    </div>
+                    <div class="col-md">
+                        <select ng-model="edit.phuongxa" class="form-select">
+                            <option value="">Chọn Phường Xã</option>
+                            <option ng-repeat="phuong in phuongList" value="{{phuong.id}}">{{phuong.full_name}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <input ng-model="edit.diachicuthe" type="text" placeholder="Địa chỉ cụ thể" class="form-control">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" ng-click="EditBtn(edit.id)">Lưu</button>
             </div>
         </div>
     </div>
