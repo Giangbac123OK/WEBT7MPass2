@@ -1,8 +1,11 @@
 app.controller('thongtintaikhoanController', function ($http, $scope) {
-    const apiUrl = "http://localhost:36106/api/Khachhangs/1";
+    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+    console.log(userInfo);
+    let idkh = userInfo.id;
+    const apiUrl = "https://localhost:7196/api/Khachhangs/";
 
     // Lấy dữ liệu từ API
-    $http.get(apiUrl)
+    $http.get(apiUrl+idkh)
         .then(function (response) {
             $scope.dataTttk = response.data;
             console.log("Dữ liệu tài khoản:", $scope.dataTttk);
