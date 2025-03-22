@@ -1,119 +1,99 @@
-app.controller('Sanpham', function () {
-  document.addEventListener("DOMContentLoaded", () => {
-    // Hover effect for desktop ok
-    if (window.innerWidth > 992) {
-      const dropdownToggle = document.querySelector(".has-megamenu .dropdown-toggle")
-      const dropdownMenu = document.querySelector(".has-megamenu .dropdown-menu")
+app.controller('SanphamController', function ($scope, $http) {
+  $scope.sanPham = [];
+  $scope.currentPage = 1; // Trang hiện tại
+  $scope.pageSize = 9; // Số sản phẩm trên mỗi trang
+  $scope.totalPages = 0; // Tổng số trang
+  $scope.sortOption = 'newest'; // Tùy chọn sắp xếp mặc định
 
-      dropdownToggle.addEventListener("mouseenter", () => {
-        dropdownMenu.classList.add("show")
-      })
+  function loadHinhAnh(idSPCT, callback) {
+      fetch(`https://localhost:7196/api/Sanphamchitiets/GetImageById/${idSPCT}`)
+          .then(response => response.blob())
+          .then(blob => {
+              let imgUrl = URL.createObjectURL(blob);
+              callback(imgUrl);
+          })
+          .catch(error => console.error("Lỗi tải ảnh:", error));
+  }
 
-      document.querySelector(".has-megamenu").addEventListener("mouseleave", () => {
-        dropdownMenu.classList.remove("show")
+  // Lấy danh sách sản phẩm
+  $http.get("https://localhost:7196/api/Sanphams/GetALLSanPham")
+      .then(function (response) {
+          $scope.sanPham = response.data.map(sp => {
+              sp.hinhAnh = "default-image.jpg"; // Ảnh mặc định
+
+              if (sp.sanphamchitiets && sp.sanphamchitiets.length > 0) {
+                  let spct = sp.sanphamchitiets[0];
+                  loadHinhAnh(spct.id, function (imgUrl) {
+                      sp.hinhAnh = imgUrl;
+                      $scope.$apply(); // Cập nhật lại view
+                  });
+              }
+
+              return sp;
+          });
+           console.log($scope.sanPham);
+           
+          // Cập nhật tổng số trang
+          $scope.totalPages = Math.ceil($scope.sanPham.length / $scope.pageSize);
       })
+      .catch(function (error) {
+          console.error("Lỗi khi tải danh sách sản phẩm:", error);
+          $scope.errorMessage = "Có lỗi xảy ra khi tải dữ liệu.";
+      });
+
+  // Hàm sắp xếp sản phẩm
+  $scope.sortProducts = function() {
+    switch ($scope.sortOption) {
+        case 'newest': // Sắp xếp mới nhất
+            $scope.sanPham.sort((a, b) => new Date(b.ngayThemSanPham) - new Date(a.ngayThemSanPham));
+            break;
+        case 'oldest': // Sắp xếp cũ nhất
+            $scope.sanPham.sort((a, b) => new Date(a.ngayThemSanPham) - new Date(b.ngayThemSanPham));
+            break;
+        case 'lowToHigh': // Giá từ thấp đến cao
+            $scope.sanPham.sort((a, b) => a.giasale - b.giasale);
+            break;
+        case 'highToLow': // Giá từ cao đến thấp
+            $scope.sanPham.sort((a, b) => b.giasale - a.giasale);
+            break;
+        case 'bestseller': // Bán chạy nhất
+            $scope.sanPham.sort((a, b) => $scope.getTotalSPCT(b) - $scope.getTotalSPCT(a));
+            break;
+        default:
+            break;
     }
+};
 
-    // Add to favorites functionality
-    const favoriteButtons = document.querySelectorAll(".btn-outline-danger")
-    favoriteButtons.forEach((button) => {
-      button.addEventListener("click", function () {
-        const icon = this.querySelector("i")
-        if (icon.classList.contains("bi-heart")) {
-          icon.classList.remove("bi-heart")
-          icon.classList.add("bi-heart-fill")
-          this.classList.remove("btn-outline-danger")
-          this.classList.add("btn-danger")
-        } else {
-          icon.classList.remove("bi-heart-fill")
-          icon.classList.add("bi-heart")
-          this.classList.remove("btn-danger")
-          this.classList.add("btn-outline-danger")
-        }
-      })
-    })
-  })
+  $scope.getTotalSPCT = function(product) {
+    return product.sanphamchitiets.reduce(function(total, spct) {
+        return total + spct.soLuongBan;
+    }, 0);
+};
+  // Lấy danh sách sản phẩm cho trang hiện tại
+  $scope.getPagedProducts = function () {
+      let start = ($scope.currentPage - 1) * $scope.pageSize;
+      let end = start + $scope.pageSize;
+      return $scope.sanPham.slice(start, end);
+  };
 
-  document.addEventListener("DOMContentLoaded", () => {
-    // Hover effect for desktop dropdown
-    if (window.innerWidth > 992) {
-      const dropdownToggle = document.querySelector(".dropdown-toggle")
-      const dropdownMenu = document.querySelector(".dropdown-menu")
+  // Chuyển sang trang trước
+  $scope.previousPage = function () {
+      if ($scope.currentPage > 1) {
+          $scope.currentPage--;
+      }
+  };
 
-      dropdownToggle.addEventListener("mouseenter", () => {
-        dropdownMenu.classList.add("show")
-      })
+  // Chuyển sang trang tiếp theo
+  $scope.nextPage = function () {
+      if ($scope.currentPage < $scope.totalPages) {
+          $scope.currentPage++;
+      }
+  };
 
-      document.querySelector(".dropdown").addEventListener("mouseleave", () => {
-        dropdownMenu.classList.remove("show")
-      })
-    }
-
-    // Add to favorites functionality
-    const favoriteButtons = document.querySelectorAll(".btn-outline-danger")
-    favoriteButtons.forEach((button) => {
-      button.addEventListener("click", function () {
-        const icon = this.querySelector("i")
-        if (icon.classList.contains("bi-heart")) {
-          icon.classList.remove("bi-heart")
-          icon.classList.add("bi-heart-fill")
-          this.classList.remove("btn-outline-danger")
-          this.classList.add("btn-danger")
-        } else {
-          icon.classList.remove("bi-heart-fill")
-          icon.classList.add("bi-heart")
-          this.classList.remove("btn-danger")
-          this.classList.add("btn-outline-danger")
-        }
-      })
-    })
-
-    // Filter functionality
-    const filterButton = document.querySelector(".filter-sidebar .btn-primary")
-    filterButton.addEventListener("click", () => {
-      // Collect filter values
-      const priceRange = document.querySelector('input[name="priceRange"]:checked').id
-      const brands = Array.from(document.querySelectorAll(".filter-section:nth-child(2) input:checked")).map((input) =>
-        input.nextElementSibling.textContent.trim(),
-      )
-      const sizes = Array.from(document.querySelectorAll(".filter-section:nth-child(3) input:checked")).map((input) =>
-        input.nextElementSibling.textContent.trim(),
-      )
-
-      // Log filter values (in a real app, you would use these to filter products)
-      console.log("Price Range:", priceRange)
-      console.log("Brands:", brands)
-      console.log("Sizes:", sizes)
-
-      // Show filter applied notification
-      alert("Bộ lọc đã được áp dụng!")
-    })
-
-    // Quick view functionality
-    const quickViewButtons = document.querySelectorAll(".action-btn:nth-child(2)")
-    quickViewButtons.forEach((button) => {
-      button.addEventListener("click", function () {
-        const productCard = this.closest(".product-card")
-        const productName = productCard.querySelector(".card-title").textContent
-        const productPrice = productCard.querySelector(".text-danger").textContent
-
-        alert(`Xem nhanh: ${productName}\nGiá: ${productPrice}`)
-      })
-    })
-
-    // Add to cart functionality
-    const addToCartButtons = document.querySelectorAll(".action-btn:nth-child(1)")
-    addToCartButtons.forEach((button) => {
-      button.addEventListener("click", function () {
-        const productCard = this.closest(".product-card")
-        const productName = productCard.querySelector(".card-title").textContent
-
-        alert(`Đã thêm ${productName} vào giỏ hàng!`)
-
-        // Update cart badge count
-        const cartBadge = document.querySelector(".cart-badge")
-        cartBadge.textContent = Number.parseInt(cartBadge.textContent) + 1
-      })
-    })
-  })
+  // Chuyển tới trang cụ thể
+  $scope.goToPage = function (page) {
+      if (page >= 1 && page <= $scope.totalPages) {
+          $scope.currentPage = page;
+      }
+  };
 });
