@@ -10,6 +10,7 @@ app.controller('SanphamDetail', function ($scope, $routeParams, $location) {
     const apiHinhAnh = "https://localhost:7196/api/Hinhanh/DanhGia/";
     const apigioHang = "https://localhost:7196/api/Giohang/giohangkhachhang";
     const apigioHangChiTiet = "https://localhost:7196/api/Giohangchitiet";
+    const apiKhachhang = "https://localhost:7196/api/Khachhangs";
     const sanPhamId = $routeParams.id;
     let dataspct = []; // Sửa Set thành mảng
     let datasanpham = [];
@@ -161,54 +162,86 @@ app.controller('SanphamDetail', function ($scope, $routeParams, $location) {
         const avgRatingElement = document.getElementById("avgRating");
         const starDisplayElement = document.getElementById("starDisplay");
         const paginationContainer = document.getElementById("pagination");
-
-        reviewsContainer.innerHTML = ""; 
+    
+        reviewsContainer.innerHTML = "";
         filterContainer.innerHTML = "";
         paginationContainer.innerHTML = "";
-
+    
         let danhGiaCounts = {};
         let tongSao = 0;
         let tongDanhGia = 0;
         danhGiaList = [];
-
-        for (const spct of dataspct) {
-            try {
-                let danhGiaData = await fetchDanhGia(spct.id);
-                if (danhGiaData === null) continue; 
-
-                if (!Array.isArray(danhGiaData)) {
-                    danhGiaData = danhGiaData ? [danhGiaData] : [];
-                }
-
-                if (danhGiaData.length === 0) continue;
-
-                for (const danhGia of danhGiaData) {
-                    danhGiaCounts[danhGia.sosao] = (danhGiaCounts[danhGia.sosao] || 0) + 1;
-                    tongSao += danhGia.sosao;
-                    tongDanhGia++;
-
-                    const hinhAnhList = await fetchHinhAnhDanhGia(danhGia.id);
-
-                    danhGiaList.push({
-                        idkh: danhGia.idkh,
-                        sosao: danhGia.sosao,
-                        noidungdanhgia: danhGia.noidungdanhgia,
-                        hinhAnhList: hinhAnhList
-                    });
-                }
-            } catch (error) {
-                console.error(`Lỗi khi lấy đánh giá cho sản phẩm ID ${spct.id}:`, error);
+    
+        try {
+            let danhGiaData = await fetchDanhGia(sanPhamId);
+    
+            if (!danhGiaData || danhGiaData.length === 0) {
+                console.warn(`Không có đánh giá cho sản phẩm ID: ${sanPhamId}`);
+                return;
             }
+    
+            // Đảm bảo danhGiaData là một mảng
+            if (!Array.isArray(danhGiaData)) {
+                danhGiaData = [danhGiaData];
+            }
+    
+            // Lấy danh sách hình ảnh của tất cả đánh giá đồng thời
+            const danhGiaIds = danhGiaData.map(dg => dg.id);
+            const hinhAnhPromises = danhGiaIds.map(id => fetchHinhAnhDanhGia(id));
+            const hinhAnhResults = await Promise.all(hinhAnhPromises);
+    
+            danhGiaData.forEach((danhGia, index) => {
+                danhGiaCounts[danhGia.sosao] = (danhGiaCounts[danhGia.sosao] || 0) + 1;
+                tongSao += danhGia.sosao;
+                tongDanhGia++;
+    
+                danhGiaList.push({
+                    idkh: danhGia.idkh,
+                    sosao: danhGia.sosao,
+                    noidungdanhgia: danhGia.noidungdanhgia,
+                    hinhAnhList: hinhAnhResults[index] || []
+                });
+            });
+    
+        } catch (error) {
+            console.error(`Lỗi khi lấy đánh giá cho sản phẩm ID ${sanPhamId}:`, error);
+            return;
         }
-
+    
         let avgRating = tongDanhGia > 0 ? (tongSao / tongDanhGia).toFixed(1) : 0;
         avgRatingElement.textContent = `${avgRating}`;
-        starDisplayElement.innerHTML = "★".repeat(Math.round(avgRating)).padEnd(5, "☆");
-
+    
+        // Hiển thị sao với nửa sao
+        starDisplayElement.innerHTML = generateStarHTML(avgRating);
+    
         hienThiBoLoc();
-        hienThiTrangDanhGia(); 
+        hienThiTrangDanhGia();
         hienThiPhanTrang();
     }
+    
+    // Hàm tạo HTML hiển thị sao (hỗ trợ nửa sao)
+    function generateStarHTML(rating) {
+        const fullStars = Math.floor(rating); // Số sao đầy
+        const halfStar = rating % 1 >= 0.5 ? 1 : 0; // Kiểm tra có nửa sao không
+        const emptyStars = 5 - fullStars - halfStar; // Số sao trống
+    
+        let starHTML = "";
+    
+        for (let i = 0; i < fullStars; i++) {
+            starHTML += '<i class="bi bi-star-fill text-warning"></i>'; // ⭐
+        }
+    
+        if (halfStar) {
+            starHTML += '<i class="bi bi-star-half text-warning"></i>'; // ⭐½
+        }
+    
+        for (let i = 0; i < emptyStars; i++) {
+            starHTML += '<i class="bi bi-star text-muted"></i>'; // ☆
+        }
+    
+        return starHTML;
+    }
+     
 
     function hienThiBoLoc() {
         const filterContainer = document.getElementById("filterContainer");
@@ -246,7 +279,7 @@ app.controller('SanphamDetail', function ($scope, $routeParams, $location) {
     }
     
     // Hiển thị đánh giá theo trang dựa trên danhGiaDaLoc
-    function hienThiTrangDanhGia() {
+    async function hienThiTrangDanhGia() {
         const reviewsContainer = document.getElementById("reviews");
         reviewsContainer.innerHTML = "";
     
@@ -254,23 +287,43 @@ app.controller('SanphamDetail', function ($scope, $routeParams, $location) {
         let endIndex = startIndex + reviewsPerPage;
         let danhGiaHienTai = danhGiaDaLoc.slice(startIndex, endIndex);
     
-        danhGiaHienTai.forEach(danhGia => {
-            const reviewDiv = document.createElement("div");
-            reviewDiv.classList.add("review");
-            reviewDiv.dataset.rating = danhGia.sosao;
-            reviewDiv.innerHTML = `
-                <div class="review-header">
-                    <span class="review-user"><strong>${danhGia.idkh}</strong></span>
-                    <span class="review-rating">${"★".repeat(danhGia.sosao)} (${danhGia.sosao}/5)</span>
-                </div>
-                <p class="review-content">${danhGia.noidungdanhgia}</p>
-                <div class="review-images">
-                    ${danhGia.hinhAnhList.map((url) => `<img src="${url}" class="review-img img-thumbnail" alt="Ảnh đánh giá">`).join("")}
-                </div>
-            `;
-            reviewsContainer.appendChild(reviewDiv);
-        });
-    }
+        for (const danhGia of danhGiaHienTai) {
+            try {
+                // Gọi API lấy thông tin khách hàng
+                const response = await fetch(`https://localhost:7196/api/khachhangs/${danhGia.idkh}`);
+                
+                if (!response.ok) {
+                    console.error(`Lỗi khi lấy thông tin khách hàng: ${response.status}`);
+                    continue; // Bỏ qua đánh giá này nếu không lấy được dữ liệu khách hàng
+                }
+    
+                const data = await response.json();
+                const tenKH = data.ten || "Khách hàng ẩn danh"; // Nếu không có tên, hiển thị mặc định
+    
+                const reviewDiv = document.createElement("div");
+                reviewDiv.classList.add("review");
+                reviewDiv.dataset.rating = danhGia.sosao;
+    
+                // Tạo số sao đầy đủ và sao trống
+                const starHTML = generateStarHTML(danhGia.sosao);
+    
+                reviewDiv.innerHTML = `
+                    <div class="review-header">
+                        <span class="review-user"><strong>${tenKH}</strong></span>
+                        <span class="review-rating">${starHTML} (${danhGia.sosao}/5)</span>
+                    </div>
+                    <p class="review-content">${danhGia.noidungdanhgia}</p>
+                    <div class="review-images">
+                        ${danhGia.hinhAnhList.map((url) => `<img src="${url}" class="review-img img-thumbnail" alt="Ảnh đánh giá">`).join("")}
+                    </div>
+                `;
+                reviewsContainer.appendChild(reviewDiv);
+            } catch (error) {
+                console.error(`Lỗi khi hiển thị đánh giá:`, error);
+            }
+        }
+    }    
+    
     
     // Hiển thị phân trang dựa trên danhGiaDaLoc
     function hienThiPhanTrang() {
@@ -503,23 +556,33 @@ app.controller('SanphamDetail', function ($scope, $routeParams, $location) {
         }
     }
     // Lấy danh sách đánh giá từ API
+
     async function fetchDanhGia(idspct) {
         try {
             const response = await fetch(`${apiDanhGia}${idspct}`);
+            
             if (!response.ok) {
                 if (response.status === 404) {
-                    return null; // Trả về null nếu gặp lỗi 404
+                    console.warn(`Không tìm thấy dữ liệu đánh giá cho id: ${idspct}`);
+                    return [];
                 }
                 throw new Error(`Lỗi API đánh giá: ${response.status}`);
             }
-
-            const danhGiaData = await response.json();
-            return danhGiaData || []; // Đảm bảo trả về mảng rỗng nếu không có dữ liệu
+    
+            // Kiểm tra nếu phản hồi rỗng
+            const text = await response.text();
+            if (!text.trim()) {
+                console.warn(`API trả về rỗng cho id: ${idspct}`);
+                return [];
+            }
+    
+            // Phân tích JSON nếu có nội dung hợp lệ
+            return JSON.parse(text);
         } catch (error) {
             console.error("Lỗi khi lấy dữ liệu đánh giá:", error);
-            return []; // Trả về mảng rỗng thay vì `null` hoặc `undefined`
+            return [];
         }
-    }
+    }     
 
     // Lấy hình ảnh đánh giá từ API
     async function fetchHinhAnhDanhGia(danhGiaId) {
@@ -988,6 +1051,7 @@ app.controller('SanphamDetail', function ($scope, $routeParams, $location) {
                             const imageUrl = URL.createObjectURL(blob);
     
                             sanPhams.push({
+                                id: spctGroup.id,
                                 tensp: data.tensp,
                                 giaban: data.giaban,
                                 giasale: data.giasale,
@@ -1006,7 +1070,7 @@ app.controller('SanphamDetail', function ($scope, $routeParams, $location) {
     
         container.innerHTML = sanPhams.map(sp => `
             <div class="col-md-3 col-6 mb-4">
-                <div class="card h-100 position-relative">
+                <div class="card h-100 position-relative" onclick="navigateToProduct(${sp.id})" style="cursor: pointer;">
                     ${sp.giasale && sp.giasale < sp.giaban ? `
                         <div class="position-absolute top-0 end-0 bg-warning text-dark p-2 m-2 small">
                             ${Math.round(((sp.giaban - sp.giasale) / sp.giaban) * 100)}% GIẢM
@@ -1024,10 +1088,13 @@ app.controller('SanphamDetail', function ($scope, $routeParams, $location) {
                     </div>
                 </div>
             </div>
-        `).join('');        
+        `).join('');                  
     }
     
-        
+    window.navigateToProduct = function(id) {
+        window.location.href = `#!SanpDetail/${id}`;
+    };      
+
     // Hàm chọn ngẫu nhiên sản phẩm
     function randomizeProducts(products, maxItems) {
         if (products.length > maxItems) {
