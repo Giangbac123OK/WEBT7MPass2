@@ -16,7 +16,7 @@ app.config(function($routeProvider){
           })
           .when("/Sanpham", {
             templateUrl: "./Views/Sanpham.html",
-            controller: "Sanpham"
+            controller: "SanphamController"
           })
           .when("/sale", {
             templateUrl: "./Views/sale.html"
