@@ -47,15 +47,14 @@
                 
                     <div class="mb-3 fw-bolder">
                         <label for="ngaysinh" class="form-label">Ngày sinh</label>
-                        <input type="date" class="form-control" ng-model="dataTttk.ngaysinh">
+                        <input type="date" class="form-control" 
+                               id="ngaysinh" 
+                               ng-model="dataTttk.ngaysinh" 
+                               ng-init="dataTttk.ngaysinh = dataTttk.ngaysinh ? dataTttk.ngaysinh.split('T')[0] : null">
                     </div>
+                    
                 
-                    <div class="mb-3 fw-bolder">
-                        <label for="diachi" class="form-label">Địa chỉ</label>
-                        <input type="text" class="form-control" id="diachi" ng-model="dataTttk.diachi">
-                    </div>
-                
-                    <button class="btn btn-primary">Lưu</button>
+                    <button class="btn btn-primary" ng-click="btnLuu(dataTttk.id)">Lưu</button>
                 </div>
             </div>
         </div>
