@@ -69,7 +69,7 @@
         </div>
     </div>
 </div>
-<!--Add Address-->
+<!--Add Address chưa-->
 <div class="modal fade" id="AddAddressModal" tabindex="-1" aria-labelledby="AddAddressModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -139,7 +139,7 @@
         </div>
     </div>
 </div>
-<!-- Edit Address Modal -->
+<!-- Edit Address Modal chưa validate-->
 <div class="modal fade" id="EditAddressModal" tabindex="-1" aria-labelledby="EditAddressModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -200,59 +200,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                <button type="button" class="btn btn-primary" id="btnSaveAddress">Lưu</button>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="modal fade" id="EditAddressModal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Cập nhật địa chỉ</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="updateAddressId" value="" style="display: none;">
-                <div class=" row mb-3">
-                    <div class="col-md">
-                        <input type="text" ng-model="update.tennguoinhan" placeholder="Họ và tên" class="form-control"
-                            id="updatetennguoinhan">
-                    </div>
-                    <div class="col-md">
-                        <input type="tel" ng-model="update.sdtnguoinhan" placeholder="Số điện thoại" class="form-control"
-                            id="updatesdtnguoinhan">
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <select id="updateTinh" class="form-select">
-                        <option selected value="">Chọn Tỉnh Thành</option>
-                    </select>
-                </div>
-                <div class=" row mb-3">
-                    <div class="col-md">
-                        <select id="updateQuan" class="form-select">
-                            <option selected value="">Chọn Quận Huyện</option>
-                        </select>
-                    </div>
-                    <div class="col-md">
-                        <select id="updatePhuong" class="form-select">
-                            <option selected value="">Chọn Phường Xã</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <input ng-model="update.diachicuthe" type="text" placeholder="Địa chỉ cụ thể" id="updatedetailInput"
-                        class="form-control">
-                </div>
-                <div class="mb-3" style="display: none;">
-                    <input ng-model="update.trangthai" type="text" placeholder="Trạng thái" id="updateCondition"
-                        class="form-control" disabled>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                <button type="button" class="btn btn-primary" id="updateForm">Lưu</button>
+                <button type="button" class="btn btn-primary" ng-click="EditBtn(edit.id)">Lưu</button>
             </div>
         </div>
     </div>
