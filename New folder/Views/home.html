@@ -350,23 +350,24 @@
     <div style="height: 450px;" class="col-6 col-md-4 col-lg-3" ng-repeat="product in sanPhamMoi">
         <a href="#" style="text-decoration: none;" >
             <div class="card rounded-0">
-                <img ng-src="{{product.hinhAnh}}" 
-                alt="Ảnh sản phẩm" height="300px" class="card-img-top  rounded-0" alt="...">
+                <div class="card-img-container">
+                    <div class="discount-badge" ng-if="product.giaTriGiam > 0 && product.giaTriGiam <= 100">-{{product.giaTriGiam}}%</div>
+                    <div class="discount-badge" ng-if="product.giaTriGiam > 0 && product.giaTriGiam > 100">-{{product.giaTriGiam}}đ</div>
+                    <img ng-src="{{product.hinhAnh}}" alt="Ảnh sản phẩm" height="300px" class="card-img-top  rounded-0" alt="...">
+                </div>
                 <div class="card-body">
+                    
                     <h5 class="card-title">{{product.tensp}}</h5>
                     <div class="d-flex justify-content-between">
                         <!-- Nếu có giảm giá thì hiển thị giá gốc gạch ngang -->
-                        <div class="p-2 text-decoration-line-through text-start" ng-if="product.giaban > product.giasale">
+                        <div class="p-2 text-decoration-line-through text-start " ng-if="product.giaban > product.giasale && product.giasale !== product.giaban">
                             {{product.giaban}}đ
                         </div>
-                    
-                        <!-- Nếu giá bán và giá sale bằng nhau thì chỉ hiển thị một giá -->
-                        <div class="p-2 text-end text-danger ms-auto" ng-if="product.giaban === product.giasale">
+                        <div class="p-2 text-end text-danger fw-bold ms-auto" ng-if="product.giasale === product.giaban">
                             {{product.giaban}}đ
                         </div>
-                    
                         <!-- Hiển thị giá sale nếu có giảm giá -->
-                        <div class="p-2 text-end text-danger" ng-if="product.giaban > product.giasale">
+                        <div class="p-2 text-end text-danger fw-bold" ng-if="product.giaban > product.giasale && product.giasale !== product.giaban">
                             {{product.giasale}}đ
                         </div>
                     </div>

@@ -43,4 +43,24 @@ app.controller('homeController', function($scope, $http) {
             }, 0);
         };
         
+        $scope.GetGiaSP = function getMinPriceDetails(sanphams) {
+            return sanphams.map(sp => {
+                let minChiTiet = sp.sanphamchitiets.reduce((min, spct) => {
+                    return (spct.giaSaleSanPhamChiTiet > 0 && spct.giaSaleSanPhamChiTiet < min.giaSaleSanPhamChiTiet)
+                        ? spct
+                        : min;
+                }, { giaSaleSanPhamChiTiet: Infinity });
+        
+                // Lấy giá trị giảm từ sale nếu có
+                minChiTiet.giatrigiam = minChiTiet.sales && minChiTiet.sales.length > 0 ? minChiTiet.sales[0].giatrigiam : 0;
+        
+                return {
+                    tensp: sp.tensp,
+                    giathoidiemhientai: minChiTiet.giathoidiemhientai,
+                    giaSaleSanPhamChiTiet: minChiTiet.giaSaleSanPhamChiTiet,
+                    giatrigiam: minChiTiet.giatrigiam
+                };
+            });
+        }
+        
 });
