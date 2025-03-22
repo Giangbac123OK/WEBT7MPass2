@@ -19,7 +19,8 @@ app.config(function($routeProvider){
             controller: "SanphamController"
           })
           .when("/sale", {
-            templateUrl: "./Views/sale.html"
+            templateUrl: "./Views/sale.html",
+            controller: "SanPhamSaleController"
           })
           .when("/diachi", {
             templateUrl: "./Views/diachi.html",

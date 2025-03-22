@@ -4,6 +4,7 @@ app.controller('homeController', function ($scope, $http) {
     $scope.sanPhamKhuyenMai = [];
     $scope.isLoading = true; // Trạng thái chờ tải dữ liệu
     $scope.thuongHieu = [];
+    $scope.spDanhGiaCao = [];
 
     // Hàm tải hình ảnh từ API
     function loadHinhAnh(idSPCT, callback) {
@@ -48,7 +49,11 @@ app.controller('homeController', function ($scope, $http) {
             $scope.sanPhamMoi = processSanPham(
                 products.sort((a, b) => new Date(b.ngayThemSanPham) - new Date(a.ngayThemSanPham))
             );
-             
+            $scope.spDanhGiaCao = processSanPham(
+                products
+                .sort((a, b) => b.trungBinhDanhGia - a.trungBinhDanhGia)
+                .slice(0, 4)
+            );
             $scope.sanPhamPhoBien = processSanPham(
                 products
                 .sort((a, b) => $scope.getTotalSPCT(b) - $scope.getTotalSPCT(a))
@@ -68,6 +73,17 @@ app.controller('homeController', function ($scope, $http) {
             $scope.errorMessage = "Có lỗi xảy ra khi tải dữ liệu.";
             $scope.isLoading = false; // Dừng trạng thái chờ tải
         });
+        $scope.generateStars = function (rating) {
+            const fullStars = Math.floor(rating); // Số sao đầy
+            const halfStar = rating % 1 >= 0.5; // Có nửa sao hay không
+            const emptyStars = 5 - Math.ceil(rating); // Số sao trống
+        
+            let stars = [];
+            for (let i = 0; i < fullStars; i++) stars.push('full'); // Sao đầy
+            if (halfStar) stars.push('half'); // Sao nửa
+            for (let i = 0; i < emptyStars; i++) stars.push('empty'); // Sao trống
+            return stars;
+        }
 
         function groupByThuongHieu(products, limit) {
             const grouped = {};
@@ -90,4 +106,7 @@ app.controller('homeController', function ($scope, $http) {
         
             return grouped;
         }
+
+
+        
 });
