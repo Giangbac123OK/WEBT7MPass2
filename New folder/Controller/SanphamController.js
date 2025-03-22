@@ -1,3 +1,13 @@
+// app.filter('range', function() {
+//     return function(input, total) {
+//         total = parseInt(total);
+//         for (let i = 0; i < total; i++) {
+//             input.push(i);
+//         }
+//         return input;
+//     };
+// });
+
 app.controller('SanphamController', function ($scope, $http) {
   $scope.sanPham = [];
   $scope.currentPage = 1; // Trang hiện tại
@@ -96,4 +106,20 @@ app.controller('SanphamController', function ($scope, $http) {
           $scope.currentPage = page;
       }
   };
+  $scope.generateStars = function (rating) {
+    const fullStars = Math.floor(rating); // Số sao đầy
+    const halfStar = rating % 1 >= 0.5; // Có nửa sao hay không
+    const emptyStars = 5 - Math.ceil(rating); // Số sao trống
+
+    let stars = [];
+    for (let i = 0; i < fullStars; i++) stars.push('full'); // Sao đầy
+    if (halfStar) stars.push('half'); // Sao nửa
+    for (let i = 0; i < emptyStars; i++) stars.push('empty'); // Sao trống
+    return stars;
+};
+
+
+
+
+ 
 });

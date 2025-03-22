@@ -1,25 +1,33 @@
 <style>
-    .btnfunction{
+    .btnfunction {
         color: blue;
         text-decoration: none;
     }
-    .btnfunction:hover{
+
+    .btnfunction:hover {
         color: black;
-        text-decoration: underline;cursor: pointer;
+        text-decoration: underline;
+        cursor: pointer;
     }
 </style>
 <div class="container">
     <div class="row mb-3">
         <div class="col-3">
-            <img src="./Images/user.png" class="rounded-circle border border-dark" width="50px" height="50px" alt="" srcset="">
+            <img src="./Images/user.png" class="rounded-circle border border-dark" width="50px" height="50px" alt=""
+                srcset="">
             <span class="fw-bold">Quốc trung</span>
             <hr>
             <div>
-                <a href="#!thongtintaikhoan" class="fs-5 text-decoration-none text-dark"><i class="bi bi-person-fill"></i> Hồ sơ của tôi</a><br>
-                <a class="fs-5 text-decoration-none text-danger"><i class="bi bi-geo-alt-fill"></i> Địa chỉ của tôi</a><br>
-                <a href="#!donhangcuaban" class="fs-5 text-decoration-none text-dark"><i class="bi bi-bag-fill"></i> Đơn hàng của tôi</a><br>
-                <a href="#!voucher" class="fs-5 text-decoration-none text-dark"><i class="bi bi-list"></i> Kho voucher</a><br>
-                <a href="#!doimatkhau" class="fs-5 text-decoration-none text-dark"><i class="bi bi-key-fill"></i> Đổi mật khẩu</a>
+                <a href="#!thongtintaikhoan" class="fs-5 text-decoration-none text-dark"><i
+                        class="bi bi-person-fill"></i> Hồ sơ của tôi</a><br>
+                <a class="fs-5 text-decoration-none text-danger"><i class="bi bi-geo-alt-fill"></i> Địa chỉ của
+                    tôi</a><br>
+                <a href="#!donhangcuaban" class="fs-5 text-decoration-none text-dark"><i class="bi bi-bag-fill"></i> Đơn
+                    hàng của tôi</a><br>
+                <a href="#!voucher" class="fs-5 text-decoration-none text-dark"><i class="bi bi-list"></i> Kho
+                    voucher</a><br>
+                <a href="#!doimatkhau" class="fs-5 text-decoration-none text-dark"><i class="bi bi-key-fill"></i> Đổi
+                    mật khẩu</a>
             </div>
         </div>
         <div class="col-9 p-3 bg-light">
@@ -66,21 +74,24 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-            <h5 class="modal-title" id="AddAddressModalLabel">Thêm địa chỉ mới</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title" id="AddAddressModalLabel">Thêm địa chỉ mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class=" row mb-3">
                     <div class="col-md">
-                        <input type="text" ng-model="add.tennguoinhan" placeholder="Họ và tên" class="form-control">
+                        <input type="text" ng-model="add.tennguoinhan" placeholder="Họ và tên" class="form-control"
+                            id="tennguoinhan">
                     </div>
                     <div class="col-md">
-                        <input type="tel" ng-model="add.sdtnguoinhan" placeholder="Số điện thoại" class="form-control">
+                        <input type="tel" ng-model="add.sdtnguoinhan" placeholder="Số điện thoại" class="form-control"
+                            id="sdtnguoinhan">
                     </div>
                 </div>
                 <div class="mb-3">
                     <select class="form-select" ng-model="selectedCity" ng-options="city.name for city in cities" ng-change="loadDistricts()">
                         <option value="">Chọn tỉnh thành</option>
+
                     </select>
                 </div>
                 <div class=" row mb-3">
@@ -92,6 +103,7 @@
                     <div class="col-md">
                         <select class="form-select" ng-model="selectedWard" ng-options="ward.name for ward in wards" ng-change="updateResult()">
                             <option value="">Chọn phường xã</option>
+
                         </select>
                     </div>
                 </div>
@@ -188,7 +200,59 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                <button type="button" class="btn btn-primary" ng-click="EditBtn(edit.id)">Lưu</button>
+                <button type="button" class="btn btn-primary" id="btnSaveAddress">Lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="EditAddressModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Cập nhật địa chỉ</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="updateAddressId" value="" style="display: none;">
+                <div class=" row mb-3">
+                    <div class="col-md">
+                        <input type="text" ng-model="update.tennguoinhan" placeholder="Họ và tên" class="form-control"
+                            id="updatetennguoinhan">
+                    </div>
+                    <div class="col-md">
+                        <input type="tel" ng-model="update.sdtnguoinhan" placeholder="Số điện thoại" class="form-control"
+                            id="updatesdtnguoinhan">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <select id="updateTinh" class="form-select">
+                        <option selected value="">Chọn Tỉnh Thành</option>
+                    </select>
+                </div>
+                <div class=" row mb-3">
+                    <div class="col-md">
+                        <select id="updateQuan" class="form-select">
+                            <option selected value="">Chọn Quận Huyện</option>
+                        </select>
+                    </div>
+                    <div class="col-md">
+                        <select id="updatePhuong" class="form-select">
+                            <option selected value="">Chọn Phường Xã</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <input ng-model="update.diachicuthe" type="text" placeholder="Địa chỉ cụ thể" id="updatedetailInput"
+                        class="form-control">
+                </div>
+                <div class="mb-3" style="display: none;">
+                    <input ng-model="update.trangthai" type="text" placeholder="Trạng thái" id="updateCondition"
+                        class="form-control" disabled>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" id="updateForm">Lưu</button>
             </div>
         </div>
     </div>
