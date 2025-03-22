@@ -32,16 +32,19 @@ app.controller('donhangcuabanController', function($scope, $http) {
     // Gọi API ngay khi trang được load
     $scope.loadHoaDon();
     //select hóa đơn chi tiết theo mã hóa đơn
-    
-    $http.get('https://localhost:7196/api/Hoadonchitiets')
-        .then(function(response){
-            $scope.dataHoaDonCT = response.data
-            console.log($scope.dataHoaDonCT)
-        })
-        .catch(function(error){
-            console.error(error)
-        })
+    $http.get("https://localhost:7196/api/Hoadonchitiets")
+            .then(function(response) {
+                $scope.dataHoaDonCT = response.data;
+                console.log("Dữ liệu hóa đơn chi tiết:", $scope.dataHoaDonCT);
+            })
+            .catch(function(error) {
+                console.error("Lỗi khi lấy dữ liệu hóa đơn chi tiết:", error);
+                alert("Có lỗi xảy ra khi tải dữ liệu. Vui lòng kiểm tra console.");
+            });
 
+        $scope.toggleItems = function() {
+            $scope.showItems = !$scope.showItems;
+        };
     $http.get('https://localhost:7196/api/Trahangs')
         .then(function(response){
             $scope.dataTraHang = response.data
@@ -50,5 +53,9 @@ app.controller('donhangcuabanController', function($scope, $http) {
         .catch(function(error){
             console.error(error)
         })
+    $scope.chitietdonhang = function(id){
+        $scope.idhd = id;
+        $('#chitietModal').modal('show');
+    }
 });
 
