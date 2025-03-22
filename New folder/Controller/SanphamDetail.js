@@ -1,5 +1,5 @@
 
-app.controller('SanphamDetail', function ($scope, $http, $location) {
+app.controller('SanphamDetail', function ($scope, $routeParams, $location) {
     const apiSPCTUrl = "https://localhost:7196/api/Sanphamchitiets";
     const apiSPUrl = "https://localhost:7196/api/Sanphams";
     const apiSize = "https://localhost:7196/api/size";
@@ -10,7 +10,7 @@ app.controller('SanphamDetail', function ($scope, $http, $location) {
     const apiHinhAnh = "https://localhost:7196/api/Hinhanh/DanhGia/";
     const apigioHang = "https://localhost:7196/api/Giohang/giohangkhachhang";
     const apigioHangChiTiet = "https://localhost:7196/api/Giohangchitiet";
-    const sanPhamId = 2;
+    const sanPhamId = $routeParams.id;
     let dataspct = []; // Sửa Set thành mảng
     let datasanpham = [];
 
@@ -77,6 +77,9 @@ app.controller('SanphamDetail', function ($scope, $http, $location) {
     
                 // Thu thập giá của sản phẩm chi tiết
                 for (const anhspct of spct.sanphamchitiets) {
+                    if(anhspct.soluong <= 0){
+                        continue;
+                    }
                     if (anhspct.giaSaleSanPhamChiTiet != null) {
                         allGiaSale.push(anhspct.giaSaleSanPhamChiTiet);
                     } else {
@@ -776,17 +779,14 @@ app.controller('SanphamDetail', function ($scope, $http, $location) {
         }
     }    
 
-    function muaSanphamNgay() {
-        // Lấy số lượng sản phẩm người dùng nhập
+    $scope.muaSanphamNgay = function() {
         let inputQuantity = parseInt(document.querySelector("#quantity").value, 10);
     
-        // Kiểm tra người dùng đã chọn đủ thuộc tính chưa
         if (!selectedColorId || !selectedSizeId || !selectedChatlieuId) {
             Swal.fire("Lỗi", "Vui lòng chọn đầy đủ Màu sắc, Kích thước và Chất liệu.", "error");
             return;
         }
     
-        // Lọc sản phẩm chi tiết dựa trên thuộc tính đã chọn
         let selectedSPCT = dataspct.find(spct =>
             spct.idMau == selectedColorId &&
             spct.idSize == selectedSizeId &&
@@ -798,23 +798,24 @@ app.controller('SanphamDetail', function ($scope, $http, $location) {
             return;
         }
     
-        // Kiểm tra trạng thái sản phẩm
         if (selectedSPCT.trangThai == 1) {
             Swal.fire("Lỗi", "Sản phẩm đã hết hàng không thể mua được.", "error");
             return;
         }
     
-        // Kiểm tra số lượng tồn kho, đảm bảo còn lại ít nhất 1 sản phẩm
         if (inputQuantity >= selectedSPCT.soluong) {
             Swal.fire("Lỗi", `Bạn chỉ có thể mua tối đa ${selectedSPCT.soluong - 1} sản phẩm.`, "error");
             return;
         }
     
-        // Hiển thị thông báo mua hàng thành công
-        Swal.fire("Thành công", `Mua sản phẩm thành công! ID Sản phẩm chi tiết = ${selectedSPCT.id}, Số lượng = ${inputQuantity}.`, "success");
+        // Lưu vào sessionStorage (hoặc localStorage nếu muốn giữ lâu hơn)
+        sessionStorage.setItem("selectedSPCTId", selectedSPCT.id);
+        sessionStorage.setItem("inputQuantity", inputQuantity);
     
-        // Xử lý logic thêm vào giỏ hàng (nếu có)
-    }    
+        // Chuyển hướng sang trang khác kèm theo ID sản phẩm và số lượng
+        console.log("Chuyển hướng đến:", `/hoadon/${selectedSPCT.id}?quantity=${inputQuantity}`);
+        $location.path(`/hoadon/${selectedSPCT.id}`).search({ quantity: inputQuantity });
+    }       
 
     function GetByidKH() {
         // Lấy dữ liệu từ localStorage
@@ -1037,7 +1038,6 @@ app.controller('SanphamDetail', function ($scope, $http, $location) {
 
     // Gán sự kiện cho nút "Xóa tất cả"
     document.getElementById("btnResetSelections").addEventListener("click", resetSelections);
-    document.getElementById("buynow").addEventListener("click", muaSanphamNgay);
     document.getElementById("addtocart").addEventListener("click", AddGHCT);
 
     document.getElementById("toggleReviews").addEventListener("click", function () {
