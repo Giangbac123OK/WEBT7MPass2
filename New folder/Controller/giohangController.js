@@ -179,6 +179,17 @@ app.controller("GiohangCtrl", function ($document, $rootScope, $scope, $compile,
     
         console.log(sanPhamChitiets);
         
+        if (!sanPhamChitiets || sanPhamChitiets.length === 0 || sanPhamChitiets.every(sp => sp.length === 0)) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="10" class="text-center text-muted">
+                        <strong>Giỏ hàng chưa có sản phẩm</strong>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        
         let tongTien = 0;
         
         for (const sp of sanPhamChitiets) {
@@ -624,13 +635,10 @@ app.controller("GiohangCtrl", function ($document, $rootScope, $scope, $compile,
 
             // Chuyển hướng sang trang "Hóa đơn giỏ hàng"
             $timeout(() => {
-                Swal.fire({
-                    title: 'Thông báo',
-                    icon: 'success', // ✅ Đã sửa
-                    html: `Sản phẩm chọn là ${selectedIds.join(',')}`,
-                    confirmButtonText: 'OK',
-                    confirmButtonColor: '#3085d6'
+                $scope.$apply(() => {
+                    $location.path(`/hoadongiohang/${selectedIds.join(',')}`); // Chuyển hướng với danh sách ID hợp lệ
                 });
+                $scope.isLoading = false; // Kết thúc tải (nếu cần)
             }, 1000);
 
         } catch (error) {

@@ -50,6 +50,10 @@ app.config(function($routeProvider){
             templateUrl: "./Views/hoadon.html",
             controller: 'hoadonCtr'
           })
+          .when("/hoadongiohang/:id", {
+            templateUrl: "./Views/hoadongiohang.html",
+            controller: 'hoadongiohangCtr'
+          })
           .when("/doidiem", {
             templateUrl: "./Views/doidiem.html"
           })
