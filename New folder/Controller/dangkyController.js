@@ -22,6 +22,7 @@ app.controller('dangkyController', function($scope, $http) {
         }
         return ''; // Nếu tuổi hợp lệ, trả về chuỗi rỗng
     }
+
 // Hàm để kiểm tra họ tên (Ten), yêu cầu độ dài từ 5 đến 50 ký tự
 function isValidFullName(fullName) {
     if (!fullName) {
@@ -42,6 +43,10 @@ function isValidEmail(email) {
     return emailPattern.test(email);
 }
 
+
+
+
+
     // Hàm để kiểm tra mật khẩu
     function isValidPassword(password) {
         return password && password.length >= 6;
@@ -59,6 +64,20 @@ function isValidEmail(email) {
             $scope.errorMessage = fullNameErrorMessage;
             return;
         }
+        $scope.register = function() {
+            // Kiểm tra giới tính
+            if ($scope.user.gioitinh === undefined) {
+                $scope.errorGender = 'Vui lòng chọn giới tính';
+                return;
+            } else {
+                $scope.errorGender = '';
+            }
+        };
+        $scope.$watch('user.gioitinh', function(newValue) {
+            if (newValue !== undefined) {
+                $scope.errorGender = '';
+            }
+        });
         // Kiểm tra mật khẩu
         if (!isValidPassword($scope.user.password)) {
             $scope.errorMessage = 'Mật khẩu phải có ít nhất 6 ký tự';
@@ -87,6 +106,7 @@ function isValidEmail(email) {
             // Diachi: $scope.user.diachi,
             Password: $scope.user.password,
             tichdiem: 0,
+            gioitinh: $scope.user.gioitinh,
             diemsudung: 0,
             trangthai: 0,
             idrank: 1,
