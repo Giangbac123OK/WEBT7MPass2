@@ -25,7 +25,7 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
     const apiChatlieu = "https://localhost:7196/api/ChatLieu";
     const apiMau = "https://localhost:7196/api/color";
     const apiAddressList = "https://localhost:7196/api/Diachi";
-    const apiTinhgiavanchuyen = "https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee";
+    const apiTinhgiavanchuyen = "https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee";
 
     let productDetails = {
         tonggiasp: null,
@@ -240,9 +240,10 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
         const discountElement = document.querySelector("#soTienGiamGia");
         const totalProductElement = document.querySelector("#tongSanPham");
         const totalInvoiceElement = document.querySelector("#tongHoaDon");
-
+        const vanChuyenElement = document.querySelector("#phiVanCHuyen");
+    
         let totalProduct = 0;
-
+    
         // Tính tổng giá trị sản phẩm
         productItems.forEach((item) => {
             const priceElement = item.querySelector(".total-price");
@@ -251,17 +252,21 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
                 totalProduct += price;
             }
         });
-
+    
         // Lấy số tiền giảm giá và đảm bảo nó luôn là giá trị dương
-        let discount = parseInt(discountElement.textContent.replace(/[VNĐ.\-]/g, "")) || 0;
-
-        // Cập nhật giá trị
+        let discount = parseInt(discountElement.textContent.replace(" VNĐ", "").replace(/\./g, "")) || 0;
+    
+        // Lấy phí vận chuyển (mặc định là 0 nếu không có)
+        let shippingFee = parseInt(vanChuyenElement.textContent.replace(" VNĐ", "").replace(/\./g, "")) || 0;
+    
+        // Cập nhật tổng giá trị sản phẩm
         totalProductElement.textContent = `${totalProduct.toLocaleString('vi-VN')} VNĐ`;
-
-        // Nếu tổng hóa đơn nhỏ hơn 0, thì gán giá trị bằng 0
-        const totalInvoiceValue = Math.max(0, totalProduct - discount);
+    
+        // Tính tổng hóa đơn (bao gồm phí vận chuyển)
+        const totalInvoiceValue = Math.max(0, totalProduct - discount + shippingFee);
         totalInvoiceElement.textContent = `${totalInvoiceValue.toLocaleString('vi-VN')} VNĐ`;
     }
+    
 
     // Hàm render sản phẩm
     async function renderSanPham() {
@@ -635,79 +640,102 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
             });
     });
 
+    async function getAvailableServices(fromDistrictID, toDistrictID) {
+        const apiURL = "https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/available-services";
+        
+        const headers = {
+            "Token": apiKey, // Thay bằng Token GHN của bạn
+            "Content-Type": "application/json"
+        };
+
+        const params = {
+            shop_id: 3846066,
+            from_district: fromDistrictID,
+            to_district: toDistrictID
+        };
+
+        try {
+            const response = await axios.post(apiURL, params, { headers });
+
+            if (response.data.code === 200 && response.data.data.length > 0) {
+                console.log("Danh sách gói dịch vụ:", response.data.data);
+                return response.data.data; // Trả về danh sách gói dịch vụ hợp lệ
+            } else {
+                console.error("Lỗi API hoặc không có gói dịch vụ khả dụng:", response.data.message);
+                return null;
+            }
+        } catch (error) {
+            console.error("Lỗi gọi API:", error.response?.data || error.message);
+            return null;
+        }
+    }
+
     async function calculateShippingFee() {
         const quanHuyenInt = parseInt(currentAddressId.quanhuyen, 10);
-    
-        // Kiểm tra giá trị quanHuyenInt hợp lệ
+
+        // Kiểm tra giá trị quận/huyện hợp lệ
         if (isNaN(quanHuyenInt)) {
             console.error("Mã quận/huyện không hợp lệ.");
             return;
         }
-    
+
         // Kiểm tra thông tin sản phẩm
         if (!productDetails || !productDetails.tonggiasp || !productDetails.trongluong || !productDetails.chieudai || !productDetails.chieurong) {
             console.error("Dữ liệu sản phẩm không hợp lệ.");
             return;
         }
-    
+
+        // Lấy danh sách dịch vụ khả dụng
+        const services = await getAvailableServices(3440, quanHuyenInt);
+        if (!services || services.length === 0) {
+            console.error("Không có gói dịch vụ khả dụng.");
+            return;
+        }
+
+        // Chọn gói dịch vụ đầu tiên
+        const selectedService = services[0].service_id;
+
         const shippingParams = {
-            service_type_id: null,
-            insurance_value: productDetails.tonggiasp, // Giá trị hàng hóa (VND)
+            service_id: selectedService,
+            insurance_value: parseInt(productDetails.tonggiasp), // Giá trị hàng hóa (VND)
             coupon: null,
-            from_district_id: 3440, // ID Quận/Huyện người gửi
-            from_ward_code: "13006",
+            to_province_id: parseInt(currentAddressId.thanhpho),
             to_district_id: quanHuyenInt, // ID Quận/Huyện người nhận
             to_ward_code: currentAddressId.phuongxa, // ID Phường/Xã người nhận
-            weight: productDetails.trongluong, // Trọng lượng (gram)
-            length: productDetails.chieudai, // Chiều dài (cm)
-            width: productDetails.chieurong, // Chiều rộng (cm)
-            height: 200, // Chiều cao (cm)
-            insurance_value: 0,
-            cod_failed_amount: 2000,
-            Token: apiKey,
-            items:[
-                {
-                    name: "TEST1",
-                    quantity: 1,
-                    height: 200,
-                    weight: productDetails.trongluong,
-                    length: productDetails.chieudai,
-                    width: productDetails.chieurong
-                }
-            ]
+            weight: parseInt(productDetails.trongluong), // Trọng lượng (gram)
+            length: parseInt(productDetails.chieudai), // Chiều dài (cm)
+            width: parseInt(productDetails.chieurong), // Chiều rộng (cm)
+            height: 20, // Chiều cao (cm)
+            from_district_id: 3440, // ID Quận/Huyện người gửi
         };
-    
+
         try {
-            const response = await fetch(apiTinhgiavanchuyen, {
-                method: "POST",
+            const response = await axios.post(apiTinhgiavanchuyen, shippingParams, {
                 headers: {
+                    "Token": apiKey,
                     "Content-Type": "application/json",
-                    "Token": "7b4f1e5c-0700-11f0-94b6-be01e07a48b5", // Đảm bảo token là chuỗi
-                    "ShopId": 3846066
                 },
-                body: JSON.stringify(shippingParams)
             });
-    
-            if (!response.ok) {
-                const errorData = await response.json(); // Lấy dữ liệu lỗi từ API
-                console.error("API Error:", errorData); // Hiển thị chi tiết lỗi API
-                throw new Error(errorData.message || "Không thể lấy dữ liệu từ server.");
+
+            // Kiểm tra mã phản hồi
+            if (response.data.code !== 200) {
+                throw new Error(response.data.message || "Lỗi khi tính phí vận chuyển.");
             }
-    
-            const data = await response.json();
-    
-            if (data.code !== 200) {
-                throw new Error(data.message || "Lỗi khi tính phí vận chuyển.");
-            }
-    
-            console.log(data.data.total); // ✅ Trả về tổng phí vận chuyển
-            return data.data.total; 
+
+            const formattedPrice = new Intl.NumberFormat("vi-VN").format(response.data.data.total) + " VNĐ";
+
+            // ✅ Cập nhật vào div `phiVanCHuyen`
+            document.getElementById("phiVanCHuyen").textContent = formattedPrice;
+
+            console.log("Phí vận chuyển:", formattedPrice);
+            updateTotals();
+            return response.data.data.total;
         } catch (error) {
-            console.error("Lỗi khi tính phí vận chuyển:", error.message); // Log thông báo lỗi chi tiết
-            return error.message; // Trả về thông báo lỗi từ API
+            console.error("Lỗi khi tính phí vận chuyển:", error.response?.data || error.message);
+            return error.message;
         }
     }
-    
+
     
 
     var printResult = () => {
@@ -1342,6 +1370,17 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
         }
     });
 
+    document.getElementById("AddNewAddressExample").addEventListener("click", function () {
+        var modal = bootstrap.Modal.getInstance(document.getElementById("exampleModal"));
+        $timeout(() => {
+            $scope.$apply(() => {
+                modal.hide();
+                $location.path(`/diachi`); 
+            });
+            $scope.isLoading = false;
+        }, 100); 
+    });
+
     async function UpdateDiem(diemtru) {
         try {
             const userId = GetByidKH();
@@ -1474,9 +1513,10 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
         }
         return null;
     }
-    updatePaymentMethod();
-    fetchPaymentMethods();
-    loadAddressesByIdKH();
+    
     fetchkhachangById();
     renderSanPham();
+    loadAddressesByIdKH();
+    updatePaymentMethod();
+    fetchPaymentMethods();
 })
