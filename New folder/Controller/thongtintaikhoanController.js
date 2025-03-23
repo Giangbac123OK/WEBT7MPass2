@@ -23,16 +23,19 @@ app.controller('thongtintaikhoanController', function ($http, $scope) {
 
     // Hàm cập nhật thông tin
     $scope.btnLuu = function () {
+        const date = new Date($scope.dataTttk.ngaysinh);
+        const isoDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 19);
         const data = {
             ten: $scope.dataTttk.ten,
             sdt: $scope.dataTttk.sdt,
-            ngaysinh: $scope.dataTttk.ngaysinh,  
+            ngaysinh: date,  
             email: $scope.dataTttk.email,
-            gioitinh: $scope.dataTttk.gioitinh
+            gioitinh: $scope.dataTttk.gioitinh,
+            avatar: "giang"
         };
         
         console.log("Dữ liệu gửi lên API:", data);
-        
+        console.log("Dữ liệu gửi lên API:", isoDate);
         $http.put(apiUrl  + idkh, data)
             .then(function (response) {
                 Swal.fire("Đã sửa!", "Dữ liệu của bạn đã được cập nhật.", "success")
