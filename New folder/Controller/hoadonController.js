@@ -13,6 +13,10 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
         }
     };
 
+    const apiKey = "7b4f1e5c-0700-11f0-94b6-be01e07a48b5";
+    const apiProvince = "https://online-gateway.ghn.vn/shiip/public-api/master-data/province";
+    const apiDistrict = "https://online-gateway.ghn.vn/shiip/public-api/master-data/district";
+    const apiWard = "https://online-gateway.ghn.vn/shiip/public-api/master-data/ward";
     const apiSPCTUrl = "https://localhost:7196/api/Sanphamchitiets";
     const apiSPUrl = "https://localhost:7196/api/Sanphams";
     const discountApiUrl = "https://localhost:7196/api/Giamgia";
@@ -21,6 +25,15 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
     const apiChatlieu = "https://localhost:7196/api/ChatLieu";
     const apiMau = "https://localhost:7196/api/color";
     const apiAddressList = "https://localhost:7196/api/Diachi";
+    const apiTinhgiavanchuyen = "https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee";
+
+    let productDetails = {
+        tonggiasp: null,
+        trongluong: null,
+        chieudai: null,
+        chieurong: null,
+        chieucao: null
+    };
 
     async function fetchSanPhamChitiet() {
         try {
@@ -43,6 +56,12 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
             $scope.sanPhamChiTiet = Array.isArray(data) ? data : [data];
 
             console.log("Dữ liệu sản phẩm chi tiết:", $scope.sanPhamChiTiet);
+            if ($scope.sanPhamChiTiet.length > 0) {
+
+                const spct = $scope.sanPhamChiTiet[0]; // Giả sử lấy dữ liệu của sản phẩm đầu tiên
+                productDetails.tonggiasp = spct.giathoidiemhientai;
+
+            }
             $scope.$apply(); // Cập nhật lại giao diện
         } catch (error) {
             console.error("Lỗi khi lấy sản phẩm chi tiết:", error);
@@ -110,15 +129,6 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
             }
 
             // Hiển thị dữ liệu vào HTML nếu các phần tử tồn tại
-            if (document.getElementById("hovaten")) {
-                document.getElementById("hovaten").innerText = khachHangData.ten || "Chưa cập nhật";
-            }
-            if (document.getElementById("sdt")) {
-                document.getElementById("sdt").innerText = khachHangData.sdt || "Chưa cập nhật";
-            }
-            if (document.getElementById("diachi")) {
-                document.getElementById("diachi").innerText = khachHangData.diachi || "Chưa cập nhật";
-            }
             if (document.getElementById("diemsudung")) {
                 // Lấy điểm sử dụng, đảm bảo giá trị không bị null
                 const diemsudung = parseInt(khachHangData.diemsudung || "0", 10);
@@ -224,6 +234,7 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
             updateTotalPrice(priceElement, priceOriginal, quantity);
         });
     }
+
     function updateTotals() {
         const productItems = document.querySelectorAll(".product-item");
         const discountElement = document.querySelector("#soTienGiamGia");
@@ -271,6 +282,10 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
 
             const sanPhamData = await fetchSanPhamById(idsp);
             if (!sanPhamData) continue;
+            productDetails.trongluong = sanPhamData.trongluong;
+            productDetails.chieudai = sanPhamData.chieudai;
+            productDetails.chieurong = sanPhamData.chieurong;
+            productDetails.chieucao = 20;
 
             const saleChiTiet = await fetchSaleChiTietBySPCTId(id);
             let giaGiam = null; // Giá giảm mặc định là null
@@ -362,41 +377,150 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
         updateTotals();
     }
 
+    let addressTrangThai0 = null;
+    let currentAddressId = null
+    
     const loadAddressesByIdKH = async () => {
-        const idKH = GetByidKH(); // Hàm logic lấy idKH
+        const idKH = GetByidKH(); // Lấy ID khách hàng
         const addressSelect = document.getElementById("addressSelect");
-
-        // Kiểm tra `idKH`
+    
         if (!idKH) {
             addressSelect.innerHTML = '<option disabled selected value="">Không tìm thấy mã khách hàng</option>';
             addressSelect.disabled = true;
-            return; // Ngưng thực hiện nếu không có `idKH`
+            return;
         }
-
-        // Gọi API lấy danh sách địa chỉ
-        const response = await fetch(`${apiAddressList}/khachhang/${idKH}`);
-
-        // Kiểm tra xem API có trả về dữ liệu không
-        if (!response.ok) {
-            throw new Error("Không thể lấy dữ liệu từ server.");
-        }
-
-        const data = await response.json(); // Chuyển dữ liệu sang JSON
-
-        // Kiểm tra dữ liệu trả về có hợp lệ không
-        if (!data || data.length === 0) {
-            // Không có địa chỉ nào
-            addressSelect.innerHTML = '<option disabled selected value="">Tài khoản này chưa có địa chỉ, vui lòng thêm địa chỉ</option>';
-            addressSelect.disabled = true; // Dropdown không tương tác
-        } else {
-            // Có danh sách địa chỉ
+    
+        try {
+            const response = await fetch(`${apiAddressList}/khachhang/${idKH}`);
+            if (!response.ok) throw new Error("Không thể lấy dữ liệu từ server.");
+    
+            const data = await response.json();
+    
+            if (!data || data.length === 0) {
+                addressSelect.innerHTML = '<option disabled selected value="">Tài khoản này chưa có địa chỉ, vui lòng thêm địa chỉ</option>';
+                addressSelect.disabled = true;
+                return;
+            }
+    
             addressSelect.innerHTML = '<option disabled selected value="" required>Chọn địa chỉ...</option>';
-            data.forEach(address => {
-                addressSelect.innerHTML += `<option value="${address.id}">${address.tennguoinhan} - ${address.sdtnguoinhan}, ${address.diachicuthe} - ${address.phuongxa} - ${address.quanhuyen} - ${address.thanhpho}</option>`;
-            });
-            addressSelect.disabled = false; // Dropdown hoạt động
+    
+            // Lặp qua danh sách địa chỉ
+            for (const address of data) {
+                // Lấy tên khu vực
+                const tenThanhPho = await getProvinceName(address.thanhpho);
+                const tenQuanHuyen = await getDistrictName(address.thanhpho, address.quanhuyen);
+                const tenPhuongXa = await getWardName(address.quanhuyen, address.phuongxa);
+    
+                if (address.trangthai === "1") {
+                    addressSelect.innerHTML += `
+                        <option value="${address.id}" 
+                                data-ten="${address.tennguoinhan || 'Chưa cập nhật'}" 
+                                data-sdt="${address.sdtnguoinhan || 'Chưa cập nhật'}" 
+                                data-diachi="${address.diachicuthe || ''} - ${tenPhuongXa} - ${tenQuanHuyen} - ${tenThanhPho}">
+                            ${address.tennguoinhan} - ${address.sdtnguoinhan}, ${address.diachicuthe} - ${tenPhuongXa} - ${tenQuanHuyen} - ${tenThanhPho}
+                        </option>`;
+                }
+    
+                if (address.trangthai === "0" && addressTrangThai0 === null) {
+                    currentAddressId =  address;
+                    addressTrangThai0 = { ...address, tenThanhPho, tenQuanHuyen, tenPhuongXa };
+                }
+            }
+    
+            addressSelect.disabled = false;
+    
+            // Nếu có địa chỉ trạng thái = 0, hiển thị thông tin bên ngoài
+            if (addressTrangThai0) {
+                getProvinceName(addressTrangThai0.thanhpho);
+                getDistrictName(addressTrangThai0.thanhpho, addressTrangThai0.quanhuyen);
+                getWardName(addressTrangThai0.quanhuyen, addressTrangThai0.phuongxa);
+    
+                document.getElementById("hovaten").innerText = addressTrangThai0.tennguoinhan || "Chưa cập nhật";
+                document.getElementById("sdt").innerText = addressTrangThai0.sdtnguoinhan || "Chưa cập nhật";
+                document.getElementById("diachi").innerText =
+                    `${addressTrangThai0.diachicuthe || ''} - ${addressTrangThai0.tenPhuongXa} - ${addressTrangThai0.tenQuanHuyen} - ${addressTrangThai0.tenThanhPho}`.trim() || "Chưa cập nhật";
+    
+                // ✅ Lưu biến addressTrangThai0 ra ngoài để xử lý tiếp
+                window.addressTrangThai0 = addressTrangThai0;
+                calculateShippingFee();
+            }
+    
+        } catch (error) {
+            console.error("Lỗi khi tải địa chỉ:", error);
+            addressSelect.innerHTML = '<option disabled selected value="">Lỗi khi tải dữ liệu</option>';
+            addressSelect.disabled = true;
         }
     };
+    
+    // Hàm lấy tên tỉnh/thành phố
+    async function getProvinceName(id) {
+        try {
+            const response = await fetch(apiProvince, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Token": apiKey // 🔹 Thêm Token vào headers
+                },
+                body: JSON.stringify({}) // Thêm body nếu cần
+            });
+
+            const data = await response.json();
+            if (data.code === 200) {
+                const province = data.data.find(p => p.ProvinceID == id);
+                return province ? province.NameExtension[1] : "Không xác định";
+            }
+        } catch (error) {
+            console.error("Lỗi lấy tỉnh/thành phố:", error);
+        }
+        return "Không xác định";
+    }
+
+    // Hàm lấy tên quận/huyện
+    async function getDistrictName(province_id, district_id) {
+        try {
+            const response = await fetch(apiDistrict, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Token": apiKey
+                },
+                body: JSON.stringify({ province_id: Number(province_id) }) // Sửa lại biến truyền đúng
+            });
+
+            const data = await response.json();
+            if (data.code === 200) {
+                const district = data.data.find(d => d.DistrictID == district_id);
+                return district ? district.DistrictName : "Không xác định";
+            }
+        } catch (error) {
+            console.error("Lỗi lấy quận/huyện:", error);
+        }
+        return "Không xác định";
+    }
+
+    // Hàm lấy tên phường/xã
+    async function getWardName(district_id, ward_id) {
+        try {
+            const response = await fetch(apiWard, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Token": apiKey
+                },
+                body: JSON.stringify({ district_id: Number(district_id) }) // Sửa lại biến truyền đúng
+            });
+
+            const data = await response.json();
+            if (data.code === 200) {
+                const ward = data.data.find(w => w.WardCode == ward_id);
+                return ward ? ward.WardName : "Không xác định";
+            }
+        } catch (error) {
+            console.error("Lỗi lấy phường/xã:", error);
+        }
+        return "Không xác định";
+    }
+  
 
     document.getElementById("btnSaveAddress").addEventListener("click", async function () {
         var addressSelect = document.getElementById("addressSelect");
@@ -413,11 +537,18 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
             const response = await axios.get(`${apiAddressList}/${selectedAddressId}`);
 
             if (response && response.data) {
+
+                currentAddressId =  response.data;
+
+                const tenThanhPho = await getProvinceName(response.data.thanhpho);
+                const tenQuanHuyen = await getDistrictName(response.data.thanhpho, response.data.quanhuyen);
+                const tenPhuongXa = await getWardName(response.data.quanhuyen, response.data.phuongxa);
+
                 // Tạo địa chỉ mới từ thông tin chi tiết của địa chỉ
                 var newAddress = response.data.diachicuthe + ", " +
-                    response.data.phuongxa + ", " +
-                    response.data.quanhuyen + ", " +
-                    response.data.thanhpho;
+                    tenPhuongXa + ", " +
+                    tenQuanHuyen + ", " +
+                    tenThanhPho;
 
                 // Cập nhật thông tin địa chỉ vào phần tử có id "diachi"
                 document.getElementById("diachi").textContent = newAddress;
@@ -439,6 +570,9 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
 
                 // Hiển thị kết quả sau khi lưu thành công
                 printResult();
+
+                calculateShippingFee();
+
                 Swal.fire("Thành Công", "Thay đổi địa chỉ thành công.", "success");
             } else {
                 Swal.fire("Lỗi", "Không tìm thấy thông tin địa chỉ.", "error");
@@ -455,8 +589,9 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
         fetchkhachangById()
             .then(data => {
                 // Kiểm tra xem dữ liệu trả về có chứa địa chỉ không
-                if (data && data.diachi) {
-                    var defaultAddress = data.diachi; // Cập nhật theo cấu trúc dữ liệu thực tế
+                if (data && addressTrangThai0) {
+                    currentAddressId =  addressTrangThai0;
+                    var defaultAddress = `${addressTrangThai0.diachicuthe}, ${addressTrangThai0.tenPhuongXa}, ${addressTrangThai0.tenQuanHuyen}, ${addressTrangThai0.tenThanhPho}`; // Cập nhật theo cấu trúc dữ liệu thực tế
 
                     // Cập nhật lại địa chỉ mặc định vào phần tử "diachi"
                     var diachiElement = document.getElementById("diachi");
@@ -485,6 +620,8 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
                     var modal = bootstrap.Modal.getInstance(document.getElementById("exampleModal"));
                     modal.hide();
 
+                    calculateShippingFee();
+
                     // Hiển thị thông báo lỗi giả
                     Swal.fire("Thành Công", "Khôi phục địa chỉ mặc định thành công.", "success");
                 } else {
@@ -497,6 +634,81 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
                 Swal.fire("Lỗi", "Lỗi khi khôi phục địa chỉ: " + error.message, "error");
             });
     });
+
+    async function calculateShippingFee() {
+        const quanHuyenInt = parseInt(currentAddressId.quanhuyen, 10);
+    
+        // Kiểm tra giá trị quanHuyenInt hợp lệ
+        if (isNaN(quanHuyenInt)) {
+            console.error("Mã quận/huyện không hợp lệ.");
+            return;
+        }
+    
+        // Kiểm tra thông tin sản phẩm
+        if (!productDetails || !productDetails.tonggiasp || !productDetails.trongluong || !productDetails.chieudai || !productDetails.chieurong) {
+            console.error("Dữ liệu sản phẩm không hợp lệ.");
+            return;
+        }
+    
+        const shippingParams = {
+            service_type_id: null,
+            insurance_value: productDetails.tonggiasp, // Giá trị hàng hóa (VND)
+            coupon: null,
+            from_district_id: 3440, // ID Quận/Huyện người gửi
+            from_ward_code: "13006",
+            to_district_id: quanHuyenInt, // ID Quận/Huyện người nhận
+            to_ward_code: currentAddressId.phuongxa, // ID Phường/Xã người nhận
+            weight: productDetails.trongluong, // Trọng lượng (gram)
+            length: productDetails.chieudai, // Chiều dài (cm)
+            width: productDetails.chieurong, // Chiều rộng (cm)
+            height: 200, // Chiều cao (cm)
+            insurance_value: 0,
+            cod_failed_amount: 2000,
+            Token: apiKey,
+            items:[
+                {
+                    name: "TEST1",
+                    quantity: 1,
+                    height: 200,
+                    weight: productDetails.trongluong,
+                    length: productDetails.chieudai,
+                    width: productDetails.chieurong
+                }
+            ]
+        };
+    
+        try {
+            const response = await fetch(apiTinhgiavanchuyen, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Token": "7b4f1e5c-0700-11f0-94b6-be01e07a48b5", // Đảm bảo token là chuỗi
+                    "ShopId": 3846066
+                },
+                body: JSON.stringify(shippingParams)
+            });
+    
+            if (!response.ok) {
+                const errorData = await response.json(); // Lấy dữ liệu lỗi từ API
+                console.error("API Error:", errorData); // Hiển thị chi tiết lỗi API
+                throw new Error(errorData.message || "Không thể lấy dữ liệu từ server.");
+            }
+    
+            const data = await response.json();
+    
+            if (data.code !== 200) {
+                throw new Error(data.message || "Lỗi khi tính phí vận chuyển.");
+            }
+    
+            console.log(data.data.total); // ✅ Trả về tổng phí vận chuyển
+            return data.data.total; 
+        } catch (error) {
+            console.error("Lỗi khi tính phí vận chuyển:", error.message); // Log thông báo lỗi chi tiết
+            return error.message; // Trả về thông báo lỗi từ API
+        }
+    }
+    
+    
 
     var printResult = () => {
         let province = document.querySelector("#province") ? document.querySelector("#province").value : '';
@@ -1036,7 +1248,12 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
         const tienvanchuyen = parseInt(document.getElementById("phiVanCHuyen")?.innerText.replace(/[VNĐ.]/g, "") || 0) || 0;
 
         const soTienGiamGia = parseInt(document.getElementById("soTienGiamGia")?.innerText.replace(/[VNĐ.\-]/g, "") || 0) || 0;
-        const diachi = document.getElementById("diachi")?.innerText.trim() || "";
+        const diachi = document.getElementById("diachi")?.innerText.trim();
+        if(diachi == null)
+        {
+            Swal.fire("Lỗi", "Bạn chưa thêm địa chỉ, vui lòng tạo địa chỉ giao hàng", "error");
+                return
+        }
         const sdt = document.getElementById("sdt")?.innerText.trim() || "";
         const voucherCodeInput = voucherCodeInputdata.getAttribute('data-value') || 0;
         const voucherCodeInputINT = parseInt(voucherCodeInput) || 0;
@@ -1257,7 +1474,6 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
         }
         return null;
     }
-
     updatePaymentMethod();
     fetchPaymentMethods();
     loadAddressesByIdKH();
