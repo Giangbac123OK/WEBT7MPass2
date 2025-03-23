@@ -112,7 +112,7 @@ app.controller('SanphamDetail', function ($scope, $routeParams, $location) {
     
             // Hiển thị giá từ thấp đến cao
             if (allGiaSale.length > 0) {
-                document.querySelector("#price-current").textContent = `${allGiaSale[0].toLocaleString("vi-VN")} VNĐ - ${allGiaSale[allGiaSale.length - 1].toLocaleString("vi-VN")} VNĐ`;
+                document.querySelector("#price-current").textContent = `${Math.round(allGiaSale[0]).toLocaleString("vi-VN")}VNĐ - ${Math.round(allGiaSale[allGiaSale.length - 1]).toLocaleString("vi-VN")}VNĐ`;
                 document.querySelector("#price-original").style.display = "none";
             } else {
                 document.querySelector("#price-current").textContent = "Chưa có giá";
@@ -175,8 +175,15 @@ app.controller('SanphamDetail', function ($scope, $routeParams, $location) {
         try {
             let danhGiaData = await fetchDanhGia(sanPhamId);
     
+            // Nếu không có dữ liệu, hiển thị thông báo
             if (!danhGiaData || danhGiaData.length === 0) {
                 console.warn(`Không có đánh giá cho sản phẩm ID: ${sanPhamId}`);
+                reviewsContainer.innerHTML = `
+                    <div class="text-center text-muted mt-3">
+                        <p>Sản phẩm chưa có đánh giá</p>
+                    </div>`;
+                avgRatingElement.textContent = "0";
+                starDisplayElement.innerHTML = generateStarHTML(0);
                 return;
             }
     
@@ -205,6 +212,10 @@ app.controller('SanphamDetail', function ($scope, $routeParams, $location) {
     
         } catch (error) {
             console.error(`Lỗi khi lấy đánh giá cho sản phẩm ID ${sanPhamId}:`, error);
+            reviewsContainer.innerHTML = `
+                <div class="text-center text-danger mt-3">
+                    <p>Không thể tải đánh giá. Vui lòng thử lại sau.</p>
+                </div>`;
             return;
         }
     
@@ -217,7 +228,7 @@ app.controller('SanphamDetail', function ($scope, $routeParams, $location) {
         hienThiBoLoc();
         hienThiTrangDanhGia();
         hienThiPhanTrang();
-    }
+    }    
     
     // Hàm tạo HTML hiển thị sao (hỗ trợ nửa sao)
     function generateStarHTML(rating) {
@@ -314,9 +325,16 @@ app.controller('SanphamDetail', function ($scope, $routeParams, $location) {
                     </div>
                     <p class="review-content">${danhGia.noidungdanhgia}</p>
                     <div class="review-images">
-                        ${danhGia.hinhAnhList.map((url) => `<img src="${url}" class="review-img img-thumbnail" alt="Ảnh đánh giá">`).join("")}
+                        ${danhGia.hinhAnhList.map((url) => `<img src="${url}" class="review-img img-thumbnail" alt="Ảnh đánh giá" data-bs-toggle="modal" data-bs-target="#imageModal">`).join("")}
                     </div>
                 `;
+                // Thêm sự kiện mở modal cho từng ảnh
+            reviewDiv.querySelectorAll(".review-img").forEach(img => {
+                img.addEventListener("click", function () {
+                    document.getElementById("modalImg").src = this.src;
+                });
+            });
+
                 reviewsContainer.appendChild(reviewDiv);
             } catch (error) {
                 console.error(`Lỗi khi hiển thị đánh giá:`, error);
@@ -762,7 +780,7 @@ app.controller('SanphamDetail', function ($scope, $routeParams, $location) {
 
         // Hiển thị giá theo khoảng từ thấp nhất đến cao nhất
         if (allGiaSale.length > 0) {
-            document.querySelector("#price-current").textContent = `${allGiaSale[0].toLocaleString("vi-VN")} VNĐ - ${allGiaSale[allGiaSale.length - 1].toLocaleString("vi-VN")} VNĐ`;
+            document.querySelector("#price-current").textContent = `${Math.round(allGiaSale[0]).toLocaleString("vi-VN")}VNĐ - ${Math.round(allGiaSale[allGiaSale.length - 1]).toLocaleString("vi-VN")}VNĐ`;
         } else {
             document.querySelector("#price-current").textContent = "Chưa có giá";
         }
@@ -773,7 +791,11 @@ app.controller('SanphamDetail', function ($scope, $routeParams, $location) {
     
 
     document.getElementById("increase-quantity").addEventListener("click", function () {
-        if (!selectedColorId || !selectedSizeId || !selectedChatlieuId) return;
+        if (!selectedColorId || !selectedSizeId || !selectedChatlieuId)
+        {
+            alert("Vui lòng chọn đủ thuộc tính");
+            return;
+        };
 
         let selectedProduct = dataspct.find(sp =>
             sp.idMau == selectedColorId &&
@@ -829,11 +851,11 @@ app.controller('SanphamDetail', function ($scope, $routeParams, $location) {
     
                 // Kiểm tra giá để hiển thị đúng format
                 if (giaThoiDiemHienTai > giaSaleSanPhamChiTiet) {
-                    priceCurrent.textContent = `${giaSaleSanPhamChiTiet.toLocaleString("vi-VN")} VNĐ`;
-                    priceOriginal.textContent = `${giaThoiDiemHienTai.toLocaleString("vi-VN")} VNĐ`;
+                    priceCurrent.textContent = `${Math.round(giaSaleSanPhamChiTiet).toLocaleString("vi-VN")}VNĐ`;
+                    priceOriginal.textContent = `${Math.round(giaThoiDiemHienTai).toLocaleString("vi-VN")}VNĐ`;
                     priceOriginal.style.display = ""
                 } else {
-                    priceCurrent.textContent = `${giaThoiDiemHienTai.toLocaleString("vi-VN")} VNĐ`;
+                    priceCurrent.textContent = `${Math.round(giaThoiDiemHienTai).toLocaleString("vi-VN")}VNĐ`;
                     document.querySelector("#price-original").style.display = "none"; // Ẩn giá gốc nếu 2 giá bằng nhau
                 }
             }
@@ -1050,12 +1072,22 @@ app.controller('SanphamDetail', function ($scope, $routeParams, $location) {
                             const blob = await response.blob();
                             const imageUrl = URL.createObjectURL(blob);
     
+                            // Kiểm tra giá hợp lệ trước khi tính phần trăm giảm
+                            let giaban = parseFloat(data.giaban) || 0;
+                            let giasale = parseFloat(data.giasale) || 0;
+                            let phanTramGiam = 0;
+    
+                            if (giaban > 0 && giasale > 0 && giasale < giaban) {
+                                phanTramGiam = Math.round(((giaban - giasale) / giaban) * 100);
+                            }
+    
                             sanPhams.push({
                                 id: spctGroup.id,
                                 tensp: data.tensp,
-                                giaban: data.giaban,
-                                giasale: data.giasale,
-                                anh: imageUrl || "default-image.jpg" // Sử dụng ảnh hoặc ảnh mặc định
+                                giaban,
+                                giasale,
+                                anh: imageUrl || "default-image.jpg",
+                                phanTramGiam
                             });
                         }
                     }
@@ -1070,30 +1102,27 @@ app.controller('SanphamDetail', function ($scope, $routeParams, $location) {
     
         container.innerHTML = sanPhams.map(sp => `
             <div class="col-md-3 col-6 mb-4">
-                <div class="card h-100 position-relative" onclick="navigateToProduct(${sp.id})" style="cursor: pointer;">
-                    ${sp.giasale && sp.giasale < sp.giaban ? `
+                <a class="card h-100 position-relative" href="#!SanpDetail/${sp.id}" style="cursor: pointer; text-decoration: none;">
+                    ${sp.phanTramGiam > 0 ? `
                         <div class="position-absolute top-0 end-0 bg-warning text-dark p-2 m-2 small">
-                            ${Math.round(((sp.giaban - sp.giasale) / sp.giaban) * 100)}% GIẢM
+                            ${sp.phanTramGiam}% GIẢM
                         </div>` 
                     : ""}
                     <img src="${sp.anh}" class="card-img-top product-image" alt="${sp.tensp}">
                     <div class="card-body">
                         <h5 class="card-title">${sp.tensp}</h5>
                         <p class="card-text">
-                            <span class="text-danger fw-bold">${sp.giasale.toLocaleString("vi-VN")}đ</span>
-                            ${sp.giasale < sp.giaban ? 
-                                `<small class="text-muted text-decoration-line-through ms-2">${sp.giaban.toLocaleString("vi-VN")}đ</small>` 
+                            <span class="text-danger fw-bold">${Math.round(sp.giasale).toLocaleString("vi-VN")} VNĐ</span>
+                            ${sp.phanTramGiam > 0 ? 
+                                `<small class="text-muted text-decoration-line-through ms-2">${Math.round(sp.giaban).toLocaleString("vi-VN")} VNĐ</small>` 
                             : ""}
                         </p>
                     </div>
-                </div>
+                </a>
             </div>
-        `).join('');                  
+        `).join('');
     }
-    
-    window.navigateToProduct = function(id) {
-        window.location.href = `#!SanpDetail/${id}`;
-    };      
+          
 
     // Hàm chọn ngẫu nhiên sản phẩm
     function randomizeProducts(products, maxItems) {
