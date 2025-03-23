@@ -84,7 +84,7 @@ function isValidEmail(email) {
             Sdt: $scope.user.sdt,
             Ngaysinh: $scope.user.ngaysinh,
             Email: $scope.user.email,
-            Diachi: $scope.user.diachi,
+            // Diachi: $scope.user.diachi,
             Password: $scope.user.password,
             tichdiem: 0,
             diemsudung: 0,
