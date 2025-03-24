@@ -1,4 +1,4 @@
-app.controller('dangkyController', function($scope, $http) {
+app.controller('dangkyController', function ($scope, $http) {
     $scope.user = {};
     $scope.errorMessage = '';
     $scope.successMessage = '';
@@ -8,12 +8,12 @@ app.controller('dangkyController', function($scope, $http) {
         var dob = new Date(birthDate);
         var age = today.getFullYear() - dob.getFullYear();
         var m = today.getMonth() - dob.getMonth();
-    
+
         // Điều chỉnh nếu ngày sinh chưa đến tháng hiện tạiok
         if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
             age--;
         }
-    
+
         // Kiểm tra nếu tuổi quá nhỏ hoặc quá lớn
         if (age < 10) {
             return 'Bạn phải từ 10 tuổi trở lên để đăng ký';
@@ -22,32 +22,33 @@ app.controller('dangkyController', function($scope, $http) {
         }
         return ''; // Nếu tuổi hợp lệ, trả về chuỗi rỗng
     }
-// Hàm để kiểm tra họ tên (Ten), yêu cầu độ dài từ 5 đến 50 ký tự
-function isValidFullName(fullName) {
-    if (!fullName) {
-        return 'Họ tên không được để trống';
-    } else if (fullName.length < 6) {
-        return 'Họ tên phải có ít nhất 6 ký tự';
-    } else if (fullName.length > 30) {
-        return 'Họ tên không được dài quá 50 ký tự';
+
+    // Hàm để kiểm tra họ tên (Ten), yêu cầu độ dài từ 5 đến 50 ký tự
+    function isValidFullName(fullName) {
+        if (!fullName) {
+            return 'Họ tên không được để trống';
+        } else if (fullName.length < 6) {
+            return 'Họ tên phải có ít nhất 6 ký tự';
+        } else if (fullName.length > 30) {
+            return 'Họ tên không được dài quá 50 ký tự';
+        }
+        return ''; // Nếu hợp lệ, trả về chuỗi rỗng
     }
-    return ''; // Nếu hợp lệ, trả về chuỗi rỗng
-}
-function isValidPhoneNumber(phoneNumber) {
-    var phoneRegex = /^[0-9]{10}$/; // Kiểm tra số điện thoại từ 10
-    return phoneRegex.test(phoneNumber);
-}
-function isValidEmail(email) {
-    var emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-    return emailPattern.test(email);
-}
+    function isValidPhoneNumber(phoneNumber) {
+        var phoneRegex = /^[0-9]{10}$/; // Kiểm tra số điện thoại từ 10
+        return phoneRegex.test(phoneNumber);
+    }
+    function isValidEmail(email) {
+        var emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+        return emailPattern.test(email);
+    }
 
     // Hàm để kiểm tra mật khẩu
     function isValidPassword(password) {
         return password && password.length >= 6;
     }
 
-    $scope.register = function() {
+    $scope.register = function () {
         // Kiểm tra ngày sinh
         var ageErrorMessage = getAgeValidationMessage($scope.user.ngaysinh);
         if (ageErrorMessage) {
@@ -59,6 +60,15 @@ function isValidEmail(email) {
             $scope.errorMessage = fullNameErrorMessage;
             return;
         }
+        if (!$scope.user.gioitinh) {
+            $scope.errorGender = 'Vui lòng chọn giới tính.';
+            return;
+        }
+        $scope.$watch('user.gioitinh', function (newValue) {
+            if (newValue !== undefined) {
+                $scope.errorGender = '';
+            }
+        });
         // Kiểm tra mật khẩu
         if (!isValidPassword($scope.user.password)) {
             $scope.errorMessage = 'Mật khẩu phải có ít nhất 6 ký tự';
@@ -87,16 +97,17 @@ function isValidEmail(email) {
             // Diachi: $scope.user.diachi,
             Password: $scope.user.password,
             tichdiem: 0,
+            gioitinh: $scope.user.gioitinh,
             diemsudung: 0,
             trangthai: 0,
             idrank: 1,
-        }).then(function(response) {
+        }).then(function (response) {
             $scope.successMessage = 'Đăng ký thành công';
             $scope.errorMessage = '';
-            setTimeout(function() {
+            setTimeout(function () {
                 window.location.href = '#!login';
             }, 2000);
-        }).catch(function(error) {
+        }).catch(function (error) {
             $scope.errorMessage = error.data || 'Đã xảy ra lỗi khi đăng ký';
             $scope.successMessage = '';
         });

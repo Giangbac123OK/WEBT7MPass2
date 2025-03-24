@@ -52,9 +52,16 @@
                                ng-model="dataTttk.ngaysinh" 
                                ng-init="dataTttk.ngaysinh = dataTttk.ngaysinh ? dataTttk.ngaysinh.split('T')[0] : null">
                     </div>
-                    
-                
+                    <div class="mb-3 fw-bolder">
+                        <label for="ngaysinh" class="form-label">Ngày sinh</label>
+                        <input type="file" class="form-control" 
+                               id="ngaysinh" 
+                               ng-model="dataTttk.avatar">
+                    </div>
                     <button class="btn btn-primary" ng-click="btnLuu(dataTttk.id)">Lưu</button>
+                </div>
+                <div class="col-md-3 text-center">
+                    <img ng-src="./Images/{{dataTttk.avatar}}" class="rounded-circle m-auto d-block" width="200px" height="200px">
                 </div>
             </div>
         </div>
