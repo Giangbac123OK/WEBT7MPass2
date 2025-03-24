@@ -50,5 +50,17 @@ app.controller('donhangcuabanController', function($scope, $http) {
         .catch(function(error){
             console.error(error)
         })
+    $scope.chitietdh = function(id) {
+        $scope.idhd = id;
+        $("#chitietModal").modal("show");
+    };
+    $http.get("https://localhost:7196/api/Sanphamchitiets")
+        .then(function (response) {
+            $scope.sanphamct = response.data;
+            console.log("sanphamct:", $scope.sanphamct);
+        })
+        .catch(function (error) {
+            console.error("Lỗi khi lấy dữ liệu:", error);
+        });
 });
 
