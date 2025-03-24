@@ -345,16 +345,17 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
                 giathoidiemhientai: giathoidiemhientai,
                 soluong: $scope.quantity,
                 giamgia: giaGiam || 0,
+                idsale: saleChiTiet && saleChiTiet.id ? saleChiTiet.id : null
             });
-
+        
             // Tạo HTML
             const productItem = document.createElement("div");
             productItem.className = "product-item d-flex align-items-center py-2 border-bottom";
 
             const giaHienThi = giaGiam
-                ? `<span class="text-muted text-decoration-line-through">${Number(giathoidiemhientai).toLocaleString('vi-VN')} VNĐ</span>
-                   <span class="text-danger fw-bold ms-2">${Number(giaGiam).toLocaleString('vi-VN')} VNĐ</span>`
-                : `<span class="text-danger fw-bold">${Number(giathoidiemhientai).toLocaleString('vi-VN')} VNĐ</span>`;
+                ? `<span class="text-muted text-decoration-line-through">${Math.floor(giathoidiemhientai).toLocaleString('vi-VN')} VNĐ</span>
+                <span class="text-danger fw-bold ms-2">${Math.floor(giaGiam).toLocaleString('vi-VN')} VNĐ</span>`
+                : `<span class="text-danger fw-bold">${Math.floor(giathoidiemhientai).toLocaleString('vi-VN')} VNĐ</span>`;
 
             productItem.innerHTML = `
             <div class="d-flex align-items-center" style="width: 50%;">
@@ -378,6 +379,7 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
             productList.appendChild(productItem);
         }
 
+        console.log(danhSachSanPham);
         initializeTotalPrices();
         updateTotals();
     }
@@ -1440,6 +1442,8 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
     // Hàm thêm chi tiết hóa đơn
     async function themHoaDonChiTiet(idhd) {
         const ListdanhSachSanPham = danhSachSanPham; // Danh sách sản phẩm từ giỏ hàng
+        const promises = []; // Mảng chứa các Promise của các yêu cầu API
+    
         for (const sanPham of ListdanhSachSanPham) {
             const data = {
                 idhd: idhd,
@@ -1449,25 +1453,73 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
                 giamgia: sanPham.giamgia || 0
             };
     
-            try {
-                const response = await fetch('https://localhost:7196/api/HoaDonChiTiets', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                const result = await response.json();
-    
-                // Kiểm tra nếu BE trả thông báo lỗi
-                if (response.ok && result.error) {
-                    Swal.fire("Lỗi", result.error, "error");
-                    return null;  // Dừng nếu có lỗi từ BE
+            const promise = fetch('https://localhost:7196/api/HoaDonChiTiets', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(async result => {
+                if (result.error) {
+                    throw new Error(result.error);
                 }
+    
+                // Nếu sản phẩm có `idsale`, thực hiện GET -> rồi mới UPDATE
+                if (sanPham.idsale != null) {
+                    try {
+                        // 1️⃣ Gọi API để lấy thông tin Salechitiets
+                        const saleResponse = await fetch(`https://localhost:7196/api/Salechitiets/${sanPham.idsale}`);
+                        const saleData = await saleResponse.json();
+    
+                        if (!saleData || saleData.error) {
+                            throw new Error("Không tìm thấy dữ liệu Salechitiets.");
+                        }
+    
+                        // 2️⃣ Cập nhật lại số lượng mới của Salechitiets
+                        const updatedSoluong = saleData.soluong - 1; // Giảm số lượng
+    
+                        if (updatedSoluong < 0) {
+                            console.warn("Số lượng Salechitiets không đủ!");
+                            return;
+                        }
+    
+                        // 3️⃣ Gọi API để cập nhật số lượng Salechitiets
+                        await fetch(`https://localhost:7196/api/Salechitiets/${sanPham.idsale}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ 
+                                id: sanPham.idsale,
+                                idspct: saleData.idspct,
+                                idsale: saleData.idsale,
+                                donvi: saleData.donvi,
+                                soluong: updatedSoluong ,
+                                giatrigiam: saleData.giatrigiam
+                            })
+                        })
+                        .then(updateResponse => updateResponse.json())
+                        .then(updateResult => {
+                            if (updateResult.error) {
+                                throw new Error(updateResult.error);
+                            }
+                            console.log("Cập nhật Salechitiets thành công:", updateResult);
+                        });
+                    } catch (error) {
+                        console.error("Lỗi trong quá trình cập nhật Salechitiets:", error);
+                    }
+                }
+    
                 return result;
-            } catch (error) {
+            })
+            .catch(error => {
                 console.error("Lỗi kết nối API khi thêm chi tiết hóa đơn:", error);
                 Swal.fire("Lỗi", "Kết nối thêm chi tiết hóa đơn thất bại.", "error");
-            }
+            });
+    
+            promises.push(promise);
         }
+    
+        // Đợi tất cả các yêu cầu hoàn thành
+        return Promise.all(promises);
     }
     
     // Hàm tạo link thanh toán (không có cọc)
@@ -1477,7 +1529,7 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
             return {
                 name: sanPham.tensp,
                 quantity: sanPham.soluong,
-                price: giaUuTien
+                price: parseInt(giaUuTien)
             };
         });
     
@@ -1487,7 +1539,7 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
             orderCode: idhd,
             items: ListdanhSachSanPham,
             totalAmount: tongHoaDon,
-            description: ""
+            description: "Thanh Toan"
         };
     
         try {
