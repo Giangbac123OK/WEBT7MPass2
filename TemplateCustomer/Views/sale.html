@@ -67,7 +67,15 @@
     .showall:hover {
         color: red;
     }
+    .disabled-card {
+    opacity: 0.5;
+    pointer-events: none;
+    }
 
+.disabled-link {
+    pointer-events: none;
+    cursor: not-allowed;
+}
     /* Giới hạn chiều cao tbody và thêm thanh cuộn */
     .table-container {
         max-height: 400px;
@@ -249,8 +257,8 @@
                 <div class="row">
 
                     <div class="col-md-4 mb-4" ng-repeat="product in getPagedProducts1()">
-                        <a href="#!SanpDetail/{{product.id}}" style="text-decoration: none;">
-                            <div class="card rounded-0">
+                        <a href="#!SanpDetail/{{product.id}}" style="text-decoration: none;" ng-class="{'disabled-link': product.soluong === 0}">
+                            <div class="card rounded-0" ng-class="{'disabled-card': product.soluong === 0}">
                                 <div class="card-img-container">
 
                                     <div class="discount-badge"

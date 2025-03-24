@@ -16,7 +16,15 @@
         transform: translateY(-5px);
         box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.15);
     }
+    .disabled-card {
+    opacity: 0.5;
+    pointer-events: none;
+    }
 
+.disabled-link {
+    pointer-events: none;
+    cursor: not-allowed;
+}
     .card-img-container {
         position: relative;
         width: 100%;
@@ -185,8 +193,9 @@
 <p class="mb-3" style="font-weight: bold;font-size: 24px; text-decoration: underline;">FLASH SALE</p>
 <div class="row" style="height: 450px;">
     <div class="col-md-3" ng-repeat="product in sanPhamKhuyenMai">
-        <a href="#!SanpDetail/{{product.id}}" style="text-decoration: none; color: inherit;">
-            <div class="card">
+        <a href="#!SanpDetail/{{product.id}}" style="text-decoration: none; color: inherit;"
+        ng-class="{'disabled-link': product.soluong === 0}">
+            <div class="card" ng-class="{'disabled-card': product.soluong === 0}">
                 <div class="card-img-container">
                     <div class="discount-badge" ng-if="product.giaTriGiam > 0 && product.giaTriGiam <= 100">
                         -{{product.giaTriGiam}}%</div>
@@ -243,8 +252,8 @@
 <p class="mb-3" style="font-weight: bold;font-size: 24px; text-decoration: underline;">SẢN PHẨM MỚI</p>
 <div class="row">
     <div style="height: 450px;" class="col-6 col-md-4 col-lg-3" ng-repeat="product in sanPhamMoi">
-        <a href="#!SanpDetail/{{product.id}}" style="text-decoration: none;">
-            <div class="card rounded-0">
+        <a href="#!SanpDetail/{{product.id}}" style="text-decoration: none;"ng-class="{'disabled-link': product.soluong === 0}">
+            <div class="card rounded-0" ng-class="{'disabled-card': product.soluong === 0}">
                 <div class="card-img-container">
 
                     <div class="discount-badge"
@@ -304,8 +313,8 @@
 </div>
 <div  class="row mb-3"  ng-repeat="(thuongHieu, group) in thuongHieu">
     <p class="mb-3" style="font-weight: bold;font-size: 24px; text-decoration: underline;">{{group.thuongHieu}}</p>
-            <div style="height: 450px;" class="col-6 col-md-4 col-lg-3" ng-repeat="product in group.sanPhams">
-                <a href="#!SanpDetail/{{product.id}}" style="text-decoration: none;">
+            <div style="height: 450px;" class="col-6 col-md-4 col-lg-3" ng-repeat="product in group.sanPhams"ng-class="{'disabled-link': product.soluong === 0}" >
+                <a href="#!SanpDetail/{{product.id}}" style="text-decoration: none;" ng-class="{'disabled-card': product.soluong === 0}">
                     <div class="card rounded-0">
                         <div class="card-img-container">
 
@@ -419,8 +428,8 @@
 </p>
 <div class="row" style="height: 450px;">
     <div style="height: 450px;" class="col-6 col-md-4 col-lg-3" ng-repeat="product in spDanhGiaCao">
-        <a href="#!SanpDetail/{{product.id}}" style="text-decoration: none;">
-            <div class="card rounded-0">
+        <a href="#!SanpDetail/{{product.id}}" style="text-decoration: none;" ng-class="{'disabled-link': product.soluong === 0}">
+            <div class="card rounded-0" ng-class="{'disabled-card': product.soluong === 0}">
                 <div class="card-img-container">
 
                     <div class="discount-badge"
