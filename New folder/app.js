@@ -43,7 +43,8 @@ app.config(function($routeProvider){
             controller: "GiohangCtrl"
           })
           .when("/trahang", {
-            templateUrl: "./Views/trahang.html"
+            templateUrl: "./Views/trahang.html",
+            controller: "trahangCtrl"
           })
           .when("/hoadon/:id", {
             templateUrl: "./Views/hoadon.html",
