@@ -267,9 +267,9 @@ app.controller("GiohangCtrl", function ($document, $rootScope, $scope, $compile,
                     <td class="align-middle">${chatLieu}</td>
                     <td class="align-middle giathoidiemhientai">
                         <span class="gia-goc ${saleInfo ? 'text-muted text-decoration-line-through' : ''}">
-                            ${giaGoc.toLocaleString('vi-VN')} VNĐ
+                            ${Math.floor(giaGoc).toLocaleString('vi-VN')} VNĐ
                         </span>
-                        ${saleInfo ? `<br><span class="gia-giam">${giaSauGiam.toLocaleString('vi-VN')} VNĐ</span>` : ""}
+                        ${saleInfo ? `<br><span class="gia-giam">${Math.floor(giaSauGiam).toLocaleString('vi-VN')} VNĐ</span>` : ""}
                     </td>
                     <td class="align-middle">
                         <div class="d-flex justify-content-center align-items-center">
@@ -278,7 +278,7 @@ app.controller("GiohangCtrl", function ($document, $rootScope, $scope, $compile,
                             <button type="button" class="btn btn-sm btn-outline-dark" ng-click="capNhatSoLuong($event, true, ${data.id})" ${isDisabled ? "disabled" : ""}>+</button>
                         </div>
                     </td>
-                    <td class="align-middle thanhTien">${thanhTien.toLocaleString('vi-VN')} VNĐ</td>
+                    <td class="align-middle thanhTien">${Math.floor(thanhTien).toLocaleString('vi-VN')} VNĐ</td>
                     <td class="align-middle">
                         <a class="text-danger" ng-click="deleteProduct('${data.id}')" ${isDisabled ? "style='pointer-events: none; opacity: 0.5;'" : ""}>
                             <i class="bi bi-trash3-fill"></i>

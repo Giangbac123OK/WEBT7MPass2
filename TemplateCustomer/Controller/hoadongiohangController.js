@@ -299,7 +299,7 @@ app.controller("hoadongiohangCtr", function ($document, $rootScope, $routeParams
         totalProductElement.textContent = `${totalProduct.toLocaleString('vi-VN')} VNĐ`;
 
         // Tính tổng hóa đơn (bao gồm phí vận chuyển)
-        const totalInvoiceValue = Math.max(0, totalProduct - discount + shippingFee);
+        const totalInvoiceValue = Math.max(0, totalProduct + discount + shippingFee);
         totalInvoiceElement.textContent = `${totalInvoiceValue.toLocaleString('vi-VN')} VNĐ`;
     }
 
@@ -339,6 +339,11 @@ app.controller("hoadongiohangCtr", function ($document, $rootScope, $routeParams
                 const { id, idsp, giathoidiemhientai } = sanPham[0];
 
                 const soluong = await fetchSoLuongSpctInGhcht(giohang.id, id)
+                if(soluong == null)
+                {
+                    $timeout(() => $location.path(`/giohang`));
+                    return null;
+                }
 
                 const sanPhamData = await fetchSanPhamById(idsp);
                 if (!sanPhamData) continue;
@@ -400,6 +405,7 @@ app.controller("hoadongiohangCtr", function ($document, $rootScope, $routeParams
                     giathoidiemhientai: giathoidiemhientai,
                     soluong: soluong.soluong,
                     giamgia: giaGiam || 0,
+                    idsale: saleChiTiet && saleChiTiet.id ? saleChiTiet.id : null
                 });
 
                 // Tạo HTML
@@ -407,9 +413,10 @@ app.controller("hoadongiohangCtr", function ($document, $rootScope, $routeParams
                 productItem.className = "product-item d-flex align-items-center py-2 border-bottom";
 
                 const giaHienThi = giaGiam
-                    ? `<span class="text-muted text-decoration-line-through">${Number(giathoidiemhientai).toLocaleString('vi-VN')} VNĐ</span>
-                   <span class="text-danger fw-bold ms-2">${Number(giaGiam).toLocaleString('vi-VN')} VNĐ</span>`
-                    : `<span class="text-danger fw-bold">${Number(giathoidiemhientai).toLocaleString('vi-VN')} VNĐ</span>`;
+                ? `<span class="text-muted text-decoration-line-through">${Math.floor(giathoidiemhientai).toLocaleString('vi-VN')} VNĐ</span>
+                <span class="text-danger fw-bold ms-2">${Math.floor(giaGiam).toLocaleString('vi-VN')} VNĐ</span>`
+                : `<span class="text-danger fw-bold">${Math.floor(giathoidiemhientai).toLocaleString('vi-VN')} VNĐ</span>`;
+
 
                 productItem.innerHTML = `
             <div class="d-flex align-items-center" style="width: 50%;">
@@ -432,6 +439,7 @@ app.controller("hoadongiohangCtr", function ($document, $rootScope, $routeParams
             `;
                 productList.appendChild(productItem);
             }
+            console.log(danhSachSanPham);
 
             initializeTotalPrices();
             updateTotals();
@@ -1517,10 +1525,55 @@ app.controller("hoadongiohangCtr", function ($document, $rootScope, $routeParams
                 body: JSON.stringify(data)
             })
             .then(response => response.json())
-            .then(result => {
+            .then(async result => {
                 if (result.error) {
                     throw new Error(result.error);
                 }
+    
+                // Nếu sản phẩm có `idsale`, thực hiện GET -> rồi mới UPDATE
+                if (sanPham.idsale != null) {
+                    try {
+                        // 1️⃣ Gọi API để lấy thông tin Salechitiets
+                        const saleResponse = await fetch(`https://localhost:7196/api/Salechitiets/${sanPham.idsale}`);
+                        const saleData = await saleResponse.json();
+    
+                        if (!saleData || saleData.error) {
+                            throw new Error("Không tìm thấy dữ liệu Salechitiets.");
+                        }
+    
+                        // 2️⃣ Cập nhật lại số lượng mới của Salechitiets
+                        const updatedSoluong = saleData.soluong - 1; // Giảm số lượng
+    
+                        if (updatedSoluong < 0) {
+                            console.warn("Số lượng Salechitiets không đủ!");
+                            return;
+                        }
+    
+                        // 3️⃣ Gọi API để cập nhật số lượng Salechitiets
+                        await fetch(`https://localhost:7196/api/Salechitiets/${sanPham.idsale}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ 
+                                id: sanPham.idsale,
+                                idspct: saleData.idspct,
+                                idsale: saleData.idsale,
+                                donvi: saleData.donvi,
+                                soluong: updatedSoluong ,
+                                giatrigiam: saleData.giatrigiam
+                            })
+                        })
+                        .then(updateResponse => updateResponse.json())
+                        .then(updateResult => {
+                            if (updateResult.error) {
+                                throw new Error(updateResult.error);
+                            }
+                            console.log("Cập nhật Salechitiets thành công:", updateResult);
+                        });
+                    } catch (error) {
+                        console.error("Lỗi trong quá trình cập nhật Salechitiets:", error);
+                    }
+                }
+    
                 return result;
             })
             .catch(error => {
@@ -1533,7 +1586,8 @@ app.controller("hoadongiohangCtr", function ($document, $rootScope, $routeParams
     
         // Đợi tất cả các yêu cầu hoàn thành
         return Promise.all(promises);
-    }    
+    }
+       
 
     // Hàm tạo link thanh toán (không có cọc)
     async function taoLinkThanhToan(idhd) {
@@ -1542,7 +1596,7 @@ app.controller("hoadongiohangCtr", function ($document, $rootScope, $routeParams
             return {
                 name: sanPham.tensp,
                 quantity: sanPham.soluong,
-                price: giaUuTien
+                price: parseInt(giaUuTien)
             };
         });
 
@@ -1552,11 +1606,11 @@ app.controller("hoadongiohangCtr", function ($document, $rootScope, $routeParams
             orderCode: idhd,
             items: ListdanhSachSanPham,
             totalAmount: tongHoaDon,
-            description: ""
+            description: "Thanh Toan"
         };
 
         try {
-            const response = await fetch('https://localhost:7196/api/checkout/create-payment-link', {
+            const response = await fetch('https://localhost:7196/api/Checkout/create-payment-link', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
