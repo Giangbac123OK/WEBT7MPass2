@@ -1,0 +1,98 @@
+<style>
+    body {
+        background: linear-gradient(to right, #6a11cb, #2575fc);
+        font-family: 'Poppins', sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+
+    .reset-container {
+        width: 450px;
+        padding: 20px;
+    }
+
+    .resetbox {
+        background: #fff;
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        position: relative;
+    }
+
+    .resetbox-logo {
+        width: 120px;
+        margin: 0 auto 20px;
+    }
+
+    .resetbox-logo img {
+        width: 100%;
+        height: auto;
+    }
+
+    .resetbox-title {
+        font-size: 24px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 25px;
+    }
+
+    .or-line {
+        height: 1px;
+        background: #ddd;
+        margin: 15px 0;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 14px;
+        margin-top: 12px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    .form-control:focus {
+        border-color: #2575fc;
+        outline: none;
+        box-shadow: 0 0 5px rgba(37, 117, 252, 0.5);
+    }
+
+    .btn-primary {
+        background: #2575fc;
+        border: none;
+        padding: 14px;
+        border-radius: 5px;
+        font-size: 18px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+        width: 100%;
+    }
+
+    .btn-primary:hover {
+        background: #1a5ccc;
+    }
+</style>
+
+<div class="reset-container animated fadeInDown">
+    <div class="resetbox bg-white">
+        <div class="resetbox-logo">
+            <img src="/TemplateCustomer/Images/logo.png" alt="Logo">
+        </div>
+        <div class="resetbox-title">ĐẶT LẠI MẬT KHẨU</div>
+        <div class="or-line"></div>
+        <div class="resetbox-textbox">
+            <input type="password" class="form-control" placeholder="Nhập mật khẩu mới">
+        </div>
+        <div class="resetbox-textbox">
+            <input type="password" class="form-control" placeholder="Xác nhận mật khẩu mới">
+        </div>
+        <div class="resetbox-submit" style="padding-top: 13px;">
+            <input type="button" class="btn btn-primary" value="Cập Nhật">
+        </div>
+    </div>
+</div>
