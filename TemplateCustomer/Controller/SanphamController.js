@@ -28,23 +28,25 @@ app.controller('SanphamController', function ($scope, $http) {
   // Lấy danh sách sản phẩm
   $http.get("https://localhost:7196/api/Sanphams/GetALLSanPham")
       .then(function (response) {
-          $scope.sanPham = response.data.map(sp => {
-              sp.hinhAnh = "default-image.jpg"; // Ảnh mặc định
+        $scope.sanPham = response.data
+        .filter(sp => sp.sanphamchitiets && sp.sanphamchitiets.length > 0)
+        .map(sp => {
+            sp.hinhAnh = "default-image.jpg"; // Ảnh mặc định
 
-              if (sp.sanphamchitiets && sp.sanphamchitiets.length > 0) {
-                  let spct = sp.sanphamchitiets[0];
-                  loadHinhAnh(spct.id, function (imgUrl) {
-                      sp.hinhAnh = imgUrl;
-                      $scope.$apply(); // Cập nhật lại view
-                  });
-              }
+            // Lấy hình ảnh từ sản phẩm chi tiết đầu tiên
+            let spct = sp.sanphamchitiets[0];
+            loadHinhAnh(spct.id, function (imgUrl) {
+                sp.hinhAnh = imgUrl;
+                $scope.$apply(); // Cập nhật lại view
+            });
 
-              return sp;
-          });
-           console.log($scope.sanPham);
-           
-          // Cập nhật tổng số trang
-          $scope.totalPages = Math.ceil($scope.sanPham.length / $scope.pageSize);
+            return sp;
+        });
+
+    console.log($scope.sanPham);
+
+    // Cập nhật tổng số trang
+    $scope.totalPages = Math.ceil($scope.sanPham.length / $scope.pageSize);
       })
       .catch(function (error) {
           console.error("Lỗi khi tải danh sách sản phẩm:", error);
@@ -66,7 +68,7 @@ app.controller('SanphamController', function ($scope, $http) {
         case 'highToLow': // Giá từ cao đến thấp
             $scope.sanPham.sort((a, b) => b.giasale - a.giasale);
             break;
-        case 'bestseller': // Bán chạy nhất
+        case 'bestseller': 
             $scope.sanPham.sort((a, b) => $scope.getTotalSPCT(b) - $scope.getTotalSPCT(a));
             break;
         default:
@@ -79,21 +81,21 @@ app.controller('SanphamController', function ($scope, $http) {
         return total + spct.soLuongBan;
     }, 0);
 };
-  // Lấy danh sách sản phẩm cho trang hiện tại
+
   $scope.getPagedProducts = function () {
       let start = ($scope.currentPage - 1) * $scope.pageSize;
       let end = start + $scope.pageSize;
       return $scope.sanPham.slice(start, end);
   };
 
-  // Chuyển sang trang trước
+
   $scope.previousPage = function () {
       if ($scope.currentPage > 1) {
           $scope.currentPage--;
       }
   };
 
-  // Chuyển sang trang tiếp theo
+
   $scope.nextPage = function () {
       if ($scope.currentPage < $scope.totalPages) {
           $scope.currentPage++;
