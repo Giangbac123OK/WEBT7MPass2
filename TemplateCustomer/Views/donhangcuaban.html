@@ -1,3 +1,13 @@
+<style>
+  .tensp{
+    color: black;
+    text-decoration: none;
+  }
+  .tensp:hover{
+    color: red;
+    text-decoration: underline;
+  }
+</style>
 <div class="container">
     <div class="row mb-3">
         <div class="col-3">
@@ -51,60 +61,64 @@
                 </button>
             </li>
           </ul>
-          <div class="input-group pt-3">
-            <button class="btn btn-dark" type="button" id="button-addon1" ng-click="loadHoaDon()">
-                <i class="bi bi-search"></i>
-            </button>
-            <input type="text" class="form-control" placeholder="Nhập từ khóa tìm kiếm..."
-                ng-model="searchText">
-        </div>
+          <input type="text" class="form-control mt-3" placeholder="Nhập từ khóa tìm kiếm..." ng-model="searchText">
           <!-- Nội Dung Tab -->
         <div class="tab-content mt-3 py-3" id="myTabContent">
           <div class="tab-pane fade show active" id="tab1" role="tabpanel">
             <div ng-repeat="x in dataHoaDon" class="mb-3 bg-light">
-              <div class="d-flex flex-row-reverse bd-highlight border-bottom">
-                <div class="p-2 bd-highlight text-uppercase" style="color: orangered;">
+              <div class="row border-bottom">
+                <div class="col m-3 text-uppercase text-en fw-semibold">
+                  <span>Mã hóa đơn: #{{x.id}}</span>
+                </div>
+                <div class="col m-3 text-uppercase text-end" style="color: orangered;">
                   <span ng-if="x.trangthai==0">Chờ xác nhận</span>
-                  <span ng-if="x.trangthai==1">Đơã xác nhận</span>
+                  <span ng-if="x.trangthai==1">Đã xác nhận</span>
                   <span ng-if="x.trangthai==2">Đang được giao</span>
                   <span ng-if="x.trangthai==3">Thành công</span>
                   <span ng-if="x.trangthai==4">Đã huỷ</span>
                 </div>
               </div>
-              <div class="row" ng-repeat="hdct in dataHoaDonCT">
-                <div ng-if="hdct.idhd == x.id" class="row border-bottom py-3"> 
+              <div class="row" ng-init="showMore = {}">
+                <div class="row border-bottom py-3" ng-repeat="hdct in dataHoaDonCT | filter:{idhd: x.id} | limitTo: (showMore[x.id] ? dataHoaDonCT.length : 2)">
                   <div class="col-3 ps-3">
-                    <img ng-repeat="spct in sanphamct" ng-if="spct.id==hdct.idspct" src="https://localhost:7196/picture/{{spct.urlHinhanh}}" width="100%" height="120px">
+                    <img ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct" src="https://localhost:7196/picture/{{spct.urlHinhanh}}" width="100%" height="120px">
                   </div>
-                  <div class="col-7">
-                    <p class="fs-5">Giayf</p>
+                  <div class="col-7" ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct">
+                    <a href="#!SanpDetail/{{spct.idsp}}" class="fs-5 tensp" >{{SelectTenTH(spct.idsp)}} - {{SelecttenSp(spct.idsp)}}</a>
                     <p class="text-secondary">Phân loại: Da độn - Đen - 38</p>
                     <p>x{{hdct.soluong}}</p>
                   </div>
+                
                   <div class="col-2 d-flex justify-content-center align-items-center">
                     <div class="text-center">
                       <span ng-if="hdct.giamgia && hdct.giamgia > 0" class="text-secondary text-decoration-line-through">
                         {{ hdct.giamgia | currency:"₫":0 }}
                       </span>
-                      
                       <span style="color: orangered;">{{ hdct.giasp | currency:"₫":0 }}0</span>
                     </div>
                   </div>
                 </div>
+
+                <!-- Hiển thị nút "Xem thêm" hoặc "Thu gọn" -->
+                <div class="text-center mt-2" ng-if="(dataHoaDonCT | filter:{idhd: x.id}).length > 2">
+                  <button class="btn btn-outline-primary" ng-click="showMore[x.id] = !showMore[x.id]">
+                    {{ showMore[x.id] ? 'Thu gọn' : 'Xem thêm' }}
+                  </button>
+                </div>
               </div>
+
               <div class="row py-3">
                 <div class="d-flex flex-column bd-highlight">
                   <div class="p-2 bd-highlight">
                     <div class="text-end">
-                      Thành tiền: <span style="color: orangered; font-size: 24px;">{{ x.tongtiencantra | currency:"₫":0 }}
-                      </span>
+                      Thành tiền: <span style="color: orangered; font-size: 24px;">{{ x.tongtiencantra | currency:"₫":0 }}</span>
                     </div>
                   </div>
                   <div class="p-2 bd-highlight">
                     <div class="d-flex justify-content-between">
-                      <div class="p-2 bd-highlight text-secondary">Đã hủy bởi bạn</div>
+                      <div class="p-2 bd-highlight text-secondary"></div>
                       <div class="p-2 bd-highlight">
-                        <button class="btn btn-danger" ng-if="x.trangthai==3||x.trangthai==4">Mua lại</button>
+                        <a class="btn btn-danger" ng-if="x.trangthai==4" >Mua lại</a>
                         <button class="btn btn-outline-dark" ng-click="chitietdh(x.id)">Chi tiết</button>
                         <a class="btn btn-outline-dark" href="tel:0867812095">Liên hệ người bán</a>
                       </div>
@@ -116,8 +130,11 @@
           </div>
           <div class="tab-pane fade" id="tab2" role="tabpanel">
             <div ng-repeat="x in dataHoaDon" ng-if="x.trangthai==0" class="mb-3 bg-light">
-              <div class="d-flex flex-row-reverse bd-highlight border-bottom">
-                <div class="p-2 bd-highlight text-uppercase" style="color: orangered;">
+              <div class="row border-bottom">
+                <div class="col m-3 text-uppercase text-en fw-semibold">
+                  <span>Mã hóa đơn: #{{x.id}}</span>
+                </div>
+                <div class="col m-3 text-uppercase text-end" style="color: orangered;">
                   <span ng-if="x.trangthai==0">Chờ xác nhận</span>
                   <span ng-if="x.trangthai==1">Đã xác nhận</span>
                   <span ng-if="x.trangthai==2">Đang được giao</span>
@@ -131,8 +148,8 @@
                   <div class="col-3 ps-3">
                     <img ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct" src="https://localhost:7196/picture/{{spct.urlHinhanh}}" width="100%" height="120px">
                   </div>
-                  <div class="col-7">
-                    <p class="fs-5">Giayf</p>
+                  <div class="col-7" ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct">
+                    <a href="#!SanpDetail/{{spct.idsp}}" class="fs-5 tensp" >{{SelectTenTH(spct.idsp)}} - {{SelecttenSp(spct.idsp)}}</a>
                     <p class="text-secondary">Phân loại: Da độn - Đen - 38</p>
                     <p>x{{hdct.soluong}}</p>
                   </div>
@@ -163,7 +180,7 @@
                   </div>
                   <div class="p-2 bd-highlight">
                     <div class="d-flex justify-content-between">
-                      <div class="p-2 bd-highlight text-secondary">Đã hủy bởi bạn</div>
+                      <div class="p-2 bd-highlight text-secondary"></div>
                       <div class="p-2 bd-highlight">
                         <button class="btn btn-danger" ng-if="x.trangthai==3 || x.trangthai==4">Mua lại</button>
                         <button class="btn btn-outline-dark" ng-click="chitietdh(x.id)">Chi tiết</button>
@@ -178,8 +195,11 @@
           
           <div class="tab-pane fade" id="tab3" role="tabpanel">
             <div ng-repeat="x in dataHoaDon" ng-if="x.trangthai==1" class="mb-3 bg-light">
-              <div class="d-flex flex-row-reverse bd-highlight border-bottom">
-                <div class="p-2 bd-highlight text-uppercase" style="color: orangered;">
+              <div class="row border-bottom">
+                <div class="col m-3 text-uppercase text-en fw-semibold">
+                  <span>Mã hóa đơn: #{{x.id}}</span>
+                </div>
+                <div class="col m-3 text-uppercase text-end" style="color: orangered;">
                   <span ng-if="x.trangthai==0">Chờ xác nhận</span>
                   <span ng-if="x.trangthai==1">Đã xác nhận</span>
                   <span ng-if="x.trangthai==2">Đang được giao</span>
@@ -193,8 +213,8 @@
                   <div class="col-3 ps-3">
                     <img ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct" src="https://localhost:7196/picture/{{spct.urlHinhanh}}" width="100%" height="120px">
                   </div>
-                  <div class="col-7">
-                    <p class="fs-5">Giayf</p>
+                  <div class="col-7" ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct">
+                    <a href="#!SanpDetail/{{spct.idsp}}" class="fs-5 tensp" >{{SelectTenTH(spct.idsp)}} - {{SelecttenSp(spct.idsp)}}</a>
                     <p class="text-secondary">Phân loại: Da độn - Đen - 38</p>
                     <p>x{{hdct.soluong}}</p>
                   </div>
@@ -225,7 +245,7 @@
                   </div>
                   <div class="p-2 bd-highlight">
                     <div class="d-flex justify-content-between">
-                      <div class="p-2 bd-highlight text-secondary">Đã hủy bởi bạn</div>
+                      <div class="p-2 bd-highlight text-secondary"></div>
                       <div class="p-2 bd-highlight">
                         <button class="btn btn-danger" ng-if="x.trangthai==3 || x.trangthai==4">Mua lại</button>
                         <button class="btn btn-outline-dark" ng-click="chitietdh(x.id)">Chi tiết</button>
@@ -239,8 +259,11 @@
           </div>
           <div class="tab-pane fade" id="tab4" role="tabpanel">
             <div ng-repeat="x in dataHoaDon" ng-if="x.trangthai==2" class="mb-3 bg-light">
-              <div class="d-flex flex-row-reverse bd-highlight border-bottom">
-                <div class="p-2 bd-highlight text-uppercase" style="color: orangered;">
+              <div class="row border-bottom">
+                <div class="col m-3 text-uppercase text-en fw-semibold">
+                  <span>Mã hóa đơn: #{{x.id}}</span>
+                </div>
+                <div class="col m-3 text-uppercase text-end" style="color: orangered;">
                   <span ng-if="x.trangthai==0">Chờ xác nhận</span>
                   <span ng-if="x.trangthai==1">Đã xác nhận</span>
                   <span ng-if="x.trangthai==2">Đang được giao</span>
@@ -254,8 +277,8 @@
                   <div class="col-3 ps-3">
                     <img ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct" src="https://localhost:7196/picture/{{spct.urlHinhanh}}" width="100%" height="120px">
                   </div>
-                  <div class="col-7">
-                    <p class="fs-5">Giayf</p>
+                  <div class="col-7" ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct">
+                    <a href="#!SanpDetail/{{spct.idsp}}" class="fs-5 tensp" >{{SelectTenTH(spct.idsp)}} - {{SelecttenSp(spct.idsp)}}</a>
                     <p class="text-secondary">Phân loại: Da độn - Đen - 38</p>
                     <p>x{{hdct.soluong}}</p>
                   </div>
@@ -286,7 +309,7 @@
                   </div>
                   <div class="p-2 bd-highlight">
                     <div class="d-flex justify-content-between">
-                      <div class="p-2 bd-highlight text-secondary">Đã hủy bởi bạn</div>
+                      <div class="p-2 bd-highlight text-secondary"></div>
                       <div class="p-2 bd-highlight">
                         <button class="btn btn-danger" ng-if="x.trangthai==3 || x.trangthai==4">Mua lại</button>
                         <button class="btn btn-outline-dark" ng-click="chitietdh(x.id)">Chi tiết</button>
@@ -300,8 +323,11 @@
           </div>
           <div class="tab-pane fade" id="tab5" role="tabpanel">
             <div ng-repeat="x in dataHoaDon" ng-if="x.trangthai==3" class="mb-3 bg-light">
-              <div class="d-flex flex-row-reverse bd-highlight border-bottom">
-                <div class="p-2 bd-highlight text-uppercase" style="color: orangered;">
+              <div class="row border-bottom">
+                <div class="col m-3 text-uppercase text-en fw-semibold">
+                  <span>Mã hóa đơn: #{{x.id}}</span>
+                </div>
+                <div class="col m-3 text-uppercase text-end" style="color: orangered;">
                   <span ng-if="x.trangthai==0">Chờ xác nhận</span>
                   <span ng-if="x.trangthai==1">Đã xác nhận</span>
                   <span ng-if="x.trangthai==2">Đang được giao</span>
@@ -315,8 +341,8 @@
                   <div class="col-3 ps-3">
                     <img ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct" src="https://localhost:7196/picture/{{spct.urlHinhanh}}" width="100%" height="120px">
                   </div>
-                  <div class="col-7">
-                    <p class="fs-5">Giayf</p>
+                  <div class="col-7" ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct">
+                    <a href="#!SanpDetail/{{spct.idsp}}" class="fs-5 tensp" >{{SelectTenTH(spct.idsp)}} - {{SelecttenSp(spct.idsp)}}</a>
                     <p class="text-secondary">Phân loại: Da độn - Đen - 38</p>
                     <p>x{{hdct.soluong}}</p>
                   </div>
@@ -347,9 +373,8 @@
                   </div>
                   <div class="p-2 bd-highlight">
                     <div class="d-flex justify-content-between">
-                      <div class="p-2 bd-highlight text-secondary">Đã hủy bởi bạn</div>
+                      <div class="p-2 bd-highlight text-secondary"></div>
                       <div class="p-2 bd-highlight">
-                        <button class="btn btn-danger" ng-if="x.trangthai==3 || x.trangthai==4">Mua lại</button>
                         <button class="btn btn-outline-dark" ng-click="chitietdh(x.id)">Chi tiết</button>
                         <a class="btn btn-outline-dark" href="tel:0867812095">Liên hệ người bán</a>
                       </div>
@@ -361,8 +386,11 @@
           </div>
           <div class="tab-pane fade" id="tab6" role="tabpanel">
             <div ng-repeat="x in dataHoaDon" ng-if="x.trangthai==4" class="mb-3 bg-light">
-              <div class="d-flex flex-row-reverse bd-highlight border-bottom">
-                <div class="p-2 bd-highlight text-uppercase" style="color: orangered;">
+              <div class="row border-bottom">
+                <div class="col m-3 text-uppercase text-en fw-semibold">
+                  <span>Mã hóa đơn: #{{x.id}}</span>
+                </div>
+                <div class="col m-3 text-uppercase text-end" style="color: orangered;">
                   <span ng-if="x.trangthai==0">Chờ xác nhận</span>
                   <span ng-if="x.trangthai==1">Đã xác nhận</span>
                   <span ng-if="x.trangthai==2">Đang được giao</span>
@@ -376,8 +404,8 @@
                   <div class="col-3 ps-3">
                     <img ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct" src="https://localhost:7196/picture/{{spct.urlHinhanh}}" width="100%" height="120px">
                   </div>
-                  <div class="col-7">
-                    <p class="fs-5">Giayf</p>
+                  <div class="col-7" ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct">
+                    <a href="#!SanpDetail/{{spct.idsp}}" class="fs-5 tensp" >{{SelectTenTH(spct.idsp)}} - {{SelecttenSp(spct.idsp)}}</a>
                     <p class="text-secondary">Phân loại: Da độn - Đen - 38</p>
                     <p>x{{hdct.soluong}}</p>
                   </div>
@@ -408,7 +436,7 @@
                   </div>
                   <div class="p-2 bd-highlight">
                     <div class="d-flex justify-content-between">
-                      <div class="p-2 bd-highlight text-secondary">Đã hủy bởi bạn</div>
+                      <div class="p-2 bd-highlight text-secondary"></div>
                       <div class="p-2 bd-highlight">
                         <button class="btn btn-danger" ng-if="x.trangthai==3 || x.trangthai==4">Mua lại</button>
                         <button class="btn btn-outline-dark" ng-click="chitietdh(x.id)">Chi tiết</button>
@@ -459,7 +487,7 @@
                   </div>
                   <div class="p-2 bd-highlight">
                     <div class="d-flex justify-content-between">
-                      <div class="p-2 bd-highlight text-secondary">Đã hủy bởi bạn</div>
+                      <div class="p-2 bd-highlight text-secondary"></div>
                       <div class="p-2 bd-highlight">
                         <button class="btn btn-danger">Mua lại</button>
                         <button class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#chitietModal">Chi tiết</button>
@@ -484,76 +512,98 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <div ng-repeat="x in dataHoaDon" ng-if="x.id==idhd" class="mb-3">
-          <div class="d-flex flex-row-reverse bd-highlight border-bottom">
-            <div class="p-2 bd-highlight text-uppercase" style="color: orangered;">
-              <span ng-if="x.trangthai==0">Chờ xác nhận</span>
-              <span ng-if="x.trangthai==1">Đã xác nhận</span>
-              <span ng-if="x.trangthai==2">Đang được giao</span>
-              <span ng-if="x.trangthai==3">Thành công</span>
-              <span ng-if="x.trangthai==4">Đã huỷ</span>
-            </div>
+        <div ng-repeat="x in dataHoaDon" ng-if="x.id == idhd" class="mb-4 p-3 border rounded shadow-sm bg-white">
+          <!-- Trạng thái đơn hàng -->
+          <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
+            <h5 class="text-uppercase text-danger"> 
+              <span ng-if="x.trangthai == 0">Chờ xác nhận</span>
+              <span ng-if="x.trangthai == 1">Đã xác nhận</span>
+              <span ng-if="x.trangthai == 2">Đang được giao</span>
+              <span ng-if="x.trangthai == 3">Thành công</span>
+              <span ng-if="x.trangthai == 4">Đã huỷ</span>
+            </h5>
           </div>
         
-          <div class="row" ng-init="showMore = {}">
-            <!-- Nếu đang thu gọn, chỉ hiển thị hình ảnh sản phẩm -->
-            <div class="row py-3" ng-if="!showMore[x.id]">
-              <div class="col-12 d-flex flex-wrap">
+          <!-- Sản phẩm trong đơn hàng -->
+          <div class="py-3" ng-init="showMore = {}">
+            <div class="row" ng-if="!showMore[x.id]">
+              <div class="col d-flex flex-wrap">
                 <div class="p-2" ng-repeat="hdct in dataHoaDonCT | filter:{idhd: x.id} | limitTo: 3">
-                  <img ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct" src="https://localhost:7196/picture/{{spct.urlHinhanh}}" width="80px" height="80px">
+                  <img ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct" 
+                       ng-src="https://localhost:7196/picture/{{spct.urlHinhanh}}" 
+                       class="rounded border" width="80" height="80">
                 </div>
               </div>
             </div>
         
-            <!-- Nếu mở rộng, hiển thị đầy đủ chi tiết sản phẩm -->
-            <div class="row py-3" ng-if="showMore[x.id]" ng-repeat="hdct in dataHoaDonCT | filter:{idhd: x.id}">
-              <div class="col-3 ps-3">
-                <img ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct" src="https://localhost:7196/picture/{{spct.urlHinhanh}}" width="100%" height="120px">
-              </div>
-              <div class="col-7">
-                <p class="fs-5">Giayf</p>
-                <p class="text-secondary">Phân loại: Da độn - Đen - 38</p>
-                <p>x{{hdct.soluong}}</p>
-              </div>
-              <div class="col-2 d-flex justify-content-center align-items-center">
-                <div class="text-center">
-                  <span ng-if="hdct.giamgia && hdct.giamgia > 0" class="text-secondary text-decoration-line-through">
-                    {{ hdct.giamgia | currency:"₫":0 }}
-                  </span>
-                  <span style="color: orangered;">{{ hdct.giasp | currency:"₫":0 }}0</span>
+            <div class="row py-3" ng-if="showMore[x.id]">
+              <div class="col-12" ng-repeat="hdct in dataHoaDonCT | filter:{idhd: x.id}">
+                <div class="row">
+                  <div class="col-3">
+                    <img ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct" 
+                         ng-src="https://localhost:7196/picture/{{spct.urlHinhanh}}" 
+                         class="img-fluid rounded border">
+                  </div>
+                  <div class="col-6">
+                    <p class="fw-bold mb-1">Giày</p>
+                    <p class="text-muted small">Phân loại: Da độn - Đen - 38</p>
+                    <p class="mb-0">Số lượng: x{{hdct.soluong}}</p>
+                  </div>
+                  <div class="col-3 text-end align-self-center">
+                    <span ng-if="hdct.giamgia > 0" class="text-muted text-decoration-line-through me-2">
+                      {{ hdct.giamgia | currency:"₫":0 }}
+                    </span>
+                    <span class="text-danger fw-bold">{{ hdct.giasp | currency:"₫":0 }}</span>
+                  </div>
                 </div>
+                <hr>
               </div>
-              <hr>
             </div>
         
-            <!-- Hiển thị nút "Xem thêm" hoặc "Thu gọn" -->
-            <div class="text-center mt-2" ng-if="(dataHoaDonCT | filter:{idhd: x.id}).length > 2">
-              <button class="btn btn-outline-primary" ng-click="showMore[x.id] = !showMore[x.id]">
+            <div class="text-center mt-2" ng-if="(dataHoaDonCT | filter:{idhd: x.id}).length > 3">
+              <button class="btn btn-outline-primary btn-sm" ng-click="showMore[x.id] = !showMore[x.id]">
                 {{ showMore[x.id] ? 'Thu gọn' : 'Xem thêm' }}
               </button>
             </div>
           </div>
         
-          <div class="row py-3">
-            <div class="d-flex flex-column bd-highlight">
-              <div class="p-2 bd-highlight">
-                <div class="text-end">
-                  Thành tiền: <span style="color: orangered; font-size: 24px;">{{ x.tongtiencantra | currency:"₫":0 }}</span>
-                </div>
-              </div>
-              <div class="p-2 bd-highlight">
-                <div class="row text-end border-top">
-                  <div class="col-9  border-end py-3">Phương thức thanh toán</div>
-                  <div class="col-3 py-3">COD</div>
-                </div>
-                <div class="row text-end border-top border-bottom">
-                  <div class="col-9 border-end py-3">Mã đơn hàng</div>
-                  <div class="col-3 py-3">1</div>
-                </div>
-              </div>
+          <!-- Thông tin thanh toán -->
+          <div class="py-3 border-top mt-3">
+            <div class="row py-1">
+              <div class="col-9 text-end text-muted">Tổng tiền hàng:</div>
+              <div class="col-3 text-end fw-bold text-danger">{{ x.tongtiensanpham | currency:"₫":0 }}</div>
+            </div>
+            <div class="row py-1">
+              <div class="col-9 text-end text-muted">Phí vận chuyển:</div>
+              <div class="col-3 text-end fw-bold text-danger">{{ x.phivanchuyen | currency:"₫":0 }}</div>
+            </div>
+            <div class="row py-1">
+              <div class="col-9 text-end text-muted">Giảm giá:</div>
+              <div class="col-3 text-end fw-bold text-danger">{{ x.tonggiamgia | currency:"₫":0 }}</div>
+            </div>
+            <div class="row py-2 border-top">
+              <div class="col-9 text-end fw-bold">Thành tiền:</div>
+              <div class="col-3 text-end fw-bold text-danger" style="font-size: 20px;">{{ x.tongtiencantra | currency:"₫":0 }}</div>
+            </div>
+          </div>
+        
+          <!-- Thông tin giao aggggaaahàng -->
+          <div class="py-3 border-top">
+            <div class="row py-1">
+              <div class="col-9 text-end text-muted">Địa chỉ giao hàng:</div>
+              <div class="col-3 text-end">{{ x.diachiship }}</div>
+            </div>
+            <div class="row py-1">
+              <div class="col-9 text-end text-muted">Phương thức thanh toán:</div>
+              <div class="col-3 text-end">1</div>
+            </div>
+            <div class="row py-1 border-top">
+              <div class="col-9 text-end text-muted">Mã đơn hàng:</div>
+              <div class="col-3 text-end fw-bold">{{ x.id }}</div>
             </div>
           </div>
         </div>
+        
       </div>
       <div class="modal-footer">
         <button class="btn btn-danger" ng-if="x.trangthai==3 || x.trangthai==4">Mua lại</button>
