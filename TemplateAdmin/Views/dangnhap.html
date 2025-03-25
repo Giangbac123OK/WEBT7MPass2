@@ -1,31 +1,42 @@
 <style>
+    @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;600&display=swap');
+
+    *,
+    :before,
+    :after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Quicksand', sans-serif;
+    }
+
     body {
-        background: linear-gradient(to right, #6a11cb, #2575fc);
-        font-family: 'Poppins', sans-serif;
+        font-family: 'Quicksand', sans-serif;
+        background-image: url(https://raw.githubusercontent.com/CiurescuP/LogIn-Form/main/bg.jpg);
+        background-repeat: no-repeat;
+        background-size: cover;
         display: flex;
         justify-content: center;
         align-items: center;
         height: 100vh;
-        margin: 0;
     }
 
-    .login-container {
-        width: 450px;
-        padding: 20px;
-    }
-
-    .loginbox {
-        background: #fff;
-        padding: 40px;
-        border-radius: 10px;
-        box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+    /* FORM */
+    form {
+        width: 380px;
+        background: rgba(255, 255, 255, 0.15);
+        padding: 30px;
+        border-radius: 15px;
+        backdrop-filter: blur(8px);
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 0 20px rgba(129, 236, 174, 0.4);
         text-align: center;
-        position: relative;
     }
 
+    /* LOGO */
     .loginbox-logo {
-        width: 120px;
-        margin: 0 auto 20px;
+        width: 100px;
+        margin: 0 auto 15px;
     }
 
     .loginbox-logo img {
@@ -33,81 +44,106 @@
         height: auto;
     }
 
-    .loginbox-title {
-        font-size: 24px;
+    /* TITLE */
+    form h3 {
+        font-size: 28px;
         font-weight: 600;
-        color: #333;
-        margin-bottom: 25px;
+        margin-bottom: 20px;
+        color: #fff;
     }
 
-    .or-line {
-        height: 1px;
-        background: #ddd;
-        margin: 15px 0;
-    }
-
-    .form-control {
-        width: 100%;
-        padding: 14px;
-        margin-top: 12px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        font-size: 16px;
-    }
-
-    .form-control:focus {
-        border-color: #2575fc;
-        outline: none;
-        box-shadow: 0 0 5px rgba(37, 117, 252, 0.5);
-    }
-
-    .loginbox-forgot a {
+    /* INPUT FIELDS */
+    label {
         display: block;
-        margin-top: 12px;
-        font-size: 15px;
-        color: #2575fc;
-        text-decoration: none;
-    }
-
-    .loginbox-forgot a:hover {
-        text-decoration: underline;
-    }
-
-    .btn-primary {
-        background: #2575fc;
-        border: none;
-        padding: 14px;
-        border-radius: 5px;
-        font-size: 18px;
+        font-size: 16px;
         font-weight: 600;
+        color: #fff;
+        text-align: left;
+        margin-top: 15px;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px;
+        margin-top: 5px;
+        font-size: 14px;
+        border-radius: 5px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        background: rgba(0, 0, 0, 0.2);
+        color: #fff;
+        transition: all 0.3s ease;
+    }
+
+    input:focus {
+        border-color: #80ffaa;
+        background: rgba(0, 0, 0, 0.3);
+        outline: none;
+    }
+
+    ::placeholder {
+        color: #ddd;
+    }
+
+    /* BUTTON */
+    button {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 5px;
+        border: none;
+        background: #62a87c;
+        color: white;
         cursor: pointer;
         transition: 0.3s;
     }
 
-    .btn-primary:hover {
-        background: #1a5ccc;
+    button:hover {
+        background: #4f8664;
+    }
+
+    /* SOCIAL LOGIN */
+    .social-text {
+        font-size: 14px;
+        margin-top: 15px;
+        color: #fff;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 420px) {
+        form {
+            width: 90%;
+            padding: 20px;
+        }
+    }
+
+    .back-to-login {
+        margin-top: 15px;
+        font-size: 14px;
+    }
+
+    .back-to-login a {
+        color: #80ffaa;
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+    .back-to-login a:hover {
+        text-decoration: underline;
     }
 </style>
-<div class="login-container animated fadeInDown">
-    <div class="loginbox bg-white">
-        <div class="loginbox-logo">
-            <img src="/TemplateCustomer/Images/logo.png" alt="Logo">
-        </div>
-        <div class="loginbox-title">SIGN IN</div>
-        <div class="loginbox-or">
-            <div class="or-line"></div>
-        </div>
-        <div class="loginbox-textbox">
-            <input type="text" class="form-control" placeholder="Email">
-        </div>
-        <div class="loginbox-textbox">
-            <input type="password" class="form-control" placeholder="Password">
-        </div>
-        <div class="loginbox-forgot">
-            <a href="#!quenmatkhau">Forgot Password?</a>
-        </div>
-        <div class="loginbox-submit">
-            <input type="button" class="btn btn-primary btn-block" value="Login">
-        </div>
+<form>
+    <div class="loginbox-logo">
+        <img src="/TemplateCustomer/Images/logo.png" alt="Logo">
     </div>
-</div>
+    <h3>Đăng Nhập</h3>
+
+    <label for="username">Email</label>
+    <input type="text" placeholder="Email" id="username">
+
+    <label for="password">Password</label>
+    <input type="password" placeholder="Password" id="password">
+    <p class="back-to-login"><a href="#!quenmatkhau">Forgot Password?</a></p>
+    <button>Log In</button>
+
+</form>
