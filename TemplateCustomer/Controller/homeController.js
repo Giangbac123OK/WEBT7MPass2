@@ -43,25 +43,28 @@ app.controller('homeController', function ($scope, $http) {
     $http.get("https://localhost:7196/api/Sanphams/GetALLSanPham")
         .then(function (response) {
             const products = response.data;
-            $scope.thuongHieu = groupByThuongHieu(products,4);
+
+            const validProducts = products.filter(sp => sp.sanphamchitiets && sp.sanphamchitiets.length > 0);
+
+            $scope.thuongHieu = groupByThuongHieu(validProducts,4);
             console.log($scope.thuongHieu);
             // Xử lý từng loại danh sách sản phẩm
             $scope.sanPhamMoi = processSanPham(
-                products.sort((a, b) => new Date(b.ngayThemSanPham) - new Date(a.ngayThemSanPham))
+                validProducts.sort((a, b) => new Date(b.ngayThemSanPham) - new Date(a.ngayThemSanPham))
             );
             $scope.spDanhGiaCao = processSanPham(
-                products
+                validProducts
                 .sort((a, b) => b.trungBinhDanhGia - a.trungBinhDanhGia)
                 .slice(0, 4)
             );
             $scope.sanPhamPhoBien = processSanPham(
-                products
+                validProducts
                 .sort((a, b) => $scope.getTotalSPCT(b) - $scope.getTotalSPCT(a))
                 .slice(0, 3)
             );
 
             $scope.sanPhamKhuyenMai = processSanPham(
-                products.filter(sp => sp.giasale < sp.giaban).sort((a, b) => b.giasale - a.giasale)
+                validProducts.filter(sp => sp.giasale < sp.giaban).sort((a, b) => b.giasale - a.giasale)
             );
 
             $scope.isLoading = false; // Kết thúc chờ tải

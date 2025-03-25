@@ -18,23 +18,25 @@ app.controller('SanPhamSaleController', function ($scope, $http) {
     // Lấy danh sách sản phẩm
     $http.get("https://localhost:7196/api/Sanphams/GetALLSanPhamGiamGia")
         .then(function (response) {
-            $scope.sanPhamSale = response.data.map(sp => {
+            $scope.sanPham = response.data
+            .filter(sp => sp.sanphamchitiets && sp.sanphamchitiets.length > 0)
+            .map(sp => {
                 sp.hinhAnh = "default-image.jpg"; // Ảnh mặc định
-  
-                if (sp.sanphamchitiets && sp.sanphamchitiets.length > 0) {
-                    let spct = sp.sanphamchitiets[0];
-                    loadHinhAnh(spct.id, function (imgUrl) {
-                        sp.hinhAnh = imgUrl;
-                        $scope.$apply(); // Cập nhật lại view
-                    });
-                }
-  
+
+                // Lấy hình ảnh từ sản phẩm chi tiết đầu tiên
+                let spct = sp.sanphamchitiets[0];
+                loadHinhAnh(spct.id, function (imgUrl) {
+                    sp.hinhAnh = imgUrl;
+                    $scope.$apply(); // Cập nhật lại view
+                });
+
                 return sp;
             });
-             console.log($scope.sanPhamSale);
-             
-            // Cập nhật tổng số trang
-            $scope.totalPages = Math.ceil($scope.sanPhamSale.length / $scope.pageSize);
+
+        console.log($scope.sanPham);
+
+        // Cập nhật tổng số trang
+        $scope.totalPages = Math.ceil($scope.sanPham.length / $scope.pageSize);
         })
         .catch(function (error) {
             console.error("Lỗi khi tải danh sách sản phẩm:", error);
