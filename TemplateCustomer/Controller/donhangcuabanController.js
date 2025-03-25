@@ -20,6 +20,9 @@ app.controller('donhangcuabanController', function($scope, $http) {
             .catch(function (error) {
                 console.error("Lỗi khi lấy dữ liệu:", error);
             });
+        if($scope.dataHoaDon==null){
+            return $scope.thongbaotimkiem = "Không tìm thấy mã hóa đơn "+$scope.searchText
+        }
     };
 
     // Theo dõi sự thay đổi của searchText
@@ -50,10 +53,13 @@ app.controller('donhangcuabanController', function($scope, $http) {
         .catch(function(error){
             console.error(error)
         })
+    
+    
     $scope.chitietdh = function(id) {
         $scope.idhd = id;
         $("#chitietModal").modal("show");
     };
+    
     $http.get("https://localhost:7196/api/Sanphamchitiets")
         .then(function (response) {
             $scope.sanphamct = response.data;
@@ -62,5 +68,54 @@ app.controller('donhangcuabanController', function($scope, $http) {
         .catch(function (error) {
             console.error("Lỗi khi lấy dữ liệu:", error);
         });
+    $http.get("https://localhost:7196/api/Sanphams")
+        .then(function (response) {
+            $scope.sanphamList = response.data;
+            console.log("sanpham:", $scope.sanphamList);
+        })
+        .catch(function (error) {
+            console.error("Lỗi khi lấy dữ liệu:", error);
+        });
+
+    $http.get("https://localhost:7196/api/Thuonghieu")
+        .then(function (response) {
+            $scope.ThuonghieuList = response.data;
+            console.log("Thuonghieu:", $scope.ThuonghieuList);
+        })
+        .catch(function (error) {
+            console.error("Lỗi khi lấy dữ liệu:", error);
+        });
+    $scope.SelecttenSp = function(id) {
+        if (!$scope.sanphamList || $scope.sanphamList.length === 0) {
+                return "Đang tải...";
+        }
+        
+        let sanpham = $scope.sanphamList.find(x => x.id == id);
+        return sanpham ? sanpham.tenSanpham : "Không tìm thấy sản phẩm";
+    };
+    $scope.SelectTenTH = function(id) {
+        if (!$scope.sanphamList || $scope.sanphamList.length === 0 || 
+            !$scope.ThuonghieuList || $scope.ThuonghieuList.length === 0) {
+            return "Đang tải...";
+        }
+    
+        let sanpham = $scope.sanphamList.find(x => x.id == id);
+        if (!sanpham) {
+            return "Không tìm thấy sản phẩm";
+        }
+    
+        let thuonghieu = $scope.ThuonghieuList.find(x => x.id == sanpham.idth);
+        return thuonghieu ? thuonghieu.tenthuonghieu : "Không tìm thấy thương hiệu";
+    };
+    $http.get("https://localhost:7196/api/Phuongthucthanhtoans/")
+            .then(function (response) {
+                $scope.ListPttt = response.data;
+                    console.log("Phương thức thanh toán:", $scope.ListPttt);
+            })
+            .catch(function (error) {
+                console.error("Lỗi khi lấy dữ liệu:", error);
+                $scope.ListPttt = "Lỗi tải dữ liệu";
+            });
+            //aaaaaaffffffffff
 });
 
