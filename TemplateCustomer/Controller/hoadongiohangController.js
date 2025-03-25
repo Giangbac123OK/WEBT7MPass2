@@ -277,10 +277,9 @@ app.controller("hoadongiohangCtr", function ($document, $rootScope, $routeParams
         const totalProductElement = document.querySelector("#tongSanPham");
         const totalInvoiceElement = document.querySelector("#tongHoaDon");
         const vanChuyenElement = document.querySelector("#phiVanCHuyen");
-
+    
         let totalProduct = 0;
-
-        // Tính tổng giá trị sản phẩm
+    
         productItems.forEach((item) => {
             const priceElement = item.querySelector(".total-price");
             if (priceElement) {
@@ -288,21 +287,15 @@ app.controller("hoadongiohangCtr", function ($document, $rootScope, $routeParams
                 totalProduct += price;
             }
         });
-
-        // Lấy số tiền giảm giá và đảm bảo nó luôn là giá trị dương
-        let discount = parseInt(discountElement.textContent.replace(" VNĐ", "").replace(/\./g, "")) || 0;
-
-        // Lấy phí vận chuyển (mặc định là 0 nếu không có)
-        let shippingFee = parseInt(vanChuyenElement.textContent.replace(" VNĐ", "").replace(/\./g, "")) || 0;
-
-        // Cập nhật tổng giá trị sản phẩm
+    
+        let discount = parseInt(discountElement.textContent.replace(/[^0-9]/g, "")) || 0;
+        let shippingFee = parseInt(vanChuyenElement.textContent.replace(/[^0-9]/g, "")) || 0;
+    
         totalProductElement.textContent = `${totalProduct.toLocaleString('vi-VN')} VNĐ`;
-
-        // Tính tổng hóa đơn (bao gồm phí vận chuyển)
-        const totalInvoiceValue = Math.max(0, totalProduct + discount + shippingFee);
+    
+        const totalInvoiceValue = Math.max(0, totalProduct - discount + shippingFee);
         totalInvoiceElement.textContent = `${totalInvoiceValue.toLocaleString('vi-VN')} VNĐ`;
     }
-
 
     // Hàm render sản phẩm
     async function renderSanPham() {
@@ -824,38 +817,34 @@ app.controller("hoadongiohangCtr", function ($document, $rootScope, $routeParams
     document.getElementById('diemsudungcheckbox').addEventListener('change', function () {
         const diemsudungElement = document.getElementById('diemsudung');
         const tongHoaDonElement = document.getElementById('tongHoaDon');
-        const diemSuDungHienThiElement = document.getElementById('diemSuDungHienThi'); // Đối tượng hiển thị số điểm sử dụng bên cạnh hóa đơn
-
-        // Lấy giá trị điểm sử dụng và tổng hóa đơn
+        const diemSuDungHienThiElement = document.getElementById('diemSuDungHienThi');
+    
         const diemsudung = parseInt(diemsudungElement.innerText.replace(/[VNĐ.,]/g, "").trim() || "0", 10);
         let tongHoaDon = parseInt(tongHoaDonElement.innerText.replace(/[VNĐ.,]/g, "") || "0", 10);
-
-        // Kiểm tra trạng thái checkbox
+    
         if (this.checked) {
-            // Nếu điểm sử dụng lớn hơn hoặc bằng tổng hóa đơn, chỉ trừ đủ số tiền trong hóa đơn
             if (diemsudung >= tongHoaDon) {
-                diemTru = tongHoaDon;  // Lưu số tiền trừ vào biến diemTru
-                tongHoaDon = 0;         // Trừ hết số tiền
+                diemTru = tongHoaDon;
+                tongHoaDon = 0;
             } else {
-                diemTru = diemsudung;  // Lưu số tiền trừ vào biến diemTru
-                tongHoaDon -= diemsudung;  // Trừ số điểm sử dụng vào tổng hóa đơn
+                diemTru = diemsudung;
+                tongHoaDon -= diemsudung;
             }
-
-            // Cập nhật số điểm sử dụng hiển thị bên cạnh hóa đơn
+    
             diemSuDungHienThiElement.innerText = `Sử dụng: ${diemTru.toLocaleString()} VNĐ`;
-
         } else {
-            // Nếu bỏ chọn, hoàn lại số tiền đã trừ
-            tongHoaDon += diemTru;  // Cộng lại số tiền đã trừ
-            diemTru = 0;  // Reset lại biến diemTru
-
-            // Ẩn số điểm sử dụng bên cạnh hóa đơn khi checkbox không được chọn
+            tongHoaDon += diemTru;
+            diemTru = 0;
             diemSuDungHienThiElement.innerText = '';
         }
-
-        // Cập nhật tổng hóa đơn
+    
         tongHoaDonElement.innerText = `${tongHoaDon.toLocaleString()} VNĐ`;
+    
+        // Nếu tổng hóa đơn = 0 thì disable checkbox
+        const diemSuDungCheckbox = document.getElementById('diemsudungcheckbox');
+        diemSuDungCheckbox.disabled = (tongHoaDon === 0);
     });
+    
     document.querySelectorAll('.voucher-card').forEach(card => {
         card.addEventListener('click', function () {
             // Lấy ra id của voucher được chọn từ thẻ card
@@ -1058,17 +1047,23 @@ app.controller("hoadongiohangCtr", function ($document, $rootScope, $routeParams
         });
     });
 
-    const confirmButton = document.querySelector('#btnAddVoucher');
-    confirmButton.addEventListener('click', function () {
+    document.querySelector('#btnAddVoucher').addEventListener('click', function () {
         const selectedVoucher = document.querySelector('input[name="voucher"]:checked');
-
+    
         if (!selectedVoucher) {
             Swal.fire('Thông báo', 'Vui lòng chọn một voucher.', 'warning');
             return;
         }
-
-        const selectedVoucherId = selectedVoucher.dataset.value; // Lấy ID của voucher
-
+    
+        // Vô hiệu hóa checkbox trước khi thực hiện tính toán
+        const diemSuDungCheckbox = document.getElementById('diemsudungcheckbox');
+        if (diemSuDungCheckbox.checked) {
+            diemSuDungCheckbox.checked = false;
+            diemSuDungCheckbox.dispatchEvent(new Event('change')); // Cập nhật tổng hóa đơn
+        }
+    
+        const selectedVoucherId = selectedVoucher.dataset.value;
+    
         Swal.fire({
             title: 'Xác Nhận Voucher',
             text: `Bạn có chắc chắn muốn áp dụng voucher này?`,
@@ -1078,81 +1073,42 @@ app.controller("hoadongiohangCtr", function ($document, $rootScope, $routeParams
             cancelButtonText: 'Hủy Bỏ'
         }).then((result) => {
             if (result.isConfirmed) {
-                // Gọi API để lấy thông tin voucher dựa trên ID
                 fetch(`${discountApiUrl}/${selectedVoucherId}`)
                     .then(response => response.json())
                     .then(voucher => {
                         if (voucher && voucher.giatri) {
                             const voucherCodeInput = document.getElementById('voucherCodeDisplay');
-
-                            // Gán ID làm giá trị (value) của input
                             voucherCodeInput.setAttribute('data-value', selectedVoucherId);
-
-                            // Hiển thị mô tả voucher bên trong input bằng cách thay đổi placeholder
                             voucherCodeInput.setAttribute('placeholder', voucher.mota);
                             voucherCodeInput.textContent = `${voucher.mota}`;
-                            voucherCodeInput.classList.add('active'); // Nếu cần style input sau khi chọn
-
+                            voucherCodeInput.classList.add('active');
+    
                             const soTienGiamGia = document.getElementById('soTienGiamGia');
                             const tongHoaDonElement = document.getElementById('tongHoaDon');
                             const tongSanPhamElement = document.getElementById('tongSanPham');
-
-                            const tongSanPhamValue = parseInt(tongSanPhamElement.textContent.replace(/[VNĐ.]/g, ''));
+                            const vanChuyenElement = document.getElementById('phiVanCHuyen');
+    
+                            const tongSanPhamValue = parseInt(tongSanPhamElement.textContent.replace(/[^0-9]/g, '')) || 0;
+                            const vanchuyenValue = parseInt(vanChuyenElement.textContent.replace(/[^0-9]/g, '')) || 0;
                             let soTienGiam = 0;
-
-                            // Tính toán số tiền giảm tùy thuộc vào đơn vị của voucher
+    
                             if (voucher.donvi === 'VND') {
                                 soTienGiam = voucher.giatri;
                             } else if (voucher.donvi === '%') {
                                 soTienGiam = tongSanPhamValue * (voucher.giatri / 100);
                             }
-
-                            // Hiển thị số tiền giảm
-                            soTienGiamGia.textContent = `-${soTienGiam.toLocaleString()} VNĐ`;
-                            soTienGiamGia.style.color = 'red';
-
-                            if (soTienGiamGia < 0) {
-                                soTienGiamGia = Math.abs(soTienGiamGia); // Chuyển thành giá trị dương
-                            }
-
-                            // Cập nhật tổng hóa đơn
-                            const tongHoaDonValue = Math.max(0, tongSanPhamValue - soTienGiam);
-                            tongHoaDonElement.textContent = `${tongHoaDonValue.toLocaleString()} VNĐ`;
-
-                            // Gọi hàm updateTotals để tính lại tổng sản phẩm và hóa đơn
+    
+                            soTienGiamGia.textContent = soTienGiam > 0 ? `-${soTienGiam.toLocaleString()} VNĐ` : '0 VNĐ';
+                            soTienGiamGia.style.color = soTienGiam > 0 ? 'red' : 'black';
+    
                             updateTotals();
-
-                            const tongHoaDonValuecheck = parseInt(tongHoaDonEl.textContent.replace(/[VNĐ.]/g, ''));
-                            const cashOnDeliveryLabel = getLabelByText("Thanh toán khi nhận hàng"); // Tìm nhãn "Thanh toán khi nhận hàng"
-                            const bankTransferLabel = getLabelByText("Chuyển khoản ngân hàng"); // Tìm nhãn "Chuyển khoản ngân hàng"
-
-                            // Lấy id của các radio button thông qua thuộc tính 'for' của label
-                            const cashOnDeliveryRadioId = cashOnDeliveryLabel ? cashOnDeliveryLabel.getAttribute('for') : null;
-                            const bankTransferRadioId = bankTransferLabel ? bankTransferLabel.getAttribute('for') : null;
-
-                            // Tìm radio buttons theo id
-                            const cashOnDeliveryRadio = cashOnDeliveryRadioId ? document.getElementById(cashOnDeliveryRadioId) : null;
-                            const bankTransferRadio = bankTransferRadioId ? document.getElementById(bankTransferRadioId) : null;
-
-                            if (tongHoaDonValuecheck === 0) {
-                                if (cashOnDeliveryRadio) {
-                                    cashOnDeliveryRadio.checked = true; // Chọn "Thanh toán khi nhận hàng"
-                                }
-                                if (bankTransferRadio) {
-                                    bankTransferRadio.disabled = true; // Vô hiệu hóa "Chuyển khoản ngân hàng"
-                                }
-                                if (bankTransferLabel) {
-                                    bankTransferLabel.style.display = "none"; // Ẩn nhãn
-                                }
-                            } else {
-                                if (bankTransferRadio) {
-                                    bankTransferRadio.disabled = false; // Bật lại "Chuyển khoản ngân hàng"
-                                }
-                                if (bankTransferLabel) {
-                                    bankTransferLabel.style.display = "inline-block"; // Hiện lại nhãn
-                                }
-                            }
-
+    
+                            const tongHoaDonValue = Math.max(0, tongSanPhamValue + vanchuyenValue - soTienGiam);
+                            tongHoaDonElement.textContent = `${tongHoaDonValue.toLocaleString()} VNĐ`;
+    
+                            // Kiểm tra nếu tổng hóa đơn = 0 thì disable checkbox
+                            diemSuDungCheckbox.disabled = (tongHoaDonValue === 0);
+    
                             document.getElementById("btnRestoreVoucher").style.display = 'inline-block';
                             Swal.fire(
                                 'Xác Nhận Thành Công',
@@ -1173,8 +1129,8 @@ app.controller("hoadongiohangCtr", function ($document, $rootScope, $routeParams
         });
     });
 
+
     document.getElementById("btnRestoreVoucher").addEventListener("click", function () {
-        // Hiển thị hộp thoại xác nhận huỷ voucher
         Swal.fire({
             title: 'Xác nhận huỷ voucher?',
             text: "Bạn có chắc chắn muốn huỷ voucher đã chọn?",
@@ -1185,45 +1141,47 @@ app.controller("hoadongiohangCtr", function ($document, $rootScope, $routeParams
             reverseButtons: true
         }).then((result) => {
             if (result.isConfirmed) {
-                // Xử lý khi nhấn "Huỷ"
                 const voucherCodeDisplay = document.getElementById('voucherCodeDisplay');
                 const soTienGiamGia = document.getElementById('soTienGiamGia');
                 const tongHoaDonElement = document.getElementById('tongHoaDon');
                 const tongSanPhamElement = document.getElementById('tongSanPham');
-
+                const diemSuDungCheckbox = document.getElementById('diemsudungcheckbox');
+    
                 // Khôi phục trạng thái ban đầu
                 voucherCodeDisplay.textContent = 'Chưa chọn voucher';
-                voucherCodeDisplay.setAttribute('data-voucher-code', ''); // Reset voucher code
-                voucherCodeDisplay.classList.remove('active'); // Remove active class
-                voucherCodeDisplay.removeAttribute('data-value'); // Xóa thuộc tính dữ liệu không cần thiết
-                voucherCodeDisplay.setAttribute('placeholder', 'Nhập mã giảm giá'); // Thiết lập lại placeholder
-
-                // Reset số tiền giảm và tổng hóa đơn
+                voucherCodeDisplay.setAttribute('data-voucher-code', '');
+                voucherCodeDisplay.classList.remove('active');
+                voucherCodeDisplay.removeAttribute('data-value');
+                voucherCodeDisplay.setAttribute('placeholder', 'Nhập mã giảm giá');
+    
+                // Reset số tiền giảm
                 soTienGiamGia.textContent = '0 VNĐ';
-
-                // Lấy giá trị tổng số sản phẩm (loại bỏ ký tự không phải số)
-                const tongSanPhamValue = parseInt(tongSanPhamElement.textContent.replace(/[VNĐ.]/g, ''));
-
-                // Cập nhật tổng hóa đơn sau khi xóa voucher
+    
+                // Lấy giá trị tổng sản phẩm
+                const tongSanPhamValue = parseInt(tongSanPhamElement.textContent.replace(/[VNĐ.]/g, '')) || 0;
                 tongHoaDonElement.textContent = `${tongSanPhamValue.toLocaleString()} VNĐ`;
-
+    
+                // Mở lại checkbox nếu tổng hóa đơn > 0
+                if (tongSanPhamValue > 0) {
+                    diemSuDungCheckbox.disabled = false;
+                }
+    
                 // Ẩn nút "Khôi phục voucher"
                 document.getElementById("btnRestoreVoucher").style.display = 'none';
-
+    
                 updateTotals();
-
-                // Đóng modal
+    
+                // Đóng modal nếu có
                 var modal = bootstrap.Modal.getInstance(document.getElementById("addVoucherButton"));
-                modal.hide();
-
-                // Hiển thị thông báo thành công
+                if (modal) modal.hide();
+    
+                // Thông báo thành công
                 Swal.fire("Thành Công", "Huỷ áp dụng voucher thành công.", "success");
             } else {
-                // Nếu người dùng chọn "Hủy bỏ", chỉ đóng thông báo mà không làm gì thêm
                 Swal.close();
             }
         });
-    });
+    });  
 
     // API endpoint
     const apiUrl = "https://localhost:7196/api/Phuongthucthanhtoans";
@@ -1420,6 +1378,8 @@ app.controller("hoadongiohangCtr", function ($document, $rootScope, $routeParams
             if (!hoaDonChiTietResult) return; // Dừng nếu thêm chi tiết hóa đơn thất bại
 
             sessionStorage.clear();
+
+            await sendOrderSuccessEmail(idhd);
 
             await deleteProduct();
 
@@ -1683,6 +1643,23 @@ app.controller("hoadongiohangCtr", function ($document, $rootScope, $routeParams
         } catch (error) {
             console.error("Lỗi khi xóa chi tiết giỏ hàng:", error);
             return false; // Trả về false nếu có lỗi
+        }
+    }
+    async function sendOrderSuccessEmail(orderId) {
+        try {
+            const response = await fetch(`https://localhost:7196/api/Hoadons/SendOrderSuccessEmail/${orderId}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+
+            const result = await response.json();
+            if (!response.ok) {
+                console.error("Lỗi trong quá trình gửi mail:", result);
+            }
+        } catch (error) {
+            console.error("Lỗi khi gọi API:", error);
         }
     }
 
