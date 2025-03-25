@@ -21,5 +21,9 @@ app.config(function ($routeProvider) {
             templateUrl: "./Views/sale.html",
             controller: "saleController"
         })
+        .when("/quanlyhoadon", {
+            templateUrl: "./Views/quanlyhoadon.html",
+            controller: "quanlyhoadonController"
+        })
         .otherwise("/")
 });
