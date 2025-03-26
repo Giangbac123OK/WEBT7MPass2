@@ -1,15 +1,36 @@
+<style>
+    .cropper-container {
+        max-height: 80vh;
+        /* Giới hạn chiều cao */
+        overflow: hidden;
+        /* Ẩn phần thừa */
+    }
+
+    #cropperImage {
+        display: block;
+        max-width: 100%;
+        /* Đảm bảo ảnh rộng 100% modal */
+        max-height: 100%;
+        /* Tự động căn chỉnh theo modal */
+    }
+</style>
 <div class="container">
     <div class="row mb-3">
         <div class="col-3">
-            <img src="./Images/user.png" class="rounded-circle border border-dark" width="50px" height="50px" alt="" srcset="">
+            <img src="./Images/user.png" class="rounded-circle border border-dark" width="50px" height="50px" alt=""
+                srcset="">
             <span class="fw-bold">Quốc trung</span>
             <hr>
             <div>
                 <a class="fs-5 text-decoration-none text-danger"><i class="bi bi-person-fill"></i> Hồ sơ của tôi</a><br>
-                <a href="#!diachi" class="fs-5 text-decoration-none text-dark"><i class="bi bi-geo-alt-fill"></i> Địa chỉ của tôi</a><br>
-                <a href="#!donhangcuaban" class="fs-5 text-decoration-none text-dark"><i class="bi bi-bag-fill"></i> Đơn hàng của tôi</a><br>
-                <a href="#!voucher" class="fs-5 text-decoration-none text-dark"><i class="bi bi-list"></i> Kho voucher</a><br>
-                <a href="#!doimatkhau" class="fs-5 text-decoration-none text-dark"><i class="bi bi-key-fill"></i> Đổi mật khẩu</a>
+                <a href="#!diachi" class="fs-5 text-decoration-none text-dark"><i class="bi bi-geo-alt-fill"></i> Địa
+                    chỉ của tôi</a><br>
+                <a href="#!donhangcuaban" class="fs-5 text-decoration-none text-dark"><i class="bi bi-bag-fill"></i> Đơn
+                    hàng của tôi</a><br>
+                <a href="#!voucher" class="fs-5 text-decoration-none text-dark"><i class="bi bi-list"></i> Kho
+                    voucher</a><br>
+                <a href="#!doimatkhau" class="fs-5 text-decoration-none text-dark"><i class="bi bi-key-fill"></i> Đổi
+                    mật khẩu</a>
             </div>
         </div>
         <div class="col-9">
@@ -20,43 +41,75 @@
                         <label for="ten" class="form-label">Tên đầy đủ</label>
                         <input type="text" class="form-control" id="ten" ng-model="dataTttk.ten">
                     </div>
-                
+
                     <div class="mb-3 fw-bolder">
                         <label for="email" class="form-label">Email</label>
                         <input type="email" class="form-control" id="email" ng-model="dataTttk.email">
                     </div>
-                
+
                     <div class="mb-3 fw-bolder">
                         <label for="sdt" class="form-label">Số điện thoại</label>
                         <input type="tel" class="form-control" id="sdt" ng-model="dataTttk.sdt">
                     </div>
-                
+
                     <div class="mb-3">
                         <label for="gioitinh" class="form-label">Giới tính</label>
                         <div class="d-flex align-items-center">
                             <div class="form-check me-3">
-                                <input class="form-check-input" type="radio" name="gioitinh" id="gioitinhNam" ng-model="dataTttk.gioitinh" ng-value="true">
+                                <input class="form-check-input" type="radio" name="gioitinh" id="gioitinhNam"
+                                    ng-model="dataTttk.gioitinh" ng-value="true">
                                 <label class="form-check-label" for="gioitinhNam">Nam</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="gioitinh" id="gioitinhNu" ng-model="dataTttk.gioitinh" ng-value="false">
+                                <input class="form-check-input" type="radio" name="gioitinh" id="gioitinhNu"
+                                    ng-model="dataTttk.gioitinh" ng-value="false">
                                 <label class="form-check-label" for="gioitinhNu">Nữ</label>
                             </div>
                         </div>
                     </div>
-                
+
                     <div class="mb-3 fw-bolder">
                         <label for="ngaysinh" class="form-label">Ngày sinh</label>
-                        <input type="date" class="form-control" 
-                               id="ngaysinh" 
-                               ng-model="dataTttk.ngaysinh" 
-                               ng-init="dataTttk.ngaysinh = dataTttk.ngaysinh ? dataTttk.ngaysinh.split('T')[0] : null">
+                        <input type="date" class="form-control" id="ngaysinh" ng-model="dataTttk.ngaysinh"
+                            ng-init="dataTttk.ngaysinh = dataTttk.ngaysinh ? dataTttk.ngaysinh.split('T')[0] : null">
                     </div>
                     <button class="btn btn-primary" ng-click="btnLuu(dataTttk.id)">Lưu</button>
                 </div>
+
                 <div class="col-md-3 text-center">
-                    <img ng-src="./Images/{{dataTttk.avatar}}" class="rounded-circle m-auto d-block" width="200px" height="200px">
+                    <!-- Ảnh đã cắt -->
+                    <img id="previewImage" ng-src="https://localhost:7196/picture/{{dataTttk.avatar}}" class="rounded-circle m-auto d-block"
+                        width="200px" height="200px">
+
+                    <!-- Input chọn ảnh -->
+                    <input type="file" id="imageInput" accept="image/png, image/jpeg" class="mt-2 d-none">
+
+                    <!-- Nút chọn ảnh -->
+                    <button type="button" class="btn btn-primary mt-2" id="btnSelectImage">Chọn ảnh</button>
+
+                    <p class="text-muted mt-2">Hình ảnh chỉ lưu tối đa 10MB, định dạng PNG hoặc JPEG.</p>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Cắt Ảnh -->
+<div class="modal fade" id="cropModal" tabindex="-1" aria-labelledby="cropModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl"> <!-- Sử dụng modal-xl để to hơn -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chỉnh sửa ảnh</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="cropper-container">
+                    <img id="cropperImage" class="w-100"> <!-- Đảm bảo ảnh full-width -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-success" id="btnCropConfirm">Xác nhận</button>
             </div>
         </div>
     </div>

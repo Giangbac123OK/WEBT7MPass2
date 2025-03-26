@@ -55,52 +55,56 @@ app.controller('dangkyController', function ($scope, $http) {
             $scope.errorMessage = ageErrorMessage;
             return;
         }
+        
+        // Kiểm tra họ tên
         var fullNameErrorMessage = isValidFullName($scope.user.ten);
         if (fullNameErrorMessage) {
             $scope.errorMessage = fullNameErrorMessage;
             return;
         }
-        if (!$scope.user.gioitinh) {
+        
+        // Kiểm tra giới tính (đảm bảo là boolean)
+        if ($scope.user.gioitinh === undefined || $scope.user.gioitinh === null) {
             $scope.errorGender = 'Vui lòng chọn giới tính.';
             return;
         }
-        $scope.$watch('user.gioitinh', function (newValue) {
-            if (newValue !== undefined) {
-                $scope.errorGender = '';
-            }
-        });
+        
+        // Chuyển đổi giới tính sang boolean nếu cần
+        var gioitinhValue = $scope.user.gioitinh;
+        if (typeof gioitinhValue === 'string') {
+            gioitinhValue = (gioitinhValue.toLowerCase() === 'true');
+        }
+        
         // Kiểm tra mật khẩu
         if (!isValidPassword($scope.user.password)) {
             $scope.errorMessage = 'Mật khẩu phải có ít nhất 6 ký tự';
             return;
         }
+        
         if (!isValidPhoneNumber($scope.user.sdt)) {
-            $scope.errorMessage = 'Số điện thoại phải có 10 chữ số ';
+            $scope.errorMessage = 'Số điện thoại phải có 10 chữ số';
             return;
         }
+        
         if (!isValidEmail($scope.user.email)) {
             $scope.errorMessage = 'Email không hợp lệ';
             return;
         }
-        // Kiểm tra nếu mật khẩu không khớp
+        
+        // Kiểm tra mật khẩu khớp
         if ($scope.user.password !== $scope.user.confirmPassword) {
             $scope.errorMessage = 'Mật khẩu không khớp';
             return;
         }
-
+    
         // Gửi yêu cầu đăng ký
         $http.post('https://localhost:7196/api/Login/_KhachHang/register', {
             Ten: $scope.user.ten,
             Sdt: $scope.user.sdt,
             Ngaysinh: $scope.user.ngaysinh,
             Email: $scope.user.email,
-            // Diachi: $scope.user.diachi,
             Password: $scope.user.password,
-            tichdiem: 0,
-            gioitinh: $scope.user.gioitinh,
-            diemsudung: 0,
-            trangthai: 0,
-            idrank: 1,
+            gioitinh: gioitinhValue, // Sử dụng giá trị đã chuyển đổi
         }).then(function (response) {
             $scope.successMessage = 'Đăng ký thành công';
             $scope.errorMessage = '';
