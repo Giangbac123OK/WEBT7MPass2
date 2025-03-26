@@ -1,31 +1,39 @@
-app.controller('trahangController', function ($http, $scope,$location,$routeParams) {
-  const idhd = $routeParams.id;
-  console.log(idhd);
-  $scope.spct =[];
-  $http.get("https://localhost:7196/api/Hoadonchitiets")
-    .then(function(response) {
-      // Kiểm tra xem dữ liệu có tồn tại không
-      if (response.data && response.data.length) {
-        $scope.hoadonChiTiet = response.data.find(x => x.idhd == idhd);
-        console.log($scope.hoadonChiTiet);
-      } else {
-        console.log("Không có dữ liệu nào được trả về.");
+app.controller('trahangController', function ($http, $scope, $location, $routeParams) {
+  $scope.idhd = $routeParams.id;
+  console.log($scope.idhd);
+
+  // Gọi API để lấy danh sách sản phẩm
+  $http.get("https://localhost:7196/api/Trahangchitiets/ListSanPhamByIdhd/" + $scope.idhd)
+      .then(function (response) {
+          $scope.dataSp = response.data.map(sp => {
+              sp.maxsoluong = sp.soluong; // Số lượng tối đa từ API
+              return sp;
+          });
+          $scope.tinhTongTien(); // Tính tổng tiền ban đầu
+          console.log($scope.dataSp);
+      })
+      .catch(function (error) {
+          console.error(error);
+      });
+
+  // Hàm tính tổng tiền
+  $scope.tinhTongTien = function () {
+      $scope.tongtien = $scope.dataSp.reduce((total, sp) => total + (sp.soluong * sp.giasp), 0);
+  };
+
+  // Tăng số lượng
+  $scope.increase = function (sp) {
+      if (sp.soluong < sp.maxsoluong) {
+          sp.soluong++;
+          $scope.tinhTongTien();
       }
-    })
-    .catch(function(error) {
-      console.error("Lỗi khi lấy dữ liệu:", error);
-    });
-    $http.get("https://localhost:7196/api/Sanphamchitiets")
-    .then(function(response) {
-      // Kiểm tra xem dữ liệu có tồn tại không
-      if (response.data && response.data.length) {
-        $scope.SanphamChiTiet = response.data;
-        console.log($scope.SanphamChiTiet);
-      } else {
-        console.log("Không có dữ liệu nào được trả về.");
+  };
+
+  // Giảm số lượng
+  $scope.decrease = function (sp) {
+      if (sp.soluong > 1) {
+          sp.soluong--;
+          $scope.tinhTongTien();
       }
-    })
-    .catch(function(error) {
-      console.error("Lỗi khi lấy dữ liệu:", error);
-    });
+  };
 });
