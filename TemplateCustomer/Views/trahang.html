@@ -1,375 +1,352 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Yêu Cầu Trả Hàng/Hoàn Tiền - Shopee</title>
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Bootstrap Icons -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body class="bg-light">
-  <!-- Header -->
-   <style>
-    /* Custom Styles */
+<style>
+  /* Custom Styles */
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 .shopee-logo {
-  color: #ee4d2d;
-  font-size: 1.5rem;
-  font-weight: 700;
+color: #ee4d2d;
+font-size: 1.5rem;
+font-weight: 700;
 }
 
 /* Custom Radio Button Styling */
 .custom-reason-option {
-  border: 1px solid #dee2e6;
-  border-radius: 0.375rem;
-  padding: 0.75rem;
-  margin-bottom: 0.75rem;
-  transition: all 0.2s ease;
+border: 1px solid #dee2e6;
+border-radius: 0.375rem;
+padding: 0.75rem;
+margin-bottom: 0.75rem;
+transition: all 0.2s ease;
 }
 
 .custom-reason-option:hover {
-  background-color: #f8f9fa;
-  cursor: pointer;
+background-color: #f8f9fa;
+cursor: pointer;
 }
 
 .custom-reason-option input[type="radio"] {
-  margin-top: 0.3rem;
+margin-top: 0.3rem;
 }
 
 .custom-reason-option label {
-  cursor: pointer;
-  padding-left: 0.5rem;
+cursor: pointer;
+padding-left: 0.5rem;
 }
 
 /* Upload Box Styling */
 .upload-box {
-  border: 1px dashed #dee2e6;
-  border-radius: 0.375rem;
-  padding: 1.5rem 0.5rem;
-  text-align: center;
-  cursor: pointer;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  position: relative;
-  aspect-ratio: 1/1;
+border: 1px dashed #dee2e6;
+border-radius: 0.375rem;
+padding: 1.5rem 0.5rem;
+text-align: center;
+cursor: pointer;
+height: 100%;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+transition: all 0.2s ease;
+position: relative;
+aspect-ratio: 1/1;
 }
 
 .upload-box:hover {
-  background-color: #f8f9fa;
+background-color: #f8f9fa;
 }
 
 .upload-box i {
-  font-size: 1.5rem;
-  color: #adb5bd;
-  margin-bottom: 0.5rem;
+font-size: 1.5rem;
+color: #adb5bd;
+margin-bottom: 0.5rem;
 }
 
 .upload-box span {
-  font-size: 0.875rem;
-  color: #6c757d;
+font-size: 0.875rem;
+color: #6c757d;
 }
 
 .upload-input {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  cursor: pointer;
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+opacity: 0;
+cursor: pointer;
 }
 
 /* Image Preview Styling */
 .image-preview {
-  position: relative;
-  border: 1px solid #dee2e6;
-  border-radius: 0.375rem;
-  overflow: hidden;
-  aspect-ratio: 1/1;
+position: relative;
+border: 1px solid #dee2e6;
+border-radius: 0.375rem;
+overflow: hidden;
+aspect-ratio: 1/1;
 }
 
 .image-preview img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+width: 100%;
+height: 100%;
+object-fit: cover;
 }
 
 .remove-image {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 1.5rem;
-  height: 1.5rem;
-  font-size: 0.875rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
+position: absolute;
+top: 0.5rem;
+right: 0.5rem;
+background-color: #dc3545;
+color: white;
+border: none;
+border-radius: 50%;
+width: 1.5rem;
+height: 1.5rem;
+font-size: 0.875rem;
+display: flex;
+align-items: center;
+justify-content: center;
+cursor: pointer;
 }
 
 /* Button Styling */
 .btn-danger {
-  background-color: #ee4d2d;
-  border-color: #ee4d2d;
+background-color: #ee4d2d;
+border-color: #ee4d2d;
 }
 
 .btn-danger:hover, .btn-danger:focus {
-  background-color: #d73211;
-  border-color: #d73211;
+background-color: #d73211;
+border-color: #d73211;
 }
 
 .btn-danger:disabled {
-  background-color: #f8a48b;
-  border-color: #f8a48b;
+background-color: #f8a48b;
+border-color: #f8a48b;
 }
 
 /* Text Colors */
 .text-danger {
-  color: #ee4d2d !important;
+color: #ee4d2d !important;
 }
-   </style>
-   <script src="/WEBT7MPass2/New folder/Controller/trahangCtrl.js"></script>
-  <header class="bg-white border-bottom shadow-sm py-3">
-    <div class="container">
-      <div class="d-flex align-items-center">
-        <div class="shopee-logo">Shopee</div>
-        <div class="ms-4 fs-5 fw-medium">Trả Hàng & Hoàn Tiền</div>
-      </div>
+ </style>
+<header class="bg-white border-bottom shadow-sm py-3">
+  <div class="container">
+    <div class="d-flex align-items-center">
+      <div class="shopee-logo">Shopee</div>
+      <div class="ms-4 fs-5 fw-medium">Trả Hàng & Hoàn Tiền</div>
     </div>
-  </header>
+  </div>
+</header>
 
-  <!-- Main Content -->
-  <div class="container py-4">
-    <div class="d-flex align-items-center mb-4">
-      <button class="btn btn-link text-secondary p-0 me-2">
-        <i class="bi bi-chevron-left"></i>
-      </button>
-      <h1 class="fs-4 fw-medium mb-0">Yêu cầu Trả hàng/Hoàn tiền</h1>
-    </div>
-    
-    <form id="returnForm">
-      <div class="row g-4">
-        <!-- Main Form Column -->
-        <div class="col-lg-8">
-          <!-- Product Information Card -->
-          <div class="card mb-4">
-            <div class="card-header border-bottom">
-              <h5 class="card-title mb-0">Thông tin đơn hàng</h5>
-            </div>
-            <div class="card-body">
-              <div class="d-flex gap-3 border-bottom pb-3 mb-3">
-                <div class="flex-shrink-0">
-                  <img src="https://via.placeholder.com/80" alt="Product" class="img-thumbnail" width="80">
-                </div>
-                <div class="flex-grow-1">
-                  <p class="fw-medium">[E-Voucher Vietnam] Thái Lan: Bangkok - Pattaya</p>
-                  <p class="text-secondary small">Phân loại: Mono Pink Phối nổi</p>
-                  <p class="text-secondary small">x1</p>
-                </div>
-                <div class="flex-shrink-0 fw-medium">
-                  đ310.000
-                </div>
-              </div>
-              
-              <div class="alert alert-warning d-flex align-items-center" role="alert">
-                <i class="bi bi-info-circle me-2"></i>
-                <div class="small">
-                  Đơn hàng đã được giao thành công vào ngày 10-01-2024
-                </div>
-              </div>
-            </div>
+<!-- Main Content -->
+<div class="container py-4">
+  <div class="d-flex align-items-center mb-4">
+    <button class="btn btn-link text-secondary p-0 me-2">
+      <i class="bi bi-chevron-left"></i>
+    </button>
+    <h1 class="fs-4 fw-medium mb-0">Yêu cầu Trả hàng/Hoàn tiền</h1>
+  </div>
+  
+  <form id="returnForm">
+    <div class="row g-4">
+      <!-- Main Form Column -->
+      <div class="col-lg-8">
+        <!-- Product Information Card -->
+        <div class="card mb-4">
+          <div class="card-header border-bottom">
+            <h5 class="card-title mb-0">Thông tin đơn hàng</h5>
           </div>
-          
-          <!-- Return Reason Card -->
-          <div class="card mb-4">
-            <div class="card-header border-bottom">
-              <h5 class="card-title mb-0">Lý do trả hàng</h5>
-            </div>
-            <div class="card-body">
-              <div class="return-reasons">
-                <div class="form-check custom-reason-option mb-3">
-                  <input class="form-check-input" type="radio" name="returnReason" id="reason1" value="defective">
-                  <label class="form-check-label w-100" for="reason1">
-                    Hàng lỗi, không hoạt động
-                  </label>
-                </div>
-                
-                <div class="form-check custom-reason-option mb-3">
-                  <input class="form-check-input" type="radio" name="returnReason" id="reason2" value="damaged">
-                  <label class="form-check-label w-100" for="reason2">
-                    Hàng hết hạn sử dụng
-                  </label>
-                </div>
-                
-                <div class="form-check custom-reason-option mb-3">
-                  <input class="form-check-input" type="radio" name="returnReason" id="reason3" value="other">
-                  <label class="form-check-label w-100" for="reason3">
-                    Khác với mô tả
-                  </label>
-                </div>
-                
-                <div class="form-check custom-reason-option mb-3">
-                  <input class="form-check-input" type="radio" name="returnReason" id="reason4" value="used">
-                  <label class="form-check-label w-100" for="reason4">
-                    Hàng đã qua sử dụng
-                  </label>
-                </div>
-                
-                <div class="form-check custom-reason-option mb-3">
-                  <input class="form-check-input" type="radio" name="returnReason" id="reason5" value="fake">
-                  <label class="form-check-label w-100" for="reason5">
-                    Hàng giả, nhái
-                  </label>
-                </div>
-                
-                <div class="form-check custom-reason-option">
-                  <input class="form-check-input" type="radio" name="returnReason" id="reason6" value="missing">
-                  <label class="form-check-label w-100" for="reason6">
-                    Hàng nguyên vẹn nhưng không còn như cũ (đã trả nguyên seal, tem, hộp sản phẩm)
-                  </label>
-                </div>
+          <div class="card-body">
+            <div class="d-flex gap-3 border-bottom pb-3 mb-3">
+              <div class="flex-shrink-0">
+                <img src="https://via.placeholder.com/80" alt="Product" class="img-thumbnail" width="80">
+              </div>
+              <div class="flex-grow-1">
+                <p class="fw-medium">[E-Voucher Vietnam] Thái Lan: Bangkok - Pattaya</p>
+                <p class="text-secondary small">Phân loại: Mono Pink Phối nổi</p>
+                <p class="text-secondary small">x1</p>
+              </div>
+              <div class="flex-shrink-0 fw-medium">
+                đ310.000
               </div>
             </div>
-          </div>
-          
-          <!-- Additional Information Card -->
-          <div class="card mb-4">
-            <div class="card-header border-bottom">
-              <h5 class="card-title mb-0">Thông tin bổ sung</h5>
-            </div>
-            <div class="card-body">
-              <div class="mb-4">
-                <label for="refundMethod" class="form-label fw-medium">Phương thức hoàn tiền</label>
-                <select class="form-select" id="refundMethod">
-                  <option value="balance" selected>Số dư TK Shopee</option>
-                  <option value="bank">Tài khoản ngân hàng</option>
-                  <option value="card">Thẻ tín dụng/ghi nợ</option>
-                </select>
-              </div>
-              
-              <div class="mb-4">
-                <label for="errorCode" class="form-label fw-medium">Mã lỗi (nếu có)</label>
-                <input type="text" class="form-control" id="errorCode" placeholder="Nhập mã lỗi">
-              </div>
-              
-              <div class="mb-4">
-                <label for="description" class="form-label fw-medium">Mô tả vấn đề</label>
-                <textarea class="form-control" id="description" rows="4" placeholder="Vui lòng mô tả chi tiết vấn đề bạn gặp phải với sản phẩm"></textarea>
-                <div class="form-text">
-                  Mô tả càng chi tiết sẽ giúp chúng tôi xử lý yêu cầu của bạn nhanh hơn
-                </div>
-              </div>
-              
-              <div>
-                <label class="form-label fw-medium">Bằng chứng (<span id="imageCount">0</span>/3)</label>
-                <div class="row g-3 mb-2" id="imagePreviewContainer">
-                  <div class="col-md-3">
-                    <div class="upload-box" id="uploadBox1">
-                      <i class="bi bi-upload"></i>
-                      <span>Thêm hình ảnh</span>
-                      <input type="file" class="upload-input" id="imageUpload1" accept="image/*">
-                    </div>
-                  </div>
-                  <div class="col-md-3">
-                    <div class="upload-box" id="uploadBox2">
-                      <i class="bi bi-camera"></i>
-                      <span>Chụp ảnh</span>
-                      <input type="file" class="upload-input" id="imageUpload2" accept="image/*" capture>
-                    </div>
-                  </div>
-                </div>
-                <div class="form-text">
-                  Hãy đăng tải hình ảnh rõ nét (1080x1080 pixel, videos có độ dài 10MB/phút) để chúng tôi xử lý yêu cầu của bạn nhanh chóng và chính xác.
-                </div>
+            
+            <div class="alert alert-warning d-flex align-items-center" role="alert">
+              <i class="bi bi-info-circle me-2"></i>
+              <div class="small">
+                Đơn hàng đã được giao thành công vào ngày 10-01-2024
               </div>
             </div>
           </div>
         </div>
         
-        <!-- Summary Column -->
-        <div class="col-lg-4">
-          <div class="card sticky-top" style="top: 1rem;">
-            <div class="card-header border-bottom">
-              <h5 class="card-title mb-0">Tóm tắt yêu cầu</h5>
+        <!-- Return Reason Card -->
+        <div class="card mb-4">
+          <div class="card-header border-bottom">
+            <h5 class="card-title mb-0">Lý do trả hàng</h5>
+          </div>
+          <div class="card-body">
+            <div class="return-reasons">
+              <div class="form-check custom-reason-option mb-3">
+                <input class="form-check-input" type="radio" name="returnReason" id="reason1" value="defective">
+                <label class="form-check-label w-100" for="reason1">
+                  Hàng lỗi, không hoạt động
+                </label>
+              </div>
+              
+              <div class="form-check custom-reason-option mb-3">
+                <input class="form-check-input" type="radio" name="returnReason" id="reason2" value="damaged">
+                <label class="form-check-label w-100" for="reason2">
+                  Hàng hết hạn sử dụng
+                </label>
+              </div>
+              
+              <div class="form-check custom-reason-option mb-3">
+                <input class="form-check-input" type="radio" name="returnReason" id="reason3" value="other">
+                <label class="form-check-label w-100" for="reason3">
+                  Khác với mô tả
+                </label>
+              </div>
+              
+              <div class="form-check custom-reason-option mb-3">
+                <input class="form-check-input" type="radio" name="returnReason" id="reason4" value="used">
+                <label class="form-check-label w-100" for="reason4">
+                  Hàng đã qua sử dụng
+                </label>
+              </div>
+              
+              <div class="form-check custom-reason-option mb-3">
+                <input class="form-check-input" type="radio" name="returnReason" id="reason5" value="fake">
+                <label class="form-check-label w-100" for="reason5">
+                  Hàng giả, nhái
+                </label>
+              </div>
+              
+              <div class="form-check custom-reason-option">
+                <input class="form-check-input" type="radio" name="returnReason" id="reason6" value="missing">
+                <label class="form-check-label w-100" for="reason6">
+                  Hàng nguyên vẹn nhưng không còn như cũ (đã trả nguyên seal, tem, hộp sản phẩm)
+                </label>
+              </div>
             </div>
-            <div class="card-body">
-              <div class="mb-3">
-                <div class="d-flex justify-content-between mb-2">
-                  <span class="text-secondary">Phương án</span>
-                  <span class="fw-medium">Trả hàng và Hoàn tiền</span>
+          </div>
+        </div>
+        
+        <!-- Additional Information Card -->
+        <div class="card mb-4">
+          <div class="card-header border-bottom">
+            <h5 class="card-title mb-0">Thông tin bổ sung</h5>
+          </div>
+          <div class="card-body">
+            <div class="mb-4">
+              <label for="refundMethod" class="form-label fw-medium">Phương thức hoàn tiền</label>
+              <select class="form-select" id="refundMethod">
+                <option value="balance" selected>Số dư TK Shopee</option>
+                <option value="bank">Tài khoản ngân hàng</option>
+                <option value="card">Thẻ tín dụng/ghi nợ</option>
+              </select>
+            </div>
+            
+            <div class="mb-4">
+              <label for="errorCode" class="form-label fw-medium">Mã lỗi (nếu có)</label>
+              <input type="text" class="form-control" id="errorCode" placeholder="Nhập mã lỗi">
+            </div>
+            
+            <div class="mb-4">
+              <label for="description" class="form-label fw-medium">Mô tả vấn đề</label>
+              <textarea class="form-control" id="description" rows="4" placeholder="Vui lòng mô tả chi tiết vấn đề bạn gặp phải với sản phẩm"></textarea>
+              <div class="form-text">
+                Mô tả càng chi tiết sẽ giúp chúng tôi xử lý yêu cầu của bạn nhanh hơn
+              </div>
+            </div>
+            
+            <div>
+              <label class="form-label fw-medium">Bằng chứng (<span id="imageCount">0</span>/3)</label>
+              <div class="row g-3 mb-2" id="imagePreviewContainer">
+                <div class="col-md-3">
+                  <div class="upload-box" id="uploadBox1">
+                    <i class="bi bi-upload"></i>
+                    <span>Thêm hình ảnh</span>
+                    <input type="file" class="upload-input" id="imageUpload1" accept="image/*">
+                  </div>
                 </div>
-                <div class="d-flex justify-content-between mb-2">
-                  <span class="text-secondary">Lý do</span>
-                  <span class="fw-medium" id="selectedReasonText">Chưa chọn</span>
-                </div>
-                <div class="d-flex justify-content-between">
-                  <span class="text-secondary">Hoàn tiền vào</span>
-                  <span class="fw-medium" id="selectedRefundMethodText">Số dư TK Shopee</span>
+                <div class="col-md-3">
+                  <div class="upload-box" id="uploadBox2">
+                    <i class="bi bi-camera"></i>
+                    <span>Chụp ảnh</span>
+                    <input type="file" class="upload-input" id="imageUpload2" accept="image/*" capture>
+                  </div>
                 </div>
               </div>
-              
-              <hr>
-              
-              <div class="mb-3">
-                <div class="d-flex justify-content-between mb-2">
-                  <span class="text-secondary">Giá sản phẩm</span>
-                  <span>đ310.000</span>
-                </div>
-                <div class="d-flex justify-content-between mb-2">
-                  <span class="text-secondary">Phí vận chuyển</span>
-                  <span>đ15.000</span>
-                </div>
-                <div class="d-flex justify-content-between">
-                  <span class="text-secondary">Giảm giá</span>
-                  <span>-đ5.000</span>
-                </div>
-              </div>
-              
-              <hr>
-              
-              <div class="d-flex justify-content-between align-items-center mb-4">
-                <span class="fw-medium">Số tiền hoàn lại</span>
-                <span class="fs-4 text-danger fw-medium">đ320.000</span>
-              </div>
-              
-              <button type="submit" class="btn btn-danger w-100 mb-3" id="submitButton" disabled>
-                Gửi yêu cầu
-              </button>
-              
-              <div class="alert alert-secondary d-flex" role="alert">
-                <i class="bi bi-box-seam me-2"></i>
-                <div>
-                  <p class="small fw-medium mb-1">Lưu ý quan trọng</p>
-                  <p class="small mb-0">
-                    Sau khi gửi yêu cầu, bạn sẽ cần đóng gói sản phẩm và gửi trả lại cho người bán trong vòng 3 ngày. Shopee sẽ hoàn tiền sau khi người bán xác nhận đã nhận được hàng trả lại.
-                  </p>
-                </div>
+              <div class="form-text">
+                Hãy đăng tải hình ảnh rõ nét (1080x1080 pixel, videos có độ dài 10MB/phút) để chúng tôi xử lý yêu cầu của bạn nhanh chóng và chính xác.
               </div>
             </div>
           </div>
         </div>
       </div>
-    </form>
-  </div>
-
-  <!-- Bootstrap JS Bundle with Popper -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <!-- Custom JavaScript -->
-  
-</body>
-</html>
+      
+      <!-- Summary Column -->
+      <div class="col-lg-4">
+        <div class="card sticky-top" style="top: 1rem;">
+          <div class="card-header border-bottom">
+            <h5 class="card-title mb-0">Tóm tắt yêu cầu</h5>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-secondary">Phương án</span>
+                <span class="fw-medium">Trả hàng và Hoàn tiền</span>
+              </div>
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-secondary">Lý do</span>
+                <span class="fw-medium" id="selectedReasonText">Chưa chọn</span>
+              </div>
+              <div class="d-flex justify-content-between">
+                <span class="text-secondary">Hoàn tiền vào</span>
+                <span class="fw-medium" id="selectedRefundMethodText">Số dư TK Shopee</span>
+              </div>
+            </div>
+            
+            <hr>
+            
+            <div class="mb-3">
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-secondary">Giá sản phẩm</span>
+                <span>đ310.000</span>
+              </div>
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-secondary">Phí vận chuyển</span>
+                <span>đ15.000</span>
+              </div>
+              <div class="d-flex justify-content-between">
+                <span class="text-secondary">Giảm giá</span>
+                <span>-đ5.000</span>
+              </div>
+            </div>
+            
+            <hr>
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <span class="fw-medium">Số tiền hoàn lại</span>
+              <span class="fs-4 text-danger fw-medium">đ320.000</span>
+            </div>
+            
+            <button type="submit" class="btn btn-danger w-100 mb-3" id="submitButton" disabled>
+              Gửi yêu cầu
+            </button>
+            
+            <div class="alert alert-secondary d-flex" role="alert">
+              <i class="bi bi-box-seam me-2"></i>
+              <div>
+                <p class="small fw-medium mb-1">Lưu ý quan trọng</p>
+                <p class="small mb-0">
+                  Sau khi gửi yêu cầu, bạn sẽ cần đóng gói sản phẩm và gửi trả lại cho người bán trong vòng 3 ngày. Shopee sẽ hoàn tiền sau khi người bán xác nhận đã nhận được hàng trả lại.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
