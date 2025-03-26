@@ -1,4 +1,4 @@
-app.controller('donhangcuabanController', function($scope, $http) {
+app.controller('donhangcuabanController', function($scope, $http,$location) {
     // select hóa đơn theo mã khách hàng
     
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));

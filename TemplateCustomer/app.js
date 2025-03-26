@@ -72,8 +72,9 @@ app.config(function($routeProvider){
           templateUrl: './Views/quenmatkhau.html',
           controller: 'quenmatkhauController'
       })
-      .when('/trahang', {
+      .when('/trahang/:id', {
         templateUrl: './Views/trahang.html',
+        controller: 'trahangController'
         
     })
       .when('/doimatkhau22', {
