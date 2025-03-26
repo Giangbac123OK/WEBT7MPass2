@@ -131,7 +131,7 @@ color: #ee4d2d !important;
 <header class="bg-white border-bottom shadow-sm py-3">
   <div class="container">
     <div class="d-flex align-items-center">
-      <div class="shopee-logo">Shopee</div>
+      <div class="shopee-logo">T7M Sneaker</div>
       <div class="ms-4 fs-5 fw-medium">Trả Hàng & Hoàn Tiền</div>
     </div>
   </div>
@@ -140,9 +140,9 @@ color: #ee4d2d !important;
 <!-- Main Content -->
 <div class="container py-4">
   <div class="d-flex align-items-center mb-4">
-    <button class="btn btn-link text-secondary p-0 me-2">
+    <a href="#!donhangcuaban" class="btn btn-link text-secondary p-0 me-2">
       <i class="bi bi-chevron-left"></i>
-    </button>
+    </a>
     <h1 class="fs-4 fw-medium mb-0">Yêu cầu Trả hàng/Hoàn tiền</h1>
   </div>
   
@@ -151,33 +151,44 @@ color: #ee4d2d !important;
       <!-- Main Form Column -->
       <div class="col-lg-8">
         <!-- Product Information Card -->
-        <div class="card mb-4">
-          <div class="card-header border-bottom">
-            <h5 class="card-title mb-0">Thông tin đơn hàng</h5>
-          </div>
-          <div class="card-body">
-            <div class="d-flex gap-3 border-bottom pb-3 mb-3">
-              <div class="flex-shrink-0">
-                <img src="https://via.placeholder.com/80" alt="Product" class="img-thumbnail" width="80">
-              </div>
-              <div class="flex-grow-1">
-                <p class="fw-medium">[E-Voucher Vietnam] Thái Lan: Bangkok - Pattaya</p>
-                <p class="text-secondary small">Phân loại: Mono Pink Phối nổi</p>
-                <p class="text-secondary small">x1</p>
-              </div>
-              <div class="flex-shrink-0 fw-medium">
-                đ310.000
-              </div>
-            </div>
-            
-            <div class="alert alert-warning d-flex align-items-center" role="alert">
-              <i class="bi bi-info-circle me-2"></i>
-              <div class="small">
-                Đơn hàng đã được giao thành công vào ngày 10-01-2024
-              </div>
-            </div>
-          </div>
-        </div>
+        <table class="table table-bordered bg-white shadow-sm text-center">
+          <thead class="bg-dark text-white">
+              <tr>
+                  <th scope="col"><input type="checkbox"></th>
+                  <th scope="col" colspan="2" class="text-center">Sản phẩm</th>
+                  <th scope="col">Màu</th>
+                  <th scope="col">Size</th>
+                  <th scope="col">Chất liệu</th>
+                  <th scope="col">Đơn giá</th>
+                  <th scope="col">Số lượng</th>
+                  <th scope="col">Thành tiền</th>
+              </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="sp in dataSp">
+              <td class="align-middle">
+                  <input type="checkbox" class="product-checkbox">
+              </td>
+              <td class="align-middle position-relative">
+                  <img src="https://localhost:7196/picture/{{sp.urlHinhanh}}" alt="Ảnh sản phẩm" class="rounded" width="100px">
+              </td>
+              <td class="align-middle" style="width: 20%;">{{sp.tensp}}</td>
+              <td class="align-middle">{{sp.mau}}</td>
+              <td class="align-middle">{{sp.size}}</td>
+              <td class="align-middle">{{sp.chatlieu}}</td>
+              <td class="align-middle">{{sp.giasp| currency:"₫":0 }}</td>
+              <td class="align-middle">
+                  <div class="d-flex justify-content-center align-items-center">
+                    <button ng-click="decrease(sp)" type="button" class="btn btn-sm btn-outline-dark" ng-disabled="sp.soluong <= 1">-</button>
+                    <input type="number" class="form-control text-center mx-2"
+                           ng-model="sp.soluong" min="1" max="{{sp.soluong}}" readonly disabled>
+                    <button ng-click="increase(sp)" type="button" class="btn btn-sm btn-outline-dark" ng-disabled="sp.soluong >= sp.maxsoluong">+</button>
+                  </div>
+              </td>
+              <td class="align-middle">{{tongtien| currency:"₫":0}}</td>
+            </tr>
+          </tbody>
+      </table>
         
         <!-- Return Reason Card -->
         <div class="card mb-4">

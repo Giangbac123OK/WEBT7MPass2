@@ -100,7 +100,22 @@ app.run(function ($rootScope, $location, $http) {
       $rootScope.isLoggedIn = false;
       $rootScope.userInfo = null;
   }
-  
+  // Hàm lấy số lượng sản phẩm trong giỏ hàng
+async function fetchSoDongGioHang() {
+  const idkh = GetByidKH();
+  try {
+      const response = await $http.get(`https://localhost:7196/api/Giohangchitiet/Sodongiohangct/${idkh}`);
+      $rootScope.sodongioHang = response.data; // Giả sử API trả về số lượng
+  } catch (error) {
+      console.error("Lỗi khi lấy số lượng giỏ hàng:", error);
+      $rootScope.sodongioHang = 0; // Giá trị mặc định nếu có lỗi
+  }
+}
+
+// Gọi hàm lấy số lượng giỏ hàng ngay khi khởi động
+fetchSoDongGioHang();
+
+
   // Kiểm tra trạng thái khách hàng mỗi khi chuyển trang
     $rootScope.$on('$routeChangeStart', function (event, next, current) {
       const idkh = GetByidKH();
@@ -172,4 +187,5 @@ app.run(function ($rootScope, $location, $http) {
       console.error('Lỗi toàn cục:', error);
       
   });
+
 });
