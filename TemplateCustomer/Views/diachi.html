@@ -9,40 +9,108 @@
         text-decoration: underline;
         cursor: pointer;
     }
+    
+    .profile-card {
+        position: sticky;
+        top: 20px;
+    }
+    
+    .nav-link {
+        padding: 10px 15px;
+        transition: all 0.2s;
+    }
+    
+    .nav-link:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .nav-link.active {
+        background-color: #0d6efd;
+        color: white !important;
+    }
+    
+    .address-card {
+        transition: transform 0.3s, box-shadow 0.3s;
+        border-left: 4px solid #0d6efd;
+    }
+    
+    .address-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .address-card-default {
+        border-left: 4px solid #ffc107;
+    }
+    
+    .address-icon {
+        width: 60px;
+        height: 60px;
+        background-color: #e9f0ff;
+        color: #0d6efd;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+    
+    @media (max-width: 768px) {
+        .profile-card {
+            position: static;
+            margin-bottom: 20px;
+        }
+    }
 </style>
-<div class="container">
-    <div class="row mb-3">
-        <div class="col-3">
-            <img src="./Images/user.png" class="rounded-circle border border-dark" width="50px" height="50px" alt=""
-                srcset="">
-            <span class="fw-bold">Quốc trung</span>
-            <hr>
-            <div>
-                <a href="#!thongtintaikhoan" class="fs-5 text-decoration-none text-dark"><i
-                        class="bi bi-person-fill"></i> Hồ sơ của tôi</a><br>
-                <a class="fs-5 text-decoration-none text-danger"><i class="bi bi-geo-alt-fill"></i> Địa chỉ của
-                    tôi</a><br>
-                <a href="#!donhangcuaban" class="fs-5 text-decoration-none text-dark"><i class="bi bi-bag-fill"></i> Đơn
-                    hàng của tôi</a><br>
-                <a href="#!voucher" class="fs-5 text-decoration-none text-dark"><i class="bi bi-list"></i> Kho
-                    voucher</a><br>
-                <a href="#!doimatkhau" class="fs-5 text-decoration-none text-dark"><i class="bi bi-key-fill"></i> Đổi
-                    mật khẩu</a>
+
+<div class="container-fluid py-4 bg-light">
+    <div class="row g-4">
+        <!-- Sidebar Profile -->
+        <div class="col-lg-3">
+            <div class="profile-card p-4 rounded-4 bg-white shadow-sm">
+                <div class="text-center mb-4">
+                    <img src="./Images/user.png" class="rounded-circle object-fit-cover border border-3 border-white shadow" width="100" height="100" alt="Profile">
+                    <h5 class="mt-3 mb-1 fw-semibold">Quốc Trung</h5>
+                    <p class="text-muted small">Thành viên Bạc</p>
+                </div>
+                
+                <nav class="nav flex-column gap-2">
+                    <a class="nav-link rounded-3" href="#!thongtintaikhoan">
+                        <i class="bi bi-person me-2"></i> Hồ sơ
+                    </a>
+                    <a class="nav-link rounded-3 active">
+                        <i class="bi bi-geo-alt me-2"></i> Địa chỉ
+                    </a>
+                    <a class="nav-link rounded-3" href="#!donhangcuaban">
+                        <i class="bi bi-bag me-2"></i> Đơn hàng của bạn
+                    </a>
+                    <a class="nav-link rounded-3" href="#!voucher">
+                        <i class="bi bi-ticket-perforated me-2"></i> Voucher
+                    </a>
+                    <a class="nav-link rounded-3" href="#!doimatkhau">
+                        <i class="bi bi-shield-lock me-2"></i> Đổi mật khẩu
+                    </a>
+                </nav>
             </div>
         </div>
-        <div class="col-9 p-3 bg-light">
-            <div class="row border-bottom mb-3">
-                <div class="d-flex justify-content-between">
-                    <div class="p-2 bd-highlight">Địa chỉ của tôi</div>
-                    <div class="p-2 bd-highlight">
-                        <button type="button" style="background-color: orangered; color: white;" class="btn rounded-0"
-                            data-bs-toggle="modal" data-bs-target="#AddAddressModal"><i class="bi bi-plus"></i> Thêm địa
-                            chỉ mới</button>
-                    </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-9">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 p-4 bg-white rounded-4 shadow-sm">
+                <div>
+                    <h4 class="fw-bold mb-1">Địa Chỉ Của Tôi</h4>
+                    <p class="text-muted mb-0">Quản lý địa chỉ giao hàng của bạn</p>
+                </div>
+                <div class="mt-3 mt-md-0">
+                    <button type="button" class="btn btn-danger px-4" data-bs-toggle="modal" data-bs-target="#AddAddressModal">
+                        <i class="bi bi-plus me-2"></i>Thêm địa chỉ mới
+                    </button>
                 </div>
             </div>
-            <div class="row p-3">
-                <div class="diachi-list"></div>
+
+            <!-- Address List -->
+            <div class="row g-4 diachi-list">
+                <!-- Address items will be rendered here -->
             </div>
         </div>
     </div>
