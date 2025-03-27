@@ -3,10 +3,14 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
     $scope.selectedSPCTId = $routeParams.id;
     $scope.inputQuantity = $location.search().quantity;
     const priceElement = document.querySelector(".total-price");
-
+     
     let danhSachSanPham = [];
     let sale = [];
 
+    
+
+   
+    
     window.onload = function () {
         if ($scope.inputQuantity && priceElement) {
             updateTotalPrice();
@@ -34,6 +38,8 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
         chieurong: null,
         chieucao: null
     };
+
+      
 
     async function fetchSanPhamChitiet() {
         try {

@@ -1,13 +1,14 @@
-app.controller('donhangcuabanController', function($scope, $http,$location) {
+
+app.controller('donhangcuabanController', function ($scope, $http, $location) {
     // select hóa đơn theo mã khách hàng
-    
+
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));
     console.log(userInfo);
     let idkh = userInfo.id;
 
     // Hàm gọi API lấy dữ liệu hóa đơn
     $scope.loadHoaDon = function () {
-        let api = "https://localhost:7196/api/Hoadons/hoa-don-theo-ma-kh-"+idkh;
+        let api = "https://localhost:7196/api/Hoadons/hoa-don-theo-ma-kh-" + idkh;
         if ($scope.searchText && $scope.searchText.trim() !== "") {
             api += `?search=${encodeURIComponent($scope.searchText)}`;
         }
@@ -20,8 +21,8 @@ app.controller('donhangcuabanController', function($scope, $http,$location) {
             .catch(function (error) {
                 console.error("Lỗi khi lấy dữ liệu:", error);
             });
-        if($scope.dataHoaDon==null){
-            return $scope.thongbaotimkiem = "Không tìm thấy mã hóa đơn "+$scope.searchText
+        if ($scope.dataHoaDon == null) {
+            return $scope.thongbaotimkiem = "Không tìm thấy mã hóa đơn " + $scope.searchText
         }
     };
 
@@ -31,35 +32,345 @@ app.controller('donhangcuabanController', function($scope, $http,$location) {
             $scope.loadHoaDon();
         }
     });
+   
+    $scope.files = []; // Lưu file upload
+    $scope.imagePreview = []; // Lưu link preview ảnh
+    $scope.review = {}; // Đối tượng đánh giá
+
+    // Mở modal đánh giá
+    $scope.openRatingModal = function (product, ) {
+        $scope.selectedProduct = product;
+        $scope.review = {
+            content: '',
+            rating: 5,
+            ngaydanhgia: new Date().toISOString(),
+            idhdct: product.id,
+            idkh: idkh
+        };
+
+        try {
+            const myModal = new bootstrap.Modal(document.getElementById('ratingModal'), { keyboard: false });
+            myModal.show();
+        } catch (err) {
+            console.error('Error while opening modal:', err);
+        }
+    };
+    $scope.openEditRatingModal = function (product) {
+        const currentRating = $scope.danhgiaById[product.id];
+        console.log("currentRating", currentRating);
+        
+        if (!currentRating) {
+            alert("Không tìm thấy đánh giá để sửa.");
+            return;
+        }
+    
+        $scope.selectedProduct = product;
+        $scope.review = {
+            content: currentRating.noidungdanhgia,
+            rating: currentRating.sosao,
+            ngaydanhgia: new Date().toISOString(),
+            idhdct: product.id,
+            idkh: currentRating.idkh,
+            id: currentRating.id // ID đánh giá để sửa
+        };
+    
+        // Hiển thị ảnh cũ (nếu có)
+        $scope.files = []; // Clear file uploads mới
+        $scope.imagePreview = currentRating.hinhanh || []; // Cập nhật ảnh đã upload trước đó
+    
+        try {
+            const editModal = new bootstrap.Modal(document.getElementById('ratingModal'), { keyboard: false });
+            editModal.show();
+        } catch (err) {
+            console.error('Error while opening edit modal:', err);
+        }
+    };
+    
+
+    $scope.submitReview = function () {
+        // Kiểm tra thông tin bắt buộc đã được nhập hay chưa
+        if (!$scope.review.rating || !$scope.review.content) {
+            alert('Vui lòng điền đầy đủ thông tin trước khi gửi!');
+            return;
+        }
+    
+        // Tạo đối tượng FormData để gửi dữ liệu
+        var formData = new FormData();
+        formData.append('Idkh', $scope.review.idkh); // ID khách hàng
+        formData.append('Noidungdanhgia', $scope.review.content); // Nội dung đánh giá
+        formData.append('Ngaydanhgia', $scope.review.ngaydanhgia); // Ngày đánh giá
+        formData.append('Idhdct', $scope.review.idhdct); // ID hóa đơn chi tiết
+        formData.append('Sosao', $scope.review.rating); // Số sao đánh giá
+    
+        // Gắn các file được tải lên vào FormData
+        if ($scope.files && $scope.files.length > 0) {
+            for (var i = 0; i < $scope.files.length; i++) {
+                formData.append('files', $scope.files[i]); // Thêm từng file vào FormData
+            }
+        }
+    
+        // Xác định API và phương thức HTTP (POST cho thêm mới, PUT cho sửa)
+        const isEditing = !!$scope.review.id; // Kiểm tra nếu có ID thì đang sửa
+        const apiUrl = isEditing
+            ? `https://localhost:7196/api/Danhgia/DanhGia/${$scope.review.id}` // API sửa
+            : 'https://localhost:7196/api/Danhgia'; // API thêm mới
+        const method = isEditing ? 'PUT' : 'POST'; // Phương thức HTTP
+    
+        // Gửi yêu cầu HTTP
+        $http({
+            method: method,
+            url: apiUrl,
+            data: formData,
+            headers: { 'Content-Type': undefined }, // Để Angular tự xử lý header cho FormData
+            transformRequest: angular.identity // Đảm bảo dữ liệu FormData không bị thay đổi
+        })
+            .then(function (response) {
+                console.log('Đánh giá thành công:', response);
+    
+                // Hiển thị thông báo thành công
+                alert(isEditing ? 'Cập nhật đánh giá thành công!' : 'Cảm ơn bạn đã gửi đánh giá!');
+    
+                // Cập nhật dữ liệu sau khi thêm hoặc sửa
+                const updatedRating = {
+                    id: isEditing ? $scope.review.id : response.data.id, // Lấy ID từ phản hồi nếu thêm mới
+                    idkh: $scope.review.idkh,
+                    idhdct: $scope.review.idhdct,
+                    sosao: $scope.review.rating,
+                    noidungdanhgia: $scope.review.content,
+                    ngaydanhgia: $scope.review.ngaydanhgia
+                };
+    
+                // Lưu hoặc cập nhật vào danh sách đánh giá
+                $scope.danhgiaById[$scope.review.idhdct] = updatedRating;
+    
+                // Đóng modal và reset dữ liệu
+                $("#ratingModal").modal("hide");
+                $scope.files = [];
+                $scope.imagePreview = [];
+                $scope.review = {};
+            })
+            .catch(function (error) {
+                console.error('Lỗi khi gửi đánh giá:', error);
+    
+                // Hiển thị thông báo lỗi
+                alert('Đã xảy ra lỗi khi gửi đánh giá. Vui lòng thử lại!');
+            });
+    };
+    
+    
+    
+    $scope.deleteRating = function (id) {
+        if (!confirm("Bạn có chắc chắn muốn xóa đánh giá này?")) {
+            return;
+        }
+        $http.delete(`https://localhost:7196/api/Danhgia/${id}`)
+            .then(function (response) {
+                console.log("Xóa đánh giá thành công:", response);
+                alert("Đã xóa đánh giá!");
+    
+                // Xóa đánh giá khỏi danh sách
+                Object.keys($scope.danhgiaById).forEach(function (key) {
+                    if ($scope.danhgiaById[key] && $scope.danhgiaById[key].id === id) {
+                        delete $scope.danhgiaById[key];
+                    }
+                });
+            })
+            .catch(function (error) {
+                console.error("Lỗi khi xóa đánh giá:", error);
+                alert("Đã xảy ra lỗi khi xóa đánh giá. Vui lòng thử lại!");
+            });
+    };
+    
+
+
+    // Thiết lập đánh giá sao
+    $scope.setRating = function (star) {
+        $scope.review.rating = star;
+    };
+
+    $scope.handleFileSelect = function (event) {
+        const files = event.target.files;
+
+        // Kiểm tra số lượng file không vượt quá 5
+        if ($scope.files.length + files.length > 5) {
+            alert("Bạn chỉ được chọn tối đa 5 ảnh.");
+            return;
+        }
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+
+            // Chỉ chấp nhận file ảnh
+            if (!file.type.startsWith("image/")) {
+                alert("Chỉ hỗ trợ định dạng ảnh.");
+                continue;
+            }
+
+            // Thêm file vào danh sách
+            $scope.files.push(file);
+
+            // Tạo URL xem trước ảnh
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                $scope.$apply(function () {
+                    $scope.imagePreview.push(e.target.result);
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    // Xóa ảnh khỏi danh sách
+    $scope.removeImage = function (index) {
+        $scope.files.splice(index, 1);
+        $scope.imagePreview.splice(index, 1);
+    };
+
+    // Gửi đánh giá
+    // $scope.submitReview = function () {
+    //     if (!$scope.review.rating || !$scope.review.content) {
+    //         alert('Vui lòng điền đầy đủ thông tin trước khi gửi!');
+    //         return;
+    //     }
+    //     var formData = new FormData();
+    //     formData.append('Idkh', $scope.review.idkh);
+    //     formData.append('Noidungdanhgia', $scope.review.content);
+    //     formData.append('Ngaydanhgia', $scope.review.ngaydanhgia);
+    //     formData.append('Idhdct', $scope.review.idhdct);
+    //     formData.append('Sosao', $scope.review.rating);
+    
+    //     for (var i = 0; i < $scope.files.length; i++) {
+    //         formData.append('files', $scope.files[i]);
+    //     }
+    
+    //     $http.post('https://localhost:7196/api/Danhgia', formData, {
+    //         headers: { 'Content-Type': undefined },
+    //         transformRequest: angular.identity
+    //     })
+    //         .then(function (response) {
+    //             console.log('Gửi đánh giá thành công:', response);
+    //             alert('Cảm ơn bạn đã gửi đánh giá!');
+    //             const newRating = {
+    //                 id: response.data.id,
+    //                 idkh: $scope.review.idkh,
+    //                 idhdct: $scope.review.idhdct,
+    //                 sosao: $scope.review.rating,
+    //                 noidungdanhgia: $scope.review.content,
+    //                 ngaydanhgia: $scope.review.ngaydanhgia
+    //             };
+    //             $scope.danhgiaById[$scope.review.idhdct] = newRating;
+    //             $("#ratingModal").modal("hide");
+    //             $scope.files = [];
+    //             $scope.imagePreview = [];
+    //             $scope.review = {};
+               
+    //         })
+    //         .catch(function (error) {
+    //             console.error('Lỗi khi gửi đánh giá:', error);
+    //             alert('Đã xảy ra lỗi khi gửi đánh giá. Vui lòng thử lại!');
+    //         });
+    // };
+
+   // Hàm tải đánh giá cho HDCT
+$scope.getRatingForHdct = function (id) {
+    // Khởi tạo danh sách nếu chưa có
+    if (!$scope.danhgiaById) {
+        $scope.danhgiaById = {};
+        $scope.isLoadingById = {}; // Cờ để kiểm tra trạng thái đang tải
+    }
+
+    if ($scope.danhgiaById[id] || $scope.isLoadingById[id]) {
+        return $scope.danhgiaById[id];
+    }
+
+    $scope.isLoadingById[id] = true;
+
+    // Gọi API để lấy đánh giá
+    $http.get(`https://localhost:7196/byIDhdct/${id}`)
+        .then(function (response) {
+            // Lưu dữ liệu vào danh sách
+            $scope.danhgiaById[id] = response.data;
+            console.log(`Đánh giá cho HDCT ${id}:`, $scope.danhgiaById[id]);
+            console.log("danhgiaById", $scope.danhgiaById);
+            
+        })
+        .catch(function (error) {
+            console.error(`Lỗi khi tải đánh giá cho HDCT ${id}:`, error);
+            $scope.danhgiaById[id] = null; // Gán null nếu không có dữ liệu
+        })
+        .finally(function () {
+            // Kết thúc trạng thái đang tải
+            $scope.isLoadingById[id] = false;
+        });
+
+    // Trả về mặc định ban đầu cho đến khi API trả về kết quả
+    return null;
+};
+
+// Gọi hàm khi render view
+$scope.loadAllDanhGia = function (listHdct) {
+    if (!listHdct || !Array.isArray(listHdct)) return;
+console.log("listHdct", listHdct);
+
+    listHdct.forEach(function (hdct) {
+        $scope.getRatingForHdct(hdct.id);
+    });
+};
+$scope.deleteRating = function (id) {
+    if (!confirm("Bạn có chắc chắn muốn xóa đánh giá này?")) {
+        return;
+    }
+    $http.delete(`https://localhost:7196/api/Danhgia/_KhachHang/${id}`)
+        .then(function (response) {
+            console.log("Xóa đánh giá thành công:", response);
+            alert("Đã xóa đánh giá!");
+            
+            // Cập nhật lại giao diện
+            $scope.loadAllDanhGia($scope.dataHoaDonCT);
+        })
+        .catch(function (error) {
+            console.error("Lỗi khi xóa đánh giá:", error);
+            alert("Đã xảy ra lỗi khi xóa đánh giá. Vui lòng thử lại!");
+        });
+};
+
+
+
+// Gọi loadHoaDonCT trong hàm init
+$scope.init = function () {
+    $scope.loadHoaDonCT();
+};
 
     // Gọi API ngay khi trang được load
     $scope.loadHoaDon();
     //select hóa đơn chi tiết theo mã hóa đơn
-    
+
     $http.get('https://localhost:7196/api/Hoadonchitiets')
-        .then(function(response){
+        .then(function (response) {
             $scope.dataHoaDonCT = response.data
-            console.log($scope.dataHoaDonCT)
+            console.log("HDCT", $scope.dataHoaDonCT)
+            $scope.loadAllDanhGia($scope.dataHoaDonCT);
+            
         })
-        .catch(function(error){
+        .catch(function (error) {
             console.error(error)
         })
 
     $http.get('https://localhost:7196/api/Trahangs')
-        .then(function(response){
+        .then(function (response) {
             $scope.dataTraHang = response.data
             console.log($scope.dataTraHang)
         })
-        .catch(function(error){
+        .catch(function (error) {
             console.error(error)
         })
-    
-    
-    $scope.chitietdh = function(id) {
+
+
+    $scope.chitietdh = function (id) {
         $scope.idhd = id;
         $("#chitietModal").modal("show");
     };
-    
+
     $http.get("https://localhost:7196/api/Sanphamchitiets")
         .then(function (response) {
             $scope.sanphamct = response.data;
@@ -85,25 +396,25 @@ app.controller('donhangcuabanController', function($scope, $http,$location) {
         .catch(function (error) {
             console.error("Lỗi khi lấy dữ liệu:", error);
         });
-    $scope.SelecttenSp = function(id) {
+    $scope.SelecttenSp = function (id) {
         if (!$scope.sanphamList || $scope.sanphamList.length === 0) {
-                return "Đang tải...";
+            return "Đang tải...";
         }
-        
+
         let sanpham = $scope.sanphamList.find(x => x.id == id);
         return sanpham ? sanpham.tenSanpham : "Không tìm thấy sản phẩm";
     };
-    $scope.SelectTenTH = function(id) {
-        if (!$scope.sanphamList || $scope.sanphamList.length === 0 || 
+    $scope.SelectTenTH = function (id) {
+        if (!$scope.sanphamList || $scope.sanphamList.length === 0 ||
             !$scope.ThuonghieuList || $scope.ThuonghieuList.length === 0) {
             return "Đang tải...";
         }
-    
+
         let sanpham = $scope.sanphamList.find(x => x.id == id);
         if (!sanpham) {
             return "Không tìm thấy sản phẩm";
         }
-    
+
         let thuonghieu = $scope.ThuonghieuList.find(x => x.id == sanpham.idth);
         return thuonghieu ? thuonghieu.tenthuonghieu : "Không tìm thấy thương hiệu";
     };
@@ -125,5 +436,6 @@ app.controller('donhangcuabanController', function($scope, $http,$location) {
                 console.error("Lỗi khi lấy dữ liệu:", error);
                 Swal.fire("Lỗi!", "Không thể lấy thông tin tài khoản. Vui lòng thử lại!", "error");
             });
+    //aaaaaaffffffffff
 });
 

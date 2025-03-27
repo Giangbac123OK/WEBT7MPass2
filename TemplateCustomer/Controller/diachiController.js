@@ -132,50 +132,65 @@ app.controller('diachiController', function ($scope, $http) {
         return userId;
     }
 
-    // Render danh sách địa chỉ ra giao diện
+    // Render danh sách địa chỉ ra giao diện (phiên bản mới)
     function renderAddressList(addresses) {
         const addressContainer = document.querySelector(".diachi-list");
-    
+
         // Sắp xếp danh sách: Địa chỉ có trạng thái = 0 lên đầu
         addresses.sort((a, b) => parseInt(a.trangthai, 10) - parseInt(b.trangthai, 10));
-    
+
         addressContainer.innerHTML = addresses.map(address => {
             const provinceName = provinceMap[address.thanhpho] || "Không xác định";
             const districtName = districtMap[address.quanhuyen] || "Không xác định";
             const wardName = wardMap[address.phuongxa] || "Không xác định";
-    
-            const trangThaiInt = parseInt(address.trangthai, 10);
-            const statusBadge = trangThaiInt === 0 ? `<span class="badge bg-warning ms-2">Mặc định</span>` : "";
-            const defaultButton = trangThaiInt !== 0
-                ? `<button class="btn btn-primary btn-sm default-btn" data-id="${address.id}">Đặt mặc định</button>`
-                : "";
-    
+
+            const isDefault = parseInt(address.trangthai, 10) === 0;
+            const cardClass = isDefault ? "address-card address-card-default" : "address-card";
+
             return `
-            <div class="address-item p-3 border rounded mb-3">
-                <h6 class="mb-1">${address.tennguoinhan} - 
-                    <span class="text-muted">${address.sdtnguoinhan}</span> 
-                    ${statusBadge}
-                </h6>
-                <p class="mb-2">${address.diachicuthe}, ${wardName} - ${districtName} - ${provinceName}</p>
-                <div class="d-flex justify-content-end gap-2">
-                    <a class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#EditAddressModal" onclick="loadEditAddress(${address.id})">
-                        Cập nhật
-                    </a>
-                    <a class="btn btn-outline-danger btn-sm" onclick="deleteAddress(${address.id}, ${address.trangthai})">
-                        Xóa
-                    </a>
-                    ${defaultButton}
+        <div class="col-md-6">
+            <div class="${cardClass} p-4 mb-3 bg-white rounded-4 h-100">
+                <div class="d-flex">
+                    <div class="address-icon me-3">
+                        <i class="bi bi-house"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h5 class="fw-bold mb-1">${address.tennguoinhan}</h5>
+                            ${isDefault ? '<span class="badge bg-warning">Mặc định</span>' : ''}
+                        </div>
+                        <p class="text-muted mb-2"><i class="bi bi-telephone me-2"></i>${address.sdtnguoinhan}</p>
+                        <p class="mb-3">
+                            <i class="bi bi-geo-alt me-2"></i>
+                            ${address.diachicuthe}, ${wardName}, ${districtName}, ${provinceName}
+                        </p>
+                        <div class="d-flex justify-content-end gap-2">
+                            <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" 
+                                data-bs-target="#EditAddressModal" onclick="loadEditAddress(${address.id})">
+                                <i class="bi bi-pencil"></i> Sửa
+                            </button>
+                            <button class="btn btn-outline-danger btn-sm" onclick="deleteAddress(${address.id}, ${address.trangthai})">
+                                <i class="bi bi-trash"></i> Xóa
+                            </button>
+                            ${!isDefault ? `
+                            <button class="btn btn-primary btn-sm default-btn" data-id="${address.id}">
+                                <i class="bi bi-check-circle"></i> Mặc định
+                            </button>` : ''}
+                        </div>
+                    </div>
                 </div>
-            </div>`;
+            </div>
+        </div>`;
         }).join("");
-    
+
+        // Thêm sự kiện cho nút đặt mặc định
         document.querySelectorAll(".default-btn").forEach(button => {
             button.addEventListener("click", function () {
                 const idDiaChi = this.getAttribute("data-id");
                 updateDefaultAddress(idDiaChi);
             });
         });
-    }    
+    }
 
 
     // 🏙️ Lấy danh sách Tỉnh/Thành phố
@@ -267,52 +282,52 @@ app.controller('diachiController', function ($scope, $http) {
         const wardElement = document.getElementById("selectPhuong");
         const diachicuthe = document.getElementById("detailInput").value.trim();
         const idkh = GetByidKH();
-    
+
         const thanhphocheck = provinceElement.value;
         const quanhuyencheck = districtElement.value;
         const phuongxacheck = wardElement.value;
-    
+
         if (!ten) {
             Swal.fire("Lỗi", "Tên người nhận không được để trống!", "error");
             return;
         }
-    
+
         if (!sdt) {
             Swal.fire("Lỗi", "Số điện thoại không được để trống!", "error");
             return;
         }
-    
+
         const phoneRegex = /^[0-9]{10}$/;
         if (!phoneRegex.test(sdt)) {
             Swal.fire("Lỗi", "Số điện thoại phải gồm đúng 10 số và không chứa ký tự khác!", "error");
             return;
         }
-    
+
         if (!thanhphocheck) {
             Swal.fire("Lỗi", "Vui lòng chọn tỉnh/thành phố!", "error");
             return;
         }
-    
+
         if (!quanhuyencheck && !districtElement.disabled) {
             Swal.fire("Lỗi", "Vui lòng chọn quận/huyện!", "error");
             return;
         }
-    
+
         if (!phuongxacheck && !wardElement.disabled) {
             Swal.fire("Lỗi", "Vui lòng chọn phường/xã!", "error");
             return;
         }
-    
+
         if (!diachicuthe) {
             Swal.fire("Lỗi", "Địa chỉ cụ thể không được để trống!", "error");
             return;
         }
-    
+
         if (!idkh) {
             Swal.fire("Lỗi", "Không tìm thấy ID khách hàng!", "error");
             return;
         }
-    
+
         let addressList = [];
         try {
             const response = await fetch(`${apiAddressList}/khachhang/${idkh}`);
@@ -320,7 +335,7 @@ app.controller('diachiController', function ($scope, $http) {
                 Swal.fire("Lỗi", "Không thể kiểm tra danh sách địa chỉ. Vui lòng thử lại sau!", "error");
                 return;
             }
-    
+
             addressList = await response.json();
             if (addressList.length >= 5) {
                 Swal.fire("Lỗi", "Khách hàng này đã có quá 5 địa chỉ. Không thể thêm mới!", "error");
@@ -331,7 +346,7 @@ app.controller('diachiController', function ($scope, $http) {
             Swal.fire("Lỗi", "Đã xảy ra lỗi khi kiểm tra danh sách địa chỉ.", "error");
             return;
         }
-    
+
         const newAddress = {
             id: 0,
             idkh: idkh,
@@ -343,7 +358,7 @@ app.controller('diachiController', function ($scope, $http) {
             diachicuthe: diachicuthe,
             trangthai: addressList.length === 0 ? "0" : "1"
         };
-    
+
         try {
             await axios.post(apiAddressList, newAddress);
             Swal.fire("Thành công", "Địa chỉ mới đã được lưu.", "success")
@@ -353,12 +368,12 @@ app.controller('diachiController', function ($scope, $http) {
             console.error(error);
         }
     });
-    
+
 
     function updateDefaultAddress(idDiaChi) {
         const idDiaChiInt = parseInt(idDiaChi, 10); // Chuyển thành số nguyên
         const idKhachHangInt = parseInt(idkh, 10); // Chuyển id khách hàng thành số nguyên
-    
+
         Swal.fire({
             title: "Xác nhận cập nhật",
             text: "Bạn có chắc muốn đặt địa chỉ này làm mặc định không?",
@@ -395,7 +410,7 @@ app.controller('diachiController', function ($scope, $http) {
             }
         });
     }
-    
+
     // Hàm tải dữ liệu địa chỉ để chỉnh sửa
     window.loadEditAddress = async function (id) {
         try {
@@ -404,10 +419,10 @@ app.controller('diachiController', function ($scope, $http) {
             const updatediachinguoidung = document.getElementById("updatedetailInput");
             const updateCondition = document.getElementById("updateCondition");
             const updateAddressId = document.getElementById("updateAddressId");
-    
+
             const response = await fetch(`${apiAddressList}/${id}`);
             const data = await response.json();
-    
+
             if (data) {
                 $scope.$apply(() => {
                     $scope.edit = {
@@ -423,14 +438,14 @@ app.controller('diachiController', function ($scope, $http) {
 
                 // 🔹 Chuyển trạng thái thành số nguyên
                 let trangthai = parseInt(data.trangthai, 10);
-    
+
                 // 🔹 Hiển thị dữ liệu trong input
                 updateAddressId.value = data.id
                 updateCondition.value = trangthai;
                 updatetennguoidung.value = data.tennguoinhan;
                 updatesdtnguoidung.value = data.sdtnguoinhan;
                 updatediachinguoidung.value = data.diachicuthe;
-    
+
                 getProvincesupdate(data.thanhpho);
                 getDistrictsUpdate(data.thanhpho, data.quanhuyen);
                 getWardsUpdate(data.quanhuyen, data.phuongxa);
@@ -438,8 +453,8 @@ app.controller('diachiController', function ($scope, $http) {
         } catch (error) {
             console.error("❌ Lỗi khi tải địa chỉ:", error);
         }
-    };    
-    
+    };
+
 
     // 🏙️ Lấy danh sách Tỉnh/Thành phố
     function getProvincesupdate(iddiachi) {
@@ -450,31 +465,31 @@ app.controller('diachiController', function ($scope, $http) {
                 "Token": apiKey
             }
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.code === 200) {
-                let options = `<option value="">Chọn Tỉnh Thành</option>`;
+            .then(response => response.json())
+            .then(data => {
+                if (data.code === 200) {
+                    let options = `<option value="">Chọn Tỉnh Thành</option>`;
 
-                // Kiểm tra nếu iddiachi tồn tại trong danh sách
-                let selectedProvince = data.data.find(province => province.ProvinceID == iddiachi);
+                    // Kiểm tra nếu iddiachi tồn tại trong danh sách
+                    let selectedProvince = data.data.find(province => province.ProvinceID == iddiachi);
 
-                // Nếu tìm thấy tỉnh có iddiachi, hiển thị nó đầu tiên
-                if (selectedProvince) {
-                    options += `<option value="${selectedProvince.ProvinceID}" selected>${selectedProvince.NameExtension[1]}</option>`;
-                }
-
-                // Hiển thị các tỉnh còn lại (không trùng với iddiachi)
-                data.data.forEach(province => {
-                    if (province.ProvinceID != iddiachi) {
-                        options += `<option value="${province.ProvinceID}">${province.NameExtension[1]}</option>`;
+                    // Nếu tìm thấy tỉnh có iddiachi, hiển thị nó đầu tiên
+                    if (selectedProvince) {
+                        options += `<option value="${selectedProvince.ProvinceID}" selected>${selectedProvince.NameExtension[1]}</option>`;
                     }
-                });
 
-                // Gán vào phần tử HTML
-                updateTinh.innerHTML = options;
-            }
-        })
-        .catch(error => console.error("Lỗi lấy danh sách tỉnh:", error));
+                    // Hiển thị các tỉnh còn lại (không trùng với iddiachi)
+                    data.data.forEach(province => {
+                        if (province.ProvinceID != iddiachi) {
+                            options += `<option value="${province.ProvinceID}">${province.NameExtension[1]}</option>`;
+                        }
+                    });
+
+                    // Gán vào phần tử HTML
+                    updateTinh.innerHTML = options;
+                }
+            })
+            .catch(error => console.error("Lỗi lấy danh sách tỉnh:", error));
     }
 
     function getDistrictsUpdate(idthanhpho, idquanhuyen) {
@@ -486,33 +501,33 @@ app.controller('diachiController', function ($scope, $http) {
             },
             body: JSON.stringify({ province_id: Number(idthanhpho) }) // 🔹 Chuyển province_id về kiểu số
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.code === 200) {
-                let options = `<option value="">Chọn Quận/Huyện</option>`;
-    
-                // 🔍 Tìm quận/huyện có idquanhuyen
-                let selectedDistrict = data.data.find(district => district.DistrictID == idquanhuyen);
-    
-                // Nếu tìm thấy, thêm vào danh sách đầu tiên với trạng thái selected
-                if (selectedDistrict) {
-                    options += `<option value="${selectedDistrict.DistrictID}" selected>${selectedDistrict.DistrictName}</option>`;
-                }
-    
-                // Thêm các quận/huyện còn lại (loại bỏ idquanhuyen nếu đã chọn ở trên)
-                data.data.forEach(district => {
-                    if (district.DistrictID != idquanhuyen) {
-                        options += `<option value="${district.DistrictID}">${district.DistrictName}</option>`;
+            .then(response => response.json())
+            .then(data => {
+                if (data.code === 200) {
+                    let options = `<option value="">Chọn Quận/Huyện</option>`;
+
+                    // 🔍 Tìm quận/huyện có idquanhuyen
+                    let selectedDistrict = data.data.find(district => district.DistrictID == idquanhuyen);
+
+                    // Nếu tìm thấy, thêm vào danh sách đầu tiên với trạng thái selected
+                    if (selectedDistrict) {
+                        options += `<option value="${selectedDistrict.DistrictID}" selected>${selectedDistrict.DistrictName}</option>`;
                     }
-                });
-    
-                // Gán vào phần tử select
-                updateQuan.innerHTML = options;
-            } else {
-                console.error("❌ Lỗi từ API:", data);
-            }
-        })
-        .catch(error => console.error("❌ Lỗi kết nối:", error));
+
+                    // Thêm các quận/huyện còn lại (loại bỏ idquanhuyen nếu đã chọn ở trên)
+                    data.data.forEach(district => {
+                        if (district.DistrictID != idquanhuyen) {
+                            options += `<option value="${district.DistrictID}">${district.DistrictName}</option>`;
+                        }
+                    });
+
+                    // Gán vào phần tử select
+                    updateQuan.innerHTML = options;
+                } else {
+                    console.error("❌ Lỗi từ API:", data);
+                }
+            })
+            .catch(error => console.error("❌ Lỗi kết nối:", error));
     }
 
     async function getWardsUpdate(idquanhuyen, idphuongxa) {
@@ -525,28 +540,28 @@ app.controller('diachiController', function ($scope, $http) {
                 },
                 body: JSON.stringify({ district_id: Number(idquanhuyen) }) // 🔹 Chuyển district_id về kiểu số
             });
-    
+
             const data = await response.json();
             console.log("📡 Phản hồi từ API Phường/Xã:", data);
-    
+
             if (data.code === 200 && data.data.length > 0) {
                 let options = `<option value="">Chọn Phường/Xã</option>`;
-    
+
                 // 🔍 Tìm phường/xã có idphuongxa
                 let selectedWard = data.data.find(ward => ward.WardCode == idphuongxa);
-    
+
                 // Nếu tìm thấy, thêm vào đầu danh sách với trạng thái selected
                 if (selectedWard) {
                     options += `<option value="${selectedWard.WardCode}" selected>${selectedWard.WardName}</option>`;
                 }
-    
+
                 // Thêm các phường/xã còn lại (loại bỏ idphuongxa nếu đã chọn ở trên)
                 data.data.forEach(ward => {
                     if (ward.WardCode != idphuongxa) {
                         options += `<option value="${ward.WardCode}">${ward.WardName}</option>`;
                     }
                 });
-    
+
                 // Gán vào phần tử select
                 updatePhuong.innerHTML = options;
             } else {
@@ -555,8 +570,8 @@ app.controller('diachiController', function ($scope, $http) {
         } catch (error) {
             console.error("❌ Lỗi kết nối API:", error);
         }
-    } 
-    
+    }
+
     // 🏢 Lấy danh sách Quận/Huyện theo Tỉnh đã chọn
     updateTinh.addEventListener("change", function () {
         const provinceId = this.value;
@@ -623,12 +638,12 @@ app.controller('diachiController', function ($scope, $http) {
         const updatediachinguoidung = document.getElementById("updatedetailInput").value.trim();
         const updateCondition = document.getElementById("updateCondition").value;
         const updateAddressId = document.getElementById("updateAddressId").value;
-    
+
         // Lấy giá trị tỉnh, quận, phường
         const updateTinh1 = document.getElementById("updateTinh")?.value || "";
         const updateQuan1 = document.getElementById("updateQuan")?.value || "";
         const updatePhuong1 = document.getElementById("updatePhuong")?.value || "";
-    
+
         // 🚀 Kiểm tra dữ liệu nhập vào
         if (!updatetennguoidung) {
             Swal.fire({
@@ -639,7 +654,7 @@ app.controller('diachiController', function ($scope, $http) {
             });
             return;
         }
-    
+
         if (!updatesdtnguoidung) {
             Swal.fire({
                 icon: "warning",
@@ -649,7 +664,7 @@ app.controller('diachiController', function ($scope, $http) {
             });
             return;
         }
-    
+
         // Kiểm tra số điện thoại
         const phoneRegex = /^[0-9]{10}$/;
         if (!phoneRegex.test(updatesdtnguoidung)) {
@@ -661,7 +676,7 @@ app.controller('diachiController', function ($scope, $http) {
             });
             return;
         }
-    
+
         if (!updateTinh1) {
             Swal.fire({
                 icon: "warning",
@@ -671,7 +686,7 @@ app.controller('diachiController', function ($scope, $http) {
             });
             return;
         }
-    
+
         if (!updateQuan1 && document.getElementById("updateQuan") && !document.getElementById("updateQuan").disabled) {
             Swal.fire({
                 icon: "warning",
@@ -681,7 +696,7 @@ app.controller('diachiController', function ($scope, $http) {
             });
             return;
         }
-    
+
         if (!updatePhuong1 && document.getElementById("updatePhuong") && !document.getElementById("updatePhuong").disabled) {
             Swal.fire({
                 icon: "warning",
@@ -691,7 +706,7 @@ app.controller('diachiController', function ($scope, $http) {
             });
             return;
         }
-    
+
         if (!updatediachinguoidung) {
             Swal.fire({
                 icon: "warning",
@@ -701,7 +716,7 @@ app.controller('diachiController', function ($scope, $http) {
             });
             return;
         }
-    
+
         const updatedData = {
             id: updateAddressId,
             idkh: idkh,
@@ -713,7 +728,7 @@ app.controller('diachiController', function ($scope, $http) {
             diachicuthe: updatediachinguoidung,
             trangthai: updateCondition
         };
-    
+
         // 🔄 Gửi yêu cầu cập nhật
         $http.put(`${apiAddressList}/${updateAddressId}`, updatedData)
             .then(response => {
@@ -736,12 +751,12 @@ app.controller('diachiController', function ($scope, $http) {
                     confirmButtonText: "OK"
                 });
             });
-    });    
+    });
 
     // Hàm xóa địa chỉ
     window.deleteAddress = function (id, trangthai) {
         console.log("ID:", id, "Trạng thái:", trangthai); // ✅ Kiểm tra đầu vào
-    
+
         if (trangthai == 0) {
             Swal.fire({
                 icon: "warning",
@@ -751,7 +766,7 @@ app.controller('diachiController', function ($scope, $http) {
             });
             return;
         }
-    
+
         Swal.fire({
             title: "Xác nhận xóa?",
             text: "Bạn có chắc muốn xóa địa chỉ này không?",
@@ -766,38 +781,38 @@ app.controller('diachiController', function ($scope, $http) {
                 fetch(`${apiAddressList}/${id}`, {
                     method: "DELETE"
                 })
-                .then(response => {
-                    if (response.ok) {
-                        Swal.fire({
-                            icon: "success",
-                            title: "Thành công",
-                            text: "Xóa địa chỉ thành công!",
-                            confirmButtonText: "OK"
-                        }).then(() => {
-                            location.reload(); // ✅ Reload sau khi xóa
-                        });
-                    } else {
+                    .then(response => {
+                        if (response.ok) {
+                            Swal.fire({
+                                icon: "success",
+                                title: "Thành công",
+                                text: "Xóa địa chỉ thành công!",
+                                confirmButtonText: "OK"
+                            }).then(() => {
+                                location.reload(); // ✅ Reload sau khi xóa
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Lỗi",
+                                text: "Xóa thất bại, vui lòng thử lại.",
+                                confirmButtonText: "OK"
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error("❌ Lỗi khi xóa địa chỉ:", error);
                         Swal.fire({
                             icon: "error",
                             title: "Lỗi",
-                            text: "Xóa thất bại, vui lòng thử lại.",
+                            text: "Có lỗi xảy ra, vui lòng thử lại.",
                             confirmButtonText: "OK"
                         });
-                    }
-                })
-                .catch(error => {
-                    console.error("❌ Lỗi khi xóa địa chỉ:", error);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Lỗi",
-                        text: "Có lỗi xảy ra, vui lòng thử lại.",
-                        confirmButtonText: "OK"
                     });
-                });
             }
         });
-    };      
-    
+    };
+
     loadAddressData();
     // Gọi API lấy danh sách tỉnh khi trang load
     getProvinces();
