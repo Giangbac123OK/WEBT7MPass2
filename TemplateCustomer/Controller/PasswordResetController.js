@@ -142,4 +142,13 @@ app.controller('PasswordResetController', function ($scope, $http, $rootScope, $
                 $scope.generalErrorMessage = error.data?.message || 'Đã xảy ra lỗi không xác định.';
             });
     };
+    $http.get("https://localhost:7196/api/Khachhangs/" + userInfo.id)
+        .then(function (response) {
+            $scope.dataTttk = response.data;
+            console.log("Dữ liệu tài khoản:", $scope.dataTttk);
+        })
+        .catch(function (error) {
+            console.error("Lỗi khi lấy dữ liệu:", error);
+            Swal.fire("Lỗi!", "Không thể lấy thông tin tài khoản. Vui lòng thử lại!", "error");
+        });
 });

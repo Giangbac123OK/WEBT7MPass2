@@ -102,42 +102,31 @@ app.run(function ($rootScope, $location, $http) {
     $rootScope.userInfo = null;
   }
   // Hàm lấy số lượng sản phẩm trong giỏ hàng
-  async function fetchSoDongGioHang() {
-    const idkh = GetByidKH();
-    try {
-      const response = await $http.get(`https://localhost:7196/api/Giohangchitiet/Sodongiohangct/${idkh}`);
-      $rootScope.sodongioHang = response.data; // Giả sử API trả về số lượng
-    } catch (error) {
-      console.error("Lỗi khi lấy số lượng giỏ hàng:", error);
-      $rootScope.sodongioHang = 0; // Giá trị mặc định nếu có lỗi
-    }
-  }
-
-  // Gọi hàm lấy số lượng giỏ hàng ngay khi khởi động
-  fetchSoDongGioHang();
 
 
   // Kiểm tra trạng thái khách hàng mỗi khi chuyển trang
-  $rootScope.$on('$routeChangeStart', function (event, next, current) {
-    const idkh = GetByidKH();
-    if ($rootScope.isLoggedIn) {
-      // Gọi API để kiểm tra trạng thái của khách hàng
-      $http.get(`https://localhost:7196/api/Khachhangs/${idkh}`)
-        .then(function (response) {
-          if (response.data.trangthai === "Tài khoản bị khoá") {
-            // Nếu trạng thái là 1, gọi hàm đăng xuất
-            $rootScope.dangxuat();
-            Swal.fire({
-              icon: 'error',               // Chọn icon là lỗi (error)
-              title: 'Lỗi',                // Tiêu đề thông báo
-              text: 'Tài khoản của bạn đã bị khoá',  // Nội dung thông báo
-              confirmButtonText: 'Đóng'    // Văn bản cho nút xác nhận
+    $rootScope.$on('$routeChangeStart', function (event, next, current) {
+      const idkh = GetByidKH();
+      
+    
+      if ($rootScope.isLoggedIn) {
+        // Gọi API để kiểm tra trạng thái của khách hàng
+        $http.get(`https://localhost:7196/api/Khachhangs/${idkh}`)  
+            .then(function(response) {
+                if (response.data.trangthai === "Tài khoản bị khoá") {
+                    // Nếu trạng thái là 1, gọi hàm đăng xuất
+                    $rootScope.dangxuat();
+                    Swal.fire({
+                      icon: 'error',               // Chọn icon là lỗi (error)
+                      title: 'Lỗi',                // Tiêu đề thông báo
+                      text: 'Tài khoản của bạn đã bị khoá',  // Nội dung thông báo
+                      confirmButtonText: 'Đóng'    // Văn bản cho nút xác nhận
+                    });  
+                }
+            })
+            .catch(function(error) {
+                console.error("Lỗi khi gọi API kiểm tra trạng thái:", error);
             });
-          }
-        })
-        .catch(function (error) {
-          console.error("Lỗi khi gọi API kiểm tra trạng thái:", error);
-        });
     }
   });
 
@@ -188,5 +177,5 @@ app.run(function ($rootScope, $location, $http) {
     console.error('Lỗi toàn cục:', error);
 
   });
-
+  
 });
