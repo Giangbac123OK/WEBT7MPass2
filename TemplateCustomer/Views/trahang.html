@@ -178,14 +178,17 @@ color: #ee4d2d !important;
               <td class="align-middle">{{sp.chatlieu}}</td>
               <td class="align-middle">{{sp.giasp| currency:"₫":0 }}</td>
               <td class="align-middle">
-                  <div class="d-flex justify-content-center align-items-center">
-                    <button ng-click="decrease(sp)" type="button" class="btn btn-sm btn-outline-dark" ng-disabled="sp.soluong <= 1">-</button>
+                <div class="d-flex justify-content-center align-items-center">
+                    <button ng-click="decrease(sp)" type="button" class="btn btn-sm btn-outline-dark" 
+                            ng-disabled="sp.soluong <= 1">-</button>
                     <input type="number" class="form-control text-center mx-2"
-                           ng-model="sp.soluong" min="1" max="{{sp.soluong}}" readonly disabled>
-                    <button ng-click="increase(sp)" type="button" class="btn btn-sm btn-outline-dark" ng-disabled="sp.soluong >= sp.maxsoluong">+</button>
-                  </div>
+                           ng-model="sp.soluong"
+                           min="1" max="{{sp.maxsoluong}}" ng-change="tinhTongTien()">
+                    <button ng-click="increase(sp)" type="button" class="btn btn-sm btn-outline-dark" 
+                            ng-disabled="sp.soluong >= sp.maxsoluong">+</button>
+                </div>
               </td>
-              <td class="align-middle">{{thanhtien| currency:"₫":0}}</td>
+              <td class="align-middle">{{sp.thanhtien | currency:"₫":0}}</td>            
             </tr>
           </tbody>
         </table>
@@ -248,6 +251,31 @@ color: #ee4d2d !important;
             <h5 class="card-title mb-0">Thông tin bổ sung</h5>
           </div>
           <div class="card-body">
+            <div class="mb-4">
+              <label for="description" class="form-label fw-medium">Địa chỉ lấy hàng</label>
+              <div class="row">
+                <div class="col-md">
+                  <select class="form-select" id="province" ng-model="selectedProvince" ng-change="getDistricts()" ng-options="p.ProvinceID as p.ProvinceName for p in provinces">
+                      <option value="">Chọn tỉnh/thành phố</option>
+                  </select>
+                </div>
+                <div class="col-md">
+                  <select class="form-select" id="district" ng-model="selectedDistrict" ng-change="getWards()" ng-options="d.DistrictID as d.DistrictName for d in districts">
+                      <option value="">Chọn quận/huyện</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row mt-4">
+                <div class="col-md">
+                  <selec class="form-select col-md"t id="ward" ng-model="selectedWard" ng-options="w.WardCode as w.WardName for w in wards">
+                      <option value="">Chọn phường/xã</option>
+                  </select>
+                </div>
+                <div class="col-md">
+                  <input type="text" class="form-control">
+                </div>
+              </div>
+            </div>
             <div class="mb-4">
               <label for="refundMethod" class="form-label fw-medium">Phương thức hoàn tiền</label>
               <select class="form-select" id="refundMethod">

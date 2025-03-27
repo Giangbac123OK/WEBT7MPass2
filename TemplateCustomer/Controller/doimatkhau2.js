@@ -69,5 +69,6 @@ app.controller('doimatkhau2', function ($scope, $http, $rootScope) {
         .catch(function (error) {
             $scope.generalErrorMessage = error.data?.message || 'Đã xảy ra lỗi không xác định.';
         });
-    }        
+    }  
+          
 });
