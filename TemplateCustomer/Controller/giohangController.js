@@ -16,12 +16,12 @@ app.controller("GiohangCtrl", function ($document, $rootScope, $scope, $compile,
     // Hàm lấy thông tin khách hàng từ localStorage
     function GetByidKH() {
         const userInfoString = localStorage.getItem("userInfo");
-    
+
         if (userInfoString === null) {
             $location.path(`/login`);
             return null; // Ngăn chặn việc tiếp tục chạy code
         }
-    
+
         try {
             const userInfo = JSON.parse(userInfoString);
             return userInfo?.id || null;
@@ -30,7 +30,7 @@ app.controller("GiohangCtrl", function ($document, $rootScope, $scope, $compile,
             return null;
         }
     }
-    
+
 
     // Hàm lấy id giỏ hàng
     async function fetchGioHangId(idkh) {
@@ -112,12 +112,12 @@ app.controller("GiohangCtrl", function ($document, $rootScope, $scope, $compile,
             return [];
         }
     }
-    
+
     async function layTenSanPham(id) {
         try {
-            const response = await fetch(`${apiUrls.sanPham}/${id}`); 
+            const response = await fetch(`${apiUrls.sanPham}/${id}`);
             if (!response.ok) throw new Error("Lỗi khi lấy dữ liệu sản phẩm!");
-            
+
             const data = await response.json();
             return data.tenSanpham;
         } catch (error) {
@@ -148,37 +148,37 @@ app.controller("GiohangCtrl", function ($document, $rootScope, $scope, $compile,
     async function renderGioHang() {
         const idkh = GetByidKH();
         if (!idkh) return;
-    
+
         const idgh = await fetchGioHangId(idkh);
         if (!idgh) return;
-    
+
         const gioHangChiTiet = await fetchGioHangChiTiet(idgh.id);
         if (!gioHangChiTiet) return;
-    
+
         for (const item of gioHangChiTiet) {
             const sanPhamChiTiet = await fetchSanPhamChitiet(item.idspct);
             if (!sanPhamChiTiet) continue;
-    
+
             sanPhamChiTiet.soluonggiohang = item.soluong;
             sanPhamChiTiet.idgh = item.id;
-    
+
             // Lấy thông tin size, chất liệu, màu
             sanPhamChiTiet.size = await fetchSizes(sanPhamChiTiet.sizeId);
             sanPhamChiTiet.chatLieu = await fetchChatLieu(sanPhamChiTiet.chatLieuId);
             sanPhamChiTiet.mau = await fetchMauSac(sanPhamChiTiet.mauId);
-    
+
             danhSachSanPham.push(sanPhamChiTiet);
         }
-    
+
         hienThiGioHang(danhSachSanPham);
     }
-       
+
     async function hienThiGioHang(sanPhamChitiets) {
         const tbody = document.querySelector("tbody");
         tbody.innerHTML = ""; // Xóa nội dung cũ
-    
+
         console.log(sanPhamChitiets);
-        
+
         if (!sanPhamChitiets || sanPhamChitiets.length === 0 || sanPhamChitiets.every(sp => sp.length === 0)) {
             tbody.innerHTML = `
                 <tr>
@@ -189,9 +189,9 @@ app.controller("GiohangCtrl", function ($document, $rootScope, $scope, $compile,
             `;
             return;
         }
-        
+
         let tongTien = 0;
-        
+
         for (const sp of sanPhamChitiets) {
             for (const data of sp) {
                 let tenSanPham = "N/A";
@@ -201,21 +201,21 @@ app.controller("GiohangCtrl", function ($document, $rootScope, $scope, $compile,
                 let chatLieu = "N/A";
                 let thanhTien = 0;
                 let isDisabled = data.trangthai === 1; // Kiểm tra trạng thái sản phẩm
-    
+
                 // Lấy giá gốc
                 let giaGoc = data.giathoidiemhientai || 0;
                 let giaSauGiam = giaGoc;
-    
+
                 // Kiểm tra giảm giá
                 const saleInfo = await fetchSaleChiTietBySPCTId(data.id);
-                    if (saleInfo && saleInfo.giatrigiam) {
-                        if (saleInfo.donvi === 0) {
-                            giaSauGiam = giaGoc - saleInfo.giatrigiam; // Trừ trực tiếp
-                        } else if (saleInfo.donvi === 1) {
-                            giaSauGiam = giaGoc - (giaGoc * saleInfo.giatrigiam / 100); // Giảm theo %
-                        }
+                if (saleInfo && saleInfo.giatrigiam) {
+                    if (saleInfo.donvi === 0) {
+                        giaSauGiam = giaGoc - saleInfo.giatrigiam; // Trừ trực tiếp
+                    } else if (saleInfo.donvi === 1) {
+                        giaSauGiam = giaGoc - (giaGoc * saleInfo.giatrigiam / 100); // Giảm theo %
                     }
-    
+                }
+
                 try {
                     const response = await fetch(`${apiUrls.sanPhamChiTiet}/GetImageById/${data.id}`);
                     if (response.ok) {
@@ -225,32 +225,32 @@ app.controller("GiohangCtrl", function ($document, $rootScope, $scope, $compile,
                 } catch (error) {
                     console.error("Lỗi tải ảnh:", error);
                 }
-    
+
                 if (data.idsp) {
                     tenSanPham = await layTenSanPham(data.idsp);
                 }
-    
+
                 if (Array.isArray(sp.mau) && sp.mau.length > 0) {
                     const mauTimThay = sp.mau.find(m => m.id === data.idMau);
                     mau = mauTimThay ? mauTimThay.tenmau : "N/A";
                 }
-    
+
                 if (Array.isArray(sp.size) && sp.size.length > 0) {
                     const sizeTimThay = sp.size.find(s => s.id === data.idSize);
                     size = sizeTimThay ? sizeTimThay.sosize : "N/A";
                 }
-    
+
                 if (Array.isArray(sp.chatLieu) && sp.chatLieu.length > 0) {
                     const chatLieuTimThay = sp.chatLieu.find(cl => cl.id === data.idChatLieu);
                     chatLieu = chatLieuTimThay ? chatLieuTimThay.tenchatlieu : "N/A";
                 }
-    
+
                 if (giaSauGiam && sp.soluonggiohang) {
                     thanhTien = giaSauGiam * sp.soluonggiohang;
                 }
-    
+
                 tongTien += thanhTien;
-    
+
                 const row = document.createElement("tr");
                 row.className = `product-item ${isDisabled ? "disabled-product" : ""}`;
                 row.innerHTML = `
@@ -289,10 +289,10 @@ app.controller("GiohangCtrl", function ($document, $rootScope, $scope, $compile,
                 tbody.appendChild(compiledElement[0]);
             }
         }
-    
+
         // Cập nhật lại checkbox tổng sau khi render xong
         initializeCheckboxEvents();
-    }           
+    }
 
     $scope.capNhatSoLuong = async function (event, isIncrease, productId) {
         let dataspct = 0;
@@ -304,7 +304,7 @@ app.controller("GiohangCtrl", function ($document, $rootScope, $scope, $compile,
 
         let quantityDisplay = event.target.closest(".product-item").querySelector(".quantity-display");
         let currentQuantity = parseInt(quantityDisplay.textContent);
-        
+
         for (const sp of product) {
             const maxQuantity = sp.soluong - 1;
 
@@ -326,7 +326,7 @@ app.controller("GiohangCtrl", function ($document, $rootScope, $scope, $compile,
             }
 
             quantityDisplay.textContent = currentQuantity;
-             dataspct = sp.id;
+            dataspct = sp.id;
         }
         try {
             await updateCartQuantity(dataspct, currentQuantity)
@@ -343,19 +343,19 @@ app.controller("GiohangCtrl", function ($document, $rootScope, $scope, $compile,
             if (!idkh) {
                 throw new Error("Không thể lấy ID khách hàng.");
             }
-    
+
             // Lấy ID giỏ hàng
             const idgh = await fetchGioHangId(idkh);
             if (!idgh || !idgh.id) {
                 throw new Error("Không thể lấy ID giỏ hàng.");
             }
-    
+
             // Lấy ID giỏ hàng chi tiết dựa trên sản phẩm chi tiết và giỏ hàng
             const idgiohangct = await fetchgiohangchitietbyspctandgh(idgh.id, productId);
             if (!idgiohangct || !idgiohangct.id) {
                 throw new Error("Không thể lấy ID giỏ hàng chi tiết.");
             }
-    
+
             // Gửi yêu cầu PUT để cập nhật số lượng sản phẩm
             const response = await fetch(`https://localhost:7196/api/Giohangchitiet/${idgiohangct.id}`, {
                 method: 'PUT',
@@ -369,13 +369,13 @@ app.controller("GiohangCtrl", function ($document, $rootScope, $scope, $compile,
                     soluong: quantity,
                 }),
             });
-    
+
             // Kiểm tra phản hồi từ API
             if (!response.ok) {
                 const errorText = await response.text();
                 throw new Error(`Lỗi API: ${response.status}. Nội dung: ${errorText}`);
             }
-    
+
             const data = await response.json();
         } catch (error) {
             console.error("Cập nhật giỏ hàng thất bại", error);
@@ -394,10 +394,10 @@ app.controller("GiohangCtrl", function ($document, $rootScope, $scope, $compile,
                 throw new Error(`Lỗi API giỏ hàng chi tiết: ${response.status}`);
             }
 
-            return await response.json(); 
+            return await response.json();
         } catch (error) {
             console.error("Lỗi khi lấy dữ liệu giảm giá chi tiết:", error);
-            return null; 
+            return null;
         }
     }
 
@@ -407,36 +407,36 @@ app.controller("GiohangCtrl", function ($document, $rootScope, $scope, $compile,
             console.error("Không tìm thấy phần tử .product-item");
             return;
         }
-    
+
         let quantityDisplay = productItem.querySelector(".quantity-display");
         let giaGiamDisplay = productItem.querySelector(".gia-giam"); // Giá đã giảm
         let giaGocDisplay = productItem.querySelector(".gia-goc");   // Giá gốc
         let thanhTienDisplay = productItem.querySelector(".thanhTien");
-    
+
         if (!quantityDisplay || !giaGocDisplay || !thanhTienDisplay) {
             console.error("Thiếu phần tử quantity-display, gia-goc hoặc thanhTien.");
             return;
         }
-    
+
         let quantity = parseInt(quantityDisplay.textContent) || 0;
-        
+
         // Kiểm tra xem có giảm giá không, nếu không thì lấy giá gốc
-        let unitPrice = giaGiamDisplay 
+        let unitPrice = giaGiamDisplay
             ? parseInt(giaGiamDisplay.textContent.replace(/\D/g, '')) || 0
             : parseInt(giaGocDisplay.textContent.replace(/\D/g, '')) || 0;
-    
+
         // Tính thành tiền
         let thanhTien = quantity * unitPrice;
         thanhTienDisplay.textContent = `${thanhTien.toLocaleString('vi-VN')} VNĐ`;
-    
+
         laydulieucheckbox();
-    }       
-    
-    
+    }
+
+
     // Hàm cập nhật tổng tiền dựa trên các sản phẩm đã chọn
     function laydulieucheckbox() {
         let totalPrice = 0;
-    
+
         document.querySelectorAll(".product-item").forEach(item => {
             const checkbox = item.querySelector("input[type='checkbox']");
             if (checkbox.checked) {
@@ -444,28 +444,57 @@ app.controller("GiohangCtrl", function ($document, $rootScope, $scope, $compile,
                 totalPrice += price;
             }
         });
-    
+
         document.querySelector("#tongThanhToan").textContent = `${totalPrice.toLocaleString('vi-VN')} VNĐ`;
     }
-    
+
+    // Xử lý sự kiện checkbox thay đổi
+    // Hàm kiểm tra và cập nhật trạng thái checkbox tổng
+    function updateSelectAllCheckbox() {
+        const allCheckboxes = document.querySelectorAll('.product-checkbox:not(:disabled)');
+        const checkedCheckboxes = document.querySelectorAll('.product-checkbox:not(:disabled):checked');
+        const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+
+        // Nếu tất cả checkbox đều được chọn thì bật checkbox tổng
+        if (checkedCheckboxes.length === allCheckboxes.length && allCheckboxes.length > 0) {
+            selectAllCheckbox.checked = true;
+        }
+        // Nếu có ít nhất 1 checkbox không được chọn thì tắt checkbox tổng
+        else {
+            selectAllCheckbox.checked = false;
+        }
+    }
+
     // Xử lý sự kiện checkbox thay đổi
     function initializeCheckboxEvents() {
         document.querySelectorAll(".product-checkbox").forEach(checkbox => {
             checkbox.addEventListener("change", function () {
                 laydulieucheckbox(); // Cập nhật tổng tiền khi chọn/bỏ chọn sản phẩm
+                updateSelectAllCheckbox(); // Cập nhật trạng thái checkbox tổng
             });
         });
     }
-    
+
     // Lắng nghe sự kiện khi checkbox "chọn tất cả" được click
     document.getElementById("selectAllCheckbox").addEventListener("click", function () {
         const isChecked = this.checked;
-        document.querySelectorAll(".product-list .product-checkbox:not(:disabled)").forEach(checkbox => {
+        document.querySelectorAll(".product-checkbox:not(:disabled)").forEach(checkbox => {
             checkbox.checked = isChecked;
         });
-    
+
         laydulieucheckbox();
     });
+
+    // Gọi hàm này sau khi render giỏ hàng xong
+    function initializeCheckboxAfterRender() {
+        initializeCheckboxEvents();
+        updateSelectAllCheckbox();
+    }
+
+    // Trong hàm hienThiGioHang, thay dòng:
+    // initializeCheckboxEvents();
+    // bằng:
+    initializeCheckboxAfterRender();
 
     // Hàm xử lý khi bấm nút xóa
     $scope.deleteProduct = async function (idspct) {
@@ -483,13 +512,13 @@ app.controller("GiohangCtrl", function ($document, $rootScope, $scope, $compile,
                 try {
                     const idkh = GetByidKH();
                     if (!idkh) throw new Error("Không thể lấy ID khách hàng.");
-    
+
                     const idgh = await fetchGioHangId(idkh);
                     if (!idgh || !idgh.id) throw new Error("Không thể lấy ID giỏ hàng.");
-    
+
                     const idgiohangct = await fetchgiohangchitietbyspctandgh(idgh.id, idspct);
                     if (!idgiohangct) throw new Error("Không thể lấy ID giỏ hàng chi tiết.");
-    
+
                     const result = await deleteGioHangChiTiet(idgiohangct.id);
                     if (result) {
                         Swal.fire({
@@ -519,29 +548,29 @@ app.controller("GiohangCtrl", function ($document, $rootScope, $scope, $compile,
             }
         });
     };
-    
+
     async function deleteGioHangChiTiet(idghct) {
-            try {
-                const response = await fetch(`https://localhost:7196/api/Giohangchitiet/${idghct}`, {
-                    method: 'DELETE'
-                });
+        try {
+            const response = await fetch(`https://localhost:7196/api/Giohangchitiet/${idghct}`, {
+                method: 'DELETE'
+            });
 
-                // Kiểm tra trạng thái phản hồi
-                if (response.ok) {
-                    return true; // Trả về true nếu xoá thành công
-                } else {
-                    console.error(`Lỗi API: ${response.status}`);
-                    return false; // Trả về false nếu xoá thất bại
-                }
-            } catch (error) {
-                console.error("Lỗi khi xóa chi tiết giỏ hàng:", error);
-                return false; // Trả về false nếu có lỗi
+            // Kiểm tra trạng thái phản hồi
+            if (response.ok) {
+                return true; // Trả về true nếu xoá thành công
+            } else {
+                console.error(`Lỗi API: ${response.status}`);
+                return false; // Trả về false nếu xoá thất bại
             }
+        } catch (error) {
+            console.error("Lỗi khi xóa chi tiết giỏ hàng:", error);
+            return false; // Trả về false nếu có lỗi
         }
+    }
 
-        // Hàm gọi API để lấy sản phẩm chi tiết theo idspct
-        async function fetchSanPhamChitiet2(sanPhamCTId) {
-            try {
+    // Hàm gọi API để lấy sản phẩm chi tiết theo idspct
+    async function fetchSanPhamChitiet2(sanPhamCTId) {
+        try {
             if (!sanPhamCTId) {
                 console.error("idspct không hợp lệ");
                 return null;
@@ -629,7 +658,7 @@ app.controller("GiohangCtrl", function ($document, $rootScope, $scope, $compile,
                     html: `Các sản phẩm sau đây có số lượng trong giỏ hàng lớn hơn số lượng khả dụng:<br>- ${productsWithIssues.join('<br>- ')}`,
                     confirmButtonText: 'OK',
                     confirmButtonColor: '#3085d6'
-                });                
+                });
                 return false;
             }
 

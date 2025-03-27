@@ -1,6 +1,72 @@
 app.controller('PasswordResetController', function ($scope, $http, $rootScope, $location) {
    
+    GetByidKH1();
     
+    async function GetByidKH1() {
+        try {
+            // Kiểm tra và lấy thông tin user từ localStorage
+            const userInfoString = localStorage.getItem("userInfo");
+            if (!userInfoString) {
+                console.error("Không tìm thấy thông tin user trong localStorage");
+                return null;
+            }
+    
+            const userInfo = JSON.parse(userInfoString);
+            if (!userInfo || !userInfo.id) {
+                console.error("Thông tin user không hợp lệ");
+                return null;
+            }
+    
+            // Lấy thông tin khách hàng từ API
+            const infoResponse = await fetch(`https://localhost:7196/api/khachhangs/${userInfo.id}`);
+            if (!infoResponse.ok) {
+                throw new Error(`Lỗi khi lấy thông tin khách hàng: ${infoResponse.status}`);
+            }
+            const customerData = await infoResponse.json();
+            
+            if (!customerData) {
+                throw new Error("Dữ liệu khách hàng trả về rỗng");
+            }
+    
+            // Gán dữ liệu cho $scope
+            $scope.dataTttk = customerData;
+    
+            // Kiểm tra và lấy thông tin rank nếu có idrank
+            if (customerData.idrank) {
+                const rankResponse = await fetch(`https://localhost:7196/api/Ranks/${customerData.idrank}`);
+                if (!rankResponse.ok) {
+                    console.error(`Lỗi khi lấy thông tin rank: ${rankResponse.status}`);
+                    $scope.datarank = null; // Gán null nếu không lấy được rank
+                } else {
+                    const rankData = await rankResponse.json();
+                    $scope.datarank = rankData;
+                }
+            } else {
+                $scope.datarank = null;
+            }
+    
+            // Kích hoạt $digest cycle để cập nhật view
+            $scope.$apply();
+            
+            return customerData;
+        } catch (error) {
+            console.error("Lỗi trong hàm GetByidKH1:", error);
+            
+            // Xử lý lỗi cụ thể
+            if (error instanceof SyntaxError) {
+                console.error("Lỗi phân tích JSON từ localStorage");
+            } else if (error.name === 'TypeError') {
+                console.error("Lỗi kết nối hoặc API không phản hồi");
+            }
+            
+            // Gán giá trị mặc định cho $scope nếu có lỗi
+            $scope.dataTttk = null;
+            $scope.datarank = null;
+            $scope.$apply();
+            
+            return null;
+        }
+    }
     // Hàm để thay đổi tab
   
     // Lấy thông tin userInfo từ localStorage hoặc từ backend
