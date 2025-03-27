@@ -56,7 +56,8 @@ app.controller('LoginController', function ($scope, $http, $rootScope, $location
                 $rootScope.userInfo = {
                     id: response.data.khachHangId,
                     ten: response.data.ten,
-                    email: response.data.email
+                    email: response.data.email,
+                    avatar: response.data.avatar
                 };
     
                

@@ -487,14 +487,23 @@ $scope.init = function () {
         return thuonghieu ? thuonghieu.tenthuonghieu : "Không tìm thấy thương hiệu";
     };
     $http.get("https://localhost:7196/api/Phuongthucthanhtoans/")
-        .then(function (response) {
-            $scope.ListPttt = response.data;
-            console.log("Phương thức thanh toán:", $scope.ListPttt);
-        })
-        .catch(function (error) {
-            console.error("Lỗi khi lấy dữ liệu:", error);
-            $scope.ListPttt = "Lỗi tải dữ liệu";
-        });
+            .then(function (response) {
+                $scope.ListPttt = response.data;
+                    console.log("Phương thức thanh toán:", $scope.ListPttt);
+            })
+            .catch(function (error) {
+                console.error("Lỗi khi lấy dữ liệu:", error);
+                $scope.ListPttt = "Lỗi tải dữ liệu";
+            });
+            $http.get("https://localhost:7196/api/Khachhangs/" + idkh)
+            .then(function (response) {
+                $scope.dataTttk = response.data;
+                console.log("Dữ liệu tài khoản:", $scope.dataTttk);
+            })
+            .catch(function (error) {
+                console.error("Lỗi khi lấy dữ liệu:", error);
+                Swal.fire("Lỗi!", "Không thể lấy thông tin tài khoản. Vui lòng thử lại!", "error");
+            });
     //aaaaaaffffffffff
 });
 
