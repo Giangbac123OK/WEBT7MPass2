@@ -1,67 +1,155 @@
-<div class="container">
-    <div class="row mb-3">
-        <div class="col-3">
-            <img src="./Images/user.png" class="rounded-circle border border-dark" width="50px" height="50px" alt="" srcset="">
-            <span class="fw-bold">Quốc trung</span>
-            <hr>
-            <div>
-                <a href="#!thongtintaikhoan" class="fs-5 text-decoration-none text-dark"><i class="bi bi-person-fill"></i> Hồ sơ của tôi</a><br>
-                <a href="#!diachi" class="fs-5 text-decoration-none text-dark"><i class="bi bi-geo-alt-fill"></i> Địa chỉ của tôi</a><br>
-                <a href="#!donhangcuaban" class="fs-5 text-decoration-none text-dark"><i class="bi bi-bag-fill"></i> Đơn hàng của tôi</a><br>
-                <a class="fs-5 text-decoration-none text-danger"><i class="bi bi-list"></i> Kho voucher</a><br>
-                <a href="#!doimatkhau" class="fs-5 text-decoration-none text-dark"><i class="bi bi-key-fill"></i> Đổi mật khẩu</a>
+<div class="container-fluid py-4 bg-light">
+    <div class="row g-4">
+        <!-- Sidebar Profile -->
+        <div class="col-lg-3">
+            <div class="profile-card p-4 rounded-4 bg-white shadow-sm">
+                <div class="text-center mb-4">
+                    <img src="./Images/user.png" class="rounded-circle object-fit-cover border border-3 border-white shadow" width="100" height="100" alt="Profile">
+                    <h5 class="mt-3 mb-1 fw-semibold">Quốc Trung</h5>
+                    <p class="text-muted small">Thành viên Bạc</p>
+                </div>
+                
+                <nav class="nav flex-column gap-2">
+                    <a class="nav-link rounded-3" href="#!thongtintaikhoan">
+                        <i class="bi bi-person me-2"></i> Hồ sơ
+                    </a>
+                    <a class="nav-link rounded-3" href="#!diachi">
+                        <i class="bi bi-geo-alt me-2"></i> Địa chỉ
+                    </a>
+                    <a class="nav-link rounded-3" href="#!donhangcuaban">
+                        <i class="bi bi-bag me-2"></i> Đơn hàng của bạn
+                    </a>
+                    <a class="nav-link rounded-3 active bg-primary text-white">
+                        <i class="bi bi-ticket-perforated me-2"></i> Voucher
+                    </a>
+                    <a class="nav-link rounded-3" href="#!doimatkhau">
+                        <i class="bi bi-shield-lock me-2"></i> Đổi mật khẩu
+                    </a>
+                </nav>
             </div>
         </div>
-        <div class="col-9">
-            <div class="input-group mb-3 pt-3">
-                <button class="btn btn-dark" type="button" id="button-addon1"><i class="bi bi-search"></i></button>
-                <input type="text" class="form-control" placeholder="Nhập ID đơn hàng hoặc tên sản phẩm" aria-label="Example text with button addon" aria-describedby="button-addon1">
-            </div>
-            <div class="text-end mb-3">
-                <a href="#!doidiem" class="btn btn-danger">Đổi voucher</a>
-            </div>
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <div class="d-flex justify-content-between bg-light rounded" style="height: 100px;">
-                        <div style="width: 100px">
-                            <img class="bg-success rounded-start ps-0 ms-0" src="https://down-vn.img.susercontent.com/file/sg-11134004-22120-4cskiffs0olvc3" style="width: 100px; height: auto;">
-                        </div>
-                        <div style="margin: auto; width: 50%;">
-                            <p>
-                                <span class="fw-semibold">Giảm tối đa ₫500k</span> <br>
-                                <span class="fw-semibold">Đơn Tối Thiểu ₫500k</span> <br>
-                                <span style="font-size: 12px;">Số lượng: 4</span><br>
-                                <span style="font-size: 12px; color: gray;">
-                                    <i class="bi bi-clock"></i>Có hiệu lực sau: 9 giờ <a href="#" style="text-decoration: none; color: blue;">Điều kiện</a>
-                                </span>
-                            </p>
-                        </div>
-                        <div style="width: 20%; padding: auto; margin: auto;">
-                            <button type="button" class="btn btn-outline-success">Dùng sau</button>
-                        </div>
-                    </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-9">
+            <div class="voucher-header d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 p-4 bg-white rounded-4 shadow-sm">
+                <div>
+                    <h4 class="fw-bold mb-1">Kho Voucher Của Tôi</h4>
+                    <p class="text-muted mb-0">Quản lý và sử dụng voucher của bạn</p>
                 </div>
-                <div class="col-md-6">
-                    <div class="d-flex justify-content-between bg-light rounded" style="height: 100px;">
-                        <div style="width: 100px">
-                            <img class="bg-danger rounded-start ps-0 ms-0" src="https://down-vn.img.susercontent.com/file/sg-11134004-22120-4cskiffs0olvc3" style="width: 100px; height: auto;">
-                        </div>
-                        <div style="margin: auto; width: 50%;">
-                            <p>
-                                <span class="fw-semibold">Giảm tối đa ₫500k</span> <br>
-                                <span class="fw-semibold">Đơn Tối Thiểu ₫500k</span> <br>
-                                <span style="font-size: 12px;">Số lượng: 4</span><br>
-                                <span style="font-size: 12px; color: gray;">
-                                    <i class="bi bi-clock"></i>HSD: 20.03.2025 <a href="#" style="text-decoration: none; color: blue;">Điều kiện</a>
-                                </span>
-                            </p>
-                        </div>
-                        <div style="width: 20%; padding: auto; margin: auto;">
-                            <button type="button" class="btn btn-outline-danger">Dùng ngay</button>
-                        </div>
+                <div class="mt-3 mt-md-0">
+                    <div class="input-group" style="max-width: 350px;">
+                        <input type="text" class="form-control border-end-0" placeholder="Tìm voucher...">
+                        <button class="btn btn-outline-secondary border-start-0" type="button">
+                            <i class="bi bi-search"></i>
+                        </button>
                     </div>
                 </div>
             </div>
+
+            <!-- Voucher List -->
+            <div class="row g-4">
+                <!-- Voucher Item 1 -->
+                <div class="col-md-6">
+                    <div class="voucher-item border-0 rounded-4 overflow-hidden shadow-sm h-100">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center">
+                                <div class="voucher-icon bg-danger bg-opacity-10 text-danger rounded-3 p-3 me-3">
+                                    <i class="bi bi-tag fs-2"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h5 class="fw-bold mb-2">Giảm 20% tối đa 500K</h5>
+                                    <div class="voucher-info">
+                                        <p class="mb-2"><span class="fw-semibold">Giá trị:</span> 20% (tối đa 500.000đ)</p>
+                                        <p class="mb-0"><span class="fw-semibold">HSD:</span> 31/12/2024</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white border-top-0 pt-0 pb-3 px-4 text-end">
+                            <button class="btn btn-danger px-4 rounded-3">Dùng ngay</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Voucher Item 2 -->
+                <div class="col-md-6">
+                    <div class="voucher-item border-0 rounded-4 overflow-hidden shadow-sm h-100">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center">
+                                <div class="voucher-icon bg-danger bg-opacity-10 text-danger rounded-3 p-3 me-3">
+                                    <i class="bi bi-tag fs-2"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h5 class="fw-bold mb-2">Giảm 100K cho đơn 0đ</h5>
+                                    <div class="voucher-info">
+                                        <p class="mb-2"><span class="fw-semibold">Giá trị:</span> 100.000đ</p>
+                                        <p class="mb-0"><span class="fw-semibold">Kích hoạt sau:</span> 2 ngày</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white border-top-0 pt-0 pb-3 px-4 text-end">
+                            <button class="btn btn-outline-secondary px-4 rounded-3">Chờ kích hoạt</button>
+                        </div>
+                    </div>
+                </div>
         </div>
     </div>
 </div>
+
+<style>
+    .profile-card {
+        position: sticky;
+        top: 20px;
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    }
+    
+    .nav-link {
+        padding: 10px 15px;
+        transition: all 0.2s;
+    }
+    
+    .nav-link:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .nav-link.active {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .voucher-item {
+        transition: transform 0.3s, box-shadow 0.3s;
+        background: white;
+    }
+    
+    .voucher-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .voucher-icon {
+        flex-shrink: 0;
+        width: 70px;
+        height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .voucher-info {
+        font-size: 0.9rem;
+        color: #555;
+    }
+    
+    .btn-danger {
+        background-color: #dc3545;
+        border: none;
+    }
+    
+    @media (max-width: 768px) {
+        .profile-card {
+            position: static;
+            margin-bottom: 20px;
+        }
+    }
+</style>

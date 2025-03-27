@@ -1,499 +1,594 @@
 <style>
-  .tensp{
+  .tensp {
     color: black;
     text-decoration: none;
   }
-  .tensp:hover{
+
+  .tensp:hover {
     color: red;
     text-decoration: underline;
   }
+
+  .profile-card {
+    position: sticky;
+    top: 20px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    padding: 1.5rem;
+  }
+  
+  .nav-link {
+    padding: 10px 15px;
+    transition: all 0.2s;
+  }
+  
+  .nav-link:hover {
+    background-color: #f8f9fa;
+  }
+  
+  .nav-link.active {
+    background-color: #0d6efd;
+    color: white !important;
+  }
+  
+  .nav-tabs .nav-link {
+    border: none;
+    color: #495057;
+    font-weight: 500;
+    padding: 0.75rem 1.25rem;
+  }
+  
+  .nav-tabs .nav-link.active {
+    color: #0d6efd !important;
+    background-color: transparent;
+    border-bottom: 2px solid #0d6efd;
+  }
+  
+  @media (max-width: 768px) {
+    .profile-card {
+      position: static;
+      margin-bottom: 20px;
+    }
+    
+    .nav-tabs {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+  }
 </style>
-<div class="container">
-    <div class="row mb-3">
-        <div class="col-3">
-            <img src="./Images/user.png" class="rounded-circle border border-dark" width="50px" height="50px" alt="" srcset="">
-            <span class="fw-bold">Quốc trung</span>
-            <hr>
-            <div>
-                <a href="#!thongtintaikhoan" class="fs-5 text-decoration-none text-dark"><i class="bi bi-person-fill"></i> Hồ sơ của tôi</a><br>
-                <a href="#!diachi" class="fs-5 text-decoration-none text-dark"><i class="bi bi-geo-alt-fill"></i> Địa chỉ của tôi</a><br>
-                <a class="fs-5 text-decoration-none text-danger"><i class="bi bi-bag-fill"></i> Đơn hàng của tôi</a><br>
-                <a href="#!voucher" class="fs-5 text-decoration-none text-dark"><i class="bi bi-list"></i> Kho voucher</a><br>
-                <a href="#!doimatkhau" class="fs-5 text-decoration-none text-dark"><i class="bi bi-key-fill"></i> Đổi mật khẩu</a>
-            </div>
+<div class="container-fluid py-4 bg-light">
+  <div class="row g-4">
+    <!-- Sidebar Profile -->
+    <div class="col-lg-3">
+      <div class="profile-card">
+        <div class="text-center mb-4">
+          <img src="./Images/user.png" class="rounded-circle object-fit-cover border border-3 border-white shadow"
+            width="100" height="100" alt="Profile">
+          <h5 class="mt-3 mb-1 fw-semibold">Quốc Trung</h5>
+          <p class="text-muted small">Thành viên Bạc</p>
         </div>
-        <div class="col-9">
-            <!-- Tabs Điều Hướng -->
-          <ul class="nav nav-tabs d-flex justify-content-center" id="myTab" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="tab1-tab" data-bs-toggle="tab" data-bs-target="#tab1" type="button" role="tab">
-                    Tất cả
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="tab2-tab" data-bs-toggle="tab" data-bs-target="#tab2" type="button" role="tab">
-                    Chờ thanh toán
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="tab3-tab" data-bs-toggle="tab" data-bs-target="#tab3" type="button" role="tab">
-                    Vận chuyển
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="tab4-tab" data-bs-toggle="tab" data-bs-target="#tab4" type="button" role="tab">
-                    Chờ giao hàng
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="tab5-tab" data-bs-toggle="tab" data-bs-target="#tab5" type="button" role="tab">
-                    Hoàn thành
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="tab6-tab" data-bs-toggle="tab" data-bs-target="#tab6" type="button" role="tab">
-                    Đã hủy
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="tab7-tab" data-bs-toggle="tab" data-bs-target="#tab7" type="button" role="tab">
-                  Trả Hàng/Hoàn tiền
-                </button>
-            </li>
-          </ul>
-          <input type="text" class="form-control mt-3" placeholder="Nhập từ khóa tìm kiếm..." ng-model="searchText">
-          <!-- Nội Dung Tab -->
-        <div class="tab-content mt-3 py-3" id="myTabContent">
-          <div class="tab-pane fade show active" id="tab1" role="tabpanel">
-            <div ng-repeat="x in dataHoaDon" class="mb-3 bg-light">
-              <div class="row border-bottom">
-                <div class="col m-3 text-uppercase text-en fw-semibold">
-                  <span>Mã hóa đơn: #{{x.id}}</span>
-                </div>
-                <div class="col m-3 text-uppercase text-end" style="color: orangered;">
-                  <span ng-if="x.trangthai==0">Chờ xác nhận</span>
-                  <span ng-if="x.trangthai==1">Đã xác nhận</span>
-                  <span ng-if="x.trangthai==2">Đang được giao</span>
-                  <span ng-if="x.trangthai==3">Thành công</span>
-                  <span ng-if="x.trangthai==4">Đã huỷ</span>
-                </div>
-              </div>
-              <div class="row" ng-init="showMore = {}">
-                <div class="row border-bottom py-3" ng-repeat="hdct in dataHoaDonCT | filter:{idhd: x.id} | limitTo: (showMore[x.id] ? dataHoaDonCT.length : 2)">
-                  <div class="col-3 ps-3">
-                    <img ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct" src="https://localhost:7196/picture/{{spct.urlHinhanh}}" width="100%" height="120px">
-                  </div>
-                  <div class="col-7" ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct">
-                    <a href="#!SanpDetail/{{spct.idsp}}" class="fs-5 tensp" >{{SelectTenTH(spct.idsp)}} - {{SelecttenSp(spct.idsp)}}</a>
-                    <p class="text-secondary">Phân loại: Da độn - Đen - 38</p>
-                    <p>x{{hdct.soluong}}</p>
-                  </div>
-                
-                  <div class="col-2 d-flex justify-content-center align-items-center">
-                    <div class="text-center">
-                      <span ng-if="hdct.giamgia && hdct.giamgia > 0" class="text-secondary text-decoration-line-through">
-                        {{ hdct.giamgia | currency:"₫":0 }}
-                      </span>
-                      <span style="color: orangered;">{{ hdct.giasp | currency:"₫":0 }}0</span>
-                    </div>
-                  </div>
-                </div>
 
-                <!-- Hiển thị nút "Xem thêm" hoặc "Thu gọn" -->
-                <div class="text-center mt-2" ng-if="(dataHoaDonCT | filter:{idhd: x.id}).length > 2">
-                  <button class="btn btn-outline-primary" ng-click="showMore[x.id] = !showMore[x.id]">
-                    {{ showMore[x.id] ? 'Thu gọn' : 'Xem thêm' }}
-                  </button>
-                </div>
-              </div>
+        <nav class="nav flex-column gap-2">
+          <a class="nav-link rounded-3" href="#!thongtintaikhoan">
+            <i class="bi bi-person me-2"></i> Hồ sơ
+          </a>
+          <a class="nav-link rounded-3" href="#!diachi">
+            <i class="bi bi-geo-alt me-2"></i> Địa chỉ
+          </a>
+          <a class="nav-link rounded-3 active">
+            <i class="bi bi-bag me-2"></i> Đơn hàng của bạn
+          </a>
+          <a class="nav-link rounded-3" href="#!voucher">
+            <i class="bi bi-ticket-perforated me-2"></i> Voucher
+          </a>
+          <a class="nav-link rounded-3" href="#!doimatkhau">
+            <i class="bi bi-shield-lock me-2"></i> Bảo mật
+          </a>
+        </nav>
+      </div>
+    </div>
 
-              <div class="row py-3">
-                <div class="d-flex flex-column bd-highlight">
-                  <div class="p-2 bd-highlight">
-                    <div class="text-end">
-                      Thành tiền: <span style="color: orangered; font-size: 24px;">{{ x.tongtiencantra | currency:"₫":0 }}</span>
-                    </div>
-                  </div>
-                  <div class="p-2 bd-highlight">
-                    <div class="d-flex justify-content-between">
-                      <div class="p-2 bd-highlight text-secondary"></div>
-                      <div class="p-2 bd-highlight">
-                        <a class="btn btn-danger" href="#!trahang/{{x.id}}">Trả hàng</a>
-                        <a class="btn btn-danger" ng-if="x.trangthai==4" >Mua lại</a>
-                        <button class="btn btn-outline-dark" ng-click="chitietdh(x.id)">Chi tiết</button>
-                        <a class="btn btn-outline-dark" href="tel:0867812095">Liên hệ người bán</a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+    <div class="col-9">
+      <!-- Tabs Điều Hướng -->
+      <ul class="nav nav-tabs d-flex justify-content-center" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="tab1-tab" data-bs-toggle="tab" data-bs-target="#tab1" type="button"
+            role="tab">
+            Tất cả
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab2-tab" data-bs-toggle="tab" data-bs-target="#tab2" type="button" role="tab">
+            Chờ thanh toán
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab3-tab" data-bs-toggle="tab" data-bs-target="#tab3" type="button" role="tab">
+            Vận chuyển
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab4-tab" data-bs-toggle="tab" data-bs-target="#tab4" type="button" role="tab">
+            Chờ giao hàng
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab5-tab" data-bs-toggle="tab" data-bs-target="#tab5" type="button" role="tab">
+            Hoàn thành
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab6-tab" data-bs-toggle="tab" data-bs-target="#tab6" type="button" role="tab">
+            Đã hủy
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab7-tab" data-bs-toggle="tab" data-bs-target="#tab7" type="button" role="tab">
+            Trả Hàng/Hoàn tiền
+          </button>
+        </li>
+      </ul>
+      <input type="text" class="form-control mt-3" placeholder="Nhập từ khóa tìm kiếm..." ng-model="searchText">
+      <!-- Nội Dung Tab -->
+      <div class="tab-content mt-3 py-3" id="myTabContent">
+        <div class="tab-pane fade show active" id="tab1" role="tabpanel">
+          <div ng-repeat="x in dataHoaDon" class="mb-3 bg-light">
+            <div class="row border-bottom">
+              <div class="col m-3 text-uppercase text-en fw-semibold">
+                <span>Mã hóa đơn: #{{x.id}}</span>
+              </div>
+              <div class="col m-3 text-uppercase text-end" style="color: orangered;">
+                <span ng-if="x.trangthai==0">Chờ xác nhận</span>
+                <span ng-if="x.trangthai==1">Đã xác nhận</span>
+                <span ng-if="x.trangthai==2">Đang được giao</span>
+                <span ng-if="x.trangthai==3">Thành công</span>
+                <span ng-if="x.trangthai==4">Đã huỷ</span>
               </div>
             </div>
-          </div>
-          <div class="tab-pane fade" id="tab2" role="tabpanel">
-            <div ng-repeat="x in dataHoaDon" ng-if="x.trangthai==0" class="mb-3 bg-light">
-              <div class="row border-bottom">
-                <div class="col m-3 text-uppercase text-en fw-semibold">
-                  <span>Mã hóa đơn: #{{x.id}}</span>
-                </div>
-                <div class="col m-3 text-uppercase text-end" style="color: orangered;">
-                  <span ng-if="x.trangthai==0">Chờ xác nhận</span>
-                  <span ng-if="x.trangthai==1">Đã xác nhận</span>
-                  <span ng-if="x.trangthai==2">Đang được giao</span>
-                  <span ng-if="x.trangthai==3">Thành công</span>
-                  <span ng-if="x.trangthai==4">Đã huỷ</span>
-                </div>
-              </div>
-
-              <div class="row" ng-init="showMore = {}">
-                <div class="row border-bottom py-3" ng-repeat="hdct in dataHoaDonCT | filter:{idhd: x.id} | limitTo: (showMore[x.id] ? dataHoaDonCT.length : 2)">
-                  <div class="col-3 ps-3">
-                    <img ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct" src="https://localhost:7196/picture/{{spct.urlHinhanh}}" width="100%" height="120px">
-                  </div>
-                  <div class="col-7" ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct">
-                    <a href="#!SanpDetail/{{spct.idsp}}" class="fs-5 tensp" >{{SelectTenTH(spct.idsp)}} - {{SelecttenSp(spct.idsp)}}</a>
-                    <p class="text-secondary">Phân loại: Da độn - Đen - 38</p>
-                    <p>x{{hdct.soluong}}</p>
-                  </div>
-                  <div class="col-2 d-flex justify-content-center align-items-center">
-                    <div class="text-center">
-                      <span ng-if="hdct.giamgia && hdct.giamgia > 0" class="text-secondary text-decoration-line-through">
-                        {{ hdct.giamgia | currency:"₫":0 }}
-                      </span>
-                      <span style="color: orangered;">{{ hdct.giasp | currency:"₫":0 }}0</span>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Hiển thị nút "Xem thêm" hoặc "Thu gọn" -->
-                <div class="text-center mt-2" ng-if="(dataHoaDonCT | filter:{idhd: x.id}).length > 2">
-                  <button class="btn btn-outline-primary" ng-click="showMore[x.id] = !showMore[x.id]">
-                    {{ showMore[x.id] ? 'Thu gọn' : 'Xem thêm' }}
-                  </button>
-                </div>
-              </div>
-
-              <div class="row py-3">
-                <div class="d-flex flex-column bd-highlight">
-                  <div class="p-2 bd-highlight">
-                    <div class="text-end">
-                      Thành tiền: <span style="color: orangered; font-size: 24px;">{{ x.tongtiencantra | currency:"₫":0 }}</span>
-                    </div>
-                  </div>
-                  <div class="p-2 bd-highlight">
-                    <div class="d-flex justify-content-between">
-                      <div class="p-2 bd-highlight text-secondary"></div>
-                      <div class="p-2 bd-highlight">
-                        <a href="#!SanpDetail/spct.idsp"><button class="btn btn-danger" ng-if="x.trangthai==3 || x.trangthai==4">Mua lại</button></a>
-                        <button class="btn btn-outline-dark" ng-click="chitietdh(x.id)">Chi tiết</button>
-                        <a class="btn btn-outline-dark" href="tel:0867812095">Liên hệ người bán</a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="tab-pane fade" id="tab3" role="tabpanel">
-            <div ng-repeat="x in dataHoaDon" ng-if="x.trangthai==1" class="mb-3 bg-light">
-              <div class="row border-bottom">
-                <div class="col m-3 text-uppercase text-en fw-semibold">
-                  <span>Mã hóa đơn: #{{x.id}}</span>
-                </div>
-                <div class="col m-3 text-uppercase text-end" style="color: orangered;">
-                  <span ng-if="x.trangthai==0">Chờ xác nhận</span>
-                  <span ng-if="x.trangthai==1">Đã xác nhận</span>
-                  <span ng-if="x.trangthai==2">Đang được giao</span>
-                  <span ng-if="x.trangthai==3">Thành công</span>
-                  <span ng-if="x.trangthai==4">Đã huỷ</span>
-                </div>
-              </div>
-
-              <div class="row" ng-init="showMore = {}">
-                <div class="row border-bottom py-3" ng-repeat="hdct in dataHoaDonCT | filter:{idhd: x.id} | limitTo: (showMore[x.id] ? dataHoaDonCT.length : 2)">
-                  <div class="col-3 ps-3">
-                    <img ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct" src="https://localhost:7196/picture/{{spct.urlHinhanh}}" width="100%" height="120px">
-                  </div>
-                  <div class="col-7" ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct">
-                    <a href="#!SanpDetail/{{spct.idsp}}" class="fs-5 tensp" >{{SelectTenTH(spct.idsp)}} - {{SelecttenSp(spct.idsp)}}</a>
-                    <p class="text-secondary">Phân loại: Da độn - Đen - 38</p>
-                    <p>x{{hdct.soluong}}</p>
-                  </div>
-                  <div class="col-2 d-flex justify-content-center align-items-center">
-                    <div class="text-center">
-                      <span ng-if="hdct.giamgia && hdct.giamgia > 0" class="text-secondary text-decoration-line-through">
-                        {{ hdct.giamgia | currency:"₫":0 }}
-                      </span>
-                      <span style="color: orangered;">{{ hdct.giasp | currency:"₫":0 }}0</span>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Hiển thị nút "Xem thêm" hoặc "Thu gọn" -->
-                <div class="text-center mt-2" ng-if="(dataHoaDonCT | filter:{idhd: x.id}).length > 2">
-                  <button class="btn btn-outline-primary" ng-click="showMore[x.id] = !showMore[x.id]">
-                    {{ showMore[x.id] ? 'Thu gọn' : 'Xem thêm' }}
-                  </button>
-                </div>
-              </div>
-
-              <div class="row py-3">
-                <div class="d-flex flex-column bd-highlight">
-                  <div class="p-2 bd-highlight">
-                    <div class="text-end">
-                      Thành tiền: <span style="color: orangered; font-size: 24px;">{{ x.tongtiencantra | currency:"₫":0 }}</span>
-                    </div>
-                  </div>
-                  <div class="p-2 bd-highlight">
-                    <div class="d-flex justify-content-between">
-                      <div class="p-2 bd-highlight text-secondary"></div>
-                      <div class="p-2 bd-highlight">
-                        <button class="btn btn-danger" ng-if="x.trangthai==3 || x.trangthai==4">Mua lại</button>
-                        <button class="btn btn-outline-dark" ng-click="chitietdh(x.id)">Chi tiết</button>
-                        <a class="btn btn-outline-dark" href="tel:0867812095">Liên hệ người bán</a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane fade" id="tab4" role="tabpanel">
-            <div ng-repeat="x in dataHoaDon" ng-if="x.trangthai==2" class="mb-3 bg-light">
-              <div class="row border-bottom">
-                <div class="col m-3 text-uppercase text-en fw-semibold">
-                  <span>Mã hóa đơn: #{{x.id}}</span>
-                </div>
-                <div class="col m-3 text-uppercase text-end" style="color: orangered;">
-                  <span ng-if="x.trangthai==0">Chờ xác nhận</span>
-                  <span ng-if="x.trangthai==1">Đã xác nhận</span>
-                  <span ng-if="x.trangthai==2">Đang được giao</span>
-                  <span ng-if="x.trangthai==3">Thành công</span>
-                  <span ng-if="x.trangthai==4">Đã huỷ</span>
-                </div>
-              </div>
-
-              <div class="row" ng-init="showMore = {}">
-                <div class="row border-bottom py-3" ng-repeat="hdct in dataHoaDonCT | filter:{idhd: x.id} | limitTo: (showMore[x.id] ? dataHoaDonCT.length : 2)">
-                  <div class="col-3 ps-3">
-                    <img ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct" src="https://localhost:7196/picture/{{spct.urlHinhanh}}" width="100%" height="120px">
-                  </div>
-                  <div class="col-7" ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct">
-                    <a href="#!SanpDetail/{{spct.idsp}}" class="fs-5 tensp" >{{SelectTenTH(spct.idsp)}} - {{SelecttenSp(spct.idsp)}}</a>
-                    <p class="text-secondary">Phân loại: Da độn - Đen - 38</p>
-                    <p>x{{hdct.soluong}}</p>
-                  </div>
-                  <div class="col-2 d-flex justify-content-center align-items-center">
-                    <div class="text-center">
-                      <span ng-if="hdct.giamgia && hdct.giamgia > 0" class="text-secondary text-decoration-line-through">
-                        {{ hdct.giamgia | currency:"₫":0 }}
-                      </span>
-                      <span style="color: orangered;">{{ hdct.giasp | currency:"₫":0 }}0</span>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Hiển thị nút "Xem thêm" hoặc "Thu gọn" -->
-                <div class="text-center mt-2" ng-if="(dataHoaDonCT | filter:{idhd: x.id}).length > 2">
-                  <button class="btn btn-outline-primary" ng-click="showMore[x.id] = !showMore[x.id]">
-                    {{ showMore[x.id] ? 'Thu gọn' : 'Xem thêm' }}
-                  </button>
-                </div>
-              </div>
-
-              <div class="row py-3">
-                <div class="d-flex flex-column bd-highlight">
-                  <div class="p-2 bd-highlight">
-                    <div class="text-end">
-                      Thành tiền: <span style="color: orangered; font-size: 24px;">{{ x.tongtiencantra | currency:"₫":0 }}</span>
-                    </div>
-                  </div>
-                  <div class="p-2 bd-highlight">
-                    <div class="d-flex justify-content-between">
-                      <div class="p-2 bd-highlight text-secondary"></div>
-                      <div class="p-2 bd-highlight">
-                        <button class="btn btn-danger" ng-if="x.trangthai==3 || x.trangthai==4">Mua lại</button>
-                        <button class="btn btn-outline-dark" ng-click="chitietdh(x.id)">Chi tiết</button>
-                        <a class="btn btn-outline-dark" href="tel:0867812095">Liên hệ người bán</a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane fade" id="tab5" role="tabpanel">
-            <div ng-repeat="x in dataHoaDon" ng-if="x.trangthai==3" class="mb-3 bg-light">
-              <div class="row border-bottom">
-                <div class="col m-3 text-uppercase text-en fw-semibold">
-                  <span>Mã hóa đơn: #{{x.id}}</span>
-                </div>
-                <div class="col m-3 text-uppercase text-end" style="color: orangered;">
-                  <span ng-if="x.trangthai==0">Chờ xác nhận</span>
-                  <span ng-if="x.trangthai==1">Đã xác nhận</span>
-                  <span ng-if="x.trangthai==2">Đang được giao</span>
-                  <span ng-if="x.trangthai==3">Thành công</span>
-                  <span ng-if="x.trangthai==4">Đã huỷ</span>
-                </div>
-              </div>
-
-              <div class="row" ng-init="showMore = {}">
-                <div class="row border-bottom py-3" ng-repeat="hdct in dataHoaDonCT | filter:{idhd: x.id} | limitTo: (showMore[x.id] ? dataHoaDonCT.length : 2)">
-                  <div class="col-3 ps-3">
-                    <img ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct" src="https://localhost:7196/picture/{{spct.urlHinhanh}}" width="100%" height="120px">
-                  </div>
-                  <div class="col-7" ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct">
-                    <a href="#!SanpDetail/{{spct.idsp}}" class="fs-5 tensp" >{{SelectTenTH(spct.idsp)}} - {{SelecttenSp(spct.idsp)}}</a>
-                    <p class="text-secondary">Phân loại: Da độn - Đen - 38</p>
-                    <p>x{{hdct.soluong}}</p>
-                  </div>
-                  <div class="col-2 d-flex justify-content-center align-items-center">
-                    <div class="text-center">
-                      <span ng-if="hdct.giamgia && hdct.giamgia > 0" class="text-secondary text-decoration-line-through">
-                        {{ hdct.giamgia | currency:"₫":0 }}
-                      </span>
-                      <span style="color: orangered;">{{ hdct.giasp | currency:"₫":0 }}0</span>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Hiển thị nút "Xem thêm" hoặc "Thu gọn" -->
-                <div class="text-center mt-2" ng-if="(dataHoaDonCT | filter:{idhd: x.id}).length > 2">
-                  <button class="btn btn-outline-primary" ng-click="showMore[x.id] = !showMore[x.id]">
-                    {{ showMore[x.id] ? 'Thu gọn' : 'Xem thêm' }}
-                  </button>
-                </div>
-              </div>
-
-              <div class="row py-3">
-                <div class="d-flex flex-column bd-highlight">
-                  <div class="p-2 bd-highlight">
-                    <div class="text-end">
-                      Thành tiền: <span style="color: orangered; font-size: 24px;">{{ x.tongtiencantra | currency:"₫":0 }}</span>
-                    </div>
-                  </div>
-                  <div class="p-2 bd-highlight">
-                    <div class="d-flex justify-content-between">
-                      <div class="p-2 bd-highlight text-secondary"></div>
-                      <div class="p-2 bd-highlight">
-                        <button class="btn btn-outline-dark" ng-click="chitietdh(x.id)">Chi tiết</button>
-                        <a class="btn btn-outline-dark" href="tel:0867812095">Liên hệ người bán</a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane fade" id="tab6" role="tabpanel">
-            <div ng-repeat="x in dataHoaDon" ng-if="x.trangthai==4" class="mb-3 bg-light">
-              <div class="row border-bottom">
-                <div class="col m-3 text-uppercase text-en fw-semibold">
-                  <span>Mã hóa đơn: #{{x.id}}</span>
-                </div>
-                <div class="col m-3 text-uppercase text-end" style="color: orangered;">
-                  <span ng-if="x.trangthai==0">Chờ xác nhận</span>
-                  <span ng-if="x.trangthai==1">Đã xác nhận</span>
-                  <span ng-if="x.trangthai==2">Đang được giao</span>
-                  <span ng-if="x.trangthai==3">Thành công</span>
-                  <span ng-if="x.trangthai==4">Đã huỷ</span>
-                </div>
-              </div>
-
-              <div class="row" ng-init="showMore = {}">
-                <div class="row border-bottom py-3" ng-repeat="hdct in dataHoaDonCT | filter:{idhd: x.id} | limitTo: (showMore[x.id] ? dataHoaDonCT.length : 2)">
-                  <div class="col-3 ps-3">
-                    <img ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct" src="https://localhost:7196/picture/{{spct.urlHinhanh}}" width="100%" height="120px">
-                  </div>
-                  <div class="col-7" ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct">
-                    <a href="#!SanpDetail/{{spct.idsp}}" class="fs-5 tensp" >{{SelectTenTH(spct.idsp)}} - {{SelecttenSp(spct.idsp)}}</a>
-                    <p class="text-secondary">Phân loại: Da độn - Đen - 38</p>
-                    <p>x{{hdct.soluong}}</p>
-                  </div>
-                  <div class="col-2 d-flex justify-content-center align-items-center">
-                    <div class="text-center">
-                      <span ng-if="hdct.giamgia && hdct.giamgia > 0" class="text-secondary text-decoration-line-through">
-                        {{ hdct.giamgia | currency:"₫":0 }}
-                      </span>
-                      <span style="color: orangered;">{{ hdct.giasp | currency:"₫":0 }}0</span>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Hiển thị nút "Xem thêm" hoặc "Thu gọn" -->
-                <div class="text-center mt-2" ng-if="(dataHoaDonCT | filter:{idhd: x.id}).length > 2">
-                  <button class="btn btn-outline-primary" ng-click="showMore[x.id] = !showMore[x.id]">
-                    {{ showMore[x.id] ? 'Thu gọn' : 'Xem thêm' }}
-                  </button>
-                </div>
-              </div>
-
-              <div class="row py-3">
-                <div class="d-flex flex-column bd-highlight">
-                  <div class="p-2 bd-highlight">
-                    <div class="text-end">
-                      Thành tiền: <span style="color: orangered; font-size: 24px;">{{ x.tongtiencantra | currency:"₫":0 }}</span>
-                    </div>
-                  </div>
-                  <div class="p-2 bd-highlight">
-                    <div class="d-flex justify-content-between">
-                      <div class="p-2 bd-highlight text-secondary"></div>
-                      <div class="p-2 bd-highlight">
-                        <button class="btn btn-danger" ng-if="x.trangthai==3 || x.trangthai==4">Mua lại</button>
-                        <button class="btn btn-outline-dark" ng-click="chitietdh(x.id)">Chi tiết</button>
-                        <a class="btn btn-outline-dark" href="tel:0867812095">Liên hệ người bán</a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane fade" id="tab7" role="tabpanel">
-            <div ng-repeat="x in dataTraHang" class="mb-3 bg-light">
-              <div class="d-flex flex-row-reverse bd-highlight border-bottom">
-                <div class="p-2 bd-highlight border-start" style="color: orangered;">Hoàn thành</div>
-                <div class="p-2 bd-highlight">
-                  <a href="#" class="text-decoration-none text-success">
-                    <i class="bi bi-truck"></i> {{x.trangthaiStr}}
-                  </a> 
-                  <a data-bs-toggle="tooltip" data-bs-placement="bottom" title="Giang">
-                    <i class="bi bi-question-circle"></i>
-                  </a>
-                </div>
-              </div>
-              <div class="row border-bottom py-3"> 
+            <div class="row" ng-init="showMore = {}">
+              <div class="row border-bottom py-3"
+                ng-repeat="hdct in dataHoaDonCT | filter:{idhd: x.id} | limitTo: (showMore[x.id] ? dataHoaDonCT.length : 2)">
                 <div class="col-3 ps-3">
-                  <img src="./Images/1.jpg" width="100%" height="120px">
+                  <img ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct"
+                    src="https://localhost:7196/picture/{{spct.urlHinhanh}}" width="100%" height="120px">
                 </div>
-                <div class="col-7">
-                  <p class="fs-5">Giayf</p>
+                <div class="col-7" ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct">
+                  <a href="#!SanpDetail/{{spct.idsp}}" class="fs-5 tensp">{{SelectTenTH(spct.idsp)}} -
+                    {{SelecttenSp(spct.idsp)}}</a>
                   <p class="text-secondary">Phân loại: Da độn - Đen - 38</p>
-                  <p>x1</p>
+                  <p>x{{hdct.soluong}}</p>
+                </div>
+
+                <div class="col-2 d-flex justify-content-center align-items-center">
+                  <div class="text-center">
+                    <span ng-if="hdct.giamgia && hdct.giamgia > 0" class="text-secondary text-decoration-line-through">
+                      {{ hdct.giamgia | currency:"₫":0 }}
+                    </span>
+                    <span style="color: orangered;">{{ hdct.giasp | currency:"₫":0 }}0</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Hiển thị nút "Xem thêm" hoặc "Thu gọn" -->
+              <div class="text-center mt-2" ng-if="(dataHoaDonCT | filter:{idhd: x.id}).length > 2">
+                <button class="btn btn-outline-primary" ng-click="showMore[x.id] = !showMore[x.id]">
+                  {{ showMore[x.id] ? 'Thu gọn' : 'Xem thêm' }}
+                </button>
+              </div>
+            </div>
+
+            <div class="row py-3">
+              <div class="d-flex flex-column bd-highlight">
+                <div class="p-2 bd-highlight">
+                  <div class="text-end">
+                    Thành tiền: <span style="color: orangered; font-size: 24px;">{{ x.tongtiencantra | currency:"₫":0
+                      }}</span>
+                  </div>
+                </div>
+                <div class="p-2 bd-highlight">
+                  <div class="d-flex justify-content-between">
+                    <div class="p-2 bd-highlight text-secondary"></div>
+                    <div class="p-2 bd-highlight">
+                      <a class="btn btn-danger" href="#!trahang/{{x.id}}">Trả hàng</a>
+                      <a class="btn btn-danger" ng-if="x.trangthai==4">Mua lại</a>
+                      <button class="btn btn-outline-dark" ng-click="chitietdh(x.id)">Chi tiết</button>
+                      <a class="btn btn-outline-dark" href="tel:0867812095">Liên hệ người bán</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="tab2" role="tabpanel">
+          <div ng-repeat="x in dataHoaDon" ng-if="x.trangthai==0" class="mb-3 bg-light">
+            <div class="row border-bottom">
+              <div class="col m-3 text-uppercase text-en fw-semibold">
+                <span>Mã hóa đơn: #{{x.id}}</span>
+              </div>
+              <div class="col m-3 text-uppercase text-end" style="color: orangered;">
+                <span ng-if="x.trangthai==0">Chờ xác nhận</span>
+                <span ng-if="x.trangthai==1">Đã xác nhận</span>
+                <span ng-if="x.trangthai==2">Đang được giao</span>
+                <span ng-if="x.trangthai==3">Thành công</span>
+                <span ng-if="x.trangthai==4">Đã huỷ</span>
+              </div>
+            </div>
+
+            <div class="row" ng-init="showMore = {}">
+              <div class="row border-bottom py-3"
+                ng-repeat="hdct in dataHoaDonCT | filter:{idhd: x.id} | limitTo: (showMore[x.id] ? dataHoaDonCT.length : 2)">
+                <div class="col-3 ps-3">
+                  <img ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct"
+                    src="https://localhost:7196/picture/{{spct.urlHinhanh}}" width="100%" height="120px">
+                </div>
+                <div class="col-7" ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct">
+                  <a href="#!SanpDetail/{{spct.idsp}}" class="fs-5 tensp">{{SelectTenTH(spct.idsp)}} -
+                    {{SelecttenSp(spct.idsp)}}</a>
+                  <p class="text-secondary">Phân loại: Da độn - Đen - 38</p>
+                  <p>x{{hdct.soluong}}</p>
                 </div>
                 <div class="col-2 d-flex justify-content-center align-items-center">
                   <div class="text-center">
-                      <span class="text-secondary text-decoration-line-through">{{ x.tongtiensanpham | currency:"₫":0 }} </span>
-                      <span style="color: orangered;">{{ x.tongtiencantra | currency:"₫":0 }}0</span>
+                    <span ng-if="hdct.giamgia && hdct.giamgia > 0" class="text-secondary text-decoration-line-through">
+                      {{ hdct.giamgia | currency:"₫":0 }}
+                    </span>
+                    <span style="color: orangered;">{{ hdct.giasp | currency:"₫":0 }}0</span>
                   </div>
                 </div>
               </div>
-              <div class="row py-3">
-                <div class="d-flex flex-column bd-highlight">
-                  <div class="p-2 bd-highlight">
-                    <div class="text-end">
-                      Thành tiền: <span style="color: orangered; font-size: 24px;">{{ x.tongtiencantra | currency:"₫":0 }}
-                      </span>
+
+              <!-- Hiển thị nút "Xem thêm" hoặc "Thu gọn" -->
+              <div class="text-center mt-2" ng-if="(dataHoaDonCT | filter:{idhd: x.id}).length > 2">
+                <button class="btn btn-outline-primary" ng-click="showMore[x.id] = !showMore[x.id]">
+                  {{ showMore[x.id] ? 'Thu gọn' : 'Xem thêm' }}
+                </button>
+              </div>
+            </div>
+
+            <div class="row py-3">
+              <div class="d-flex flex-column bd-highlight">
+                <div class="p-2 bd-highlight">
+                  <div class="text-end">
+                    Thành tiền: <span style="color: orangered; font-size: 24px;">{{ x.tongtiencantra | currency:"₫":0
+                      }}</span>
+                  </div>
+                </div>
+                <div class="p-2 bd-highlight">
+                  <div class="d-flex justify-content-between">
+                    <div class="p-2 bd-highlight text-secondary"></div>
+                    <div class="p-2 bd-highlight">
+                      <a href="#!SanpDetail/spct.idsp"><button class="btn btn-danger"
+                          ng-if="x.trangthai==3 || x.trangthai==4">Mua lại</button></a>
+                      <button class="btn btn-outline-dark" ng-click="chitietdh(x.id)">Chi tiết</button>
+                      <a class="btn btn-outline-dark" href="tel:0867812095">Liên hệ người bán</a>
                     </div>
                   </div>
-                  <div class="p-2 bd-highlight">
-                    <div class="d-flex justify-content-between">
-                      <div class="p-2 bd-highlight text-secondary"></div>
-                      <div class="p-2 bd-highlight">
-                        <button class="btn btn-danger">Mua lại</button>
-                        <button class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#chitietModal">Chi tiết</button>
-                        <a href="tel:0987654321" class="btn btn-outline-dark">Liên hệ người bán</a>
-                      </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-pane fade" id="tab3" role="tabpanel">
+          <div ng-repeat="x in dataHoaDon" ng-if="x.trangthai==1" class="mb-3 bg-light">
+            <div class="row border-bottom">
+              <div class="col m-3 text-uppercase text-en fw-semibold">
+                <span>Mã hóa đơn: #{{x.id}}</span>
+              </div>
+              <div class="col m-3 text-uppercase text-end" style="color: orangered;">
+                <span ng-if="x.trangthai==0">Chờ xác nhận</span>
+                <span ng-if="x.trangthai==1">Đã xác nhận</span>
+                <span ng-if="x.trangthai==2">Đang được giao</span>
+                <span ng-if="x.trangthai==3">Thành công</span>
+                <span ng-if="x.trangthai==4">Đã huỷ</span>
+              </div>
+            </div>
+
+            <div class="row" ng-init="showMore = {}">
+              <div class="row border-bottom py-3"
+                ng-repeat="hdct in dataHoaDonCT | filter:{idhd: x.id} | limitTo: (showMore[x.id] ? dataHoaDonCT.length : 2)">
+                <div class="col-3 ps-3">
+                  <img ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct"
+                    src="https://localhost:7196/picture/{{spct.urlHinhanh}}" width="100%" height="120px">
+                </div>
+                <div class="col-7" ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct">
+                  <a href="#!SanpDetail/{{spct.idsp}}" class="fs-5 tensp">{{SelectTenTH(spct.idsp)}} -
+                    {{SelecttenSp(spct.idsp)}}</a>
+                  <p class="text-secondary">Phân loại: Da độn - Đen - 38</p>
+                  <p>x{{hdct.soluong}}</p>
+                </div>
+                <div class="col-2 d-flex justify-content-center align-items-center">
+                  <div class="text-center">
+                    <span ng-if="hdct.giamgia && hdct.giamgia > 0" class="text-secondary text-decoration-line-through">
+                      {{ hdct.giamgia | currency:"₫":0 }}
+                    </span>
+                    <span style="color: orangered;">{{ hdct.giasp | currency:"₫":0 }}0</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Hiển thị nút "Xem thêm" hoặc "Thu gọn" -->
+              <div class="text-center mt-2" ng-if="(dataHoaDonCT | filter:{idhd: x.id}).length > 2">
+                <button class="btn btn-outline-primary" ng-click="showMore[x.id] = !showMore[x.id]">
+                  {{ showMore[x.id] ? 'Thu gọn' : 'Xem thêm' }}
+                </button>
+              </div>
+            </div>
+
+            <div class="row py-3">
+              <div class="d-flex flex-column bd-highlight">
+                <div class="p-2 bd-highlight">
+                  <div class="text-end">
+                    Thành tiền: <span style="color: orangered; font-size: 24px;">{{ x.tongtiencantra | currency:"₫":0
+                      }}</span>
+                  </div>
+                </div>
+                <div class="p-2 bd-highlight">
+                  <div class="d-flex justify-content-between">
+                    <div class="p-2 bd-highlight text-secondary"></div>
+                    <div class="p-2 bd-highlight">
+                      <button class="btn btn-danger" ng-if="x.trangthai==3 || x.trangthai==4">Mua lại</button>
+                      <button class="btn btn-outline-dark" ng-click="chitietdh(x.id)">Chi tiết</button>
+                      <a class="btn btn-outline-dark" href="tel:0867812095">Liên hệ người bán</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="tab4" role="tabpanel">
+          <div ng-repeat="x in dataHoaDon" ng-if="x.trangthai==2" class="mb-3 bg-light">
+            <div class="row border-bottom">
+              <div class="col m-3 text-uppercase text-en fw-semibold">
+                <span>Mã hóa đơn: #{{x.id}}</span>
+              </div>
+              <div class="col m-3 text-uppercase text-end" style="color: orangered;">
+                <span ng-if="x.trangthai==0">Chờ xác nhận</span>
+                <span ng-if="x.trangthai==1">Đã xác nhận</span>
+                <span ng-if="x.trangthai==2">Đang được giao</span>
+                <span ng-if="x.trangthai==3">Thành công</span>
+                <span ng-if="x.trangthai==4">Đã huỷ</span>
+              </div>
+            </div>
+
+            <div class="row" ng-init="showMore = {}">
+              <div class="row border-bottom py-3"
+                ng-repeat="hdct in dataHoaDonCT | filter:{idhd: x.id} | limitTo: (showMore[x.id] ? dataHoaDonCT.length : 2)">
+                <div class="col-3 ps-3">
+                  <img ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct"
+                    src="https://localhost:7196/picture/{{spct.urlHinhanh}}" width="100%" height="120px">
+                </div>
+                <div class="col-7" ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct">
+                  <a href="#!SanpDetail/{{spct.idsp}}" class="fs-5 tensp">{{SelectTenTH(spct.idsp)}} -
+                    {{SelecttenSp(spct.idsp)}}</a>
+                  <p class="text-secondary">Phân loại: Da độn - Đen - 38</p>
+                  <p>x{{hdct.soluong}}</p>
+                </div>
+                <div class="col-2 d-flex justify-content-center align-items-center">
+                  <div class="text-center">
+                    <span ng-if="hdct.giamgia && hdct.giamgia > 0" class="text-secondary text-decoration-line-through">
+                      {{ hdct.giamgia | currency:"₫":0 }}
+                    </span>
+                    <span style="color: orangered;">{{ hdct.giasp | currency:"₫":0 }}0</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Hiển thị nút "Xem thêm" hoặc "Thu gọn" -->
+              <div class="text-center mt-2" ng-if="(dataHoaDonCT | filter:{idhd: x.id}).length > 2">
+                <button class="btn btn-outline-primary" ng-click="showMore[x.id] = !showMore[x.id]">
+                  {{ showMore[x.id] ? 'Thu gọn' : 'Xem thêm' }}
+                </button>
+              </div>
+            </div>
+
+            <div class="row py-3">
+              <div class="d-flex flex-column bd-highlight">
+                <div class="p-2 bd-highlight">
+                  <div class="text-end">
+                    Thành tiền: <span style="color: orangered; font-size: 24px;">{{ x.tongtiencantra | currency:"₫":0
+                      }}</span>
+                  </div>
+                </div>
+                <div class="p-2 bd-highlight">
+                  <div class="d-flex justify-content-between">
+                    <div class="p-2 bd-highlight text-secondary"></div>
+                    <div class="p-2 bd-highlight">
+                      <button class="btn btn-danger" ng-if="x.trangthai==3 || x.trangthai==4">Mua lại</button>
+                      <button class="btn btn-outline-dark" ng-click="chitietdh(x.id)">Chi tiết</button>
+                      <a class="btn btn-outline-dark" href="tel:0867812095">Liên hệ người bán</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="tab5" role="tabpanel">
+          <div ng-repeat="x in dataHoaDon" ng-if="x.trangthai==3" class="mb-3 bg-light">
+            <div class="row border-bottom">
+              <div class="col m-3 text-uppercase text-en fw-semibold">
+                <span>Mã hóa đơn: #{{x.id}}</span>
+              </div>
+              <div class="col m-3 text-uppercase text-end" style="color: orangered;">
+                <span ng-if="x.trangthai==0">Chờ xác nhận</span>
+                <span ng-if="x.trangthai==1">Đã xác nhận</span>
+                <span ng-if="x.trangthai==2">Đang được giao</span>
+                <span ng-if="x.trangthai==3">Thành công</span>
+                <span ng-if="x.trangthai==4">Đã huỷ</span>
+              </div>
+            </div>
+
+            <div class="row" ng-init="showMore = {}">
+              <div class="row border-bottom py-3"
+                ng-repeat="hdct in dataHoaDonCT | filter:{idhd: x.id} | limitTo: (showMore[x.id] ? dataHoaDonCT.length : 2)">
+                <div class="col-3 ps-3">
+                  <img ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct"
+                    src="https://localhost:7196/picture/{{spct.urlHinhanh}}" width="100%" height="120px">
+                </div>
+                <div class="col-7" ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct">
+                  <a href="#!SanpDetail/{{spct.idsp}}" class="fs-5 tensp">{{SelectTenTH(spct.idsp)}} -
+                    {{SelecttenSp(spct.idsp)}}</a>
+                  <p class="text-secondary">Phân loại: Da độn - Đen - 38</p>
+                  <p>x{{hdct.soluong}}</p>
+                </div>
+                <div class="col-2 d-flex justify-content-center align-items-center">
+                  <div class="text-center">
+                    <span ng-if="hdct.giamgia && hdct.giamgia > 0" class="text-secondary text-decoration-line-through">
+                      {{ hdct.giamgia | currency:"₫":0 }}
+                    </span>
+                    <span style="color: orangered;">{{ hdct.giasp | currency:"₫":0 }}0</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Hiển thị nút "Xem thêm" hoặc "Thu gọn" -->
+              <div class="text-center mt-2" ng-if="(dataHoaDonCT | filter:{idhd: x.id}).length > 2">
+                <button class="btn btn-outline-primary" ng-click="showMore[x.id] = !showMore[x.id]">
+                  {{ showMore[x.id] ? 'Thu gọn' : 'Xem thêm' }}
+                </button>
+              </div>
+            </div>
+
+            <div class="row py-3">
+              <div class="d-flex flex-column bd-highlight">
+                <div class="p-2 bd-highlight">
+                  <div class="text-end">
+                    Thành tiền: <span style="color: orangered; font-size: 24px;">{{ x.tongtiencantra | currency:"₫":0
+                      }}</span>
+                  </div>
+                </div>
+                <div class="p-2 bd-highlight">
+                  <div class="d-flex justify-content-between">
+                    <div class="p-2 bd-highlight text-secondary"></div>
+                    <div class="p-2 bd-highlight">
+                      <button class="btn btn-outline-dark" ng-click="chitietdh(x.id)">Chi tiết</button>
+                      <a class="btn btn-outline-dark" href="tel:0867812095">Liên hệ người bán</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="tab6" role="tabpanel">
+          <div ng-repeat="x in dataHoaDon" ng-if="x.trangthai==4" class="mb-3 bg-light">
+            <div class="row border-bottom">
+              <div class="col m-3 text-uppercase text-en fw-semibold">
+                <span>Mã hóa đơn: #{{x.id}}</span>
+              </div>
+              <div class="col m-3 text-uppercase text-end" style="color: orangered;">
+                <span ng-if="x.trangthai==0">Chờ xác nhận</span>
+                <span ng-if="x.trangthai==1">Đã xác nhận</span>
+                <span ng-if="x.trangthai==2">Đang được giao</span>
+                <span ng-if="x.trangthai==3">Thành công</span>
+                <span ng-if="x.trangthai==4">Đã huỷ</span>
+              </div>
+            </div>
+
+            <div class="row" ng-init="showMore = {}">
+              <div class="row border-bottom py-3"
+                ng-repeat="hdct in dataHoaDonCT | filter:{idhd: x.id} | limitTo: (showMore[x.id] ? dataHoaDonCT.length : 2)">
+                <div class="col-3 ps-3">
+                  <img ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct"
+                    src="https://localhost:7196/picture/{{spct.urlHinhanh}}" width="100%" height="120px">
+                </div>
+                <div class="col-7" ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct">
+                  <a href="#!SanpDetail/{{spct.idsp}}" class="fs-5 tensp">{{SelectTenTH(spct.idsp)}} -
+                    {{SelecttenSp(spct.idsp)}}</a>
+                  <p class="text-secondary">Phân loại: Da độn - Đen - 38</p>
+                  <p>x{{hdct.soluong}}</p>
+                </div>
+                <div class="col-2 d-flex justify-content-center align-items-center">
+                  <div class="text-center">
+                    <span ng-if="hdct.giamgia && hdct.giamgia > 0" class="text-secondary text-decoration-line-through">
+                      {{ hdct.giamgia | currency:"₫":0 }}
+                    </span>
+                    <span style="color: orangered;">{{ hdct.giasp | currency:"₫":0 }}0</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Hiển thị nút "Xem thêm" hoặc "Thu gọn" -->
+              <div class="text-center mt-2" ng-if="(dataHoaDonCT | filter:{idhd: x.id}).length > 2">
+                <button class="btn btn-outline-primary" ng-click="showMore[x.id] = !showMore[x.id]">
+                  {{ showMore[x.id] ? 'Thu gọn' : 'Xem thêm' }}
+                </button>
+              </div>
+            </div>
+
+            <div class="row py-3">
+              <div class="d-flex flex-column bd-highlight">
+                <div class="p-2 bd-highlight">
+                  <div class="text-end">
+                    Thành tiền: <span style="color: orangered; font-size: 24px;">{{ x.tongtiencantra | currency:"₫":0
+                      }}</span>
+                  </div>
+                </div>
+                <div class="p-2 bd-highlight">
+                  <div class="d-flex justify-content-between">
+                    <div class="p-2 bd-highlight text-secondary"></div>
+                    <div class="p-2 bd-highlight">
+                      <button class="btn btn-danger" ng-if="x.trangthai==3 || x.trangthai==4">Mua lại</button>
+                      <button class="btn btn-outline-dark" ng-click="chitietdh(x.id)">Chi tiết</button>
+                      <a class="btn btn-outline-dark" href="tel:0867812095">Liên hệ người bán</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="tab7" role="tabpanel">
+          <div ng-repeat="x in dataTraHang" class="mb-3 bg-light">
+            <div class="d-flex flex-row-reverse bd-highlight border-bottom">
+              <div class="p-2 bd-highlight border-start" style="color: orangered;">Hoàn thành</div>
+              <div class="p-2 bd-highlight">
+                <a href="#" class="text-decoration-none text-success">
+                  <i class="bi bi-truck"></i> {{x.trangthaiStr}}
+                </a>
+                <a data-bs-toggle="tooltip" data-bs-placement="bottom" title="Giang">
+                  <i class="bi bi-question-circle"></i>
+                </a>
+              </div>
+            </div>
+            <div class="row border-bottom py-3">
+              <div class="col-3 ps-3">
+                <img src="./Images/1.jpg" width="100%" height="120px">
+              </div>
+              <div class="col-7">
+                <p class="fs-5">Giayf</p>
+                <p class="text-secondary">Phân loại: Da độn - Đen - 38</p>
+                <p>x1</p>
+              </div>
+              <div class="col-2 d-flex justify-content-center align-items-center">
+                <div class="text-center">
+                  <span class="text-secondary text-decoration-line-through">{{ x.tongtiensanpham | currency:"₫":0 }}
+                  </span>
+                  <span style="color: orangered;">{{ x.tongtiencantra | currency:"₫":0 }}0</span>
+                </div>
+              </div>
+            </div>
+            <div class="row py-3">
+              <div class="d-flex flex-column bd-highlight">
+                <div class="p-2 bd-highlight">
+                  <div class="text-end">
+                    Thành tiền: <span style="color: orangered; font-size: 24px;">{{ x.tongtiencantra | currency:"₫":0 }}
+                    </span>
+                  </div>
+                </div>
+                <div class="p-2 bd-highlight">
+                  <div class="d-flex justify-content-between">
+                    <div class="p-2 bd-highlight text-secondary"></div>
+                    <div class="p-2 bd-highlight">
+                      <button class="btn btn-danger">Mua lại</button>
+                      <button class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#chitietModal">Chi
+                        tiết</button>
+                      <a href="tel:0987654321" class="btn btn-outline-dark">Liên hệ người bán</a>
                     </div>
                   </div>
                 </div>
@@ -502,6 +597,7 @@
           </div>
         </div>
       </div>
+    </div>
   </div>
 </div>
 <!-- Chi tiết đơn hàng -->
@@ -516,7 +612,7 @@
         <div ng-repeat="x in dataHoaDon" ng-if="x.id == idhd" class="mb-4 p-3 shadow-sm bg-white">
           <!-- Trạng thái đơn hàng -->
           <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
-            <h5 class="text-uppercase text-danger"> 
+            <h5 class="text-uppercase text-danger">
               <span ng-if="x.trangthai == 0">Chờ xác nhận</span>
               <span ng-if="x.trangthai == 1">Đã xác nhận</span>
               <span ng-if="x.trangthai == 2">Đang được giao</span>
@@ -524,26 +620,25 @@
               <span ng-if="x.trangthai == 4">Đã huỷ</span>
             </h5>
           </div>
-        
+
           <!-- Sản phẩm trong đơn hàng -->
           <div class="py-3" ng-init="showMore = {}">
             <div class="row" ng-if="!showMore[x.id]">
               <div class="col d-flex flex-wrap">
                 <div class="p-2" ng-repeat="hdct in dataHoaDonCT | filter:{idhd: x.id} | limitTo: 3">
-                  <img ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct" 
-                       ng-src="https://localhost:7196/picture/{{spct.urlHinhanh}}" 
-                       class="rounded border" width="80" height="80">
+                  <img ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct"
+                    ng-src="https://localhost:7196/picture/{{spct.urlHinhanh}}" class="rounded border" width="80"
+                    height="80">
                 </div>
               </div>
             </div>
-        
+
             <div class="row py-3" ng-if="showMore[x.id]">
               <div class="col-12" ng-repeat="hdct in dataHoaDonCT | filter:{idhd: x.id}">
                 <div class="row">
                   <div class="col-3">
-                    <img ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct" 
-                         ng-src="https://localhost:7196/picture/{{spct.urlHinhanh}}" 
-                         class="img-fluid rounded border">
+                    <img ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct"
+                      ng-src="https://localhost:7196/picture/{{spct.urlHinhanh}}" class="img-fluid rounded border">
                   </div>
                   <div class="col-6">
                     <p class="fw-bold mb-1">Giày</p>
@@ -560,14 +655,14 @@
                 <hr>
               </div>
             </div>
-        
+
             <div class="text-center mt-2" ng-if="(dataHoaDonCT | filter:{idhd: x.id}).length > 0">
               <button class="btn btn-outline-primary" ng-click="showMore[x.id] = !showMore[x.id]">
                 {{ showMore[x.id] ? 'Thu gọn' : 'Xem thêm' }}
               </button>
             </div>
           </div>
-        
+
           <!-- Thông tin thanh toán -->
           <div class="py-3 border-top mt-3">
             <div class="row py-1">
@@ -584,10 +679,11 @@
             </div>
             <div class="row py-2 border-top">
               <div class="col-9 text-end fw-bold">Thành tiền:</div>
-              <div class="col-3 text-end fw-bold text-danger" style="font-size: 20px;">{{ x.tongtiencantra | currency:"₫":0 }}</div>
+              <div class="col-3 text-end fw-bold text-danger" style="font-size: 20px;">{{ x.tongtiencantra |
+                currency:"₫":0 }}</div>
             </div>
           </div>
-        
+
           <!-- Thông tin giao aggggaaahàng -->
           <div class="py-3 border-top">
             <div class="row py-1">
@@ -604,7 +700,7 @@
             </div>
           </div>
         </div>
-        
+
       </div>
       <div class="modal-footer">
         <button class="btn btn-danger" ng-if="x.trangthai==3 || x.trangthai==4">Mua lại</button>
