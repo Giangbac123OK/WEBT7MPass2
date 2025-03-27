@@ -105,28 +105,28 @@ app.run(function ($rootScope, $location, $http) {
 
 
   // Kiểm tra trạng thái khách hàng mỗi khi chuyển trang
-    $rootScope.$on('$routeChangeStart', function (event, next, current) {
-      const idkh = GetByidKH();
-      
-    
-      if ($rootScope.isLoggedIn) {
-        // Gọi API để kiểm tra trạng thái của khách hàng
-        $http.get(`https://localhost:7196/api/Khachhangs/${idkh}`)  
-            .then(function(response) {
-                if (response.data.trangthai === "Tài khoản bị khoá") {
-                    // Nếu trạng thái là 1, gọi hàm đăng xuất
-                    $rootScope.dangxuat();
-                    Swal.fire({
-                      icon: 'error',               // Chọn icon là lỗi (error)
-                      title: 'Lỗi',                // Tiêu đề thông báo
-                      text: 'Tài khoản của bạn đã bị khoá',  // Nội dung thông báo
-                      confirmButtonText: 'Đóng'    // Văn bản cho nút xác nhận
-                    });  
-                }
-            })
-            .catch(function(error) {
-                console.error("Lỗi khi gọi API kiểm tra trạng thái:", error);
+  $rootScope.$on('$routeChangeStart', function (event, next, current) {
+    const idkh = GetByidKH();
+
+
+    if ($rootScope.isLoggedIn) {
+      // Gọi API để kiểm tra trạng thái của khách hàng
+      $http.get(`https://localhost:7196/api/Khachhangs/${idkh}`)
+        .then(function (response) {
+          if (response.data.trangthai === "Tài khoản bị khoá") {
+            // Nếu trạng thái là 1, gọi hàm đăng xuất
+            $rootScope.dangxuat();
+            Swal.fire({
+              icon: 'error',               // Chọn icon là lỗi (error)
+              title: 'Lỗi',                // Tiêu đề thông báo
+              text: 'Tài khoản của bạn đã bị khoá',  // Nội dung thông báo
+              confirmButtonText: 'Đóng'    // Văn bản cho nút xác nhận
             });
+          }
+        })
+        .catch(function (error) {
+          console.error("Lỗi khi gọi API kiểm tra trạng thái:", error);
+        });
     }
   });
 
@@ -163,6 +163,57 @@ app.run(function ($rootScope, $location, $http) {
     return userId;
   }
 
+  GetByidKH1();
+
+  async function GetByidKH1() {
+    try {
+      // Kiểm tra và lấy thông tin user từ localStorage
+      const userInfoString = localStorage.getItem("userInfo");
+      if (!userInfoString) {
+        console.error("Không tìm thấy thông tin user trong localStorage");
+        return null;
+      }
+
+      const userInfo = JSON.parse(userInfoString);
+      if (!userInfo || !userInfo.id) {
+        console.error("Thông tin user không hợp lệ");
+        return null;
+      }
+
+      // Lấy thông tin khách hàng từ API
+      const infoResponse = await fetch(`https://localhost:7196/api/khachhangs/${userInfo.id}`);
+      if (!infoResponse.ok) {
+        throw new Error(`Lỗi khi lấy thông tin khách hàng: ${infoResponse.status}`);
+      }
+      const customerData = await infoResponse.json();
+
+      if (!customerData) {
+        throw new Error("Dữ liệu khách hàng trả về rỗng");
+      }
+
+      // Gán dữ liệu cho $scope
+      $rootScope.dataTttk1 = customerData;
+
+      // Kích hoạt $digest cycle để cập nhật view
+      $rootScope.$apply();
+
+      return;
+    } catch (error) {
+      console.error("Lỗi trong hàm GetByidKH1:", error);
+
+      // Xử lý lỗi cụ thể
+      if (error instanceof SyntaxError) {
+        console.error("Lỗi phân tích JSON từ localStorage");
+      } else if (error.name === 'TypeError') {
+        console.error("Lỗi kết nối hoặc API không phản hồi");
+      }
+      $rootScope.dataTttk1 = null;
+      $rootScope.$apply();
+
+      return null;
+    }
+  }
+
   // Hàm đăng xuất
   $rootScope.dangxuat = function () {
     $rootScope.isLoggedIn = false;
@@ -177,5 +228,5 @@ app.run(function ($rootScope, $location, $http) {
     console.error('Lỗi toàn cục:', error);
 
   });
-  
+
 });
