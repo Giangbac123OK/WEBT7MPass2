@@ -25,5 +25,9 @@ app.config(function ($routeProvider) {
             templateUrl: "./Views/quanlyhoadon.html",
             controller: "quanlyhoadonController"
         })
+        .when("/nhanvien", {
+            templateUrl: "./Views/nhanvien.html",
+            controller: 'nhanvienController'
+        })
         .otherwise("/")
 });

@@ -1,0 +1,52 @@
+<div class="container">
+    <div class="card my-3">
+        <div class="d-flex justify-content-between">
+            <div class="p-2 bd-highlight">DANH SÁCH NHÂN VIÊN</div>
+            <div class="p-2 bd-highlight">{{time }}</div>
+        </div>
+    </div>
+    <div class="card mb-3 py-3">
+        <div class="mx-3 mb-3">
+            <button type="button" class="btn btn-primary"><i class="bi bi-plus"></i>Thêm nhân viên mới</button>
+            <button type="button" class="btn btn-success"><i class="bi bi-file-earmark-excel-fill"></i>Xuất file Excel</button>
+            <button type="button" class="btn btn-danger"><i class="bi bi-trash3-fill"></i>Xoá tất cả</button>
+        </div>
+        <hr class="mb-3">
+        <div class="m-3">
+            <table class="table table-bordered">
+                <thead style="color: silver;">
+                    <tr class="text-center">
+                        <th scope="col"><input type="checkbox"></th>
+                        <th scope="col">ID</th>
+                        <th scope="col">Họ và tên</th>
+                        <th scope="col">Ngày sinh</th>
+                        <th scope="col">Giới tính</th>
+                        <th scope="col">Số điện thoại</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Địa chỉ</th>
+                        <th scope="col">Chức vụ</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="x in listNhanVien">
+                        <th class="text-center"><input type="checkbox"></th>
+                        <td class="text-center">{{x.id}}</td>
+                        <td>{{x.hovaten}}</td>
+                        <td class="text-center">{{x.ngaysinh}}</td>
+                        <th class="text-center">{{x.gioitinh}}</th>
+                        <td>{{x.sdt}}</td>
+                        <td>{{x.email}}</td>
+                        <td class="text-center">{{x.diachi}}</td>
+                        <td class="text-center">{{x.role}}</td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-success"><i class="bi bi-person-lines-fill"></i></button>
+                            <button type="button" class="btn btn-warning"><i class="bi bi-pen-fill"></i></button>
+                            <button type="button" class="btn btn-danger"><i class="bi bi-trash3-fill"></i></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
