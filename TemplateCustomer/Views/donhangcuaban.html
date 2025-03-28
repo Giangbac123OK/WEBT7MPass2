@@ -193,6 +193,22 @@
                     {{SelecttenSp(spct.idsp)}}</a>
                   <p class="text-secondary">Phân loại: Da độn - Đen - 38</p>
                   <p>x{{hdct.soluong}}</p>
+                  <button type="button" class="btn btn-success" ng-click="openRatingModal(hdct)"
+                  ng-if="( danhgiaById[hdct.id].success === false) && x.trangthai === 3">
+                  Đánh giá
+                </button>
+
+                <!-- Nút Sửa đánh giá -->
+                <button type="button" class="btn btn-warning" ng-click="openEditRatingModal(hdct)"
+                  ng-if="danhgiaById[hdct.id] && danhgiaById[hdct.id].success !== false && x.trangthai === 3">
+                  Sửa đánh giá
+                </button>
+
+                <!-- Nút Xóa đánh giá -->
+                <button type="button" class="btn btn-danger" ng-click="deleteRating(danhgiaById[hdct.id].id)"
+                  ng-if="danhgiaById[hdct.id] && danhgiaById[hdct.id].success !== false && x.trangthai === 3">
+                  Xóa đánh giá
+                </button>
                 </div>
 
                 <div class="col-2 d-flex justify-content-center align-items-center">
