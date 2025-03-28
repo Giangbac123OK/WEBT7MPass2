@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Bảng xếp hạng</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
+      <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+        <div class="position-sticky pt-3">
+          <div class="d-flex align-items-center pb-3 mb-3 border-bottom">
+            <i class="bi bi-box me-2"></i>
+            <span class="fs-5 fw-semibold">Admin Dashboard</span>
+          </div>
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link" href="dashboard.html">
+                <i class="bi bi-grid me-2"></i>
+                Tổng quan
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="returns.html">
+                <i class="bi bi-cart me-2"></i>
+                Quản lý trả hàng
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="rankings.html">
+                <i class="bi bi-bar-chart me-2"></i>
+                Bảng xếp hạng
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="vouchers.html">
+                <i class="bi bi-ticket-perforated me-2"></i>
+                Quản lý voucher
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">
+                <i class="bi bi-people me-2"></i>
+                Khách hàng
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">
+                <i class="bi bi-gear me-2"></i>
+                Cài đặt
+              </a>
+            </li>
+          </ul>
+          <div class="border-top my-3"></div>
+          <div class="px-3">
+            <button class="btn btn-outline-secondary w-100 d-flex align-items-center">
+              <i class="bi bi-box-arrow-right me-2"></i>
+              Đăng xuất
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Main content -->
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+          <div>
+            <h1 class="h2">Bảng xếp hạng</h1>
+            <p class="text-muted">Xem xếp hạng khách hàng và sản phẩm</p>
+          </div>
+          <button class="btn btn-primary d-flex align-items-center">
+            <i class="bi bi-download me-2"></i>
+            Xuất báo cáo
+          </button>
+        </div>
+
+        <!-- Tabs -->
+        <ul class="nav nav-tabs mb-4">
+          <li class="nav-item">
+            <a class="nav-link active" href="#" data-bs-toggle="tab" data-bs-target="#customers">Khách hàng</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" data-bs-toggle="tab" data-bs-target="#products">Sản phẩm</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" data-bs-toggle="tab" data-bs-target="#stores">Cửa hàng</a>
+          </li>
+        </ul>
+
+        <div class="tab-content">
+          <!-- Customers Tab -->
+          <div class="tab-pane fade show active" id="customers">
+            <!-- Stats cards -->
+            <div class="row row-cols-1 row-cols-md-3 g-4 mb-4">
+              <div class="col">
+                <div class="card h-100">
+                  <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                      <div>
+                        <p class="card-text text-muted small">Tổng khách hàng</p>
+                        <h5 class="card-title mb-0">12,234</h5>
+                      </div>
+                      <div class="text-muted">
+                        <i class="bi bi-people"></i>
+                      </div>
+                    </div>
+                    <p class="card-text mt-2 small text-success">
+                      <i class="bi bi-arrow-up"></i> +573 khách hàng mới trong tháng này
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <div class="card h-100">
+                  <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                      <div>
+                        <p class="card-text text-muted small">Khách hàng VIP</p>
+                        <h5 class="card-title mb-0">1,432</h5>
+                      </div>
+                      <div class="text-muted">
+                        <i class="bi bi-graph-up"></i>
+                      </div>
+                    </div>
+                    <p class="card-text mt-2 small text-success">
+                      <i class="bi bi-arrow-up"></i> +120 khách hàng VIP mới trong tháng này
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <div class="card h-100">
+                  <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                      <div>
+                        <p class="card-text text-muted small">Tỷ lệ chuyển đổi</p>
+                        <h5 class="card-title mb-0">24.5%</h5>
+                      </div>
+                      <div class="text-muted">
+                        <i class="bi bi-bag"></i>
+                      </div>
+                    </div>
+                    <p class="card-text mt-2 small text-success">
+                      <i class="bi bi-arrow-up"></i> +2.3% so với tháng trước
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Customer Rankings -->
+            <div class="row g-4">
+              <div class="col-md-7">
+                <div class="card">
+                  <div class="card-header">
+                    <h5 class="card-title">Top khách hàng</h5>
+                    <p class="card-text text-muted small">Xếp hạng theo tổng chi tiêu</p>
+                  </div>
+                  <div class="card-body">
+                    <div class="table-responsive">
+                      <table class="table table-hover">
+                        <thead>
+                          <tr>
+                            <th>Xếp hạng</th>
+                            <th>Khách hàng</th>
+                            <th>Cấp độ</th>
+                            <th class="text-end">Chi tiêu</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td class="fw-medium">1</td>
+                            <td>Nguyễn Văn A</td>
+                            <td>
+                              <span class="badge bg-purple text-white">Kim cương</span>
+                            </td>
+                            <td class="text-end">25,432,000đ</td>
+                          </tr>
+                          <tr>
+                            <td class="fw-medium">2</td>
+                            <td>Trần Thị B</td>
+                            <td>
+                              <span class="badge bg-warning text-dark">Vàng</span>
+                            </td>
+                            <td class="text-end">18,765,000đ</td>
+                          </tr>
+                          <tr>
+                            <td class="fw-medium">3</td>
+                            <td>Lê Văn C</td>
+                            <td>
+                              <span class="badge bg-warning text-dark">Vàng</span>
+                            </td>
+                            <td class="text-end">15,432,000đ</td>
+                          </tr>
+                          <tr>
+                            <td class="fw-medium">4</td>
+                            <td>Phạm Thị D</td>
+                            <td>
+                              <span class="badge bg-secondary">Bạc</span>
+                            </td>
+                            <td class="text-end">12,876,000đ</td>
+                          </tr>
+                          <tr>
+                            <td class="fw-medium">5</td>
+                            <td>Hoàng Văn E</td>
+                            <td>
+                              <span class="badge bg-secondary">Bạc</span>
+                            </td>
+                            <td class="text-end">10,543,000đ</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-5">
+                <div class="card">
+                  <div class="card-header">
+                    <h5 class="card-title">Phân bố cấp độ khách hàng</h5>
+                    <p class="card-text text-muted small">Tỷ lệ khách hàng theo cấp độ</p>
+                  </div>
+                  <div class="card-body">
+                    <canvas id="customerRankChart" height="250"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Products Tab -->
+          <div class="tab-pane fade" id="products">
+            <div class="card">
+              <div class="card-header">
+                <h5 class="card-title">Top sản phẩm bán chạy</h5>
+                <p class="card-text text-muted small">Xếp hạng theo số lượng bán ra trong tháng này</p>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-hover">
+                    <thead>
+                      <tr>
+                        <th>Xếp hạng</th>
+                        <th>Sản phẩm</th>
+                        <th>Danh mục</th>
+                        <th>Đã bán</th>
+                        <th class="text-end">Doanh thu</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="fw-medium">1</td>
+                        <td>Áo thun nam basic</td>
+                        <td>Thời trang nam</td>
+                        <td>1,234</td>
+                        <td class="text-end">246,800,000đ</td>
+                      </tr>
+                      <tr>
+                        <td class="fw-medium">2</td>
+                        <td>Quần jean nữ ống rộng</td>
+                        <td>Thời trang nữ</td>
+                        <td>987</td>
+                        <td class="text-end">197,400,000đ</td>
+                      </tr>
+                      <tr>
+                        <td class="fw-medium">3</td>
+                        <td>Giày thể thao unisex</td>
+                        <td>Giày dép</td>
+                        <td>876</td>
+                        <td class="text-end">175,200,000đ</td>
+                      </tr>
+                      <tr>
+                        <td class="fw-medium">4</td>
+                        <td>Túi xách nữ thời trang</td>
+                        <td>Phụ kiện</td>
+                        <td>765</td>
+                        <td class="text-end">153,000,000đ</td>
+                      </tr>
+                      <tr>
+                        <td class="fw-medium">5</td>
+                        <td>Đồng hồ nam cao cấp</td>
+                        <td>Phụ kiện</td>
+                        <td>654</td>
+                        <td class="text-end">130,800,000đ</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stores Tab -->
+          <div class="tab-pane fade" id="stores">
+            <div class="card">
+              <div class="card-header">
+                <h5 class="card-title">Top cửa hàng</h5>
+                <p class="card-text text-muted small">Xếp hạng theo doanh thu trong tháng này</p>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-hover">
+                    <thead>
+                      <tr>
+                        <th>Xếp hạng</th>
+                        <th>Cửa hàng</th>
+                        <th>Địa chỉ</th>
+                        <th>Đơn hàng</th>
+                        <th class="text-end">Doanh thu</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="fw-medium">1</td>
+                        <td>Chi nhánh Hà Nội</td>
+                        <td>Cầu Giấy, Hà Nội</td>
+                        <td>1,543</td>
+                        <td class="text-end">308,600,000đ</td>
+                      </tr>
+                      <tr>
+                        <td class="fw-medium">2</td>
+                        <td>Chi nhánh TP.HCM</td>
+                        <td>Quận 1, TP.HCM</td>
+                        <td>1,432</td>
+                        <td class="text-end">286,400,000đ</td>
+                      </tr>
+                      <tr>
+                        <td class="fw-medium">3</td>
+                        <td>Chi nhánh Đà Nẵng</td>
+                        <td>Hải Châu, Đà Nẵng</td>
+                        <td>987</td>
+                        <td class="text-end">197,400,000đ</td>
+                      </tr>
+                      <tr>
+                        <td class="fw-medium">4</td>
+                        <td>Chi nhánh Cần Thơ</td>
+                        <td>Ninh Kiều, Cần Thơ</td>
+                        <td>765</td>
+                        <td class="text-end">153,000,000đ</td>
+                      </tr>
+                      <tr>
+                        <td class="fw-medium">5</td>
+                        <td>Chi nhánh Hải Phòng</td>
+                        <td>Lê Chân, Hải Phòng</td>
+                        <td>654</td>
+                        <td class="text-end">130,800,000đ</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Bootstrap Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Custom JS -->
+  <script src="assets/js/script.js"></script>
+  <script>
+    // Customer Rank Chart
+    const rankCtx = document.getElementById('customerRankChart').getContext('2d');
+    const rankChart = new Chart(rankCtx, {
+      type: 'pie',
+      data: {
+        labels: ['Kim cương', 'Vàng', 'Bạc', 'Đồng'],
+        datasets: [{
+          data: [5, 15, 30, 50],
+          backgroundColor: [
+            '#9333ea',
+            '#eab308',
+            '#94a3b8',
+            '#d97706'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return context.label + ': ' + context.raw + '%';
+              }
+            }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
