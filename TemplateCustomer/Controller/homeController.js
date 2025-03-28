@@ -5,7 +5,7 @@ app.controller('homeController', function ($scope, $http) {
     $scope.isLoading = true; // Trạng thái chờ tải dữ liệu
     $scope.thuongHieu = [];
     $scope.spDanhGiaCao = [];
-
+    
     // Hàm tải hình ảnh từ API
     function loadHinhAnh(idSPCT, callback) {
         fetch(`https://localhost:7196/api/Sanphamchitiets/GetImageById/${idSPCT}`)
