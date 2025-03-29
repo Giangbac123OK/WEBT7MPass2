@@ -282,16 +282,30 @@ color: #ee4d2d !important;
           </div>
           
           
-            <div class="mb-4">
-              <label for="refundMethod" class="form-label fw-medium">Phương thức hoàn tiền</label>
-              <select class="form-select" id="refundMethod" ng-model="refundMethod">
+          <div class="mt-4">
+            <label for="refundMethod">Phương thức hoàn tiền:</label>
+            <select class="form-select" id="refundMethod" ng-model="refundMethod">
                 <option disabled selected>Chọn phương thức hoàn tiền</option>
                 <option value="Số dư TK Shopee">Số dư TK Shopee</option>
                 <option value="Tài khoản ngân hàng">Tài khoản ngân hàng</option>
                 <option value="Thẻ tín dụng/ghi nợ">Thẻ tín dụng/ghi nợ</option>
-              </select>
+            </select>
+        </div>
+        
+        <!-- Hiển thị khi chọn "Tài khoản ngân hàng" -->
+        <div class="row mt-4" ng-show="refundMethod == 'Tài khoản ngân hàng'">
+            <div class="col">
+                <label for="bank">Ngân hàng</label>
+                <select class="form-select" id="bank" ng-model="selectedBank" ng-options="bank for bank in banks">
+                    <option disabled selected>Chọn ngân hàng</option>
+                </select>
             </div>
-            
+            <div class="col">
+                <label for="accountNumber">Số tài khoản/Số thẻ</label>
+                <input type="text" id="accountNumber" class="form-control" ng-model="accountNumber" placeholder="Nhập số tài khoản">
+            </div>
+        </div>
+        
             <div class="mb-4">
               <label for="description" class="form-label fw-medium">Mô tả vấn đề</label>
               <textarea class="form-control" ng-model="description" id="description" rows="4" placeholder="Vui lòng mô tả chi tiết vấn đề bạn gặp phải với sản phẩm"></textarea>

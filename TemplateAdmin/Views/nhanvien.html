@@ -40,7 +40,7 @@
                         <td class="text-center"><input type="checkbox"></td>
                         <td class="text-center">{{ x.id }}</td>
                         <td>{{ x.hovaten }}</td>
-                        <td class="text-center">{{ x.ngaysinh }}</td>
+                        <td class="text-center">{{ x.ngaysinh | date:'dd/MM/yyyy' }}</td>
                         <td class="text-center">{{ x.gioitinh }}</td>
                         <td>{{ x.sdt }}</td>
                         <td>{{ x.email }}</td>
@@ -71,21 +71,30 @@
                     <div class="mb-3 row">
                         <div class="col-md">
                             <label class="form-label">Họ và Tên</label>
-                            <input type="text" name="hovaten" ng-model="add.hovaten" required maxlength="50" class="form-control">
+                            <input type="text" name="hovaten" ng-model="add.hovaten" ng-pattern="/^[A-Za-zÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƠĂẮẰẶẲẴẸẺẼỀẾỆỂỄỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰỲỴÝỶỸ\s]+$/" required maxlength="50" class="form-control">
                             <span class="text-danger" ng-if="AddNhanVienfrm.hovaten.$touched && AddNhanVienfrm.hovaten.$error.maxlength">
                                 Vui lòng nhập họ và tên tối đa 50 ký tự.
                             </span>
                             <span class="text-danger" ng-if="AddNhanVienfrm.hovaten.$touched && AddNhanVienfrm.hovaten.$error.required">
                                 Vui lòng nhập họ và tên.
                             </span>
+                            <span class="text-danger" ng-if="AddNhanVienfrm.hovaten.$touched && AddNhanVienfrm.hovaten.$error.pattern">
+                                Vui lòng nhập họ và tên không hợp lệ.
+                            </span>
                         </div>
                         <div class="col-md">
                             <label class="form-label">Ngày sinh</label>
-                            <input type="date" name="ngaysinh" ng-model="add.ngaysinh" required class="form-control">
+                            <input type="date" name="ngaysinh" ng-model="add.ngaysinh" required 
+                                   class="form-control" max="{{ getMaxYear() }}">
+                            
                             <span class="text-danger" ng-show="AddNhanVienfrm.ngaysinh.$touched && AddNhanVienfrm.ngaysinh.$error.required">
                                 Vui lòng chọn ngày sinh.
                             </span>
+                            <span class="text-danger" ng-show="AddNhanVienfrm.ngaysinh.$touched && AddNhanVienfrm.ngaysinh.$error.max">
+                                Nhân viên phải từ 18 tuổi trở lên.
+                            </span>
                         </div>
+                        
                     </div>
                 
                     <div class="mb-3 row">
