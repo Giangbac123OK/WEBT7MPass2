@@ -1,44 +1,51 @@
 <div class="container">
     <div class="card my-3">
-        <div class="d-flex justify-content-between">
-            <div class="p-2 bd-highlight">DANH SÁCH NHÂN VIÊN</div>
-            <div class="p-2 bd-highlight">{{time }}</div>
+        <div class="d-flex justify-content-between p-2">
+            <h5>DANH SÁCH NHÂN VIÊN</h5>
+            <span>{{ time }}</span>
         </div>
     </div>
+
     <div class="card mb-3 py-3">
         <div class="mx-3 mb-3">
-            <button type="button" class="btn btn-primary"><i class="bi bi-plus"></i>Thêm nhân viên mới</button>
-            <button type="button" class="btn btn-success"><i class="bi bi-file-earmark-excel-fill"></i>Xuất file Excel</button>
-            <button type="button" class="btn btn-danger"><i class="bi bi-trash3-fill"></i>Xoá tất cả</button>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ThemNVModal">
+                <i class="bi bi-plus"></i> Thêm nhân viên mới
+            </button>
+            <button type="button" class="btn btn-success">
+                <i class="bi bi-file-earmark-excel-fill"></i> Xuất file Excel
+            </button>
+            <button type="button" class="btn btn-danger">
+                <i class="bi bi-trash3-fill"></i> Xoá tất cả
+            </button>
         </div>
         <hr class="mb-3">
         <div class="m-3">
             <table class="table table-bordered">
-                <thead style="color: silver;">
-                    <tr class="text-center">
-                        <th scope="col"><input type="checkbox"></th>
-                        <th scope="col">ID</th>
-                        <th scope="col">Họ và tên</th>
-                        <th scope="col">Ngày sinh</th>
-                        <th scope="col">Giới tính</th>
-                        <th scope="col">Số điện thoại</th>
-                        <th scope="col">Email</th>
-                        <th scope="col">Địa chỉ</th>
-                        <th scope="col">Chức vụ</th>
-                        <th scope="col"></th>
+                <thead class="text-secondary text-center">
+                    <tr>
+                        <th><input type="checkbox"></th>
+                        <th>ID</th>
+                        <th>Họ và tên</th>
+                        <th>Ngày sinh</th>
+                        <th>Giới tính</th>
+                        <th>Số điện thoại</th>
+                        <th>Email</th>
+                        <th>Địa chỉ</th>
+                        <th>Chức vụ</th>
+                        <th>Hành động</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr ng-repeat="x in listNhanVien">
-                        <th class="text-center"><input type="checkbox"></th>
-                        <td class="text-center">{{x.id}}</td>
-                        <td>{{x.hovaten}}</td>
-                        <td class="text-center">{{x.ngaysinh}}</td>
-                        <th class="text-center">{{x.gioitinh}}</th>
-                        <td>{{x.sdt}}</td>
-                        <td>{{x.email}}</td>
-                        <td class="text-center">{{x.diachi}}</td>
-                        <td class="text-center">{{x.role}}</td>
+                        <td class="text-center"><input type="checkbox"></td>
+                        <td class="text-center">{{ x.id }}</td>
+                        <td>{{ x.hovaten }}</td>
+                        <td class="text-center">{{ x.ngaysinh | date:'dd/MM/yyyy' }}</td>
+                        <td class="text-center">{{ x.gioitinh }}</td>
+                        <td>{{ x.sdt }}</td>
+                        <td>{{ x.email }}</td>
+                        <td>{{ x.diachi }}</td>
+                        <td class="text-center">{{ x.role }}</td>
                         <td class="text-center">
                             <button type="button" class="btn btn-success"><i class="bi bi-person-lines-fill"></i></button>
                             <button type="button" class="btn btn-warning"><i class="bi bi-pen-fill"></i></button>
@@ -47,6 +54,123 @@
                     </tr>
                 </tbody>
             </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Thêm Nhân Viên -->
+<div class="modal fade" id="ThemNVModal" tabindex="-1" aria-labelledby="ThemNVModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ThemNVModalLabel">Tạo mới nhân viên</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="AddNhanVienfrm" name="AddNhanVienfrm" ng-submit="btnAdd()" novalidate>
+                    <div class="mb-3 row">
+                        <div class="col-md">
+                            <label class="form-label">Họ và Tên</label>
+                            <input type="text" name="hovaten" ng-model="add.hovaten" ng-pattern="/^[A-Za-zÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƠĂẮẰẶẲẴẸẺẼỀẾỆỂỄỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰỲỴÝỶỸ\s]+$/" required maxlength="50" class="form-control">
+                            <span class="text-danger" ng-if="AddNhanVienfrm.hovaten.$touched && AddNhanVienfrm.hovaten.$error.maxlength">
+                                Vui lòng nhập họ và tên tối đa 50 ký tự.
+                            </span>
+                            <span class="text-danger" ng-if="AddNhanVienfrm.hovaten.$touched && AddNhanVienfrm.hovaten.$error.required">
+                                Vui lòng nhập họ và tên.
+                            </span>
+                            <span class="text-danger" ng-if="AddNhanVienfrm.hovaten.$touched && AddNhanVienfrm.hovaten.$error.pattern">
+                                Vui lòng nhập họ và tên không hợp lệ.
+                            </span>
+                        </div>
+                        <div class="col-md">
+                            <label class="form-label">Ngày sinh</label>
+                            <input type="date" name="ngaysinh" ng-model="add.ngaysinh" required 
+                                   class="form-control" max="{{ getMaxYear() }}">
+                            
+                            <span class="text-danger" ng-show="AddNhanVienfrm.ngaysinh.$touched && AddNhanVienfrm.ngaysinh.$error.required">
+                                Vui lòng chọn ngày sinh.
+                            </span>
+                            <span class="text-danger" ng-show="AddNhanVienfrm.ngaysinh.$touched && AddNhanVienfrm.ngaysinh.$error.max">
+                                Nhân viên phải từ 18 tuổi trở lên.
+                            </span>
+                        </div>
+                        
+                    </div>
+                
+                    <div class="mb-3 row">
+                        <div class="col-md">
+                            <label class="form-label">Giới tính</label>
+                            <select class="form-select" name="gioitinh" ng-model="add.gioitinh" required>
+                                <option value="" disabled selected>Chọn giới tính</option>
+                                <option value="true">Nam</option>
+                                <option value="false">Nữ</option>
+                            </select>
+                            <span class="text-danger" ng-show="AddNhanVienfrm.gioitinh.$touched && AddNhanVienfrm.gioitinh.$error.required">
+                                Vui lòng chọn giới tính.
+                            </span>
+                        </div>
+                        <div class="col-md">
+                            <label class="form-label">Số điện thoại</label>
+                            <input type="tel" name="sdt" ng-model="add.sdt" required ng-pattern="/^0\d{9}$/" class="form-control">
+                            <span class="text-danger" ng-show="AddNhanVienfrm.sdt.$touched && AddNhanVienfrm.sdt.$error.pattern">
+                                Số điện thoại phải có 10 chữ số, bắt đầu bằng 0.
+                            </span>
+                            <span class="text-danger" ng-show="AddNhanVienfrm.sdt.$touched && AddNhanVienfrm.sdt.$error.required">
+                                Vui lòng nhập số điện thoại.
+                            </span>
+                        </div>
+                    </div>
+                
+                    <div class="mb-3 row">
+                        <div class="col-md">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" ng-model="add.email" required class="form-control">
+                            <span class="text-danger" ng-show="AddNhanVienfrm.email.$touched && AddNhanVienfrm.email.$error.email">
+                                Vui lòng nhập email hợp lệ.
+                            </span>
+                            <span class="text-danger" ng-show="AddNhanVienfrm.email.$touched && AddNhanVienfrm.email.$error.required">
+                                Vui lòng nhập email.
+                            </span>
+                        </div>
+                        <div class="col-md">
+                            <label class="form-label">Địa chỉ</label>
+                            <input type="text" name="diachi" ng-model="add.diachi" required class="form-control">
+                            <span class="text-danger" ng-show="AddNhanVienfrm.diachi.$touched && AddNhanVienfrm.diachi.$error.required">
+                                Vui lòng nhập địa chỉ.
+                            </span>
+                        </div>
+                    </div>
+                
+                    <div class="mb-3 row">
+                        <div class="col-md">
+                            <label class="form-label">Chức vụ</label>
+                            <select class="form-select" name="chucvu" ng-model="add.chucvu" required>
+                                <option value="" disabled selected>Chọn chức vụ</option>
+                                <option value="1">Quản lý</option>
+                                <option value="2">Nhân viên</option>
+                            </select>
+                            <span class="text-danger" ng-show="AddNhanVienfrm.chucvu.$touched && AddNhanVienfrm.chucvu.$error.required">
+                                Vui lòng chọn chức vụ.
+                            </span>
+                        </div>
+                        <div class="col-md">
+                            <label class="form-label">Mật khẩu</label>
+                            <input type="password" name="password" ng-model="add.password" required maxlength="50" class="form-control">
+                            <span class="text-danger" ng-show="AddNhanVienfrm.password.$touched && AddNhanVienfrm.password.$error.maxlength">
+                                Vui lòng nhập mật khẩu tối đa 50 ký tự.
+                            </span>
+                            <span class="text-danger" ng-show="AddNhanVienfrm.password.$touched && AddNhanVienfrm.password.$error.required">
+                                Vui lòng nhập mật khẩu.
+                            </span>
+                        </div>
+                    </div>
+                </form>
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" ng-click="btnAdd()">Lưu</button>
+            </div>
         </div>
     </div>
 </div>

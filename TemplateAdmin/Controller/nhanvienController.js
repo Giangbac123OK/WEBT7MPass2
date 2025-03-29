@@ -24,13 +24,88 @@ app.controller('nhanvienController', function ($scope, $http, $location, $interv
 
     // Chạy ngay khi trang tải
     updateTime();
-    $http.get("https://localhost:7196/api/Nhanviens")
-        .then(function(response) {
-            $scope.listNhanVien = response.data;
-            console.log($scope.listNhanVien);
-        })
-        .catch(function(error) {
-            console.error(error);
+    function LoadData(){
+        $http.get("https://localhost:7196/api/Nhanviens")
+            .then(function(response) {
+                $scope.listNhanVien = response.data;
+                console.log($scope.listNhanVien);
+            })
+            .catch(function(error) {
+                console.error(error);
+            });
+    }
+    LoadData();
+    $scope.getMaxYear = function() {
+        const today = new Date();
+        const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate()); // Trừ đúng 18 năm từ hôm nay
+        return maxDate.toISOString().split("T")[0]; // Chuyển về yyyy-mm-dd
+    };
+    
+    
+    $scope.btnAdd = function(){
+        if ($scope.AddNhanVienfrm.$invalid) {
+            angular.forEach($scope.AddNhanVienfrm.$error, function (fields) {
+                angular.forEach(fields, function (field) {
+                    field.$setTouched();
+                });
+            });
+            return; // Dừng lại nếu form có lỗi
+        }
+    
+        // Xử lý ngày sinh đúng múi giờ
+        const date = new Date($scope.add.ngaysinh); // Đảm bảo có giờ
+        const formattedDate = date.toISOString(); // Chuyển sang ISO UTC
+        const data = {
+            id: 0,
+            hovaten: $scope.add.hovaten,
+            ngaysinh: date, // Lưu dưới dạng ISO
+            diachi: $scope.add.diachi,
+            gioitinh: $scope.add.gioitinh === "true", // Đảm bảo đúng kiểu boolean
+            sdt: $scope.add.sdt,
+            email: $scope.add.email,
+            trangthai: 0,
+            password: $scope.add.password,
+            role: Number($scope.add.chucvu), // Đảm bảo số nguyên
+            ngaytaotaikhoan: new Date().toISOString() // Lưu thời gian tạo tài khoản
+        };
+    
+        Swal.fire({
+            title: "Xác nhận",
+            text: "Bạn có chắc chắn muốn thêm nhân viên này?",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Đồng ý",
+            cancelButtonText: "Hủy"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $http.post("https://localhost:7196/api/Nhanviens", data)
+                    .then(function(){
+                        location.reload();
+                                window.scrollTo(1,1);
+            
+                                Swal.fire({
+                                    title: "Thành công!",
+                                    text: "Nhân viên đã được thêm thành công.",
+                                    icon: "success",
+                                    confirmButtonText: "OK"
+                                });
+                                // Reset form đúng cách
+                                $scope.add = angular.copy({});
+                                $scope.AddNhanVienfrm.$setPristine();
+                                $scope.AddNhanVienfrm.$setUntouched();
+                    })
+                    .catch(function(error){
+                        console.error("Error:", error);
+                        let errorMessage = error.data?.message || "Lỗi dữ liệu!";
+                        Swal.fire({
+                            title: "Lỗi",
+                            text: errorMessage,
+                            icon: "error",
+                            confirmButtonText: "OK"
+                        });
+                    });
+            }
         });
+    };
     
 });

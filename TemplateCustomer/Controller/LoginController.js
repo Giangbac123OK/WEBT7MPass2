@@ -67,6 +67,7 @@ app.controller('LoginController', function ($scope, $http, $rootScope, $location
                 localStorage.setItem('userInfo', JSON.stringify($rootScope.userInfo));
                 localStorage.setItem('lastLoginTime', Date.now()); // Lưu thời gian đăng nhập
                 Swal.fire("Thành Công", "Đăng nhập thành công.", "success");
+                location.reload();
                 $location.path('/');
             } else {
                 // Thay đổi thông báo lỗi khi đăng nhập thất bại
