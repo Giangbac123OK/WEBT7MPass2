@@ -405,12 +405,12 @@ $scope.getRatingForHdct = function (id) {
     return null;
 };
 
-// Gọi hàm khi render view
 $scope.loadAllDanhGia = function (listHdct) {
     if (!listHdct || !Array.isArray(listHdct)) return;
-console.log("listHdct", listHdct);
+    console.log("listHdct:", listHdct);
 
     listHdct.forEach(function (hdct) {
+        // Gọi API để lấy đánh giá của từng hóa đơn chi tiết
         $scope.getRatingForHdct(hdct.id);
     });
 };
@@ -422,17 +422,21 @@ $scope.deleteRating = function (id) {
         .then(function (response) {
             console.log("Xóa đánh giá thành công:", response);
             alert("Đã xóa đánh giá!");
-            
-            
-            $("#ratingModal").modal("hide");
+
+            // Tìm idhdct liên quan để cập nhật
+            for (let hdctId in $scope.danhgiaById) {
+                if ($scope.danhgiaById[hdctId] && $scope.danhgiaById[hdctId].id === id) {
+                    // Cập nhật trạng thái đánh giá thành false
+                    $scope.danhgiaById[hdctId].success = false;
+                    break;
+                }
+            }
         })
         .catch(function (error) {
             console.error("Lỗi khi xóa đánh giá:", error);
             alert("Đã xảy ra lỗi khi xóa đánh giá. Vui lòng thử lại!");
         });
 };
-
-
 
 // Gọi loadHoaDonCT trong hàm init
 $scope.init = function () {

@@ -200,13 +200,13 @@
 
                 <!-- Nút Sửa đánh giá -->
                 <button type="button" class="btn btn-warning" ng-click="openEditRatingModal(hdct)"
-                  ng-if="danhgiaById[hdct.id] && danhgiaById[hdct.id].success !== false && x.trangthai === 3">
+                  ng-if=" danhgiaById[hdct.id].success !== false && x.trangthai === 3">
                   Sửa đánh giá
                 </button>
 
                 <!-- Nút Xóa đánh giá -->
                 <button type="button" class="btn btn-danger" ng-click="deleteRating(danhgiaById[hdct.id].id)"
-                  ng-if="danhgiaById[hdct.id] && danhgiaById[hdct.id].success !== false && x.trangthai === 3">
+                  ng-if=" danhgiaById[hdct.id].success !== false && x.trangthai === 3">
                   Xóa đánh giá
                 </button>
                 </div>
@@ -844,8 +844,6 @@
           giá</button>
         <button type="button" class="btn btn-primary" ng-if="review.id" ng-click="submitReview()">Cập nhật
           đánh giá</button>
-          <button type="button" class="btn btn-primary" ng-if="review.id" ng-click="deleteRating(review.id)">Xóa
-            đánh giá</button>
       </div>
 
     </div>
