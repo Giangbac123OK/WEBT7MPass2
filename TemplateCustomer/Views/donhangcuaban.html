@@ -816,10 +816,10 @@
               <input type="file" id="imageUpload" class="hidden-input" multiple
                 onchange="angular.element(this).scope().handleFileSelect(event)">
               <div class="mt-3">
-                <p class="text-muted">Đã chọn {{ files.length }}/5 ảnh</p>
+                <p class="text-muted">Đã chọn {{ totalSelectedFiles }}/5 ảnh</p>
                 <div class="d-flex flex-wrap">
                   <div class="position-relative me-2 mb-2" ng-repeat="image in imagePreview track by $index">
-                    <img ng-src="{{ image }}" class="img-thumbnail" style="width: 80px; height: 80px;"
+                    <img ng-src="{{ image.url }}" class="img-thumbnail" style="width: 80px; height: 80px;"
                       alt="Uploaded Image">
                     <button class="btn btn-sm btn-danger position-absolute top-0 end-0"
                       style="transform: translate(50%, -50%);" ng-click="removeImage($index)">×</button>
@@ -844,6 +844,8 @@
           giá</button>
         <button type="button" class="btn btn-primary" ng-if="review.id" ng-click="submitReview()">Cập nhật
           đánh giá</button>
+          <button type="button" class="btn btn-primary" ng-if="review.id" ng-click="deleteRating(review.id)">Xóa
+            đánh giá</button>
       </div>
 
     </div>
