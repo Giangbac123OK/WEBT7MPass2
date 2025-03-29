@@ -131,19 +131,33 @@
     .back-to-login a:hover {
         text-decoration: underline;
     }
+    
+    .error-message {
+        color: #ff6b6b;
+        font-size: 14px;
+        margin-top: 10px;
+        text-align: center;
+    }
 </style>
-<form>
+
+<form ng-controller="dangnhapController" ng-submit="login()">
     <div class="loginbox-logo">
         <img src="/TemplateCustomer/Images/logo.png" alt="Logo">
     </div>
     <h3>Đăng Nhập</h3>
 
-    <label for="username">Email</label>
-    <input type="text" placeholder="Email" id="username">
+    <label for="email">Email</label>
+    <input type="email" placeholder="Email" id="email" ng-model="user.email" required>
 
-    <label for="password">Password</label>
-    <input type="password" placeholder="Password" id="password">
-    <p class="back-to-login"><a href="#!quenmatkhau">Forgot Password?</a></p>
-    <button>Log In</button>
-
+    <label for="password">Mật khẩu</label>
+    <input type="password" placeholder="Mật khẩu" id="password" ng-model="user.password" required>
+    
+    <div class="error-message" ng-if="errorMessage">{{errorMessage}}</div>
+    
+    <p class="back-to-login"><a href="#!quenmatkhau">Quên mật khẩu?</a></p>
+    
+    <button type="submit" ng-disabled="isLoading">
+        <span ng-if="!isLoading">Đăng nhập</span>
+        <span ng-if="isLoading">Đang xử lý...</span>
+    </button>
 </form>

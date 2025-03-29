@@ -163,57 +163,6 @@ app.run(function ($rootScope, $location, $http) {
     return userId;
   }
 
-  GetByidKH1();
-
-  async function GetByidKH1() {
-    try {
-      // Kiểm tra và lấy thông tin user từ localStorage
-      const userInfoString = localStorage.getItem("userInfo");
-      if (!userInfoString) {
-        console.error("Không tìm thấy thông tin user trong localStorage");
-        return null;
-      }
-
-      const userInfo = JSON.parse(userInfoString);
-      if (!userInfo || !userInfo.id) {
-        console.error("Thông tin user không hợp lệ");
-        return null;
-      }
-
-      // Lấy thông tin khách hàng từ API
-      const infoResponse = await fetch(`https://localhost:7196/api/khachhangs/${userInfo.id}`);
-      if (!infoResponse.ok) {
-        throw new Error(`Lỗi khi lấy thông tin khách hàng: ${infoResponse.status}`);
-      }
-      const customerData = await infoResponse.json();
-
-      if (!customerData) {
-        throw new Error("Dữ liệu khách hàng trả về rỗng");
-      }
-
-      // Gán dữ liệu cho $scope
-      $rootScope.dataTttk1 = customerData;
-
-      // Kích hoạt $digest cycle để cập nhật view
-      $rootScope.$apply();
-
-      return;
-    } catch (error) {
-      console.error("Lỗi trong hàm GetByidKH1:", error);
-
-      // Xử lý lỗi cụ thể
-      if (error instanceof SyntaxError) {
-        console.error("Lỗi phân tích JSON từ localStorage");
-      } else if (error.name === 'TypeError') {
-        console.error("Lỗi kết nối hoặc API không phản hồi");
-      }
-      $rootScope.dataTttk1 = null;
-      $rootScope.$apply();
-
-      return null;
-    }
-  }
-
   // Hàm đăng xuất
   $rootScope.dangxuat = function () {
     $rootScope.isLoggedIn = false;
