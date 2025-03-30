@@ -222,7 +222,7 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
         const data = {
             tenkhachhang: userInfo?.ten || "Không xác định",
             idnv: null,
-            idkh: userInfo.id ,
+            idkh: userInfo?.id || null,
             sotienhoan: $scope.tongtien,
             lydotrahang: $scope.description,
             trangthai: 0,
