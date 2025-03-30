@@ -375,18 +375,24 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
         });
     };
     //list danh sách ngân hàng
-    $http.get("https://api.vietqr.io/v2/banks")
-        .then(function(response) {
-            if (response.data && response.data.data) {
-                $scope.ListNganHang = response.data.data; // Lấy danh sách ngân hàng
-                console.log("Danh sách ngân hàng:", $scope.ListNganHang);
-            } else {
-                console.log("Dữ liệu ngân hàng không hợp lệ:", response);
-            }
-        })
-        .catch(function(error) {
-            console.error("Lỗi khi lấy danh sách ngân hàng:", error);
-        });
+    $scope.ListNganHang = []; // Khởi tạo danh sách ngân hàng
+$scope.selectedBank = ""; // Ngân hàng được chọn
+$scope.cardNumber = ""; // Số tài khoản/số thẻ
+
+// Gọi API lấy danh sách ngân hàng
+$http.get("https://api.vietqr.io/v2/banks")
+    .then(function(response) {
+        if (response.data && Array.isArray(response.data.data)) {
+            $scope.ListNganHang = response.data.data;
+            console.log("Danh sách ngân hàng:", $scope.ListNganHang);
+        } else {
+            console.error("Dữ liệu ngân hàng không hợp lệ:", response);
+        }
+    })
+    .catch(function(error) {
+        console.error("Lỗi khi lấy danh sách ngân hàng:", error);
+    });
+
         $scope.imageCount = 0;
     
         $scope.images = []; // Mảng lưu trữ ảnh
