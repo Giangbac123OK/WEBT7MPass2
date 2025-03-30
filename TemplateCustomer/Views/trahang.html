@@ -321,7 +321,7 @@ color: #ee4d2d !important;
               </div>
             </div>
             
-            <div class="container mt-4">
+            <div class="mt-4">
               <label class="form-label fw-medium">Bằng chứng (<span>{{imageCount}}</span>/3)</label>
           
               <div class="row g-3 mb-2">
@@ -330,8 +330,7 @@ color: #ee4d2d !important;
                       <div class="upload-box" ng-click="openFileInput()">
                           <i class="bi bi-upload"></i>
                           <span>Thêm hình ảnh</span>
-                          <input type="file" class="upload-input" multiple accept="image/*" id="fileInput"
-                              onchange="angular.element(this).scope().selectImages(event)">
+                          <input type="file" class="upload-input" multiple accept="image/*" id="fileInput" onchange="angular.element(this).scope().selectImages(event)">
                       </div>
                   </div>
           
@@ -348,7 +347,7 @@ color: #ee4d2d !important;
               <div class="row g-3 mb-2">
                   <div class="col-md-3" ng-repeat="(index, img) in images">
                       <div class="image-wrapper position-relative">
-                          <img style="width: 100%; height: auto;" ng-src="{{img.previewUrl}}" class="image-preview rounded">
+                          <img style="width: 100%; height: auto;" ng-src="{{img}}" class="image-preview rounded">
                           <button class="remove-image" ng-click="removeImage(index)">×</button>
                       </div>
                   </div>
@@ -366,7 +365,6 @@ color: #ee4d2d !important;
                       <div class="modal-body text-center">
                           <video id="cameraFeed" autoplay playsinline width="100%"></video>
                           <canvas id="cameraCanvas" style="display: none;"></canvas>
-                          <button class="btn btn-secondary mt-2" ng-click="toggleCamera()">Chuyển Camera</button>
                       </div>
                       <div class="modal-footer">
                           <button ng-click="capturePhoto()" class="btn btn-primary">Chụp</button>
@@ -375,8 +373,6 @@ color: #ee4d2d !important;
                   </div>
               </div>
           </div>
-          
-          
           
             
           </div>
