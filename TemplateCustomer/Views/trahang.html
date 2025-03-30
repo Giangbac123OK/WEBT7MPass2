@@ -289,29 +289,28 @@ color: #ee4d2d !important;
             <label for="refundMethod" class="form-label fw-medium">Phương thức hoàn tiền:</label>
             <select class="form-select" id="refundMethod" ng-model="refundMethod">
                 <option disabled selected>Chọn phương thức hoàn tiền</option>
-                <option value="Số dư TK Shopee">Số dư TK Shopee</option>
-                <option value="Thẻ tín dụng/ghi nợ/Tài khoản ngân hàng">Thẻ tín dụng/ghi nợ/Tài khoản ngân hàng</option>
+                <option value="Đổi điểm">Đổi điểm</option>
+                <option value="Thẻ tín dụng/ghi nợ/Tài khoản ngân hàng">Thẻ tín dụng ghi nợ/Tài khoản ngân hàng</option>
             </select>
         </div>
         
         <!-- Hiển thị khi chọn "Tài khoản ngân hàng" -->
         <div class="mt-4" ng-show="refundMethod == 'Thẻ tín dụng/ghi nợ/Tài khoản ngân hàng'">
-            <div class="row mb-4">
+          <div class="row mb-4">
               <div class="col">
-                <label for="bank" class="form-label fw-medium">Ngân hàng</label>
-                <select class="form-select" id="bank" ng-model="selectedBank">
-                  <option disabled selected>Chọn ngân hàng</option>
-                  <option ng-repeat="nganhang in ListNganHang" value="{{nganhang.code}}">
-                      {{nganhang.name}} ({{nganhang.shortName}})
-                  </option>
-                </select>
+                  <label for="bank" class="form-label fw-medium">Ngân hàng</label>
+                  <select class="form-select" id="bank" ng-model="selectedBank" ng-options="bank.code as (bank.name + ' (' + bank.shortName + ')') for bank in ListNganHang">
+                      <option value="" disabled selected>Chọn ngân hàng</option> 
+                  </select>
               </div>
               <div class="col">
                   <label for="accountNumber" class="form-label fw-medium">Số tài khoản/Số thẻ</label>
                   <input type="text" id="accountNumber" class="form-control" ng-model="cardNumber" placeholder="Nhập số tài khoản">
               </div>
-            </div>
-        </div>
+          </div>
+      </div>
+      
+      
         
             <div class="mb-4">
               <label for="description" class="form-label fw-medium">Mô tả vấn đề</label>
@@ -427,7 +426,7 @@ color: #ee4d2d !important;
               <div>
                 <p class="small fw-medium mb-1">Lưu ý quan trọng</p>
                 <p class="small mb-0">
-                  Sau khi gửi yêu cầu, bạn sẽ cần đóng gói sản phẩm và gửi trả lại cho người bán trong vòng 3 ngày. Shopee sẽ hoàn tiền sau khi người bán xác nhận đã nhận được hàng trả lại.
+                  Sau khi gửi yêu cầu, bạn sẽ cần đóng gói sản phẩm và gửi trả lại cho người bán trong vòng 3 ngày. T7M Sneaker sẽ hoàn tiền sau khi người bán xác nhận đã nhận được hàng trả lại.
                 </p>
               </div>
             </div>
