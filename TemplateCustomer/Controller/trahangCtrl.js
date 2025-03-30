@@ -3,6 +3,30 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
     console.log($scope.idhd);
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));
     console.log(userInfo);
+
+    // Initialize variables
+    $scope.selectedProducts = []; // Danh sách sản phẩm đã chọn
+    $scope.images = []; // Mảng lưu trữ ảnh
+    $scope.imageCount = 0;
+    $scope.token = "7b4f1e5c-0700-11f0-94b6-be01e07a48b5";
+    $scope.shopId = "3846066";
+    $scope.provinces = [];
+    $scope.districts = [];
+    $scope.wards = [];
+    $scope.fullAddress = "";
+    $scope.estimatedDeliveryDate = null;
+    $scope.ListNganHang = [];
+
+    // Thông tin địa chỉ đã chọn
+    $scope.selectedInfo = {
+        provinceId: null,
+        provinceName: "",
+        districtId: null,
+        districtName: "",
+        wardCode: null,
+        wardName: ""
+    };
+
     // Gọi API để lấy danh sách sản phẩm
     $http.get("https://localhost:7196/api/Trahangchitiets/ListSanPhamByIdhd/" + $scope.idhd)
         .then(function (response) {
@@ -27,7 +51,7 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
             $scope.tinhTongTien();
         }
     };
-    
+
     $scope.decrease = function (sp) {
         if (sp.soluong > 1) {
             sp.soluong--;
@@ -36,8 +60,6 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
             $scope.tinhTongTien();
         }
     };
-    
-    
 
     // Hàm tính tổng tiền
     $scope.tinhTongTien = function () {
@@ -52,10 +74,6 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
         $scope.tongtien = total;
         $scope.updateSelectAll(); // Gọi để cập nhật trạng thái "Chọn tất cả"
     };
-    
-    
-
-    $scope.selectedProducts = []; // Danh sách sản phẩm đã chọn (chứa id và số lượng)
 
     $scope.toggleProductSelection = function (sp) {
         if (sp.selected) {
@@ -69,31 +87,29 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
         console.log("Danh sách sản phẩm đã chọn:", $scope.selectedProducts);
         $scope.tinhTongTien();
     };
+
     $scope.updateQuantity = function (sp) {
         if (sp.soluong < 1) {
             sp.soluong = 1; // Không cho số lượng nhỏ hơn 1
         } else if (sp.soluong > sp.maxsoluong) {
             sp.soluong = sp.maxsoluong; // Không cho vượt quá số lượng tối đa
         }
-    
+
         sp.thanhtien = sp.soluong * sp.giasp; // Cập nhật thành tiền
-    
         $scope.updateSelectedProduct(sp); // Cập nhật số lượng trong danh sách đã chọn
         $scope.tinhTongTien(); // Cập nhật tổng tiền
     };
-        
-    
 
     $scope.toggleAll = function () {
         $scope.selectedProducts = []; // Reset danh sách sản phẩm đã chọn
-    
+
         $scope.dataSp.forEach(sp => {
             sp.selected = $scope.selectAll;
             if ($scope.selectAll) {
                 $scope.selectedProducts.push({ id: sp.id, soluong: sp.soluong });
             }
         });
-    
+
         console.log("Danh sách sản phẩm đã chọn:", $scope.selectedProducts);
         $scope.tinhTongTien();
     };
@@ -106,200 +122,18 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
             console.log($scope.selectedProducts)
         }
     };
-    
-    
+
     $scope.updateSelectAll = function () {
         $scope.selectAll = $scope.dataSp.every(sp => sp.selected);
     };
-    
 
-    // GHN API
-    const token = "7b4f1e5c-0700-11f0-94b6-be01e07a48b5"; // Thay bằng token API GHN của bạn
-    const shopId = "3846066"; // Thay bằng Shop ID của bạn
-    
-    $scope.provinces = [];
-    $scope.districts = [];
-    $scope.wards = [];
-    
-    // Gọi API lấy danh sách tỉnh/thành phố
-    $http.get("https://online-gateway.ghn.vn/shiip/public-api/master-data/province", { headers: { "Token": token } })
-        .then(function (response) {
-            $scope.provinces = response.data.data;
-        })
-        .catch(function (error) {
-            console.error("Lỗi khi lấy danh sách tỉnh/thành phố:", error);
-        });
-    
-    // Khi chọn tỉnh/thành, lấy danh sách quận/huyện
-    $scope.getDistricts = function () {
-        if (!$scope.selectedProvince) return;
-        
-        // Reset danh sách quận/huyện và phường/xã
-        $scope.districts = [];
-        $scope.wards = [];
-        $scope.selectedDistrict = null;
-        $scope.selectedWard = null;
-        $scope.selectedProvinceName = $scope.provinces.find(p => p.ProvinceID == $scope.selectedProvince)?.ProvinceName || "";
-
-        $http.get("https://online-gateway.ghn.vn/shiip/public-api/master-data/district", {
-            headers: { "Token": token },
-            params: { province_id: $scope.selectedProvince }
-        })
-        .then(function (response) {
-            $scope.districts = response.data.data;
-        })
-        .catch(function (error) {
-            console.error("Lỗi khi lấy danh sách quận/huyện:", error);
-        });
-    };
-
-    // Khi chọn quận/huyện, lấy danh sách phường/xã
-    $scope.getWards = function () {
-        if (!$scope.selectedDistrict) return;
-        
-        // Reset danh sách phường/xã
-        $scope.wards = [];
-        $scope.selectedWard = null;
-        $scope.selectedDistrictName = $scope.districts.find(d => d.DistrictID == $scope.selectedDistrict)?.DistrictName || "";
-
-        $http.get("https://online-gateway.ghn.vn/shiip/public-api/master-data/ward", {
-            headers: { "Token": token },
-            params: { district_id: $scope.selectedDistrict }
-        })
-        .then(function (response) {
-            $scope.wards = response.data.data;
-        })
-        .catch(function (error) {
-            console.error("Lỗi khi lấy danh sách phường/xã:", error);
-        });
-    };
-
-    // Khi chọn phường/xã
-    $scope.selectWard = function () {
-        $scope.selectedWardName = $scope.wards.find(w => w.WardCode == $scope.selectedWard)?.WardName || "";
-        console.log("Phường/Xã đã chọn:", $scope.selectedWardName);
-        $scope.calculateEstimatedDelivery();
-    };
-
-    // Tính ngày giao dự kiến
-    $scope.calculateEstimatedDelivery = function () {
-        if (!$scope.selectedProvince || !$scope.selectedDistrict || !$scope.selectedWard) {
-            console.error("Vui lòng chọn đầy đủ địa chỉ");
-            return;
-        }
-
-        let requestData = {
-            from_district_id: 1444, // ID quận/huyện nơi gửi hàng
-            from_ward_code: "20308", // Mã phường/xã nơi gửi hàng
-            to_district_id: $scope.selectedDistrict,
-            to_ward_code: $scope.selectedWard,
-            service_id: 53320
-        };
-
-        let config = {
-            headers: {
-                "Token": token,
-                "ShopId": shopId,
-                "Content-Type": "application/json"
-            }
-        };
-
-        $http.post("https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/leadtime", requestData, config)
-            .then(function (response) {
-                $scope.estimatedDeliveryDate = new Date(response.data.data.leadtime * 1000);
-                console.log("Dự kiến ngày giao:", $scope.estimatedDeliveryDate);
-            })
-            .catch(function (error) {
-                console.error("Lỗi khi tính ngày giao:", error);
-                $scope.errorMessage = "Không thể tính ngày giao dự kiến.";
-            });
-    };
-    $scope.btnAdd = function () {
-        if (!$scope.selectedProducts || $scope.selectedProducts.length === 0) {
-            console.error("Chưa có sản phẩm nào!");
-            return;
-        }
-        const data = {
-            tenkhachhang: userInfo?.ten || "Không xác định",
-            idnv: null,
-            idkh: userInfo?.id || null,
-            sotienhoan: $scope.tongtien,
-            lydotrahang: $scope.description,
-            trangthai: 0,
-            phuongthuchoantien: $scope.refundMethod,  // Sửa lỗi chỗ này
-            ngaytrahangdukien: $scope.estimatedDeliveryDate,
-            ngaytrahangthucte: null,
-            chuthich: null,
-            hinhthucxuly: $scope.refundMethod
-        };
-
-        // Bước 1: Gửi dữ liệu trả hàng
-        $http.post("https://localhost:7196/api/Trahangs", data)
-            .then(() => {
-                console.log("Thêm trả hàng thành công!");
-
-                // Bước 2: Gọi API để lấy ID lớn nhất
-                return $http.get("https://localhost:7196/api/Trahangs");
-            })
-            .then(response => {
-                if (response.data && response.data.length > 0) {
-                    let maxId = Math.max(...response.data.map(item => item.id));
-                    console.log("ID lớn nhất:", maxId);
-
-                    // Bước 3: Thêm danh sách sản phẩm vào chi tiết trả hàng
-                    let promises = $scope.selectedProducts.map(element => {
-                        const datathct = {
-                            idth: maxId,
-                            soluong: element.soluong,
-                            tinhtrang: 0,
-                            ghichu: $scope.description, // Sửa lỗi chỗ này
-                            idhdct: element.id
-                        };
-                        return $http.post("https://localhost:7196/api/Trahangchitiets", datathct);
-                    });
-
-                    // Chạy tất cả các request POST chi tiết trả hàng
-                    return Promise.all(promises).then(() => maxId);
-                } else {
-                    throw new Error("Không có dữ liệu trả về từ API.");
-                }
-            })
-            .then(maxId => {
-                return $http.put(`https://localhost:7196/api/Trahangs/UpdateTrangThaiHd/${$scope.idhd}`)
-                    .then(() => {
-                        console.log("Cập nhật trạng thái hóa đơn thành công!");
-                    });
-            })
-            .catch(error => {
-                console.error("Lỗi:", error);
-            });
-    };
-
-    $scope.token = "7b4f1e5c-0700-11f0-94b6-be01e07a48b5";
-    $scope.shopId = "3846066";
-
-    $scope.provinces = [];
-    $scope.districts = [];
-    $scope.wards = [];
-    $scope.fullAddress = "";
-    $scope.estimatedDeliveryDate = null;
-
-    // Thông tin địa chỉ đã chọn
-    $scope.selectedInfo = {
-        provinceId: null,
-        provinceName: "",
-        districtId: null,
-        districtName: "",
-        wardCode: null,
-        wardName: ""
-    };
-
+    // ========== GHN API Functions ==========
     // Lấy danh sách tỉnh/thành phố
     $http.get("https://online-gateway.ghn.vn/shiip/public-api/master-data/province", {
         headers: { "Token": $scope.token }
     })
-    .then(response => $scope.provinces = response.data.data)
-    .catch(error => console.error("Lỗi lấy tỉnh/thành:", error));
+        .then(response => $scope.provinces = response.data.data)
+        .catch(error => console.error("Lỗi lấy tỉnh/thành:", error));
 
     // Khi chọn tỉnh/thành → Lấy danh sách quận/huyện
     $scope.getDistricts = function () {
@@ -313,8 +147,8 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
             headers: { "Token": $scope.token },
             params: { province_id: $scope.selectedInfo.provinceId }
         })
-        .then(response => $scope.districts = response.data.data)
-        .catch(error => console.error("Lỗi lấy quận/huyện:", error));
+            .then(response => $scope.districts = response.data.data)
+            .catch(error => console.error("Lỗi lấy quận/huyện:", error));
     };
 
     // Khi chọn quận/huyện → Lấy danh sách phường/xã
@@ -327,8 +161,8 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
             headers: { "Token": $scope.token },
             params: { district_id: $scope.selectedInfo.districtId }
         })
-        .then(response => $scope.wards = response.data.data)
-        .catch(error => console.error("Lỗi lấy phường/xã:", error));
+            .then(response => $scope.wards = response.data.data)
+            .catch(error => console.error("Lỗi lấy phường/xã:", error));
     };
 
     // Khi chọn phường/xã, cập nhật địa chỉ và tính ngày giao hàng
@@ -365,79 +199,17 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
                 "Content-Type": "application/json"
             }
         })
-        .then(response => {
-            $scope.estimatedDeliveryDate = new Date(response.data.data.leadtime * 1000);
-            console.log("Dự kiến ngày giao:", $scope.estimatedDeliveryDate);
-        })
-        .catch(error => {
-            console.error("Lỗi tính ngày giao:", error);
-            $scope.errorMessage = "Không thể tính ngày giao dự kiến.";
-        });
+            .then(response => {
+                $scope.estimatedDeliveryDate = new Date(response.data.data.leadtime * 1000);
+                console.log("Dự kiến ngày giao:", $scope.estimatedDeliveryDate);
+            })
+            .catch(error => {
+                console.error("Lỗi tính ngày giao:", error);
+                $scope.errorMessage = "Không thể tính ngày giao dự kiến.";
+            });
     };
-    //list danh sách ngân hàng
-    $http.get("https://api.vietqr.io/v2/banks")
-        .then(function(response) {
-            if (response.data && response.data.data) {
-                $scope.ListNganHang = response.data.data; // Lấy danh sách ngân hàng
-                console.log("Danh sách ngân hàng:", $scope.ListNganHang);
-            } else {
-                console.log("Dữ liệu ngân hàng không hợp lệ:", response);
-            }
-        })
-        .catch(function(error) {
-            console.error("Lỗi khi lấy danh sách ngân hàng:", error);
-        });
-        $scope.imageCount = 0;
-    
-        $scope.images = []; // Mảng lưu trữ ảnh
 
-        $scope.selectImages = function (event) {
-            if ($scope.images.length >= 3) {
-                alert("Bạn chỉ có thể chọn tối đa 3 ảnh!");
-                return;
-            }
-    
-            let files = event.target.files;
-            if (files.length + $scope.images.length > 3) {
-                alert("Chỉ được chọn tối đa 3 ảnh!");
-                return;
-            }
-    
-            for (let i = 0; i < files.length; i++) {
-                let reader = new FileReader();
-                reader.onload = function (e) {
-                    $scope.$apply(function () {
-                        $scope.images.push(e.target.result);
-                    });
-                };
-                reader.readAsDataURL(files[i]);
-            }
-        };
-    
-        $scope.removeImage = function (index) {
-            $scope.images.splice(index, 1);
-        };
-        $scope.captureImage = function (event) {
-            if ($scope.images.length >= 3) {
-                alert("Bạn chỉ có thể chọn tối đa 3 ảnh!");
-                return;
-            }
-    
-            let file = event.target.files[0];
-            if (file) {
-                let reader = new FileReader();
-                reader.onload = function (e) {
-                    $scope.$apply(function () {
-                        $scope.images.push(e.target.result);
-                    });
-                };
-                reader.readAsDataURL(file);
-            }
-        };
-        $scope.images = []; // Danh sách ảnh đã chọn
-    $scope.imageCount = 0; // Số lượng ảnh hiện tại
-    let videoStream = null;
-
+    // ========== Image Handling Functions ==========
     // Mở file picker khi click vào box "Thêm hình ảnh"
     $scope.openFileInput = function () {
         document.getElementById("fileInput").click();
@@ -445,42 +217,42 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
 
     // Xử lý chọn ảnh từ thư viện
     $scope.selectImages = function (event) {
+        if (!$scope.images) $scope.images = [];
+        const files = event.target.files;
+
         if ($scope.images.length >= 3) {
             alert("Bạn chỉ có thể chọn tối đa 3 ảnh!");
+            event.target.value = '';
             return;
         }
-    
-        let files = event.target.files;
-        if (files.length + $scope.images.length > 3) {
-            alert("Bạn chỉ có thể chọn tối đa 3 ảnh!");
-            return;
-        }
-    
+
         for (let i = 0; i < files.length; i++) {
-            let reader = new FileReader();
-            reader.onload = function (e) {
-                $scope.$apply(function () {
-                    $scope.images.push(e.target.result);
-                    $scope.imageCount = $scope.images.length;
-                    console.log("Danh sách ảnh sau khi chọn:", $scope.images); // ✅ Debug
+            if ($scope.images.length >= 3) break;
+
+            const file = files[i];
+            const objectURL = URL.createObjectURL(file); // Lấy URL trực tiếp
+
+            $scope.$apply(() => {
+                $scope.images.push({
+                    url: objectURL,
+                    file: file
                 });
-            };
-            reader.readAsDataURL(files[i]);
+                $scope.imageCount = $scope.images.length;
+            });
         }
-    
-        // Reset input file để có thể chọn lại ảnh trùng
-        event.target.value = null;
+
+        event.target.value = '';
     };
-    
-    
 
     // Xóa ảnh đã chọn
     $scope.removeImage = function (index) {
+        URL.revokeObjectURL($scope.images[index].url); // Giải phóng URL blob
         $scope.images.splice(index, 1);
         $scope.imageCount = $scope.images.length;
     };
 
     // Bật camera
+    let videoStream = null;
     $scope.startCamera = function () {
         let video = document.getElementById("cameraFeed");
 
@@ -493,41 +265,215 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
                 console.error("Không thể truy cập camera!", error);
             });
     };
+
     // Chụp ảnh từ camera
     $scope.capturePhoto = function () {
         if ($scope.images.length >= 3) {
             alert("Bạn chỉ có thể chọn tối đa 3 ảnh!");
             return;
         }
-    
+
         let video = document.getElementById("cameraFeed");
         let canvas = document.getElementById("cameraCanvas");
         let context = canvas.getContext("2d");
-    
+
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
-    
-        let imageData = canvas.toDataURL("image/png");
-    
-        // Dùng $applyAsync để cập nhật UI mà không gây lỗi
-        $scope.$applyAsync(function () {
-            $scope.images.push(imageData);
-            $scope.imageCount = $scope.images.length;
-            console.log("Danh sách ảnh sau khi chụp:", $scope.images); // ✅ Debug
-        });
-    
+
+        canvas.toBlob((blob) => {
+            const objectURL = URL.createObjectURL(blob);
+
+            $scope.$apply(() => {
+                $scope.images.push({
+                    url: objectURL,
+                    file: blob
+                });
+                $scope.imageCount = $scope.images.length;
+            });
+        }, 'image/png', 0.9); // Lưu ảnh dưới dạng PNG
+
         // Tắt camera sau khi chụp
         if (videoStream) {
             let tracks = videoStream.getTracks();
             tracks.forEach(track => track.stop());
             video.srcObject = null;
         }
-    
+
         // Đóng modal sau khi chụp
         setTimeout(() => {
             document.querySelector("#cameraModal .btn-close").click();
         }, 500);
     };
-    
+
+    // Hàm upload ảnh
+    function uploadImages(idtrahang) {
+        if (!$scope.images || $scope.images.length === 0) {
+            alert("Vui lòng chọn ít nhất một ảnh!");
+            return Promise.reject("Không có ảnh để upload");
+        }
+
+        $scope.isUploading = true;
+        let successCount = 0;
+        let failedCount = 0;
+        const uploadResults = [];
+
+        // Xử lý tuần tự từng ảnh
+        const processImagesSequentially = async () => {
+            for (let index = 0; index < $scope.images.length; index++) {
+                const imageData = $scope.images[index];
+
+                try {
+                    const result = await processSingleImage(imageData, index, idtrahang);
+                    uploadResults.push(result);
+                    successCount++;
+                    console.log(`Upload ảnh ${index + 1}/${$scope.images.length} thành công`);
+                } catch (error) {
+                    failedCount++;
+                    console.error(`Lỗi khi upload ảnh ${index + 1}:`, error);
+                    uploadResults.push({ success: false, index: index, error: error });
+                }
+            }
+
+            return { total: $scope.images.length, success: successCount, failed: failedCount, results: uploadResults };
+        };
+
+        // Hàm xử lý upload từng ảnh
+        const processSingleImage = (imageData, index, idtrahang) => {
+            return new Promise((resolve, reject) => {
+                const canvas = document.createElement('canvas');
+                const img = new Image();
+
+                img.onload = function () {
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+
+                    // Chuyển đổi sang PNG
+                    canvas.toBlob((blob) => {
+                        const formData = new FormData();
+                        const fileName = `image_${idtrahang}_${Date.now()}_${index}.png`;
+
+                        formData.append('file', blob, fileName);
+                        formData.append('idtrahang', idtrahang);
+                        formData.append('Iddanhgia', 0);
+                        formData.append('Urlhinhanh', fileName);
+
+                        $http.post('https://localhost:7196/api/Hinhanh', formData, {
+                            headers: { 'Content-Type': undefined },
+                            transformRequest: angular.identity
+                        })
+                            .then(response => {
+                                resolve({ success: true, index: index, fileName: fileName, response: response.data });
+                            })
+                            .catch(error => {
+                                reject(error);
+                            });
+                    }, 'image/png', 0.9); // Lưu ảnh dưới dạng PNG
+                };
+
+                img.onerror = () => reject(new Error("Không thể tải ảnh"));
+                img.src = imageData.url;
+            });
+        };
+
+        return processImagesSequentially().finally(() => {
+            $scope.$apply(() => {
+                $scope.isUploading = false;
+            });
+        });
+    }
+
+    // ========== Bank List ==========
+    $http.get("https://api.vietqr.io/v2/banks")
+        .then(function (response) {
+            if (response.data && response.data.data) {
+                $scope.ListNganHang = response.data.data;
+                console.log("Danh sách ngân hàng:", $scope.ListNganHang);
+            } else {
+                console.log("Dữ liệu ngân hàng không hợp lệ:", response);
+            }
+        })
+        .catch(function (error) {
+            console.error("Lỗi khi lấy danh sách ngân hàng:", error);
+        });
+
+    // ========== Submit Function ==========
+    $scope.btnAdd = function () {
+        if (!$scope.selectedProducts || $scope.selectedProducts.length === 0) {
+            alert("Chưa có sản phẩm nào!");
+            return;
+        }
+
+        if (!$scope.images || $scope.images.length === 0) {
+            alert("Vui lòng chọn ít nhất một ảnh!");
+            return;
+        }
+
+        // 1. Chuẩn bị dữ liệu chính
+        const data = {
+            tenkhachhang: userInfo?.ten || "Không xác định",
+            idnv: null,
+            idkh: userInfo?.id || null,
+            sotienhoan: $scope.tongtien,
+            lydotrahang: $scope.description,
+            trangthai: 0,
+            phuongthuchoantien: $scope.refundMethod,
+            ngaytrahangdukien: $scope.estimatedDeliveryDate,
+            ngaytrahangthucte: null,
+            chuthich: null,
+            hinhthucxuly: $scope.refundMethod
+        };
+
+        // 2. Gửi dữ liệu trả hàng
+        $http.post("https://localhost:7196/api/Trahangs", data)
+            .then(() => {
+                console.log("Thêm trả hàng thành công!");
+                return $http.get("https://localhost:7196/api/Trahangs");
+            })
+            .then(response => {
+                if (!response.data || response.data.length === 0) {
+                    throw new Error("Không có dữ liệu trả về từ API.");
+                }
+
+                const maxId = Math.max(...response.data.map(item => item.id));
+                console.log("ID lớn nhất:", maxId);
+
+                // 3. Thêm chi tiết trả hàng trước
+                const detailPromises = $scope.selectedProducts.map(element => {
+                    const datathct = {
+                        idth: maxId,
+                        soluong: element.soluong,
+                        tinhtrang: 0,
+                        ghichu: $scope.description,
+                        idhdct: element.id
+                    };
+                    return $http.post("https://localhost:7196/api/Trahangchitiets", datathct);
+                });
+
+                return Promise.all(detailPromises)
+                    .then(() => maxId); // Trả về maxId sau khi tất cả chi tiết được thêm
+            })
+            .then(maxId => {
+                // 4. Chỉ upload ảnh sau khi tất cả chi tiết đã được thêm
+                if ($scope.images && $scope.images.length > 0) {
+                    return uploadImages(maxId)
+                        .then(() => maxId); // Đảm bảo trả về maxId để tiếp tục chuỗi promise
+                }
+                return maxId;
+            })
+            .then(maxId => {
+                // 5. Cập nhật trạng thái hóa đơn (chỉ sau khi mọi thứ hoàn thành)
+                return $http.put(`https://localhost:7196/api/Trahangs/UpdateTrangThaiHd/${$scope.idhd}`);
+            })
+            .then(() => {
+                console.log("Xử lý trả hàng hoàn tất!");
+                // Reset form hoặc chuyển trang ở đây
+            })
+            .catch(error => {
+                console.error("Lỗi trong quá trình xử lý:", error);
+                // Hiển thị thông báo lỗi cho người dùng
+            });
+    };
 });

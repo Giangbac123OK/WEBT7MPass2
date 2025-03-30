@@ -807,7 +807,7 @@ app.controller('SanphamDetail', function ($scope, $routeParams, $location) {
 
         let quantityInput = document.getElementById("quantity");
         let currentQuantity = parseInt(quantityInput.value, 10);
-        let maxQuantity = selectedProduct.soluong - 1; // Giới hạn số lượng có thể mua
+        let maxQuantity = selectedProduct.soluong; // Giới hạn số lượng có thể mua
 
         if (currentQuantity < maxQuantity) {
             quantityInput.value = currentQuantity + 1;

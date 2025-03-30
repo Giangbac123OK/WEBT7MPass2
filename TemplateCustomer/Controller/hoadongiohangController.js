@@ -1302,7 +1302,7 @@ app.controller("hoadongiohangCtr", function ($document, $rootScope, $routeParams
 
         const soTienGiamGia = parseInt(document.getElementById("soTienGiamGia")?.innerText.replace(/[VNĐ.\-]/g, "") || 0) || 0;
         const diachi = document.getElementById("diachi")?.innerText.trim();
-        if (diachi == null) {
+        if (diachi == "...") {
             Swal.fire("Lỗi", "Bạn chưa thêm địa chỉ, vui lòng tạo địa chỉ giao hàng", "error");
             return
         }
