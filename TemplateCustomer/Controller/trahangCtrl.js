@@ -434,100 +434,106 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
                 reader.readAsDataURL(file);
             }
         };
-        $scope.images = []; // Danh sách ảnh đã chọn
-    $scope.imageCount = 0; // Số lượng ảnh hiện tại
-    let videoStream = null;
+        $scope.images = []; 
+$scope.imageCount = 0;
+let videoStream = null;
+let usingFrontCamera = true;
 
-    // Mở file picker khi click vào box "Thêm hình ảnh"
-    $scope.openFileInput = function () {
-        document.getElementById("fileInput").click();
-    };
+// Mở file picker khi click vào "Thêm hình ảnh"
+$scope.openFileInput = function () {
+    document.getElementById("fileInput").click();
+};
 
-    // Xử lý chọn ảnh từ thư viện
-    $scope.selectImages = function (event) {
-        if ($scope.images.length >= 3) {
-            alert("Bạn chỉ có thể chọn tối đa 3 ảnh!");
-            return;
-        }
-    
-        let files = event.target.files;
-        if (files.length + $scope.images.length > 3) {
-            alert("Bạn chỉ có thể chọn tối đa 3 ảnh!");
-            return;
-        }
-    
-        for (let i = 0; i < files.length; i++) {
-            let reader = new FileReader();
-            reader.onload = function (e) {
-                $scope.$apply(function () {
-                    $scope.images.push(e.target.result);
-                    $scope.imageCount = $scope.images.length;
-                    console.log("Danh sách ảnh sau khi chọn:", $scope.images); // ✅ Debug
-                });
-            };
-            reader.readAsDataURL(files[i]);
-        }
-    
-        // Reset input file để có thể chọn lại ảnh trùng
-        event.target.value = null;
-    };
-    
-    
+// Xử lý chọn ảnh từ thư viện
+$scope.selectImages = function (event) {
+    if ($scope.images.length >= 3) {
+        alert("Bạn chỉ có thể chọn tối đa 3 ảnh!");
+        return;
+    }
 
-    // Xóa ảnh đã chọn
-    $scope.removeImage = function (index) {
-        $scope.images.splice(index, 1);
-        $scope.imageCount = $scope.images.length;
-    };
+    let files = event.target.files;
+    if (files.length + $scope.images.length > 3) {
+        alert("Bạn chỉ có thể chọn tối đa 3 ảnh!");
+        return;
+    }
 
-    // Bật camera
-    $scope.startCamera = function () {
-        let video = document.getElementById("cameraFeed");
+    for (let i = 0; i < files.length; i++) {
+        let file = files[i];
+        let previewUrl = URL.createObjectURL(file);
 
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(function (stream) {
-                video.srcObject = stream;
-                videoStream = stream;
-            })
-            .catch(function (error) {
-                console.error("Không thể truy cập camera!", error);
-            });
-    };
-    // Chụp ảnh từ camera
-    $scope.capturePhoto = function () {
-        if ($scope.images.length >= 3) {
-            alert("Bạn chỉ có thể chọn tối đa 3 ảnh!");
-            return;
-        }
-    
-        let video = document.getElementById("cameraFeed");
-        let canvas = document.getElementById("cameraCanvas");
-        let context = canvas.getContext("2d");
-    
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);
-    
-        let imageData = canvas.toDataURL("image/png");
-    
-        // Dùng $applyAsync để cập nhật UI mà không gây lỗi
-        $scope.$applyAsync(function () {
-            $scope.images.push(imageData);
+        $scope.$apply(() => {
+            $scope.images.push({ file, previewUrl });
             $scope.imageCount = $scope.images.length;
-            console.log("Danh sách ảnh sau khi chụp:", $scope.images); // ✅ Debug
         });
-    
+    }
+
+    event.target.value = null; // Reset input
+};
+
+// Xóa ảnh đã chọn
+$scope.removeImage = function (index) {
+    $scope.images.splice(index, 1);
+    $scope.imageCount = $scope.images.length;
+};
+
+// Bật camera với chế độ trước/sau
+$scope.startCamera = function () {
+    if (videoStream) {
+        videoStream.getTracks().forEach(track => track.stop());
+    }
+
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: usingFrontCamera ? "user" : "environment" } })
+        .then(stream => {
+            let video = document.getElementById("cameraFeed");
+            video.srcObject = stream;
+            videoStream = stream;
+        })
+        .catch(error => {
+            console.error("Không thể bật camera:", error);
+        });
+};
+
+// Chuyển đổi camera trước/sau
+$scope.toggleCamera = function () {
+    usingFrontCamera = !usingFrontCamera;
+    $scope.startCamera();
+};
+
+// Chụp ảnh từ camera
+$scope.capturePhoto = function () {
+    if ($scope.images.length >= 3) {
+        alert("Bạn chỉ có thể chọn tối đa 3 ảnh!");
+        return;
+    }
+
+    let video = document.getElementById("cameraFeed");
+    let canvas = document.getElementById("cameraCanvas");
+    let context = canvas.getContext("2d");
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    canvas.toBlob(blob => {
+        let previewUrl = URL.createObjectURL(blob);
+        let file = new File([blob], `photo_${Date.now()}.png`, { type: "image/png" });
+
+        $scope.$apply(() => {
+            $scope.images.push({ file, previewUrl });
+            $scope.imageCount = $scope.images.length;
+        });
+
         // Tắt camera sau khi chụp
         if (videoStream) {
-            let tracks = videoStream.getTracks();
-            tracks.forEach(track => track.stop());
+            videoStream.getTracks().forEach(track => track.stop());
             video.srcObject = null;
         }
-    
-        // Đóng modal sau khi chụp
+
         setTimeout(() => {
             document.querySelector("#cameraModal .btn-close").click();
         }, 500);
-    };
+    }, "image/png");
+};
+
     
 });
