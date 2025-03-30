@@ -89,7 +89,10 @@ width: 100%;
 height: 100%;
 object-fit: cover;
 }
-
+.image-wrapper {
+    position: relative;
+    display: inline-block;
+}
 .remove-image {
 position: absolute;
 top: 0.5rem;
@@ -283,26 +286,30 @@ color: #ee4d2d !important;
           
           
           <div class="mt-4">
-            <label for="refundMethod">Phương thức hoàn tiền:</label>
+            <label for="refundMethod" class="form-label fw-medium">Phương thức hoàn tiền:</label>
             <select class="form-select" id="refundMethod" ng-model="refundMethod">
                 <option disabled selected>Chọn phương thức hoàn tiền</option>
                 <option value="Số dư TK Shopee">Số dư TK Shopee</option>
-                <option value="Tài khoản ngân hàng">Tài khoản ngân hàng</option>
-                <option value="Thẻ tín dụng/ghi nợ">Thẻ tín dụng/ghi nợ</option>
+                <option value="Thẻ tín dụng/ghi nợ/Tài khoản ngân hàng">Thẻ tín dụng/ghi nợ/Tài khoản ngân hàng</option>
             </select>
         </div>
         
         <!-- Hiển thị khi chọn "Tài khoản ngân hàng" -->
-        <div class="row mt-4" ng-show="refundMethod == 'Tài khoản ngân hàng'">
-            <div class="col">
-                <label for="bank">Ngân hàng</label>
-                <select class="form-select" id="bank" ng-model="selectedBank" ng-options="bank for bank in banks">
-                    <option disabled selected>Chọn ngân hàng</option>
+        <div class="mt-4" ng-show="refundMethod == 'Thẻ tín dụng/ghi nợ/Tài khoản ngân hàng'">
+            <div class="row mb-4">
+              <div class="col">
+                <label for="bank" class="form-label fw-medium">Ngân hàng</label>
+                <select class="form-select" id="bank" ng-model="selectedBank">
+                  <option disabled selected>Chọn ngân hàng</option>
+                  <option ng-repeat="nganhang in ListNganHang" value="{{nganhang.code}}">
+                      {{nganhang.name}} ({{nganhang.shortName}})
+                  </option>
                 </select>
-            </div>
-            <div class="col">
-                <label for="accountNumber">Số tài khoản/Số thẻ</label>
-                <input type="text" id="accountNumber" class="form-control" ng-model="accountNumber" placeholder="Nhập số tài khoản">
+              </div>
+              <div class="col">
+                  <label for="accountNumber" class="form-label fw-medium">Số tài khoản/Số thẻ</label>
+                  <input type="text" id="accountNumber" class="form-control" ng-model="cardNumber" placeholder="Nhập số tài khoản">
+              </div>
             </div>
         </div>
         
@@ -314,28 +321,61 @@ color: #ee4d2d !important;
               </div>
             </div>
             
-            <div>
-              <label class="form-label fw-medium">Bằng chứng (<span id="imageCount">0</span>/3)</label>
-              <div class="row g-3 mb-2" id="imagePreviewContainer">
-                <div class="col-md-3">
-                  <div class="upload-box" id="uploadBox1">
-                    <i class="bi bi-upload"></i>
-                    <span>Thêm hình ảnh</span>
-                    <input type="file" class="upload-input" id="imageUpload1" accept="image/*">
+            <div class="container mt-4">
+              <label class="form-label fw-medium">Bằng chứng (<span>{{imageCount}}</span>/3)</label>
+          
+              <div class="row g-3 mb-2">
+                  <!-- Chọn ảnh từ thư viện -->
+                  <div class="col-md-3">
+                      <div class="upload-box" ng-click="openFileInput()">
+                          <i class="bi bi-upload"></i>
+                          <span>Thêm hình ảnh</span>
+                          <input type="file" class="upload-input" multiple accept="image/*" id="fileInput" onchange="angular.element(this).scope().selectImages(event)">
+                      </div>
                   </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="upload-box" id="uploadBox2">
-                    <i class="bi bi-camera"></i>
-                    <span>Chụp ảnh</span>
-                    <input type="file" class="upload-input" id="imageUpload2" accept="image/*" capture>
+          
+                  <!-- Chụp ảnh -->
+                  <div class="col-md-3">
+                      <div class="upload-box" data-bs-toggle="modal" data-bs-target="#cameraModal" ng-click="startCamera()">
+                          <i class="bi bi-camera"></i>
+                          <span>Chụp ảnh</span>
+                      </div>
                   </div>
-                </div>
               </div>
-              <div class="form-text">
-                Hãy đăng tải hình ảnh rõ nét (1080x1080 pixel, videos có độ dài 10MB/phút) để chúng tôi xử lý yêu cầu của bạn nhanh chóng và chính xác.
+          
+              <!-- Hiển thị ảnh đã chọn -->
+              <div class="row g-3 mb-2">
+                  <div class="col-md-3" ng-repeat="(index, img) in images">
+                      <div class="image-wrapper position-relative">
+                          <img style="width: 100%; height: auto;" ng-src="{{img}}" class="image-preview rounded">
+                          <button class="remove-image" ng-click="removeImage(index)">×</button>
+                      </div>
+                  </div>
               </div>
-            </div>
+          </div>
+          
+          <!-- Modal chụp ảnh -->
+          <div class="modal fade" id="cameraModal" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog">
+                  <div class="modal-content">
+                      <div class="modal-header">
+                          <h5 class="modal-title">Chụp ảnh</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                      </div>
+                      <div class="modal-body text-center">
+                          <video id="cameraFeed" autoplay playsinline width="100%"></video>
+                          <canvas id="cameraCanvas" style="display: none;"></canvas>
+                      </div>
+                      <div class="modal-footer">
+                          <button ng-click="capturePhoto()" class="btn btn-primary">Chụp</button>
+                          <button class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          
+          
+            
           </div>
         </div>
       </div>
