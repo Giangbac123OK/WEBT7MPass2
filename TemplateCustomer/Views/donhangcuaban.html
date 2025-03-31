@@ -181,17 +181,17 @@
                 <span ng-if="x.trangthai==4">Đã huỷ</span>
               </div>
             </div>
-            <div class="row" ng-init="showMore = {}">
+            <div class="row" ng-init="showMore={}">
               <div class="row border-bottom py-3"
-                ng-repeat="hdct in dataHoaDonCT | filter:{idhd: x.id} | limitTo: (showMore[x.id] ? dataHoaDonCT.length : 2)">
-                <div class="col-3 ps-3">
-                  <img ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct"
+                ng-repeat="hdct in dataHoaDonCT | filter:{idhd: x.id} | limitTo: (showMore[x.id] ? dataHoaDonCT.length : 2)" >
+                <div class="col-3 ps-3" ng-repeat="spct in sanphamct | filter:{id: hdct.idspct}">
+                  <img  
                     src="https://localhost:7196/picture/{{spct.urlHinhanh}}" width="100%" height="120px">
                 </div>
-                <div class="col-7" ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct">
+                <div class="col-7" ng-repeat="spct in sanphamct"  ng-if="spct.id==hdct.idspct">
                   <a href="#!SanpDetail/{{spct.idsp}}" class="fs-5 tensp">{{SelectTenTH(spct.idsp)}} -
                     {{SelecttenSp(spct.idsp)}}</a>
-                  <p class="text-secondary">Phân loại: Da độn - Đen - 38</p>
+                  <p class="text-secondary">Phân loại: <span ng-repeat="chatlieu in listChatlieu" ng-if="spct.idChatLieu==chatlieu.id">{{chatlieu.tenchatlieu}}</span> - <span ng-repeat="mau in listColor" ng-if="spct.idMau==mau.id">{{mau.tenmau}}</span> - <span ng-repeat="size in listSize" ng-if="spct.idSize==size.id">{{size.sosize}}</span></p>
                   <p>x{{hdct.soluong}}</p>
                   <button type="button" class="btn btn-success" ng-click="openRatingModal(hdct)"
                   ng-if="( danhgiaById[hdct.id].success === false) && x.trangthai === 3">
@@ -301,7 +301,7 @@
           <div class="py-3" ng-init="showMore = {}">
             <div class="row" ng-if="!showMore[x.id]">
               <div class="col d-flex flex-wrap">
-                <div class="p-2" ng-repeat="hdct in dataHoaDonCT | filter:{idhd: x.id} | limitTo: 3">
+                <div class="p-2" ng-repeat="hdct in dataHoaDonCT | filter:{idhd: x.id}">
                   <img ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct"
                     ng-src="https://localhost:7196/picture/{{spct.urlHinhanh}}" class="rounded border" width="80"
                     height="80">
