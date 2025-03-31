@@ -472,15 +472,15 @@ $scope.init = function () {
         $scope.idhd = id;
         $("#chitietModal").modal("show");
     };
-
-    $http.get("https://localhost:7196/api/Sanphamchitiets")
-        .then(function (response) {
-            $scope.sanphamct = response.data;
-            console.log("sanphamct:", $scope.sanphamct);
-        })
-        .catch(function (error) {
-            console.error("Lỗi khi lấy dữ liệu:", error);
-        });
+    $scope.sanphamctById = {};
+    $http.get("https://localhost:7196/api/Sanphamchitiets/")
+            .then(function (response) {
+                $scope.sanphamct = response.data;
+                console.log("sanphamct:", $scope.sanphamct);
+            })
+            .catch(function (error) {
+                console.error("Lỗi khi lấy dữ liệu:", error);
+            });
     $http.get("https://localhost:7196/api/Sanphams")
         .then(function (response) {
             $scope.sanphamList = response.data;
@@ -538,6 +538,31 @@ $scope.init = function () {
                 console.error("Lỗi khi lấy dữ liệu:", error);
                 Swal.fire("Lỗi!", "Không thể lấy thông tin tài khoản. Vui lòng thử lại!", "error");
             });
-    //aaaaaaffffffffff
+    
+            $http.get("https://localhost:7196/api/Size")
+                .then(function(response){
+                    $scope.listSize = response.data;
+                    console.log("Danh sách kích cỡ: "+$scope.listSize)
+                })
+                .catch(function(error){
+                    console.error(error);
+                })
+            $http.get("https://localhost:7196/api/Color")
+                .then(function(response){
+                    $scope.listColor = response.data;
+                    console.log("Danh sách kích cỡ: "+$scope.listColor)
+                })
+                .catch(function(error){
+                    console.error(error);
+                })
+            
+            $http.get("https://localhost:7196/api/ChatLieu")
+                .then(function(response){
+                    $scope.listChatlieu = response.data;
+                    console.log("Danh sách kích cỡ: "+$scope.listChatlieu)
+                })
+                .catch(function(error){
+                    console.error(error);
+                })
 });
 
