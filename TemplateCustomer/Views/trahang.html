@@ -151,7 +151,7 @@
     <h1 class="fs-4 fw-medium mb-0">Yêu cầu Trả hàng/Hoàn tiền</h1>
   </div>
 
-  <form id="returnForm">
+  <form>
     <div class="row g-4">
       <!-- Main Form Column -->
       <div class="col-lg-8">
@@ -395,7 +395,7 @@
                 <span class="fw-medium">Số tiền hoàn lại</span>
                 <span class="fs-4 text-danger fw-medium">{{tongtien | currency:"₫":0}}</span>
               </div>
-              <button type="submit" class="btn btn-danger w-100 mb-3" ng-click="btnAdd()" id="submitButton">
+              <button type="submit" class="btn btn-danger w-100 mb-3" ng-click="btnAdd(trahangForm)" id="submitButton">
                 Gửi yêu cầu
               </button>
 

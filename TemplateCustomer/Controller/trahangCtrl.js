@@ -398,82 +398,112 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
         .catch(function (error) {
             console.error("Lỗi khi lấy danh sách ngân hàng:", error);
         });
-
     // ========== Submit Function ==========
     $scope.btnAdd = function () {
+        let errorMessages = [];
+
+        // Kiểm tra từng trường và thêm lỗi vào danh sách
         if (!$scope.selectedProducts || $scope.selectedProducts.length === 0) {
-            alert("Chưa có sản phẩm nào!");
-            return;
+            errorMessages.push("Vui lòng chọn ít nhất một sản phẩm.");
         }
-
+        if (!$scope.description) {
+            errorMessages.push("Vui lòng nhập lý do trả hàng.");
+        }
+        if (!$scope.selectedInfo.provinceId || !$scope.selectedInfo.districtId || !$scope.selectedInfo.wardCode || !$scope.fullAddress) {
+            errorMessages.push("Vui lòng nhập đầy đủ địa chỉ hàng.");
+        }
+        if (!$scope.refundMethod) {
+            errorMessages.push("Vui lòng chọn phương thức hoàn tiền.");
+        }
         if (!$scope.images || $scope.images.length === 0) {
-            alert("Vui lòng chọn ít nhất một ảnh!");
-            return;
+            errorMessages.push("Vui lòng tải lên ít nhất một hình ảnh làm bằng chứng.");
+        }
+        if ($scope.refundMethod === 'bank' && (!$scope.bankName || !$scope.accountNumber)) {
+            errorMessages.push("Vui lòng nhập ngân hàng & số tài khoản.");
         }
 
-        // 1. Chuẩn bị dữ liệu chính
-        const data = {
-            tenkhachhang: userInfo?.ten || "Không xác định",
-            idnv: null,
-            idkh: userInfo?.id || null,
-            sotienhoan: $scope.tongtien,
-            lydotrahang: $scope.description,
-            trangthai: 0,
-            phuongthuchoantien: $scope.refundMethod,
-            ngaytrahangdukien: $scope.estimatedDeliveryDate,
-            ngaytrahangthucte: null,
-            chuthich: null,
-            hinhthucxuly: $scope.refundMethod
-        };
-
-        // 2. Gửi dữ liệu trả hàng
-        $http.post("https://localhost:7196/api/Trahangs", data)
-            .then(() => {
-                console.log("Thêm trả hàng thành công!");
-                return $http.get("https://localhost:7196/api/Trahangs");
-            })
-            .then(response => {
-                if (!response.data || response.data.length === 0) {
-                    throw new Error("Không có dữ liệu trả về từ API.");
-                }
-
-                const maxId = Math.max(...response.data.map(item => item.id));
-                console.log("ID lớn nhất:", maxId);
-
-                // 3. Thêm chi tiết trả hàng trước
-                const detailPromises = $scope.selectedProducts.map(element => {
-                    const datathct = {
-                        idth: maxId,
-                        soluong: element.soluong,
-                        tinhtrang: 0,
-                        ghichu: $scope.description,
-                        idhdct: element.id
-                    };
-                    return $http.post("https://localhost:7196/api/Trahangchitiets", datathct);
+        // Nếu có lỗi, hiển thị tất cả bằng Swal.fire
+        if (errorMessages.length > 0) {
+            Swal.fire("Lỗi!", errorMessages.join("<br>"), "error");
+            return;
+        }
+    
+        Swal.fire({
+            title: "Xác nhận trả hàng?",
+            text: "Bạn có chắc chắn muốn gửi yêu cầu trả hàng không?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Có, gửi yêu cầu!",
+            cancelButtonText: "Hủy"
+        }).then((result) => {
+            if (!result.isConfirmed) return;
+    
+            // 1. Chuẩn bị dữ liệu trả hàng
+            const data = {
+                tenkhachhang: userInfo?.ten || "Không xác định",
+                idnv: null,
+                idkh: userInfo.id,
+                sotienhoan: $scope.tongtien,
+                lydotrahang: $scope.description,
+                trangthai: 0,
+                phuongthuchoantien: $scope.refundMethod,
+                ngaytrahangdukien: $scope.estimatedDeliveryDate,
+                ngaytrahangthucte: null,
+                chuthich: null,
+                hinhthucxuly: $scope.refundMethod
+            };
+    
+            // 2. Gửi dữ liệu trả hàng
+            $http.post("https://localhost:7196/api/Trahangs", data)
+                .then(() => {
+                    console.log("Thêm trả hàng thành công!");
+                    return $http.get("https://localhost:7196/api/Trahangs");
+                })
+                .then(response => {
+                    if (!response.data || response.data.length === 0) {
+                        throw new Error("Không có dữ liệu trả về từ API.");
+                    }
+    
+                    const maxId = Math.max(...response.data.map(item => item.id));
+                    console.log("ID lớn nhất:", maxId);
+    
+                    // 3. Thêm chi tiết trả hàng
+                    return Promise.all(
+                        $scope.selectedProducts.map(element => {
+                            const datathct = {
+                                idth: maxId,
+                                soluong: element.soluong,
+                                tinhtrang: 0,
+                                ghichu: $scope.description,
+                                idhdct: element.id
+                            };
+                            return $http.post("https://localhost:7196/api/Trahangchitiets", datathct);
+                        })
+                    ).then(() => maxId); // Trả về maxId sau khi hoàn thành chi tiết
+                })
+                .then(maxId => {
+                    // 4. Upload ảnh nếu có
+                    if ($scope.images && $scope.images.length > 0) {
+                        return uploadImages(maxId).then(() => maxId);
+                    }
+                    return maxId;
+                })
+                .then(() => {
+                    // 5. Cập nhật trạng thái hóa đơn
+                    return $http.put(`https://localhost:7196/api/Trahangs/UpdateTrangThaiHd/${$scope.idhd}`);
+                })
+                .then(() => {
+                    console.log("Xử lý trả hàng hoàn tất!");
+                    Swal.fire("Đã gửi!", "Yêu cầu trả hàng của bạn đã được gửi thành công.", "success")
+                        .then(() => $location.path("/donhangcuaban"));
+                })
+                .catch(error => {
+                    console.error("Lỗi trong quá trình xử lý:", error);
+                    Swal.fire("Thất bại!", "Đã xảy ra lỗi khi gửi yêu cầu. Vui lòng thử lại sau.", "error");
                 });
-
-                return Promise.all(detailPromises)
-                    .then(() => maxId); // Trả về maxId sau khi tất cả chi tiết được thêm
-            })
-            .then(maxId => {
-                // 4. Chỉ upload ảnh sau khi tất cả chi tiết đã được thêm
-                if ($scope.images && $scope.images.length > 0) {
-                    return uploadImages(maxId)
-                        .then(() => maxId); // Đảm bảo trả về maxId để tiếp tục chuỗi promise
-                }
-                return maxId;
-            })
-            .then(maxId => {
-                // 5. Cập nhật trạng thái hóa đơn (chỉ sau khi mọi thứ hoàn thành)
-                return $http.put(`https://localhost:7196/api/Trahangs/UpdateTrangThaiHd/${$scope.idhd}`);
-            })
-            .then(() => {
-                console.log("Xử lý trả hàng hoàn tất!");
-                // Reset form hoặc chuyển trang ở đây
-            })
-            .catch(error => {
-                console.error("Lỗi trong quá trình xử lý:", error);
-                // Hiển thị thông báo lỗi cho người dùng
-            });
+        });
     };
+    
 });
