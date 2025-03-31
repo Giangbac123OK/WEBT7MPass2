@@ -386,6 +386,10 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
     }
 
     // ========== Bank List ==========
+    $scope.ListNganHang = [];
+    $scope.selectedBank = "";
+    $scope.accountNumber = "";
+    $scope.accountName = "";
     $http.get("https://api.vietqr.io/v2/banks")
         .then(function (response) {
             if (response.data && response.data.data) {
@@ -452,7 +456,10 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
                 ngaytrahangdukien: $scope.estimatedDeliveryDate,
                 ngaytrahangthucte: null,
                 chuthich: null,
-                hinhthucxuly: $scope.refundMethod
+                hinhthucxuly: null,
+                tennganhang: $scope.selectedBank,
+                sotaikhoan: $scope.cardNumber,
+                tentaikhoan: $scope.accountName
             };
     
             // 2. Gửi dữ liệu trả hàng

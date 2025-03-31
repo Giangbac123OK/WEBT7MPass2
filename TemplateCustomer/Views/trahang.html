@@ -309,7 +309,7 @@
                   <label for="bank" class="form-label fw-medium">Ngân hàng</label>
                   <select class="form-select" id="bank" ng-model="selectedBank">
                     <option disabled selected>Chọn ngân hàng</option>
-                    <option ng-repeat="nganhang in ListNganHang" value="{{nganhang.code}}">
+                    <option ng-repeat="nganhang in ListNganHang" value="{{nganhang.shortName}}">
                       {{nganhang.name}} ({{nganhang.shortName}})
                     </option>
                   </select>
@@ -319,7 +319,13 @@
                   <input type="text" id="accountNumber" class="form-control" ng-model="cardNumber"
                     placeholder="Nhập số tài khoản">
                 </div>
+                <div class="col">
+                  <label for="accountNumber" class="form-label fw-medium">Tên chủ tài khoản</label>
+                  <input type="text" id="accountNumber" class="form-control" ng-model="accountName"
+                    placeholder="Nhập số tài khoản">
+                </div>
               </div>
+              
             </div>
             <div class="mb-4">
               <label for="description" class="form-label fw-medium">Mô tả vấn đề</label>
