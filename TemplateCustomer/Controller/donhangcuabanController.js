@@ -458,16 +458,9 @@ $scope.init = function () {
             console.error(error)
         })
 
-    $http.get('https://localhost:7196/api/Trahangs')
-        .then(function (response) {
-            $scope.dataTraHang = response.data
-            console.log($scope.dataTraHang)
-        })
-        .catch(function (error) {
-            console.error(error)
-        })
+    
 
-
+    
     $scope.chitietdh = function (id) {
         $scope.idhd = id;
         $("#chitietModal").modal("show");
@@ -564,5 +557,107 @@ $scope.init = function () {
                 .catch(function(error){
                     console.error(error);
                 })
+                $scope.idhd = null;
+                $scope.huydh = function (id) {
+                    $scope.idhd = id;
+                    $("#HuyDonModal").modal("show");
+                };
+                
+                $scope.huydonhang = function () {
+                    if (!$scope.lydohuy) {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Vui lòng chọn lý do hủy đơn!",
+                        });
+                        return;
+                    }
+                
+                    let lydohuydon = ($scope.lydohuy === "khác") ? $scope.lydokhac : $scope.lydohuy;
+                
+                    Swal.fire({
+                        title: "Bạn có chắc muốn hủy đơn hàng?",
+                        text: "Sau khi hủy, bạn không thể khôi phục lại đơn hàng!",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#d33",
+                        cancelButtonColor: "#3085d6",
+                        confirmButtonText: "Hủy đơn hàng",
+                        cancelButtonText: "Quay lại"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            let api = "https://localhost:7196/api/Hoadons/" + $scope.idhd;
+                
+                            // ✅ Gọi API GET trước
+                            $http.get(api)
+                                .then(function (response) {
+                                    let dataHoaDon = response.data;
+                
+                                    // ✅ Chuẩn bị dữ liệu cập nhật
+                                    let data = {
+                                        id: dataHoaDon.id,
+                                        idnv: dataHoaDon.idnv,
+                                        idkh: dataHoaDon.idkh,
+                                        trangthaithanhtoan: dataHoaDon.trangthaithanhtoan,
+                                        trangthaidonhang: dataHoaDon.trangthaidonhang,
+                                        thoigiandathang: dataHoaDon.thoigiandathang,
+                                        diachiship: dataHoaDon.diachiship,
+                                        ngaygiaothucte: dataHoaDon.ngaygiaothucte,
+                                        tongtiencantra: dataHoaDon.tongtiencantra,
+                                        tongtiensanpham: dataHoaDon.tongtiensanpham,
+                                        sdt: dataHoaDon.sdt,
+                                        tonggiamgia: dataHoaDon.tonggiamgia,
+                                        idgg: dataHoaDon.idgg,
+                                        trangthai: 4, // ✅ Cập nhật trạng thái
+                                        phivanchuyen: dataHoaDon.phivanchuyen,
+                                        idpttt: dataHoaDon.idpttt,
+                                        ghichu: "Huỷ đơn hàng với lý do: " + lydohuydon
+                                    };
+                
+                                    // ✅ Gọi API PUT để cập nhật trạng thái đơn hàng
+                                    return $http.put(api, data);
+                                })
+                                .then(function () {
+                                    // ✅ Hủy đơn thành công → Ẩn modal, reset form
+                                    $("#HuyDonModal").modal("hide");
+                
+                                    // ✅ Reset radio & lý do hủy đơn
+                                    $scope.lydohuy = null;
+                                    $scope.lydokhac = "";
+                
+                                    setTimeout(() => {
+                                        document.querySelectorAll('input[name="flexRadioDefault"]').forEach(radio => {
+                                            radio.checked = false;
+                                        });
+                                    }, 300);
+                
+                                    // ✅ Hiển thị thông báo thành công
+                                    Swal.fire({
+                                        icon: "success",
+                                        title: "Hủy đơn hàng thành công!",
+                                        text: "Đơn hàng của bạn đã được hủy.",
+                                        timer: 2000,
+                                        showConfirmButton: false
+                                    });
+                
+                                    // ✅ Reload lại trang
+                                    setTimeout(() => {
+                                        location.reload();
+                                        window.scroll(0, 0);
+                                    }, 2000);
+                                })
+                                .catch(function (error) {
+                                    console.error("Lỗi khi hủy đơn hàng:", error);
+                
+                                    Swal.fire({
+                                        icon: "error",
+                                        title: "Hủy đơn không thành công!",
+                                        text: "Vui lòng thử lại sau.",
+                                    });
+                                });
+                        }
+                    });
+                };
+                
+    
 });
 

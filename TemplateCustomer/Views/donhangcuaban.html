@@ -244,6 +244,7 @@
                     <div class="p-2 bd-highlight">
                       <a class="btn btn-danger" ng-if="x.trangthai==3" href="#!trahang/{{x.id}}">Trả hàng</a>
                       <a class="btn btn-danger" ng-if="x.trangthai==4">Mua lại</a>
+                      <button class="btn btn-danger" ng-if="x.trangthai==0" ng-click="huydh(x.id)">Hủy đơn</button>
                       <button class="btn btn-outline-dark" ng-click="chitietdh(x.id)">Chi tiết</button>
                       <a class="btn btn-outline-dark" href="tel:0867812095">Liên hệ người bán</a>
                     </div>
@@ -864,6 +865,69 @@
           đánh giá</button>
       </div>
 
+    </div>
+  </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="HuyDonModal" tabindex="-1" aria-labelledby="HuyDonModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="HuyDonModalLabel">Lý do hủy đơn hàng</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="flexRadioDefault" ng-model="lydohuy" value="Tôi muốn cập nhật địa chỉ/số điện thoại nhận hàng" checked>
+          <label class="form-check-label" for="flexRadioDefault1">
+            Tôi muốn cập nhật địa chỉ/số điện thoại nhận hàng
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="flexRadioDefault"   ng-model="lydohuy" value="Tôi muốn thêm/thay đổi mã giảm giá">
+          <label class="form-check-label" for="flexRadioDefault2">
+            Tôi muốn thêm/thay đổi mã giảm giá
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="flexRadioDefault" ng-model="lydohuy">
+          <label class="form-check-label" for="flexRadioDefault1">
+            Tôi muốn thay đổi sản phẩm (kích thước, màu sắc, chất liệu, số lượng,...)
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="flexRadioDefault" ng-model="lydohuy" value="Thủ tục thanh toán rắc dối">
+          <label class="form-check-label" for="flexRadioDefault1">
+            Thủ tục thanh toán rắc dối
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="flexRadioDefault" "  ng-model="lydohuy" value="Tôi tìm chỗ mua khác tốt hơn">
+          <label class="form-check-label" for="flexRadioDefault2">
+            Tôi tìm chỗ mua khác tốt hơn
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="flexRadioDefault" "  ng-model="lydohuy" value="Tôi không có nhu cầu mua nữa">
+          <label class="form-check-label" for="flexRadioDefault2">
+            Tôi không có nhu cầu mua nữa
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="flexRadioDefault" " ng-model="lydohuy" value="khác">
+          <label class="form-check-label" for="flexRadioDefault2">
+            Khác
+          </label>
+        </div>
+        <div class="form-floating" ng-show="lydohuy=='khác'">
+          <textarea class="form-control" id="floatingTextarea" ng-model="lydokhac"></textarea>
+          <label for="floatingTextarea">Khác</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+        <button type="button" class="btn btn-primary" ng-click="huydonhang()">Hủy đơn hàng</button>
+      </div>
     </div>
   </div>
 </div>
