@@ -1,0 +1,158 @@
+<!-- Thêm file này vào thư mục views của bạn -->
+<div class="container py-4">
+    <header class="mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1 class="h4 mb-0">Kết quả tìm kiếm: "{{searchTerm}}"</h1>
+            </div>
+            <div class="col-md-6">
+                <search-box></search-box>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" ng-if="loading">
+        <div class="spinner"></div>
+    </div>
+    
+    <!-- No Results Message -->
+    <div class="no-results" ng-if="!loading && searchPerformed && products.length === 0">
+        <i class="bi bi-search"></i>
+        <h3>Không tìm thấy sản phẩm phù hợp</h3>
+        <p class="text-muted">Vui lòng thử lại với từ khóa khác</p>
+    </div>
+    
+    <!-- Search Results -->
+    <div class="row g-4 product-listing" ng-if="!loading && products.length > 0">
+        <!-- Filter Sidebar -->
+        <div class="col-lg-3">
+            <div class="filter-sidebar" ng-class="{'show': showMobileFilter}">
+                <div class="d-flex justify-content-between align-items-center mb-3 d-lg-none">
+                    <h5 class="mb-0">Bộ lọc</h5>
+                    <button class="btn-close" ng-click="toggleMobileFilter()"></button>
+                </div>
+                
+                <div class="filter-section">
+                    <h2 class="filter-title">Lọc sản phẩm</h2>
+                    
+                    <!-- Price Filter -->
+                    <div class="filter-group">
+                        <h3 class="filter-group-title">Giá</h3>
+                        <div class="form-check mb-2" ng-repeat="range in priceRanges">
+                            <input class="form-check-input" type="radio" name="priceRange" id="price{{$index}}" 
+                                ng-model="filters.priceRange" ng-value="range.value">
+                            <label class="form-check-label" for="price{{$index}}">{{range.label}}</label>
+                        </div>
+                    </div>
+                    
+                    <!-- Brand Filter -->
+                    <div class="filter-group">
+                        <h3 class="filter-group-title">Thương hiệu</h3>
+                        <div class="form-check mb-2" ng-repeat="brand in brands">
+                            <input class="form-check-input" type="checkbox" name="brand" id="brand{{$index}}" 
+                                ng-model="filters.brands[brand]">
+                            <label class="form-check-label" for="brand{{$index}}">{{brand}}</label>
+                        </div>
+                    </div>
+                    
+                    <!-- Size Filter -->
+                    <div class="filter-group">
+                        <h3 class="filter-group-title">Size</h3>
+                        <div class="form-check mb-2" ng-repeat="size in sizes">
+                            <input class="form-check-input" type="checkbox" name="size" id="size{{$index}}" 
+                                ng-model="filters.sizes[size]">
+                            <label class="form-check-label" for="size{{$index}}">{{size}}</label>
+                        </div>
+                    </div>
+                    
+                    <button type="button" class="filter-apply-btn" ng-click="applyFilters()">Áp dụng</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Product Listing -->
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <p class="mb-0"><span>{{filteredProducts.length}}</span> sản phẩm</p>
+                <div class="d-flex align-items-center">
+                    <span>Sắp xếp theo:</span>
+                    <select class="form-select ms-2" ng-model="sortOption" ng-change="sortProducts()">
+                        <option value="popularity">Phổ biến</option>
+                        <option value="newest">Mới nhất</option>
+                        <option value="priceAsc">Giá: Thấp đến cao</option>
+                        <option value="priceDesc">Giá: Cao đến thấp</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="row g-3">
+                <!-- Product Cards -->
+                <div class="col-md-6 col-lg-4" ng-repeat="product in filteredProducts">
+                    <div class="product-card">
+                        <div class="discount-badge" ng-if="product.discount > 0">{{product.discount}}% GIẢM</div>
+                        <div class="product-image-container">
+                            <img ng-src="{{product.image}}" alt="{{product.name}}" class="product-image">
+                        </div>
+                        <div class="product-details">
+                            <div class="product-brand">{{product.brand}}</div>
+                            <h3 class="product-name">{{product.name}}</h3>
+                            <div class="product-price">
+                                <span class="original-price" ng-if="product.originalPrice">{{product.originalPrice | currency:"":0}}₫</span>
+                                <span class="sale-price">{{product.salePrice | currency:"":0}}₫</span>
+                            </div>
+                            <div class="product-rating">
+                                <div class="rating-stars">
+                                    <i class="bi" 
+                                       ng-repeat="star in [1,2,3,4,5]" 
+                                       ng-class="{'bi-star-fill': star <= product.rating, 'bi-star-half': star - 0.5 <= product.rating && star > product.rating, 'bi-star': star > product.rating && star - 0.5 > product.rating}">
+                                    </i>
+                                </div>
+                                <span class="sold-count">{{product.soldCount}} đã bán</span>
+                            </div>
+                        </div>
+                        <div class="action-buttons">
+                            <div>
+                                <button class="action-button" ng-click="addToCart(product)">
+                                    <i class="bi bi-cart"></i>
+                                </button>
+                                <button class="action-button" ng-click="viewProductDetail(product)">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                            <button class="wishlist-button" ng-click="toggleWishlist(product)">
+                                <i class="bi" ng-class="{'bi-heart': !product.inWishlist, 'bi-heart-fill': product.inWishlist}"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            <nav aria-label="Page navigation" class="mt-4" ng-if="totalPages > 1">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" ng-class="{'disabled': currentPage === 1}">
+                        <a class="page-link" href="#" ng-click="changePage(currentPage - 1)" tabindex="-1">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+                    <li class="page-item" ng-repeat="page in getPages()" ng-class="{'active': currentPage === page}">
+                        <a class="page-link" href="#" ng-click="changePage(page)">{{page}}</a>
+                    </li>
+                    <li class="page-item" ng-class="{'disabled': currentPage === totalPages}">
+                        <a class="page-link" href="#" ng-click="changePage(currentPage + 1)">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    
+    <!-- Mobile Filter Button & Overlay -->
+    <button class="mobile-filter-toggle d-lg-none" ng-click="toggleMobileFilter()" ng-if="!loading && products.length > 0">
+        <i class="bi bi-funnel-fill"></i>
+    </button>
+    <div class="filter-overlay" ng-class="{'show': showMobileFilter}" ng-click="toggleMobileFilter()"></div>
+</div>
+

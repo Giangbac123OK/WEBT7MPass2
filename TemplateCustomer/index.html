@@ -49,6 +49,347 @@
             z-index: 1000;
             display: block; /* Luôn hiển thị */
         }
+        /* Thêm file này vào thư mục CSS của bạn hoặc nhúng vào file CSS hiện có */
+
+/* Styles cho search box và suggestions */
+.search-container {
+  position: relative;
+  width: 100%;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.search-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 0 0 5px 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.suggestion-item {
+  padding: 10px 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.suggestion-item:hover {
+  background-color: #f5f5f5;
+}
+
+.suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.highlight {
+  color: #dc3545;
+  font-weight: 600;
+}
+
+/* Spinner cho loading */
+.search-spinner {
+  position: absolute;
+  right: 45px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #dc3545;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: translateY(-50%) rotate(0deg);
+  }
+  100% {
+    transform: translateY(-50%) rotate(360deg);
+  }
+}
+
+/* Styles cho trang kết quả tìm kiếm */
+.filter-section {
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.filter-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.filter-group {
+  margin-bottom: 20px;
+}
+
+.filter-group-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.filter-apply-btn {
+  background: linear-gradient(to right, #dc3545, #c82333);
+  border: none;
+  color: white;
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  font-weight: 600;
+  transition: opacity 0.3s;
+}
+
+.filter-apply-btn:hover {
+  opacity: 0.9;
+}
+
+.form-check-input:checked {
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
+/* Product card styles */
+.product-card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+  margin-bottom: 20px;
+  overflow: hidden;
+  position: relative;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.discount-badge {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  background-color: #dc3545;
+  color: white;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: bold;
+  z-index: 1;
+}
+
+.product-image-container {
+  position: relative;
+  padding-top: 100%;
+  overflow: hidden;
+}
+
+.product-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.product-card:hover .product-image {
+  transform: scale(1.05);
+}
+
+.product-details {
+  padding: 15px;
+}
+
+.product-brand {
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 5px;
+}
+
+.product-name {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #333;
+  height: 40px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.product-price {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.original-price {
+  text-decoration: line-through;
+  color: #888;
+  font-size: 14px;
+  margin-right: 10px;
+}
+
+.sale-price {
+  color: #dc3545;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.product-rating {
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.rating-stars {
+  color: #ffc107;
+  margin-right: 5px;
+}
+
+.sold-count {
+  font-size: 14px;
+  color: #666;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 15px 15px;
+}
+
+.action-button {
+  background: transparent;
+  border: none;
+  color: #666;
+  transition: color 0.2s;
+  padding: 5px;
+}
+
+.action-button:hover {
+  color: #dc3545;
+}
+
+.wishlist-button {
+  border: 1px solid #ddd;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #dc3545;
+}
+
+.wishlist-button:hover {
+  background-color: #fff0f0;
+}
+
+/* Mobile filter */
+@media (max-width: 991.98px) {
+  .filter-sidebar {
+    position: fixed;
+    top: 0;
+    left: -300px;
+    width: 280px;
+    height: 100vh;
+    background-color: white;
+    z-index: 1000;
+    transition: left 0.3s;
+    overflow-y: auto;
+    padding: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  }
+
+  .filter-sidebar.show {
+    left: 0;
+  }
+
+  .mobile-filter-toggle {
+    display: flex;
+    position: fixed;
+    bottom: 70px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background-color: #dc3545;
+    color: white;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+  }
+
+  .filter-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    display: none;
+  }
+
+  .filter-overlay.show {
+    display: block;
+  }
+}
+
+/* Loading spinner */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #dc3545;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* No results message */
+.no-results {
+  text-align: center;
+  padding: 40px 0;
+}
+
+.no-results i {
+  font-size: 48px;
+  color: #ccc;
+  margin-bottom: 15px;
+}
+
+
     </style>
 </head>
 <body ng-app="myApp">
@@ -101,12 +442,37 @@
         <div class="col-3">
            <a href="#"><img src="./Images/logo.png" width="100px" height="100px" alt="Logo"></a>
         </div>
+<!-- bị dính ng-controller không hiển thị sản phẩm -->
         <div class="col-6 d-flex justify-content-center align-items-center">
-          <form class="d-flex w-100" role="search">
-              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-              <button class="btn btn-outline-success" type="submit"><i class="bi bi-search"></i></button>
-          </form>
+          <div class="search-container w-100" ng-controller="SearchController">
+            <div class="input-group">
+              <input 
+                type="text" 
+                class="form-control" 
+                placeholder="Tìm kiếm giày..." 
+                ng-model="searchTerm" 
+                ng-change="getSuggestions()" 
+                ng-focus="showSuggestions = true"
+                autocomplete="off"
+              >
+              <button class="btn btn-outline-danger" type="button" ng-click="search()">
+                <i class="bi bi-search"></i>
+              </button>
+              
+              <!-- Loading spinner -->
+              <div class="search-spinner" ng-if="loading"></div>
+              
+              <!-- Search Suggestions -->
+              <div class="search-suggestions" ng-show="showSuggestions && suggestions.length > 0">
+                <div class="suggestion-item" ng-repeat="suggestion in suggestions" ng-click="selectSuggestion(suggestion)">
+                  <i class="bi bi-search"></i>
+                  <span ng-bind-html="highlightText(suggestion)"></span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+
         <div class="col-3 d-flex justify-content-center align-items-center">
           <a href="#!giohang" class="cartme position-relative">
             <i style="font-size: 24px;" class="bi bi-cart4"></i>
@@ -214,6 +580,9 @@
   <script src="./Controller/hoadongiohangController.js"></script>
   <script src="./Controller/trahangCtrl.js"></script>
   <script src="./Controller/voucherController.js"></script>
+  <script src="./Controller/search-component.js"></script>
+  <script src="./Controller/search-directive.js"></script>
+  <script src="./Controller/search-results.js"></script>
   <script>
     
     const backToTopButton = document.getElementById("backToTop");
