@@ -135,17 +135,17 @@
         </li>
         <li class="nav-item" role="presentation">
           <button class="nav-link" id="tab2-tab" data-bs-toggle="tab" data-bs-target="#tab2" type="button" role="tab">
-            Chờ thanh toán
+            Chờ xác nhận
           </button>
         </li>
         <li class="nav-item" role="presentation">
           <button class="nav-link" id="tab3-tab" data-bs-toggle="tab" data-bs-target="#tab3" type="button" role="tab">
-            Vận chuyển
+            Đã xác nhận
           </button>
         </li>
         <li class="nav-item" role="presentation">
           <button class="nav-link" id="tab4-tab" data-bs-toggle="tab" data-bs-target="#tab4" type="button" role="tab">
-            Chờ giao hàng
+            Đang giao
           </button>
         </li>
         <li class="nav-item" role="presentation">
@@ -168,7 +168,7 @@
       <!-- Nội Dung Tab -->
       <div class="tab-content mt-3 py-3" id="myTabContent">
         <div class="tab-pane fade show active" id="tab1" role="tabpanel">
-          <div ng-repeat="x in dataHoaDon" ng-if="x.trangthai!=5" class="mb-3 bg-light">
+          <div ng-repeat="x in dataHoaDon" class="mb-3 bg-light">
             <div class="row border-bottom">
               <div class="col m-3 text-uppercase text-en fw-semibold">
                 <span>Mã hóa đơn: #{{x.id}}</span> 
@@ -176,9 +176,10 @@
               <div class="col m-3 text-uppercase text-end" style="color: orangered;">
                 <span ng-if="x.trangthai==0">Chờ xác nhận</span>
                 <span ng-if="x.trangthai==1">Đã xác nhận</span>
-                <span ng-if="x.trangthai==2">Đang được giao</span>
-                <span ng-if="x.trangthai==3">Thành công</span>
+                <span ng-if="x.trangthai==2">Đang giao</span>
+                <span ng-if="x.trangthai==3">Hoàn thành</span>
                 <span ng-if="x.trangthai==4">Đã huỷ</span>
+                <span ng-if="x.trangthai==5">Hoàn thành/Trả hàng - Hoàn tiền</span>
               </div>
             </div>
             <div class="row" ng-init="showMore={}">
@@ -263,9 +264,10 @@
               <div class="col m-3 text-uppercase text-end" style="color: orangered;">
                 <span ng-if="x.trangthai==0">Chờ xác nhận</span>
                 <span ng-if="x.trangthai==1">Đã xác nhận</span>
-                <span ng-if="x.trangthai==2">Đang được giao</span>
-                <span ng-if="x.trangthai==3">Thành công</span>
+                <span ng-if="x.trangthai==2">Đang giao</span>
+                <span ng-if="x.trangthai==3">Hoàn thành</span>
                 <span ng-if="x.trangthai==4">Đã huỷ</span>
+                <span ng-if="x.trangthai==5">Hoàn thành/Trả hàng - Hoàn tiền</span>
               </div>
             </div>
             <div class="row" ng-init="showMore={}">
@@ -348,9 +350,10 @@
               <div class="col m-3 text-uppercase text-end" style="color: orangered;">
                 <span ng-if="x.trangthai==0">Chờ xác nhận</span>
                 <span ng-if="x.trangthai==1">Đã xác nhận</span>
-                <span ng-if="x.trangthai==2">Đang được giao</span>
-                <span ng-if="x.trangthai==3">Thành công</span>
+                <span ng-if="x.trangthai==2">Đang giao</span>
+                <span ng-if="x.trangthai==3">Hoàn thành</span>
                 <span ng-if="x.trangthai==4">Đã huỷ</span>
+                <span ng-if="x.trangthai==5">Hoàn thành/Trả hàng - Hoàn tiền</span>
               </div>
             </div>
             <div class="row" ng-init="showMore={}">
@@ -432,9 +435,10 @@
               <div class="col m-3 text-uppercase text-end" style="color: orangered;">
                 <span ng-if="x.trangthai==0">Chờ xác nhận</span>
                 <span ng-if="x.trangthai==1">Đã xác nhận</span>
-                <span ng-if="x.trangthai==2">Đang được giao</span>
-                <span ng-if="x.trangthai==3">Thành công</span>
+                <span ng-if="x.trangthai==2">Đang giao</span>
+                <span ng-if="x.trangthai==3">Hoàn thành</span>
                 <span ng-if="x.trangthai==4">Đã huỷ</span>
+                <span ng-if="x.trangthai==5">Hoàn thành/Trả hàng - Hoàn tiền</span>
               </div>
             </div>
             <div class="row" ng-init="showMore={}">
@@ -508,7 +512,7 @@
           </div>
         </div>
         <div class="tab-pane fade" id="tab5" role="tabpanel">
-          <div ng-repeat="x in dataHoaDon" ng-if="x.trangthai==3" class="mb-3 bg-light">
+          <div ng-repeat="x in dataHoaDon" ng-if="x.trangthai==3||x.trangthai==5" class="mb-3 bg-light">
             <div class="row border-bottom">
               <div class="col m-3 text-uppercase text-en fw-semibold">
                 <span>Mã hóa đơn: #{{x.id}}</span> 
@@ -516,9 +520,10 @@
               <div class="col m-3 text-uppercase text-end" style="color: orangered;">
                 <span ng-if="x.trangthai==0">Chờ xác nhận</span>
                 <span ng-if="x.trangthai==1">Đã xác nhận</span>
-                <span ng-if="x.trangthai==2">Đang được giao</span>
-                <span ng-if="x.trangthai==3">Thành công</span>
+                <span ng-if="x.trangthai==2">Đang giao</span>
+                <span ng-if="x.trangthai==3">Hoàn thành</span>
                 <span ng-if="x.trangthai==4">Đã huỷ</span>
+                <span ng-if="x.trangthai==5">Hoàn thành/Trả hàng - Hoàn tiền</span>
               </div>
             </div>
             <div class="row" ng-init="showMore={}">
@@ -601,9 +606,10 @@
               <div class="col m-3 text-uppercase text-end" style="color: orangered;">
                 <span ng-if="x.trangthai==0">Chờ xác nhận</span>
                 <span ng-if="x.trangthai==1">Đã xác nhận</span>
-                <span ng-if="x.trangthai==2">Đang được giao</span>
-                <span ng-if="x.trangthai==3">Thành công</span>
+                <span ng-if="x.trangthai==2">Đang giao</span>
+                <span ng-if="x.trangthai==3">Hoàn thành</span>
                 <span ng-if="x.trangthai==4">Đã huỷ</span>
+                <span ng-if="x.trangthai==5">Hoàn thành/Trả hàng - Hoàn tiền</span>
               </div>
             </div>
             <div class="row" ng-init="showMore={}">
@@ -698,7 +704,7 @@
           <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
             <h5 class="text-uppercase text-danger">
               <span ng-if="x.trangthai == 0">Chờ xác nhận</span>
-              <span ng-if="x.trangthai == 1">Đã xác nhận</span>
+              <span ng-if="x.trangthai == 1">Đơn hàng đã được xác nhận</span>
               <span ng-if="x.trangthai == 2">Đang được giao</span>
               <span ng-if="x.trangthai == 3">Thành công</span>
               <span ng-if="x.trangthai == 4">Đã huỷ</span>

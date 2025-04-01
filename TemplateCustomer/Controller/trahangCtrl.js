@@ -412,6 +412,7 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
         }
         if (!$scope.description) {
             errorMessages.push("Vui lòng nhập lý do trả hàng.");
+            
         }
         if (!$scope.selectedInfo.provinceId || !$scope.selectedInfo.districtId || !$scope.selectedInfo.wardCode || !$scope.fullAddress) {
             errorMessages.push("Vui lòng nhập đầy đủ địa chỉ hàng.");
@@ -429,6 +430,8 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
         // Nếu có lỗi, hiển thị tất cả bằng Swal.fire
         if (errorMessages.length > 0) {
             Swal.fire("Lỗi!", errorMessages.join("<br>"), "error");
+            console.error(errorMessages.join("<br>"))
+            console.log($scope.description)
             return;
         }
     
@@ -446,21 +449,23 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
     
             // 1. Chuẩn bị dữ liệu trả hàng
             const data = {
+                id: 0,  // ID mới, có thể API tự động tăng, nhưng cần gửi giá trị mặc định
                 tenkhachhang: userInfo?.ten || "Không xác định",
-                idnv: null,
-                idkh: userInfo.id,
-                sotienhoan: $scope.tongtien,
-                lydotrahang: $scope.description,
+                idnv: 0, // Nếu không có nhân viên, gửi 0 thay vì null
+                idkh: userInfo.id || 0, 
+                sotienhoan: $scope.tongtien ?? 0, 
+                lydotrahang: $scope.description || "Không có lý do",
                 trangthai: 0,
-                phuongthuchoantien: $scope.refundMethod,
-                ngaytrahangdukien: $scope.estimatedDeliveryDate,
-                ngaytrahangthucte: null,
-                chuthich: null,
-                hinhthucxuly: null,
-                tennganhang: $scope.selectedBank,
-                sotaikhoan: $scope.cardNumber,
-                tentaikhoan: $scope.accountName
+                phuongthuchoantien: $scope.refundMethod || "Số dư TK Shopee",
+                ngaytrahangdukien: $scope.estimatedDeliveryDate ? new Date($scope.estimatedDeliveryDate).toISOString() : new Date().toISOString(), 
+                ngaytrahangthucte: null,  // Có thể API cần một giá trị hợp lệ hoặc không gửi nếu null
+                chuthich: $scope.chuthich || "Không có chú thích", 
+                hinhthucxuly: $scope.hinhthucxuly || "Không xác định", 
+                tennganhang: $scope.selectedBank || "Không xác định",
+                sotaikhoan: $scope.cardNumber || "0000000000",
+                tentaikhoan: $scope.accountName || "Không xác định"
             };
+            
     
             // 2. Gửi dữ liệu trả hàng
             $http.post("https://localhost:7196/api/Trahangs", data)
