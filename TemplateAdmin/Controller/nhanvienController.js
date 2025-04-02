@@ -51,7 +51,6 @@ app.controller('nhanvienController', function ($scope, $http, $location, $interv
             });
             return; // Dừng lại nếu form có lỗi
         }
-    
         // Xử lý ngày sinh đúng múi giờ
         const date = new Date($scope.add.ngaysinh); // Đảm bảo có giờ
         const formattedDate = date.toISOString(); // Chuyển sang ISO UTC
@@ -66,9 +65,27 @@ app.controller('nhanvienController', function ($scope, $http, $location, $interv
             trangthai: 0,
             password: $scope.add.password,
             role: Number($scope.add.chucvu), // Đảm bảo số nguyên
-            ngaytaotaikhoan: new Date().toISOString() // Lưu thời gian tạo tài khoản
+            ngaytaotaikhoan: new Date(), // Lưu thời gian tạo tài khoản
+            avatar: "giang.img"
         };
-    
+        if ($scope.listNhanVien.find(x => x.sdt === data.sdt)) {
+            Swal.fire({
+                title: "Lỗi",
+                text: "Số điện thoại đã tồn tại!",
+                icon: "error",
+                confirmButtonText: "OK"
+            });
+            return;
+        }
+        if ($scope.listNhanVien.find(x => x.email === data.email)) {
+            Swal.fire({
+                title: "Lỗi",
+                text: "Email đã tồn tại!",
+                icon: "error",
+                confirmButtonText: "OK"
+            });
+            return;
+        }
         Swal.fire({
             title: "Xác nhận",
             text: "Bạn có chắc chắn muốn thêm nhân viên này?",
@@ -80,19 +97,41 @@ app.controller('nhanvienController', function ($scope, $http, $location, $interv
             if (result.isConfirmed) {
                 $http.post("https://localhost:7196/api/Nhanviens", data)
                     .then(function(){
-                        location.reload();
-                                window.scrollTo(1,1);
-            
+                        const dataSendEmail = {
+                            toEmail: data.email,
+                            hoten: data.hovaten,
+                            password: data.password,
+                            role: data.role
+                        };
+                        
+                        $http.post("https://localhost:7196/api/Nhanviens/Send_Account_Creation_Email", null, { params: dataSendEmail })
+                            .then(() => {
+                                
+                                window.scroll(0,0);
+                                location.reload();
                                 Swal.fire({
                                     title: "Thành công!",
-                                    text: "Nhân viên đã được thêm thành công.",
+                                    text: "Nhân viên đã được thêm và email đã gửi.",
                                     icon: "success",
                                     confirmButtonText: "OK"
                                 });
-                                // Reset form đúng cách
-                                $scope.add = angular.copy({});
+                                // Reset form
+                                $scope.add = {};
                                 $scope.AddNhanVienfrm.$setPristine();
                                 $scope.AddNhanVienfrm.$setUntouched();
+                            })
+                            .catch((error) => {
+                                console.error(error);
+                                let errorMessage = error.data?.message || "Lỗi khi gửi email!";
+                                Swal.fire({
+                                    title: "Lỗi",
+                                    text: errorMessage,
+                                    icon: "error",
+                                    confirmButtonText: "OK"
+                                });
+                            });
+                        
+                        
                     })
                     .catch(function(error){
                         console.error("Error:", error);

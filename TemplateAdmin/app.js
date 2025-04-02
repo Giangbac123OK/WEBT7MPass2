@@ -3,7 +3,7 @@ const app = angular.module("myApp", ['ngRoute']);
 app.config(function ($routeProvider) {
     $routeProvider
         .when("/", {
-            templateUrl: "./Views/quanLySanPham.html"
+            templateUrl: "./Views/home.html"
         })
         .when("/dangnhap", {
             templateUrl: "./Views/dangnhap.html",
@@ -30,5 +30,5 @@ app.config(function ($routeProvider) {
             templateUrl: "./Views/nhanvien.html",
             controller: 'nhanvienController'
         })
-        .otherwise("/")
+        .otherwise("/nhanvien")
 });
