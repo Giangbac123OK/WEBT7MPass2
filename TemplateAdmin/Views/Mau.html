@@ -1,0 +1,66 @@
+<div class="container-fluid">
+    <h3 class="mb-4">Quản Lý Màu Sắc</h3>
+
+    <!-- Button để mở modal Thêm Màu -->
+    <button class="btn btn-success mb-3" data-bs-toggle="modal" ng-click="showAddColorModal()">Thêm Màu</button>
+
+    <!-- Modal thêm hoặc cập nhật màu -->
+    <div class="modal fade" id="addColorModal" tabindex="-1" aria-labelledby="addColorModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addColorModalLabel">{{ editingColor ? 'Cập Nhật Màu' : 'Thêm Màu' }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="colorName" class="form-label">Tên Màu</label>
+                        <input type="text" id="colorName" class="form-control" ng-model="newColor.name" placeholder="Nhập tên màu" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="colorCode" class="form-label">Mã Màu</label>
+                        <!-- Trình chọn màu -->
+                        <input type="color" id="colorCode" class="form-control" ng-model="newColor.colorCode" required>
+                    </div>
+
+                    <div class="mb-3 form-check form-switch">
+                        <input type="checkbox" class="form-check-input" ng-model="newColor.status" 
+                               ng-true-value="0" ng-false-value="2">
+                        <label class="form-check-label">Trạng Thái</label>
+                    </div>
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button class="btn btn-success" ng-click="addColor()" ng-if="!editingColor" data-bs-dismiss="modal">Thêm Màu</button>
+                    <button class="btn btn-warning" ng-click="updateColor()" ng-if="editingColor" data-bs-dismiss="modal">Cập Nhật Màu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <!-- Danh sách các màu đã thêm -->
+    <h5 class="mt-4">Danh Sách Màu</h5>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Tên Màu</th>
+                <th>Mã Màu</th>
+                <th>Trạng Thái</th>
+                <th>Hành Động</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="color in colors">
+                <td>{{ color.name }}</td>
+                <td>{{ color.colorCode }}</td>
+                <td>{{ color.status === 0 ? 'Kích hoạt' : 'Không kích hoạt' }}</td>
+                <td>
+                    <button class="btn btn-primary btn-sm" ng-click="editColor(color)" data-bs-toggle="modal" data-bs-target="#addColorModal">Sửa màu</button>
+                    <button class="btn btn-danger btn-sm" ng-if="color.isUsedInProduct === false" ng-click="deleteColor(color)" >Xóa màu</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

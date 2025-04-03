@@ -30,5 +30,25 @@ app.config(function ($routeProvider) {
             templateUrl: "./Views/nhanvien.html",
             controller: 'nhanvienController'
         })
-        .otherwise("/nhanvien")
+        .when("/Size", {
+            templateUrl: "./Views/Size.html",
+            controller: 'QuanLyThuocTinhController'
+        })
+        .when("/Mau", {
+            templateUrl: "./Views/Mau.html",
+            controller: 'QuanLyThuocTinhController'
+        })
+        .when("/ChatLieu", {
+            templateUrl: "./Views/ChatLieu.html",
+            controller: 'QuanLyThuocTinhController'
+        })
+        .when("/addSanPham", {
+            templateUrl: "./Views/addSanPham.html",
+            controller: "QuanLySanPhamController"
+        })
+        .when("/sanpham", {
+            templateUrl: "./Views/quanLySanPham.html",
+            controller: "QuanLySanPhamController"
+        })
+        .otherwise("/")
 });
