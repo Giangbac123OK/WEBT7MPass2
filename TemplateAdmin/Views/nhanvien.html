@@ -11,8 +11,8 @@
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ThemNVModal">
                 <i class="bi bi-plus"></i> Thêm nhân viên mới
             </button>
-            <button type="button" class="btn btn-success">
-                <i class="bi bi-file-earmark-excel-fill"></i> Xuất file Excel
+            <button type="button" class="btn btn-warning">
+                <i class="bi bi-arrow-counterclockwise"></i> Hoàn tác
             </button>
             <button type="button" class="btn btn-danger">
                 <i class="bi bi-trash3-fill"></i> Xoá tất cả
@@ -62,7 +62,7 @@
     </div>
 </div>
 
-<!-- Modal Thêm Nhân Viên -->
+<!-- Modal EDIT Nhân Viên -->
 <div class="modal fade" id="ThemNVModal" tabindex="-1" aria-labelledby="ThemNVModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -174,6 +174,121 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                 <button type="button" class="btn btn-primary" ng-click="btnAdd()">Lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="SuaNVModal" tabindex="-1" aria-labelledby="SuaNVModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="SuaNVModalLabel">Sửa nhân viên</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="EditNhanVienfrm" name="EditNhanVienfrm" ng-submit="btnEdit()" novalidate>
+                    <div class="mb-3 row">
+                        <div class="col-md">
+                            <label class="form-label">Họ và Tên</label>
+                            <input type="text" name="hovaten" ng-model="edit.hovaten" ng-pattern="/^[A-Za-zÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƠĂẮẰẶẲẴẸẺẼỀẾỆỂỄỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰỲỴÝỶỸ\s]+$/" required maxlength="50" class="form-control">
+                            <span class="text-danger" ng-if="EditNhanVienfrm.hovaten.$touched && EditNhanVienfrm.hovaten.$error.maxlength">
+                                Vui lòng nhập họ và tên tối đa 50 ký tự.
+                            </span>
+                            <span class="text-danger" ng-if="EditNhanVienfrm.hovaten.$touched && EditNhanVienfrm.hovaten.$error.required">
+                                Vui lòng nhập họ và tên.
+                            </span>
+                            <span class="text-danger" ng-if="EditNhanVienfrm.hovaten.$touched && EditNhanVienfrm.hovaten.$error.pattern">
+                                Vui lòng nhập họ và tên không hợp lệ.
+                            </span>
+                        </div>
+                        <div class="col-md">
+                            <label class="form-label">Ngày sinh</label>
+                            <input type="date" name="ngaysinh" ng-model="edit.ngaysinh" required 
+                                   class="form-control" max="{{ getMaxYear() }}">
+                            
+                            <span class="text-danger" ng-show="EditNhanVienfrm.ngaysinh.$touched && EditNhanVienfrm.ngaysinh.$error.required">
+                                Vui lòng chọn ngày sinh.
+                            </span>
+                            <span class="text-danger" ng-show="EditNhanVienfrm.ngaysinh.$touched && EditNhanVienfrm.ngaysinh.$error.max">
+                                Nhân viên phải từ 18 tuổi trở lên.
+                            </span>
+                        </div>
+                        
+                    </div>
+                
+                    <div class="mb-3 row">
+                        <div class="col-md">
+                            <label class="form-label">Giới tính</label>
+                            <select class="form-select" name="gioitinh" ng-model="edit.gioitinh" required>
+                                <option value="" disabled selected>Chọn giới tính</option>
+                                <option value="true">Nam</option>
+                                <option value="false">Nữ</option>
+                            </select>
+                            <span class="text-danger" ng-show="EditNhanVienfrm.gioitinh.$touched && EditNhanVienfrm.gioitinh.$error.required">
+                                Vui lòng chọn giới tính.
+                            </span>
+                        </div>
+                        <div class="col-md">
+                            <label class="form-label">Số điện thoại</label>
+                            <input type="tel" name="sdt" ng-model="edit.sdt" required ng-pattern="/^0\d{9}$/" class="form-control">
+                            <span class="text-danger" ng-show="EditNhanVienfrm.sdt.$touched && EditNhanVienfrm.sdt.$error.pattern">
+                                Số điện thoại phải có 10 chữ số, bắt đầu bằng 0.
+                            </span>
+                            <span class="text-danger" ng-show="EditNhanVienfrm.sdt.$touched && EditNhanVienfrm.sdt.$error.required">
+                                Vui lòng nhập số điện thoại.
+                            </span>
+                        </div>
+                    </div>
+                
+                    <div class="mb-3 row">
+                        <div class="col-md">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" ng-model="edit.email" required class="form-control">
+                            <span class="text-danger" ng-show="EditNhanVienfrm.email.$touched && EditNhanVienfrm.email.$error.email">
+                                Vui lòng nhập email hợp lệ.
+                            </span>
+                            <span class="text-danger" ng-show="EditNhanVienfrm.email.$touched && EditNhanVienfrm.email.$error.required">
+                                Vui lòng nhập email.
+                            </span>
+                        </div>
+                        <div class="col-md">
+                            <label class="form-label">Địa chỉ</label>
+                            <input type="text" name="diachi" ng-model="edit.diachi" required class="form-control">
+                            <span class="text-danger" ng-show="EditNhanVienfrm.diachi.$touched && EditNhanVienfrm.diachi.$error.required">
+                                Vui lòng nhập địa chỉ.
+                            </span>
+                        </div>
+                    </div>
+                
+                    <div class="mb-3 row">
+                        <div class="col-md">
+                            <label class="form-label">Chức vụ</label>
+                            <select class="form-select" name="chucvu" ng-model="edit.chucvu" required>
+                                <option value="" disabled selected>Chọn chức vụ</option>
+                                <option value="1">Quản lý</option>
+                                <option value="2">Nhân viên</option>
+                            </select>
+                            <span class="text-danger" ng-show="EditNhanVienfrm.chucvu.$touched && EditNhanVienfrm.chucvu.$error.required">
+                                Vui lòng chọn chức vụ.
+                            </span>
+                        </div>
+                        <div class="col-md">
+                            <label class="form-label">Mật khẩu</label>
+                            <input type="password" name="password" ng-model="edit.password" required maxlength="50" class="form-control">
+                            <span class="text-danger" ng-show="EditNhanVienfrm.password.$touched && EditNhanVienfrm.password.$error.maxlength">
+                                Vui lòng nhập mật khẩu tối đa 50 ký tự.
+                            </span>
+                            <span class="text-danger" ng-show="EditNhanVienfrm.password.$touched && EditNhanVienfrm.password.$error.required">
+                                Vui lòng nhập mật khẩu.
+                            </span>
+                        </div>
+                    </div>
+                </form>
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" ng-click="btnEdit()">Lưu</button>
             </div>
         </div>
     </div>
