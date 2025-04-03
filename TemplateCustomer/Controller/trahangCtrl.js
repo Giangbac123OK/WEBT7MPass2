@@ -177,37 +177,6 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
         $scope.calculateEstimatedDelivery();
     };
 
-    // Tính ngày trả hàng dự kiến
-    $scope.calculateEstimatedDelivery = function () {
-        if (!$scope.selectedInfo.provinceId || !$scope.selectedInfo.districtId || !$scope.selectedInfo.wardCode) {
-            console.error("Vui lòng chọn đầy đủ địa chỉ");
-            return;
-        }
-
-        let requestData = {
-            from_district_id: 1444, // Quận nơi gửi hàng
-            from_ward_code: "20308", // Phường nơi gửi hàng
-            to_district_id: $scope.selectedInfo.districtId,
-            to_ward_code: $scope.selectedInfo.wardCode,
-            service_id: 53320
-        };
-
-        $http.post("https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/leadtime", requestData, {
-            headers: {
-                "Token": $scope.token,
-                "ShopId": $scope.shopId,
-                "Content-Type": "application/json"
-            }
-        })
-            .then(response => {
-                $scope.estimatedDeliveryDate = new Date(response.data.data.leadtime * 1000);
-                console.log("Dự kiến ngày giao:", $scope.estimatedDeliveryDate);
-            })
-            .catch(error => {
-                console.error("Lỗi tính ngày giao:", error);
-                $scope.errorMessage = "Không thể tính ngày giao dự kiến.";
-            });
-    };
 
     // ========== Image Handling Functions ==========
     // Mở file picker khi click vào box "Thêm hình ảnh"
@@ -414,9 +383,6 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
             errorMessages.push("Vui lòng nhập lý do trả hàng.");
             
         }
-        if (!$scope.selectedInfo.provinceId || !$scope.selectedInfo.districtId || !$scope.selectedInfo.wardCode || !$scope.fullAddress) {
-            errorMessages.push("Vui lòng nhập đầy đủ địa chỉ hàng.");
-        }
         if (!$scope.refundMethod) {
             errorMessages.push("Vui lòng chọn phương thức hoàn tiền.");
         }
@@ -455,7 +421,7 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
                 lydotrahang: $scope.returnReason || "Không có lý do",
                 trangthai: 0,
                 phuongthuchoantien: $scope.refundMethod || "Số dư TK Shopee",
-                ngaytrahangdukien: $scope.estimatedDeliveryDate ? new Date($scope.estimatedDeliveryDate).toISOString() : new Date().toISOString(), 
+                ngaytrahangdukien: new Date().toISOString(), 
                 ngaytrahangthucte: null,  // Có thể API cần một giá trị hợp lệ hoặc không gửi nếu null
                 chuthich: $scope.mota || "Không có chú thích", 
                 hinhthucxuly: $scope.hinhthucxuly || "Không xác định", 
@@ -505,6 +471,23 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
                     return $http.put(`https://localhost:7196/api/Trahangs/UpdateTrangThaiHd/${$scope.idhd}`);
                 })
                 .then(() => {
+                    $http({
+                        method: 'POST',
+                        url: 'https://dev-online-gateway.ghn.vn/shiip/public-api/v2/switch-status/return',
+                        headers: {
+                            'token': '7b4f1e5c-0700-11f0-94b6-be01e07a48b5',
+                            'shop_id': '3846066',
+                            'Content-Type': 'application/json'
+                        },
+                        data: {
+                            "order_codes": [$scope.idhd]
+                        }
+                    }).then(function(response) {
+                        console.log("Response:", response.data);
+                    }, function(error) {
+                        console.error("Error:", error);
+                    });
+                    
                     console.log("Xử lý trả hàng hoàn tất!");
                     Swal.fire("Đã gửi!", "Yêu cầu trả hàng của bạn đã được gửi thành công.", "success")
                         .then(() => $location.path("/donhangcuaban"));
