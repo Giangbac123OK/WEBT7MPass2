@@ -50,5 +50,17 @@ app.config(function ($routeProvider) {
             templateUrl: "./Views/quanLySanPham.html",
             controller: "QuanLySanPhamController"
         })
+        .when("/Rank", {
+            templateUrl: "./Views/Rank.html",
+            
+        })
+        .when("/thongtinAdmin", {
+            templateUrl: "./Views/ThongtinAdmin.html",
+            
+        })
+        .when("/Vocher", {
+            templateUrl: "./Views/VocherAdmin.html",
+            
+        })
         .otherwise("/")
 });

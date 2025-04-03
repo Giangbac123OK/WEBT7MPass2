@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Voucher</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Bootstrap Datepicker -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+    <style>
+        .badge-bronze {
+            background-color: #cd7f32;
+            color: white;
+        }
+        .badge-silver {
+            background-color: #c0c0c0;
+            color: white;
+        }
+        .badge-gold {
+            background-color: #ffd700;
+            color: black;
+        }
+        .badge-platinum {
+            background-color: #e5e4e2;
+            color: black;
+        }
+        .badge-diamond {
+            background-color: #b9f2ff;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex align-items-center">
+                <a href="index.html" class="btn btn-outline-secondary me-2">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <h1 class="mb-0">Quản lý Voucher</h1>
+            </div>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addVoucherModal">
+                <i class="bi bi-plus-lg me-1"></i> Thêm Voucher mới
+            </button>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Danh sách Voucher</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-4 mb-2">
+                        <select class="form-select" id="statusFilter">
+                            <option value="all" selected>Tất cả trạng thái</option>
+                            <option value="0">Đang chuẩn bị</option>
+                            <option value="1">Sẵn sàng</option>
+                            <option value="2">Đang hoạt động</option>
+                            <option value="3">Đã sử dụng</option>
+                            <option value="4">Đã xóa</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <select class="form-select" id="typeFilter">
+                            <option value="all" selected>Tất cả loại</option>
+                            <option value="0">Phần trăm</option>
+                            <option value="1">Số tiền cố định</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <select class="form-select" id="rankFilter">
+                            <option value="all" selected>Tất cả Rank</option>
+                            <option value="Bronze">Bronze</option>
+                            <option value="Silver">Silver</option>
+                            <option value="Gold">Gold</option>
+                            <option value="Platinum">Platinum</option>
+                            <option value="Diamond">Diamond</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Mô tả</th>
+                                <th>Giá trị</th>
+                                <th>Số lượng</th>
+                                <th>Thời gian</th>
+                                <th>Trạng thái</th>
+                                <th>Áp dụng cho Rank</th>
+                                <th class="text-end">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="voucherTableBody">
+                            <!-- Dữ liệu sẽ được thêm vào bằng JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer d-flex justify-content-between align-items-center">
+                <div>Hiển thị <span id="totalVouchers">0</span> voucher</div>
+                <div>
+                    <button class="btn btn-sm btn-outline-secondary me-2" id="prevPage" disabled>Trước</button>
+                    <button class="btn btn-sm btn-outline-secondary" id="nextPage">Sau</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Thêm Voucher -->
+    <div class="modal fade" id="addVoucherModal" tabindex="-1" aria-labelledby="addVoucherModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addVoucherModalLabel">Thêm Voucher mới</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addVoucherForm">
+                        <div class="mb-3">
+                            <label for="mota" class="form-label">Mô tả</label>
+                            <input type="text" class="form-control" id="mota">
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="donvi" class="form-label">Đơn vị <span class="text-danger">*</span></label>
+                                <select class="form-select" id="donvi" required>
+                                    <option value="0">Phần trăm (%)</option>
+                                    <option value="1">Số tiền cố định (VNĐ)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="giatri" class="form-label">Giá trị <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="giatri" required min="0">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="soluong" class="form-label">Số lượng <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="soluong" required min="1">
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="ngaybatdau" class="form-label">Ngày bắt đầu <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control datepicker" id="ngaybatdau" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="ngayketthuc" class="form-label">Ngày kết thúc <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control datepicker" id="ngayketthuc" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="trangthai" class="form-label">Trạng thái</label>
+                            <select class="form-select" id="trangthai">
+                                <option value="0">Đang chuẩn bị</option>
+                                <option value="1">Sẵn sàng</option>
+                                <option value="2">Đang hoạt động</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Áp dụng cho Rank <span class="text-danger">*</span></label>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input rank-checkbox" type="checkbox" value="Bronze" id="rankBronze">
+                                        <label class="form-check-label" for="rankBronze">
+                                            Bronze
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input rank-checkbox" type="checkbox" value="Silver" id="rankSilver">
+                                        <label class="form-check-label" for="rankSilver">
+                                            Silver
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input rank-checkbox" type="checkbox" value="Gold" id="rankGold">
+                                        <label class="form-check-label" for="rankGold">
+                                            Gold
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input rank-checkbox" type="checkbox" value="Platinum" id="rankPlatinum">
+                                        <label class="form-check-label" for="rankPlatinum">
+                                            Platinum
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input rank-checkbox" type="checkbox" value="Diamond" id="rankDiamond">
+                                        <label class="form-check-label" for="rankDiamond">
+                                            Diamond
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary" id="saveVoucherBtn">Lưu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Sửa Voucher -->
+    <div class="modal fade" id="editVoucherModal" tabindex="-1" aria-labelledby="editVoucherModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editVoucherModalLabel">Sửa Voucher</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editVoucherForm">
+                        <input type="hidden" id="editVoucherId">
+                        <div class="mb-3">
+                            <label for="editMota" class="form-label">Mô tả</label>
+                            <input type="text" class="form-control" id="editMota">
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="editDonvi" class="form-label">Đơn vị <span class="text-danger">*</span></label>
+                                <select class="form-select" id="editDonvi" required>
+                                    <option value="0">Phần trăm (%)</option>
+                                    <option value="1">Số tiền cố định (VNĐ)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="editGiatri" class="form-label">Giá trị <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="editGiatri" required min="0">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editSoluong" class="form-label">Số lượng <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="editSoluong" required min="1">
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="editNgaybatdau" class="form-label">Ngày bắt đầu <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control datepicker" id="editNgaybatdau" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="editNgayketthuc" class="form-label">Ngày kết thúc <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control datepicker" id="editNgayketthuc" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editTrangthai" class="form-label">Trạng thái</label>
+                            <select class="form-select" id="editTrangthai">
+                                <option value="0">Đang chuẩn bị</option>
+                                <option value="1">Sẵn sàng</option>
+                                <option value="2">Đang hoạt động</option>
+                                <option value="3">Đã sử dụng</option>
+                                <option value="4">Đã xóa</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Áp dụng cho Rank <span class="text-danger">*</span></label>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input edit-rank-checkbox" type="checkbox" value="Bronze" id="editRankBronze">
+                                        <label class="form-check-label" for="editRankBronze">
+                                            Bronze
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input edit-rank-checkbox" type="checkbox" value="Silver" id="editRankSilver">
+                                        <label class="form-check-label" for="editRankSilver">
+                                            Silver
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input edit-rank-checkbox" type="checkbox" value="Gold" id="editRankGold">
+                                        <label class="form-check-label" for="editRankGold">
+                                            Gold
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input edit-rank-checkbox" type="checkbox" value="Platinum" id="editRankPlatinum">
+                                        <label class="form-check-label" for="editRankPlatinum">
+                                            Platinum
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input edit-rank-checkbox" type="checkbox" value="Diamond" id="editRankDiamond">
+                                        <label class="form-check-label" for="editRankDiamond">
+                                            Diamond
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary" id="updateVoucherBtn">Cập nhật</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Xác nhận xóa -->
+    <div class="modal fade" id="deleteVoucherModal" tabindex="-1" aria-labelledby="deleteVoucherModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteVoucherModalLabel">Xác nhận xóa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Bạn có chắc chắn muốn xóa voucher này không?</p>
+                    <input type="hidden" id="deleteVoucherId">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Xóa</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap Datepicker -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.vi.min.js"></script>
+    
+    <script>
+        // Dữ liệu mẫu - thay thế bằng API call thực tế
+        const vouchers = [
+            {
+                id: 1,
+                mota: "Giảm giá mùa hè",
+                donvi: 0, // 0: percentage, 1: fixed amount
+                soluong: 100,
+                giatri: 10, // 10% or 10,000 VND depending on donvi
+                ngaybatdau: "2025-06-01",
+                ngayketthuc: "2025-06-30",
+                trangthai: 1, // 0: pending, 1: ready, 2: active, 3: used, 4: deleted
+                ranks: ["Silver", "Gold", "Platinum"]
+            },
+            {
+                id: 2,
+                mota: "Khuyến mãi tháng 7",
+                donvi: 0,
+                soluong: 50,
+                giatri: 15,
+                ngaybatdau: "2025-07-01",
+                ngayketthuc: "2025-07-15",
+                trangthai: 0,
+                ranks: ["Gold", "Platinum"]
+            },
+            {
+                id: 3,
+                mota: "Giảm giá cố định",
+                donvi: 1,
+                soluong: 30,
+                giatri: 50000,
+                ngaybatdau: "2025-05-15",
+                ngayketthuc: "2025-05-30",
+                trangthai: 2,
+                ranks: ["Platinum", "Diamond"]
+            },
+            {
+                id: 4,
+                mota: "Ưu đãi thành viên mới",
+                donvi: 0,
+                soluong: 200,
+                giatri: 5,
+                ngaybatdau: "2025-04-01",
+                ngayketthuc: "2025-12-31",
+                trangthai: 2,
+                ranks: ["Bronze", "Silver"]
+            },
+            {
+                id: 5,
+                mota: "Khuyến mãi đặc biệt",
+                donvi: 1,
+                soluong: 10,
+                giatri: 100000,
+                ngaybatdau: "2025-08-01",
+                ngayketthuc: "2025-08-05",
+                trangthai: 0,
+                ranks: ["Diamond"]
+            }
+        ];
+
+        // Format tiền tệ VND
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+        }
+
+        // Format ngày
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return new Intl.DateTimeFormat('vi-VN').format(date);
+        }
+
+        // Lấy text giảm giá
+        function getDiscountText(donvi, giatri) {
+            return donvi == 0 ? `${giatri}%` : formatCurrency(giatri);
+        }
+
+        // Lấy trạng thái text
+        function getStatusText(status) {
+            switch(parseInt(status)) {
+                case 0: return "Đang chuẩn bị";
+                case 1: return "Sẵn sàng";
+                case 2: return "Đang hoạt động";
+                case 3: return "Đã sử dụng";
+                case 4: return "Đã xóa";
+                default: return "Không xác định";
+            }
+        }
+
+        // Lấy badge class cho trạng thái
+        function getStatusBadgeClass(status) {
+            switch(parseInt(status)) {
+                case 0: return "bg-secondary";
+                case 1: return "bg-info";
+                case 2: return "bg-success";
+                case 3: return "bg-warning";
+                case 4: return "bg-danger";
+                default: return "bg-secondary";
+            }
+        }
+
+        // Lấy badge class cho rank
+        function getRankBadgeClass(rankName) {
+            switch(rankName) {
+                case "Bronze": return "badge-bronze";
+                case "Silver": return "badge-silver";
+                case "Gold": return "badge-gold";
+                case "Platinum": return "badge-platinum";
+                case "Diamond": return "badge-diamond";
+                default: return "bg-secondary";
+            }
+        }
+
+        // Hiển thị danh sách voucher
+        function displayVouchers(vouchersData) {
+            const tableBody = document.getElementById('voucherTableBody');
+            tableBody.innerHTML = '';
+            
+            vouchersData.forEach(voucher => {
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td>${voucher.id}</td>
+                    <td>${voucher.mota || '-'}</td>
+                    <td>${getDiscountText(voucher.donvi, voucher.giatri)}</td>
+                    <td>${voucher.soluong}</td>
+                    <td>
+                        <div class="small">
+                            <div><i class="bi bi-calendar-event me-1"></i> Từ: ${formatDate(voucher.ngaybatdau)}</div>
+                            <div><i class="bi bi-calendar-event me-1"></i> Đến: ${formatDate(voucher.ngayketthuc)}</div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge ${getStatusBadgeClass(voucher.trangthai)}">
+                            ${getStatusText(voucher.trangthai)}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="d-flex flex-wrap gap-1">
+                            ${voucher.ranks.map(rank => `
+                                <span class="badge ${getRankBadgeClass(rank)}">${rank}</span>
+                            `).join('')}
+                        </div>
+                    </td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-primary me-1 edit-btn" data-id="${voucher.id}">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${voucher.id}">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+            
+            document.getElementById('totalVouchers').textContent = vouchersData.length;
+            
+            // Thêm event listeners cho các nút
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const voucherId = this.getAttribute('data-id');
+                    openEditModal(voucherId);
+                });
+            });
+            
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const voucherId = this.getAttribute('data-id');
+                    openDeleteModal(voucherId);
+                });
+            });
+        }
+
+        // Mở modal sửa
+        function openEditModal(voucherId) {
+            const voucher = vouchers.find(v => v.id == voucherId);
+            if (voucher) {
+                document.getElementById('editVoucherId').value = voucher.id;
+                document.getElementById('editMota').value = voucher.mota || '';
+                document.getElementById('editDonvi').value = voucher.donvi;
+                document.getElementById('editGiatri').value = voucher.giatri;
+                document.getElementById('editSoluong').value = voucher.soluong;
+                document.getElementById('editNgaybatdau').value = formatDateForInput(voucher.ngaybatdau);
+                document.getElementById('editNgayketthuc').value = formatDateForInput(voucher.ngayketthuc);
+                document.getElementById('editTrangthai').value = voucher.trangthai;
+                
+                // Reset checkboxes
+                document.querySelectorAll('.edit-rank-checkbox').forEach(checkbox => {
+                    checkbox.checked = voucher.ranks.includes(checkbox.value);
+                });
+                
+                const editModal = new bootstrap.Modal(document.getElementById('editVoucherModal'));
+                editModal.show();
+            }
+        }
+
+        // Format date for input
+        function formatDateForInput(dateString) {
+            const date = new Date(dateString);
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+        // Mở modal xóa
+        function openDeleteModal(voucherId) {
+            document.getElementById('deleteVoucherId').value = voucherId;
+            const deleteModal = new bootstrap.Modal(document.getElementById('deleteVoucherModal'));
+            deleteModal.show();
+        }
+
+        // Lấy ranks đã chọn
+        function getSelectedRanks(selector) {
+            const selectedRanks = [];
+            document.querySelectorAll(selector).forEach(checkbox => {
+                if (checkbox.checked) {
+                    selectedRanks.push(checkbox.value);
+                }
+            });
+            return selectedRanks;
+        }
+
+        // Khi trang đã tải xong
+        document.addEventListener('DOMContentLoaded', function() {
+            // Khởi tạo datepicker
+            $('.datepicker').datepicker({
+                format: 'dd/mm/yyyy',
+                language: 'vi',
+                autoclose: true,
+                todayHighlight: true
+            });
+            
+            // Hiển thị danh sách voucher ban đầu
+            displayVouchers(vouchers);
+            
+            // Xử lý lọc theo trạng thái
+            document.getElementById('statusFilter').addEventListener('change', filterVouchers);
+            document.getElementById('typeFilter').addEventListener('change', filterVouchers);
+            document.getElementById('rankFilter').addEventListener('change', filterVouchers);
+            
+            function filterVouchers() {
+                const statusValue = document.getElementById('statusFilter').value;
+                const typeValue = document.getElementById('typeFilter').value;
+                const rankValue = document.getElementById('rankFilter').value;
+                
+                let filteredVouchers = vouchers;
+                
+                if (statusValue !== 'all') {
+                    filteredVouchers = filteredVouchers.filter(voucher => voucher.trangthai == statusValue);
+                }
+                
+                if (typeValue !== 'all') {
+                    filteredVouchers = filteredVouchers.filter(voucher => voucher.donvi == typeValue);
+                }
+                
+                if (rankValue !== 'all') {
+                    filteredVouchers = filteredVouchers.filter(voucher => voucher.ranks.includes(rankValue));
+                }
+                
+                displayVouchers(filteredVouchers);
+            }
+            
+            // Xử lý thêm voucher mới
+            document.getElementById('saveVoucherBtn').addEventListener('click', function() {
+                const mota = document.getElementById('mota').value;
+                const donvi = document.getElementById('donvi').value;
+                const giatri = document.getElementById('giatri').value;
+                const soluong = document.getElementById('soluong').value;
+                const ngaybatdau = document.getElementById('ngaybatdau').value;
+                const ngayketthuc = document.getElementById('ngayketthuc').value;
+                const trangthai = document.getElementById('trangthai').value;
+                const selectedRanks = getSelectedRanks('.rank-checkbox');
+                
+                if (!giatri || !soluong || !ngaybatdau || !ngayketthuc || selectedRanks.length === 0) {
+                    alert('Vui lòng điền đầy đủ thông tin bắt buộc và chọn ít nhất một Rank');
+                    return;
+                }
+                
+                // Chuyển đổi định dạng ngày
+                const parseDateFromInput = (dateString) => {
+                    const parts = dateString.split('/');
+                    return `${parts[2]}-${parts[1]}-${parts[0]}`;
+                };
+                
+                // Tạo đối tượng voucher mới
+                const newVoucher = {
+                    id: vouchers.length + 1, // Trong thực tế, ID sẽ được tạo bởi server
+                    mota: mota,
+                    donvi: parseInt(donvi),
+                    giatri: parseFloat(giatri),
+                    soluong: parseInt(soluong),
+                    ngaybatdau: parseDateFromInput(ngaybatdau),
+                    ngayketthuc: parseDateFromInput(ngayketthuc),
+                    trangthai: parseInt(trangthai),
+                    ranks: selectedRanks
+                };
+                
+                // API call để thêm voucher mới
+                // fetch('/api/vouchers', {
+                //     method: 'POST',
+                //     headers: {
+                //         'Content-Type': 'application/json',
+                //     },
+                //     body: JSON.stringify(newVoucher),
+                // })
+                // .then(response => response.json())
+                // .then(data => {
+                //     vouchers.push(data);
+                //     displayVouchers(vouchers);
+                //     const modal = bootstrap.Modal.getInstance(document.getElementById('addVoucherModal'));
+                //     modal.hide();
+                //     document.getElementById('addVoucherForm').reset();
+                // })
+                // .catch(error => {
+                //     console.error('Error:', error);
+                //     alert('Đã xảy ra lỗi khi thêm voucher mới');
+                // });
+                
+                // Mô phỏng thêm voucher mới (xóa khi triển khai API thực tế)
+                vouchers.push(newVoucher);
+                displayVouchers(vouchers);
+                const modal = bootstrap.Modal.getInstance(document.getElementById('addVoucherModal'));
+                modal.hide();
+                document.getElementById('addVoucherForm').reset();
+            });
+            
+            // Xử lý cập nhật voucher
+            document.getElementById('updateVoucherBtn').addEventListener('click', function() {
+                const voucherId = document.getElementById('editVoucherId').value;
+                const mota = document.getElementById('editMota').value;
+                const donvi = document.getElementById('editDonvi').value;
+                const giatri = document.getElementById('editGiatri').value;
+                const soluong = document.getElementById('editSoluong').value;
+                const ngaybatdau = document.getElementById('editNgaybatdau').value;
+                const ngayketthuc = document.getElementById('editNgayketthuc').value;
+                const trangthai = document.getElementById('editTrangthai').value;
+                const selectedRanks = getSelectedRanks('.edit-rank-checkbox');
+                
+                if (!giatri || !soluong || !ngaybatdau || !ngayketthuc || selectedRanks.length === 0) {
+                    alert('Vui lòng điền đầy đủ thông tin bắt buộc và chọn ít nhất một Rank');
+                    return;
+                }
+                
+                // Chuyển đổi định dạng ngày
+                const parseDateFromInput = (dateString) => {
+                    const parts = dateString.split('/');
+                    return `${parts[2]}-${parts[1]}-${parts[0]}`;
+                };
+                
+                // Tạo đối tượng voucher cập nhật
+                const updatedVoucher = {
+                    id: parseInt(voucherId),
+                    mota: mota,
+                    donvi: parseInt(donvi),
+                    giatri: parseFloat(giatri),
+                    soluong: parseInt(soluong),
+                    ngaybatdau: parseDateFromInput(ngaybatdau),
+                    ngayketthuc: parseDateFromInput(ngayketthuc),
+                    trangthai: parseInt(trangthai),
+                    ranks: selectedRanks
+                };
+                
+                // API call để cập nhật voucher
+                // fetch(`/api/vouchers/${voucherId}`, {
+                //     method: 'PUT',
+                //     headers: {
+                //         'Content-Type': 'application/json',
+                //     },
+                //     body: JSON.stringify(updatedVoucher),
+                // })
+                // .then(response => response.json())
+                // .then(data => {
+                //     const index = vouchers.findIndex(v => v.id == voucherId);
+                //     if (index !== -1) {
+                //         vouchers[index] = { ...vouchers[index], ...updatedVoucher };
+                //     }
+                //     displayVouchers(vouchers);
+                //     const modal = bootstrap.Modal.getInstance(document.getElementById('editVoucherModal'));
+                //     modal.hide();
+                // })
+                // .catch(error => {
+                //     console.error('Error:', error);
+                //     alert('Đã xảy ra lỗi khi cập nhật voucher');
+                // });
+                
+                // Mô phỏng cập nhật voucher (xóa khi triển khai API thực tế)
+                const index = vouchers.findIndex(v => v.id == voucherId);
+                if (index !== -1) {
+                    vouchers[index] = updatedVoucher;
+                }
+                displayVouchers(vouchers);
+                const modal = bootstrap.Modal.getInstance(document.getElementById('editVoucherModal'));
+                modal.hide();
+            });
+            
+            // Xử lý xóa voucher
+            document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+                const voucherId = document.getElementById('deleteVoucherId').value;
+                
+                // API call để xóa voucher
+                // fetch(`/api/vouchers/${voucherId}`, {
+                //     method: 'DELETE',
+                // })
+                // .then(response => {
+                //     if (response.ok) {
+                //         const index = vouchers.findIndex(v => v.id == voucherId);
+                //         if (index !== -1) {
+                //             vouchers.splice(index, 1);
+                //         }
+                //         displayVouchers(vouchers);
+                //         const modal = bootstrap.Modal.getInstance(document.getElementById('deleteVoucherModal'));
+                //         modal.hide();
+                //     } else {
+                //         throw new Error('Không thể xóa voucher');
+                //     }
+                // })
+                // .catch(error => {
+                //     console.error('Error:', error);
+                //     alert('Đã xảy ra lỗi khi xóa voucher');
+                // });
+                
+                // Mô phỏng xóa voucher (xóa khi triển khai API thực tế)
+                const index = vouchers.findIndex(v => v.id == voucherId);
+                if (index !== -1) {
+                    // Thay vì xóa hoàn toàn, chỉ đánh dấu là đã xóa
+                    vouchers[index].trangthai = 4;
+                }
+                displayVouchers(vouchers);
+                const modal = bootstrap.Modal.getInstance(document.getElementById('deleteVoucherModal'));
+                modal.hide();
+            });
+        });
+    </script>
+</body>
+</html>
