@@ -1,59 +1,95 @@
 <style>
-    .btn-add {
-      background-color: #28a745;
-      color: #fff;
-    }
-    .btn-delete {
-      background-color: #dc3545;
-      color: #fff;
-    }
-    .btn-excel {
-      background-color: #28a745;
-      color: #fff;
-    }
-    .btn-delete:hover, .btn-add:hover, .btn-excel:hover {
-      opacity: 0.8;
-    }
-    .badge-success {
-      background-color: #28a745;
-      color: white;
-    }
-    .element-button .btn {
-      margin-right: 2px;
-    }
-    .form-switch {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-  </style>
-  
+  .btn-add {
+    background-color: #28a745;
+    color: #fff;
+  }
 
-  <div class="container mt-5">
-    <h3 class="mb-4">Danh Sách Sản Phẩm</h3>
-    
-      
-      <div class="border rounded shadow-sm p-3 bg-white">
-        <div class="row element-button mb-3 g-2">
-            <div class="col-auto">
-              <a class="btn btn-add btn-sm" href="#" title="Thêm"><i class="fas fa-plus"></i> Tạo mới sản phẩm</a>
-            </div>
-            <div class="col-auto">
-              <a class="btn btn-delete btn-sm" href="#" title="Tải từ file"><i class="fas fa-file-upload"></i> Tải từ file</a>
-            </div>
-            <div class="col-auto">
-              <a class="btn btn-delete btn-sm" href="#" title="In"><i class="fas fa-print"></i> In dữ liệu</a>
-            </div>
-            <div class="col-auto">
-              <a class="btn btn-excel btn-sm" href="#" title="Xuất Excel"><i class="fas fa-file-excel"></i> Xuất Excel</a>
-            </div>
-            <div class="col-auto">
-              <a class="btn btn-delete btn-sm" href="#" title="Xuất PDF"><i class="fas fa-file-pdf"></i> Xuất PDF</a>
-            </div>
-          </div>
-          <hr>
+  .btn-delete {
+    background-color: #dc3545;
+    color: #fff;
+  }
 
+  .btn-excel {
+    background-color: #28a745;
+    color: #fff;
+  }
+
+  .btn-delete:hover,
+  .btn-add:hover,
+  .btn-excel:hover {
+    opacity: 0.8;
+  }
+
+  .badge-success {
+    background-color: #28a745;
+    color: white;
+  }
+
+  .element-button .btn {
+    margin-right: 2px;
+  }
+
+  .form-switch {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .nav-tabs {
+    display: flex;
+    width: 100%;
+  }
+
+  .nav-tabs .nav-link {
+    flex-grow: 1;
+    text-align: center;
+    padding: 10px 20px;
+  }
+</style>
+
+
+<div class="container-fruid mt-5">
+  <h3 class="mb-4">Danh Sách Sản Phẩm</h3>
+
+
+  <div class="border rounded shadow-sm p-3 bg-white">
+    <div class="row element-button mb-3 g-2">
+      <div class="col-auto">
+        <a class="btn btn-add btn-sm" href="#!addSanPham" title="Thêm"><i class="fas fa-plus"></i> Tạo mới sản phẩm</a>
+      </div>
+      <div class="col-auto">
+        <a class="btn btn-delete btn-sm" href="#" title="Tải từ file"><i class="fas fa-file-upload"></i> Tải từ file</a>
+      </div>
+      <div class="col-auto">
+        <a class="btn btn-delete btn-sm" href="#" title="In"><i class="fas fa-print"></i> In dữ liệu</a>
+      </div>
+      <div class="col-auto">
+        <a class="btn btn-excel btn-sm" href="#" title="Xuất Excel"><i class="fas fa-file-excel"></i> Xuất Excel</a>
+      </div>
+      <div class="col-auto">
+        <a class="btn btn-delete btn-sm" href="#" title="Xuất PDF"><i class="fas fa-file-pdf"></i> Xuất PDF</a>
+      </div>
+    </div>
+    <hr>
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button"
+        role="tab" aria-controls="nav-home" aria-selected="true">Tất cả</button>
+        <button class="nav-link" id="nav-HoatDong-tab" data-bs-toggle="tab" data-bs-target="#nav-HoatDong" type="button"
+        role="tab" aria-controls="nav-HoatDong" aria-selected="false">Hoạt động</button>
+        <button class="nav-link" id="nav-HetHang-tab" data-bs-toggle="tab" data-bs-target="#nav-HetHang" type="button"
+          role="tab" aria-controls="nav-HetHang" aria-selected="false">Hết hàng</button>
+        <button class="nav-link" id="nav-TatHoatDong-tab" data-bs-toggle="tab" data-bs-target="#nav-TatHoatDong" type="button"
+          role="tab" aria-controls="nav-TatHoatDong" aria-selected="false">Tắt hoạt động</button>
+        <button class="nav-link" id="nav-ChoXoa-tab" data-bs-toggle="tab" data-bs-target="#nav-ChoXoa" type="button"
+          role="tab" aria-controls="nav-ChoXoa" aria-selected="false"> <i class="fas fa-trash"></i> Chờ xóa</button>
+      </div>
+    </nav>
+    <div class="tab-content" id="nav-tabContent">
+      <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
         <div class="d-flex justify-content-between align-items-center mb-3">
+
+
           <!-- Bộ lọc hiển thị số lượng danh mục -->
           <div class="d-flex align-items-center">
             <label for="show-entries" class="me-2">Hiện</label>
@@ -65,14 +101,14 @@
             </select>
             <span class="ms-2">danh mục</span>
           </div>
-      
+
           <!-- Ô tìm kiếm -->
           <div>
             <label for="search-input" class="me-2">Tìm kiếm:</label>
             <input id="search-input" type="text" class="form-control form-control-sm" style="width: 200px;">
           </div>
         </div>
-      
+
         <table class="table table-bordered">
           <thead class="table-light">
             <tr>
@@ -90,7 +126,9 @@
             <tr>
               <td><input type="checkbox"></td>
               <td>Bàn ăn Reno mặt đá</td>
-              <td><img src="https://drake.vn/image/catalog/H%C3%ACnh%20content/hinh-anh-giay-vans/hinh-anh-giay-vans-17.jpg" alt="Ảnh sản phẩm" class="img-thumbnail" width="100"></td>
+              <td><img
+                  src="https://drake.vn/image/catalog/H%C3%ACnh%20content/hinh-anh-giay-vans/hinh-anh-giay-vans-17.jpg"
+                  alt="Ảnh sản phẩm" class="img-thumbnail" width="100"></td>
               <td>70</td>
               <td><span class="badge badge-success">Còn hàng</span></td>
               <td>24.200.000 đ</td>
@@ -99,20 +137,22 @@
                 <div class="d-flex align-items-center gap-2">
                   <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
                   <button class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></button>
+                  <button class="btn btn-primary btn-sm"><i class="fas fa-eye"></i> Xem</button>
                   <div class="form-switch">
                     <input class="form-check-input" type="checkbox" id="toggle-71309005" checked>
                     <label class="form-check-label" for="toggle-71309005" style="margin-left: 5px;">Bật</label>
                   </div>
                 </div>
+                
               </td>
             </tr>
           </tbody>
         </table>
-      
+
         <div class="d-flex justify-content-between align-items-center">
           <!-- Thông tin hiển thị số lượng danh mục -->
           <span>Hiện 11 đến 16 của 16 danh mục</span>
-      
+
           <!-- Phân trang -->
           <nav aria-label="Pagination">
             <ul class="pagination mb-0">
@@ -132,6 +172,353 @@
           </nav>
         </div>
       </div>
-      
-      
+      <div class="tab-pane fade" id="nav-HoatDong" role="tabpanel" aria-labelledby="nav-HoatDong-tab">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+
+
+          <!-- Bộ lọc hiển thị số lượng danh mục -->
+          <div class="d-flex align-items-center">
+            <label for="show-entries" class="me-2">Hiện</label>
+            <select id="show-entries" class="form-select form-select-sm " style="width: auto;">
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+            <span class="ms-2">danh mục</span>
+          </div>
+
+          <!-- Ô tìm kiếm -->
+          <div>
+            <label for="search-input" class="me-2">Tìm kiếm:</label>
+            <input id="search-input" type="text" class="form-control form-control-sm" style="width: 200px;">
+          </div>
+        </div>
+
+        <table class="table table-bordered">
+          <thead class="table-light">
+            <tr>
+              <th><input type="checkbox"></th>
+              <th>Tên sản phẩm</th>
+              <th>Ảnh</th>
+              <th>Số lượng</th>
+              <th>Tình trạng</th>
+              <th>Giá tiền</th>
+              <th>Danh mục</th>
+              <th>Chức năng</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>Bàn ăn Reno mặt đá</td>
+              <td><img
+                  src="https://drake.vn/image/catalog/H%C3%ACnh%20content/hinh-anh-giay-vans/hinh-anh-giay-vans-17.jpg"
+                  alt="Ảnh sản phẩm" class="img-thumbnail" width="100"></td>
+              <td>70</td>
+              <td><span class="badge badge-success">Còn hàng</span></td>
+              <td>24.200.000 đ</td>
+              <td>Bàn ăn</td>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                  <button class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></button>
+                  <button class="btn btn-primary btn-sm"><i class="fas fa-eye"></i> Xem</button>
+                  <div class="form-switch">
+                    <input class="form-check-input" type="checkbox" id="toggle-71309005" checked>
+                    <label class="form-check-label" for="toggle-71309005" style="margin-left: 5px;">Bật</label>
+                  </div>
+                </div>
+                
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="d-flex justify-content-between align-items-center">
+          <!-- Thông tin hiển thị số lượng danh mục -->
+          <span>Hiện 11 đến 16 của 16 danh mục</span>
+
+          <!-- Phân trang -->
+          <nav aria-label="Pagination">
+            <ul class="pagination mb-0">
+              <li class="page-item">
+                <button class="page-link" aria-label="Previous">Lùi</button>
+              </li>
+              <li class="page-item">
+                <button class="page-link">1</button>
+              </li>
+              <li class="page-item active">
+                <button class="page-link">2</button>
+              </li>
+              <li class="page-item">
+                <button class="page-link" aria-label="Next">Tiếp</button>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="nav-HetHang" role="tabpanel" aria-labelledby="nav-HetHang-tab">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+
+
+          <!-- Bộ lọc hiển thị số lượng danh mục -->
+          <div class="d-flex align-items-center">
+            <label for="show-entries" class="me-2">Hiện</label>
+            <select id="show-entries" class="form-select form-select-sm " style="width: auto;">
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+            <span class="ms-2">danh mục</span>
+          </div>
+
+          <!-- Ô tìm kiếm -->
+          <div>
+            <label for="search-input" class="me-2">Tìm kiếm:</label>
+            <input id="search-input" type="text" class="form-control form-control-sm" style="width: 200px;">
+          </div>
+        </div>
+
+        <table class="table table-bordered">
+          <thead class="table-light">
+            <tr>
+              <th><input type="checkbox"></th>
+              <th>Tên sản phẩm</th>
+              <th>Ảnh</th>
+              <th>Số lượng</th>
+              <th>Tình trạng</th>
+              <th>Giá tiền</th>
+              <th>Danh mục</th>
+              <th>Chức năng</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>Bàn ăn Reno mặt đá</td>
+              <td><img
+                  src="https://drake.vn/image/catalog/H%C3%ACnh%20content/hinh-anh-giay-vans/hinh-anh-giay-vans-17.jpg"
+                  alt="Ảnh sản phẩm" class="img-thumbnail" width="100"></td>
+              <td>70</td>
+              <td><span class="badge badge-success">Còn hàng</span></td>
+              <td>24.200.000 đ</td>
+              <td>Bàn ăn</td>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                  <button class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></button>
+                  <button class="btn btn-primary btn-sm"><i class="fas fa-eye"></i> Xem</button>
+                  <div class="form-switch">
+                    <input class="form-check-input" type="checkbox" id="toggle-71309005" checked>
+                    <label class="form-check-label" for="toggle-71309005" style="margin-left: 5px;">Bật</label>
+                  </div>
+                </div>
+                
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="d-flex justify-content-between align-items-center">
+          <!-- Thông tin hiển thị số lượng danh mục -->
+          <span>Hiện 11 đến 16 của 16 danh mục</span>
+
+          <!-- Phân trang -->
+          <nav aria-label="Pagination">
+            <ul class="pagination mb-0">
+              <li class="page-item">
+                <button class="page-link" aria-label="Previous">Lùi</button>
+              </li>
+              <li class="page-item">
+                <button class="page-link">1</button>
+              </li>
+              <li class="page-item active">
+                <button class="page-link">2</button>
+              </li>
+              <li class="page-item">
+                <button class="page-link" aria-label="Next">Tiếp</button>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="nav-TatHoatDong" role="tabpanel" aria-labelledby="nav-contact-tab">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+
+
+          <!-- Bộ lọc hiển thị số lượng danh mục -->
+          <div class="d-flex align-items-center">
+            <label for="show-entries" class="me-2">Hiện</label>
+            <select id="show-entries" class="form-select form-select-sm " style="width: auto;">
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+            <span class="ms-2">danh mục</span>
+          </div>
+
+          <!-- Ô tìm kiếm -->
+          <div>
+            <label for="search-input" class="me-2">Tìm kiếm:</label>
+            <input id="search-input" type="text" class="form-control form-control-sm" style="width: 200px;">
+          </div>
+        </div>
+
+        <table class="table table-bordered">
+          <thead class="table-light">
+            <tr>
+              <th><input type="checkbox"></th>
+              <th>Tên sản phẩm</th>
+              <th>Ảnh</th>
+              <th>Số lượng</th>
+              <th>Tình trạng</th>
+              <th>Giá tiền</th>
+              <th>Danh mục</th>
+              <th>Chức năng</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>Bàn ăn Reno mặt đá</td>
+              <td><img
+                  src="https://drake.vn/image/catalog/H%C3%ACnh%20content/hinh-anh-giay-vans/hinh-anh-giay-vans-17.jpg"
+                  alt="Ảnh sản phẩm" class="img-thumbnail" width="100"></td>
+              <td>70</td>
+              <td><span class="badge badge-success">Còn hàng</span></td>
+              <td>24.200.000 đ</td>
+              <td>Bàn ăn</td>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                  <button class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></button>
+                  <button class="btn btn-primary btn-sm"><i class="fas fa-eye"></i> Xem</button>
+                  <div class="form-switch">
+                    <input class="form-check-input" type="checkbox" id="toggle-71309005" checked>
+                    <label class="form-check-label" for="toggle-71309005" style="margin-left: 5px;">Bật</label>
+                  </div>
+                </div>
+                
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="d-flex justify-content-between align-items-center">
+          <!-- Thông tin hiển thị số lượng danh mục -->
+          <span>Hiện 11 đến 16 của 16 danh mục</span>
+
+          <!-- Phân trang -->
+          <nav aria-label="Pagination">
+            <ul class="pagination mb-0">
+              <li class="page-item">
+                <button class="page-link" aria-label="Previous">Lùi</button>
+              </li>
+              <li class="page-item">
+                <button class="page-link">1</button>
+              </li>
+              <li class="page-item active">
+                <button class="page-link">2</button>
+              </li>
+              <li class="page-item">
+                <button class="page-link" aria-label="Next">Tiếp</button>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="nav-ChoXoa" role="tabpanel" aria-labelledby="nav-ChoXoa-tab">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+
+
+          <!-- Bộ lọc hiển thị số lượng danh mục -->
+          <div class="d-flex align-items-center">
+            <label for="show-entries" class="me-2">Hiện</label>
+            <select id="show-entries" class="form-select form-select-sm " style="width: auto;">
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+            <span class="ms-2">danh mục</span>
+          </div>
+
+          <!-- Ô tìm kiếm -->
+          <div>
+            <label for="search-input" class="me-2">Tìm kiếm:</label>
+            <input id="search-input" type="text" class="form-control form-control-sm" style="width: 200px;">
+          </div>
+        </div>
+
+        <table class="table table-bordered">
+          <thead class="table-light">
+            <tr>
+              <th><input type="checkbox"></th>
+              <th>Tên sản phẩm</th>
+              <th>Ảnh</th>
+              <th>Số lượng</th>
+              <th>Tình trạng</th>
+              <th>Giá tiền</th>
+              <th>Danh mục</th>
+              <th>Chức năng</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>Bàn ăn Reno mặt đá</td>
+              <td><img
+                  src="https://drake.vn/image/catalog/H%C3%ACnh%20content/hinh-anh-giay-vans/hinh-anh-giay-vans-17.jpg"
+                  alt="Ảnh sản phẩm" class="img-thumbnail" width="100"></td>
+              <td>70</td>
+              <td><span class="badge badge-success">Còn hàng</span></td>
+              <td>24.200.000 đ</td>
+              <td>Bàn ăn</td>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                  <button class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></button>
+                  <button class="btn btn-primary btn-sm"><i class="fas fa-eye"></i> Xem</button>
+                  <div class="form-switch">
+                    <input class="form-check-input" type="checkbox" id="toggle-71309005" checked>
+                    <label class="form-check-label" for="toggle-71309005" style="margin-left: 5px;">Bật</label>
+                  </div>
+                </div>
+                
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="d-flex justify-content-between align-items-center">
+          <!-- Thông tin hiển thị số lượng danh mục -->
+          <span>Hiện 11 đến 16 của 16 danh mục</span>
+
+          <!-- Phân trang -->
+          <nav aria-label="Pagination">
+            <ul class="pagination mb-0">
+              <li class="page-item">
+                <button class="page-link" aria-label="Previous">Lùi</button>
+              </li>
+              <li class="page-item">
+                <button class="page-link">1</button>
+              </li>
+              <li class="page-item active">
+                <button class="page-link">2</button>
+              </li>
+              <li class="page-item">
+                <button class="page-link" aria-label="Next">Tiếp</button>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+
   </div>
+
+
+</div>

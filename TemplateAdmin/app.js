@@ -3,7 +3,7 @@ const app = angular.module("myApp", ['ngRoute']);
 app.config(function ($routeProvider) {
     $routeProvider
         .when("/", {
-            templateUrl: "./Views/quanLySanPham.html"
+            templateUrl: "./Views/home.html"
         })
         .when("/dangnhap", {
             templateUrl: "./Views/dangnhap.html",
@@ -29,6 +29,26 @@ app.config(function ($routeProvider) {
         .when("/nhanvien", {
             templateUrl: "./Views/nhanvien.html",
             controller: 'nhanvienController'
+        })
+        .when("/Size", {
+            templateUrl: "./Views/Size.html",
+            controller: 'QuanLyThuocTinhController'
+        })
+        .when("/Mau", {
+            templateUrl: "./Views/Mau.html",
+            controller: 'QuanLyThuocTinhController'
+        })
+        .when("/ChatLieu", {
+            templateUrl: "./Views/ChatLieu.html",
+            controller: 'QuanLyThuocTinhController'
+        })
+        .when("/addSanPham", {
+            templateUrl: "./Views/addSanPham.html",
+            controller: "QuanLySanPhamController"
+        })
+        .when("/sanpham", {
+            templateUrl: "./Views/quanLySanPham.html",
+            controller: "QuanLySanPhamController"
         })
         .otherwise("/")
 });
