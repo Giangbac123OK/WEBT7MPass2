@@ -262,35 +262,6 @@
             <h5 class="card-title mb-0">Thông tin bổ sung</h5>
           </div>
           <div class="card-body">
-            <div class="mb-4">
-              <label class="form-label fw-medium">Địa chỉ lấy hàng</label>
-              <div class="row">
-                <div class="col-md">
-                  <select class="form-select" ng-model="selectedInfo.provinceId" ng-change="getDistricts()"
-                    ng-options="p.ProvinceID as p.ProvinceName for p in provinces">
-                    <option value="">Chọn tỉnh/thành phố</option>
-                  </select>
-                </div>
-                <div class="col-md">
-                  <select class="form-select" ng-model="selectedInfo.districtId" ng-change="getWards()"
-                    ng-options="d.DistrictID as d.DistrictName for d in districts">
-                    <option value="">Chọn quận/huyện</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="row mt-4">
-                <div class="col-md">
-                  <select class="form-select" ng-model="selectedInfo.wardCode" ng-change="selectWard()"
-                    ng-options="w.WardCode as w.WardName for w in wards">
-                    <option value="">Chọn phường/xã</option>
-                  </select>
-                </div>
-                <div class="col-md">
-                  <input type="text" class="form-control" ng-model="fullAddress" placeholder="Địa chỉ đầy đủ">
-                </div>
-              </div>
-            </div>
 
 
             <div class="mt-4">
