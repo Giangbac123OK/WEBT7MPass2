@@ -241,38 +241,54 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q) {
             case 1: statusMessage = "Xác nhận đơn hàng"; break;
             case 2: statusMessage = "Chuyển sang trạng thái vận chuyển"; break;
             case 3: statusMessage = "Xác nhận đơn hàng thành công"; break;
-            case 4: statusMessage = "Hủy đơn hàng/Đánh dấu thất bại"; break;
+            case 4: statusMessage = "Hủy đơn hàng"; break;
             case 5: statusMessage = "Đánh dấu đơn hàng trả hàng"; break;
         }
-
+    
         if (!confirm('Bạn có chắc chắn muốn ' + statusMessage.toLowerCase() + '?')) {
             return;
         }
-
-        $http.put('/api/invoices/' + invoiceId + '/status', { status: newStatus })
+    
+        $http.put(`https://localhost:7196/api/Hoadons/trangthai/${invoiceId}?trangthai=${newStatus}`)
             .then(function (response) {
-                // Cập nhật trạng thái trong danh sách
-                var invoice = $scope.invoices.find(i => i.id === invoiceId);
-                if (invoice) {
-                    invoice.trangthai = newStatus;
-                    invoice.trangthaiStr = $scope.getStatusString(newStatus);
+                // Kiểm tra status code 200 (thành công)
+                if (response.status === 200) {
+                    // Cập nhật trạng thái trong danh sách
+                    var invoice = $scope.invoices.find(i => i.id === invoiceId);
+                    if (invoice) {
+                        invoice.trangthai = newStatus;
+                        invoice.trangthaiStr = $scope.getStatusString(newStatus);
+                    }
+    
+                    // Cập nhật trạng thái trong chi tiết nếu đang mở
+                    if ($scope.selectedInvoice && $scope.selectedInvoice.id === invoiceId) {
+                        $scope.selectedInvoice.trangthai = newStatus;
+                        $scope.selectedInvoice.trangthaiStr = $scope.getStatusString(newStatus);
+                    }
+    
+                    // Cập nhật lại thống kê
+                    $scope.calculateCounts();
+    
+                    // Hiển thị thông báo thành công
+                    if(newStatus == 3)
+                    {
+                        alert(statusMessage);
+                    }else
+                    {
+                        alert(statusMessage + ' thành công!');
+                    }
+                } else {
+                    alert('Cập nhật trạng thái không thành công. Vui lòng thử lại.');
                 }
-
-                // Cập nhật trạng thái trong chi tiết nếu đang mở
-                if ($scope.selectedInvoice && $scope.selectedInvoice.id === invoiceId) {
-                    $scope.selectedInvoice.trangthai = newStatus;
-                    $scope.selectedInvoice.trangthaiStr = $scope.getStatusString(newStatus);
-                }
-
-                // Cập nhật lại thống kê
-                $scope.calculateCounts();
-
-                // Hiển thị thông báo thành công
-                alert(statusMessage + ' thành công!');
             })
             .catch(function (error) {
                 console.error('Lỗi khi cập nhật trạng thái:', error);
-                alert('Có lỗi xảy ra khi ' + statusMessage.toLowerCase() + '!');
+                
+                // Hiển thị thông báo lỗi chi tiết nếu có
+                var errorMsg = error.data && error.data.message 
+                    ? error.data.message 
+                    : 'Có lỗi xảy ra khi ' + statusMessage.toLowerCase() + '!';
+                alert(errorMsg);
             });
     };
 
@@ -280,10 +296,10 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q) {
     $scope.getStatusString = function (status) {
         switch (status) {
             case 0: return 'Chờ xác nhận';
-            case 1: return 'Đã xác nhận';
-            case 2: return 'Đang vận chuyển';
-            case 3: return 'Thành công';
-            case 4: return 'Đơn hủy/Thất bại';
+            case 1: return 'Đơn hàng đã được xác nhận';
+            case 2: return 'Đơn hàng đang được giao';
+            case 3: return 'Đơn hàng thành công';
+            case 4: return 'Đơn hàng đã huỷ';
             default: return 'Không xác định';
         }
     };

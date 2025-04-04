@@ -401,7 +401,7 @@
     }
 </style>
 
-<div class="container mt-4" ng-app="invoiceApp" ng-controller="quanlyhoadonController">
+<div class="container mt-4">
     <div class="page-header">
         <h2>Quản Lý Hóa Đơn</h2>
         <button class="notification-btn" id="notificationBtn" ng-click="toggleNotification()">
@@ -479,7 +479,7 @@
             <div class="order-card" ng-repeat="invoice in filteredInvoices">
                 <div class="order-header">
                     <div>
-                        <h5>Đơn hàng #HD{{invoice.id}}</h5>
+                        <h5>Đơn hàng #HD-{{invoice.id}}</h5>
                         <span class="badge" ng-class="{
                             'badge-waiting': invoice.trangthai === 0,
                             'badge-confirmed': invoice.trangthai === 1,
@@ -535,7 +535,7 @@
                     </button>
 
                     <button class="btn btn-sm btn-danger" ng-if="invoice.trangthai < 3"
-                        ng-click="updateInvoiceStatus(invoice.id, 5)">
+                        ng-click="updateInvoiceStatus(invoice.id, 4)">
                         <i class="fas fa-times"></i> Hủy đơn
                     </button>
                 </div>
@@ -574,7 +574,7 @@
             <div class="order-card" ng-repeat="invoice in filteredInvoices">
                 <div class="order-header">
                     <div>
-                        <h5>Đơn hàng #HD{{invoice.id}}</h5>
+                        <h5>Đơn hàng #HD-{{invoice.id}}</h5>
                         <span class="badge" ng-class="{
                             'badge-waiting': invoice.trangthai === 0,
                             'badge-confirmed': invoice.trangthai === 1,
@@ -630,7 +630,387 @@
                     </button>
 
                     <button class="btn btn-sm btn-danger" ng-if="invoice.trangthai < 3"
-                        ng-click="updateInvoiceStatus(invoice.id, 5)">
+                        ng-click="updateInvoiceStatus(invoice.id, 4)">
+                        <i class="fas fa-times"></i> Hủy đơn
+                    </button>
+                </div>
+            </div>
+
+            <!-- Phân trang -->
+            <nav aria-label="Page navigation" ng-if="filteredInvoices.length > 0">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" ng-class="{disabled: currentPage === 1}">
+                        <a class="page-link" href="#" ng-click="changePage(currentPage - 1)">Trước</a>
+                    </li>
+                    <li class="page-item" ng-repeat="page in pages" ng-class="{active: page === currentPage}">
+                        <a class="page-link" href="#" ng-click="changePage(page)">{{page}}</a>
+                    </li>
+                    <li class="page-item" ng-class="{disabled: currentPage === totalPages}">
+                        <a class="page-link" href="#" ng-click="changePage(currentPage + 1)">Sau</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <div class="tab-pane fade" id="success" role="tabpanel">
+            <!-- Danh sách hóa đơn -->
+            <div ng-if="loading" class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Đang tải dữ liệu...</p>
+            </div>
+
+            <div ng-if="!loading && filteredInvoices.length === 0" class="text-center py-5">
+                <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                <p class="text-muted">Không có hóa đơn nào</p>
+            </div>
+
+            <div class="order-card" ng-repeat="invoice in filteredInvoices">
+                <div class="order-header">
+                    <div>
+                        <h5>Đơn hàng #HD-{{invoice.id}}</h5>
+                        <span class="badge" ng-class="{
+                            'badge-waiting': invoice.trangthai === 0,
+                            'badge-confirmed': invoice.trangthai === 1,
+                            'badge-shipping': invoice.trangthai === 2,
+                            'badge-success': invoice.trangthai === 3,
+                            'badge-failed': invoice.trangthai === 4,
+                            'badge-canceled': invoice.trangthai === 5
+                        }">{{invoice.trangthaiStr}}</span>
+                    </div>
+                    <div class="text-end">
+                        <div class="total">{{invoice.tongtiencantra | currency:"":0}}₫</div>
+                        <small class="order-date">{{invoice.thoigiandathang | date:'dd/MM/yyyy HH:mm'}}</small>
+                    </div>
+                </div>
+                <div class="order-info">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong><i class="fas fa-user me-2"></i>Khách hàng:</strong> {{invoice.tenkhachhang ||
+                                'Khách vãng lai'}}</p>
+                            <p><strong><i class="fas fa-phone me-2"></i>SĐT:</strong> {{invoice.sdt}}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong><i class="fas fa-map-marker-alt me-2"></i>Địa chỉ:</strong>
+                                {{invoice.diachiship}}</p>
+                            <p><strong><i class="fas fa-credit-card me-2"></i>Thanh toán:</strong>
+                                <span ng-if="invoice.trangthaithanhtoan === 1" class="badge bg-success">Đã thanh
+                                    toán</span>
+                                <span ng-if="invoice.trangthaithanhtoan === 0" class="badge bg-warning">Chưa thanh
+                                    toán</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-actions">
+                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                        data-bs-target="#orderDetailModal" ng-click="viewInvoiceDetail(invoice)">
+                        <i class="fas fa-eye"></i> Chi tiết
+                    </button>
+
+                    <button class="btn btn-sm btn-success" ng-if="invoice.trangthai === 0"
+                        ng-click="updateInvoiceStatus(invoice.id, 1)">
+                        <i class="fas fa-check"></i> Xác nhận
+                    </button>
+
+                    <button class="btn btn-sm btn-info" ng-if="invoice.trangthai === 1"
+                        ng-click="updateInvoiceStatus(invoice.id, 2)">
+                        <i class="fas fa-truck"></i> Vận chuyển
+                    </button>
+
+                    <button class="btn btn-sm btn-success" ng-if="invoice.trangthai === 2"
+                        ng-click="updateInvoiceStatus(invoice.id, 3)">
+                        <i class="fas fa-check-circle"></i> Hoàn thành
+                    </button>
+
+                    <button class="btn btn-sm btn-danger" ng-if="invoice.trangthai < 3"
+                        ng-click="updateInvoiceStatus(invoice.id, 4)">
+                        <i class="fas fa-times"></i> Hủy đơn
+                    </button>
+                </div>
+            </div>
+
+            <!-- Phân trang -->
+            <nav aria-label="Page navigation" ng-if="filteredInvoices.length > 0">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" ng-class="{disabled: currentPage === 1}">
+                        <a class="page-link" href="#" ng-click="changePage(currentPage - 1)">Trước</a>
+                    </li>
+                    <li class="page-item" ng-repeat="page in pages" ng-class="{active: page === currentPage}">
+                        <a class="page-link" href="#" ng-click="changePage(page)">{{page}}</a>
+                    </li>
+                    <li class="page-item" ng-class="{disabled: currentPage === totalPages}">
+                        <a class="page-link" href="#" ng-click="changePage(currentPage + 1)">Sau</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <div class="tab-pane fade" id="confirmed" role="tabpanel">
+            <!-- Danh sách hóa đơn -->
+            <div ng-if="loading" class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Đang tải dữ liệu...</p>
+            </div>
+
+            <div ng-if="!loading && filteredInvoices.length === 0" class="text-center py-5">
+                <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                <p class="text-muted">Không có hóa đơn nào</p>
+            </div>
+
+            <div class="order-card" ng-repeat="invoice in filteredInvoices">
+                <div class="order-header">
+                    <div>
+                        <h5>Đơn hàng #HD-{{invoice.id}}</h5>
+                        <span class="badge" ng-class="{
+                            'badge-waiting': invoice.trangthai === 0,
+                            'badge-confirmed': invoice.trangthai === 1,
+                            'badge-shipping': invoice.trangthai === 2,
+                            'badge-success': invoice.trangthai === 3,
+                            'badge-failed': invoice.trangthai === 4,
+                            'badge-canceled': invoice.trangthai === 5
+                        }">{{invoice.trangthaiStr}}</span>
+                    </div>
+                    <div class="text-end">
+                        <div class="total">{{invoice.tongtiencantra | currency:"":0}}₫</div>
+                        <small class="order-date">{{invoice.thoigiandathang | date:'dd/MM/yyyy HH:mm'}}</small>
+                    </div>
+                </div>
+                <div class="order-info">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong><i class="fas fa-user me-2"></i>Khách hàng:</strong> {{invoice.tenkhachhang ||
+                                'Khách vãng lai'}}</p>
+                            <p><strong><i class="fas fa-phone me-2"></i>SĐT:</strong> {{invoice.sdt}}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong><i class="fas fa-map-marker-alt me-2"></i>Địa chỉ:</strong>
+                                {{invoice.diachiship}}</p>
+                            <p><strong><i class="fas fa-credit-card me-2"></i>Thanh toán:</strong>
+                                <span ng-if="invoice.trangthaithanhtoan === 1" class="badge bg-success">Đã thanh
+                                    toán</span>
+                                <span ng-if="invoice.trangthaithanhtoan === 0" class="badge bg-warning">Chưa thanh
+                                    toán</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-actions">
+                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                        data-bs-target="#orderDetailModal" ng-click="viewInvoiceDetail(invoice)">
+                        <i class="fas fa-eye"></i> Chi tiết
+                    </button>
+
+                    <button class="btn btn-sm btn-success" ng-if="invoice.trangthai === 0"
+                        ng-click="updateInvoiceStatus(invoice.id, 1)">
+                        <i class="fas fa-check"></i> Xác nhận
+                    </button>
+
+                    <button class="btn btn-sm btn-info" ng-if="invoice.trangthai === 1"
+                        ng-click="updateInvoiceStatus(invoice.id, 2)">
+                        <i class="fas fa-truck"></i> Vận chuyển
+                    </button>
+
+                    <button class="btn btn-sm btn-success" ng-if="invoice.trangthai === 2"
+                        ng-click="updateInvoiceStatus(invoice.id, 3)">
+                        <i class="fas fa-check-circle"></i> Hoàn thành
+                    </button>
+
+                    <button class="btn btn-sm btn-danger" ng-if="invoice.trangthai < 3"
+                        ng-click="updateInvoiceStatus(invoice.id, 4)">
+                        <i class="fas fa-times"></i> Hủy đơn
+                    </button>
+                </div>
+            </div>
+
+            <!-- Phân trang -->
+            <nav aria-label="Page navigation" ng-if="filteredInvoices.length > 0">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" ng-class="{disabled: currentPage === 1}">
+                        <a class="page-link" href="#" ng-click="changePage(currentPage - 1)">Trước</a>
+                    </li>
+                    <li class="page-item" ng-repeat="page in pages" ng-class="{active: page === currentPage}">
+                        <a class="page-link" href="#" ng-click="changePage(page)">{{page}}</a>
+                    </li>
+                    <li class="page-item" ng-class="{disabled: currentPage === totalPages}">
+                        <a class="page-link" href="#" ng-click="changePage(currentPage + 1)">Sau</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <div class="tab-pane fade" id="shipping" role="tabpanel">
+            <!-- Danh sách hóa đơn -->
+            <div ng-if="loading" class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Đang tải dữ liệu...</p>
+            </div>
+
+            <div ng-if="!loading && filteredInvoices.length === 0" class="text-center py-5">
+                <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                <p class="text-muted">Không có hóa đơn nào</p>
+            </div>
+
+            <div class="order-card" ng-repeat="invoice in filteredInvoices">
+                <div class="order-header">
+                    <div>
+                        <h5>Đơn hàng #HD-{{invoice.id}}</h5>
+                        <span class="badge" ng-class="{
+                            'badge-waiting': invoice.trangthai === 0,
+                            'badge-confirmed': invoice.trangthai === 1,
+                            'badge-shipping': invoice.trangthai === 2,
+                            'badge-success': invoice.trangthai === 3,
+                            'badge-failed': invoice.trangthai === 4,
+                            'badge-canceled': invoice.trangthai === 5
+                        }">{{invoice.trangthaiStr}}</span>
+                    </div>
+                    <div class="text-end">
+                        <div class="total">{{invoice.tongtiencantra | currency:"":0}}₫</div>
+                        <small class="order-date">{{invoice.thoigiandathang | date:'dd/MM/yyyy HH:mm'}}</small>
+                    </div>
+                </div>
+                <div class="order-info">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong><i class="fas fa-user me-2"></i>Khách hàng:</strong> {{invoice.tenkhachhang ||
+                                'Khách vãng lai'}}</p>
+                            <p><strong><i class="fas fa-phone me-2"></i>SĐT:</strong> {{invoice.sdt}}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong><i class="fas fa-map-marker-alt me-2"></i>Địa chỉ:</strong>
+                                {{invoice.diachiship}}</p>
+                            <p><strong><i class="fas fa-credit-card me-2"></i>Thanh toán:</strong>
+                                <span ng-if="invoice.trangthaithanhtoan === 1" class="badge bg-success">Đã thanh
+                                    toán</span>
+                                <span ng-if="invoice.trangthaithanhtoan === 0" class="badge bg-warning">Chưa thanh
+                                    toán</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-actions">
+                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                        data-bs-target="#orderDetailModal" ng-click="viewInvoiceDetail(invoice)">
+                        <i class="fas fa-eye"></i> Chi tiết
+                    </button>
+
+                    <button class="btn btn-sm btn-success" ng-if="invoice.trangthai === 0"
+                        ng-click="updateInvoiceStatus(invoice.id, 1)">
+                        <i class="fas fa-check"></i> Xác nhận
+                    </button>
+
+                    <button class="btn btn-sm btn-info" ng-if="invoice.trangthai === 1"
+                        ng-click="updateInvoiceStatus(invoice.id, 2)">
+                        <i class="fas fa-truck"></i> Vận chuyển
+                    </button>
+
+                    <button class="btn btn-sm btn-success" ng-if="invoice.trangthai === 2"
+                        ng-click="updateInvoiceStatus(invoice.id, 3)">
+                        <i class="fas fa-check-circle"></i> Hoàn thành
+                    </button>
+
+                    <button class="btn btn-sm btn-danger" ng-if="invoice.trangthai < 3"
+                        ng-click="updateInvoiceStatus(invoice.id, 4)">
+                        <i class="fas fa-times"></i> Hủy đơn
+                    </button>
+                </div>
+            </div>
+
+            <!-- Phân trang -->
+            <nav aria-label="Page navigation" ng-if="filteredInvoices.length > 0">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" ng-class="{disabled: currentPage === 1}">
+                        <a class="page-link" href="#" ng-click="changePage(currentPage - 1)">Trước</a>
+                    </li>
+                    <li class="page-item" ng-repeat="page in pages" ng-class="{active: page === currentPage}">
+                        <a class="page-link" href="#" ng-click="changePage(page)">{{page}}</a>
+                    </li>
+                    <li class="page-item" ng-class="{disabled: currentPage === totalPages}">
+                        <a class="page-link" href="#" ng-click="changePage(currentPage + 1)">Sau</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <div class="tab-pane fade" id="failed" role="tabpanel">
+            <!-- Danh sách hóa đơn -->
+            <div ng-if="loading" class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Đang tải dữ liệu...</p>
+            </div>
+
+            <div ng-if="!loading && filteredInvoices.length === 0" class="text-center py-5">
+                <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                <p class="text-muted">Không có hóa đơn nào</p>
+            </div>
+
+            <div class="order-card" ng-repeat="invoice in filteredInvoices">
+                <div class="order-header">
+                    <div>
+                        <h5>Đơn hàng #HD-{{invoice.id}}</h5>
+                        <span class="badge" ng-class="{
+                            'badge-waiting': invoice.trangthai === 0,
+                            'badge-confirmed': invoice.trangthai === 1,
+                            'badge-shipping': invoice.trangthai === 2,
+                            'badge-success': invoice.trangthai === 3,
+                            'badge-failed': invoice.trangthai === 4,
+                            'badge-canceled': invoice.trangthai === 5
+                        }">{{invoice.trangthaiStr}}</span>
+                    </div>
+                    <div class="text-end">
+                        <div class="total">{{invoice.tongtiencantra | currency:"":0}}₫</div>
+                        <small class="order-date">{{invoice.thoigiandathang | date:'dd/MM/yyyy HH:mm'}}</small>
+                    </div>
+                </div>
+                <div class="order-info">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong><i class="fas fa-user me-2"></i>Khách hàng:</strong> {{invoice.tenkhachhang ||
+                                'Khách vãng lai'}}</p>
+                            <p><strong><i class="fas fa-phone me-2"></i>SĐT:</strong> {{invoice.sdt}}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong><i class="fas fa-map-marker-alt me-2"></i>Địa chỉ:</strong>
+                                {{invoice.diachiship}}</p>
+                            <p><strong><i class="fas fa-credit-card me-2"></i>Thanh toán:</strong>
+                                <span ng-if="invoice.trangthaithanhtoan === 1" class="badge bg-success">Đã thanh
+                                    toán</span>
+                                <span ng-if="invoice.trangthaithanhtoan === 0" class="badge bg-warning">Chưa thanh
+                                    toán</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-actions">
+                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                        data-bs-target="#orderDetailModal" ng-click="viewInvoiceDetail(invoice)">
+                        <i class="fas fa-eye"></i> Chi tiết
+                    </button>
+
+                    <button class="btn btn-sm btn-success" ng-if="invoice.trangthai === 0"
+                        ng-click="updateInvoiceStatus(invoice.id, 1)">
+                        <i class="fas fa-check"></i> Xác nhận
+                    </button>
+
+                    <button class="btn btn-sm btn-info" ng-if="invoice.trangthai === 1"
+                        ng-click="updateInvoiceStatus(invoice.id, 2)">
+                        <i class="fas fa-truck"></i> Vận chuyển
+                    </button>
+
+                    <button class="btn btn-sm btn-success" ng-if="invoice.trangthai === 2"
+                        ng-click="updateInvoiceStatus(invoice.id, 3)">
+                        <i class="fas fa-check-circle"></i> Hoàn thành
+                    </button>
+
+                    <button class="btn btn-sm btn-danger" ng-if="invoice.trangthai < 3"
+                        ng-click="updateInvoiceStatus(invoice.id, 4)">
                         <i class="fas fa-times"></i> Hủy đơn
                     </button>
                 </div>
@@ -657,11 +1037,11 @@
 <!-- Modal Chi tiết đơn hàng -->
 <div class="modal fade" id="orderDetailModal" tabindex="-1" aria-labelledby="orderDetailModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content" >
+        <div class="modal-content">
             <!-- Header luôn hiển thị -->
             <div class="modal-header">
                 <h5 class="modal-title">
-                    {{selectedInvoice ? 'Chi tiết đơn hàng #HD' + selectedInvoice.id : 'Đang tải...'}}
+                    {{selectedInvoice ? 'Chi tiết đơn hàng #HD-' + selectedInvoice.id : 'Đang tải...'}}
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -780,29 +1160,28 @@
                     </table>
                 </div>
             </div>
-        </div>
-
-        <!-- Footer với các action -->
-        <div class="modal-footer" ng-if="selectedInvoice && !detailLoading && !detailError">
-            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-                <i class="fas fa-times me-2"></i>Đóng
-            </button>
-            <button type="button" class="btn btn-success" ng-if="selectedInvoice.trangthai === 0"
-                ng-click="updateInvoiceStatus(selectedInvoice.id, 1)">
-                <i class="fas fa-check me-2"></i>Xác nhận đơn hàng
-            </button>
-            <button type="button" class="btn btn-info" ng-if="selectedInvoice.trangthai === 1"
-                ng-click="updateInvoiceStatus(selectedInvoice.id, 2)">
-                <i class="fas fa-truck me-2"></i>Bắt đầu vận chuyển
-            </button>
-            <button type="button" class="btn btn-success" ng-if="selectedInvoice.trangthai === 2"
-                ng-click="updateInvoiceStatus(selectedInvoice.id, 3)">
-                <i class="fas fa-check-circle me-2"></i>Xác nhận hoàn thành
-            </button>
-            <button type="button" class="btn btn-danger" ng-if="selectedInvoice.trangthai < 3"
-                ng-click="updateInvoiceStatus(selectedInvoice.id, 5)">
-                <i class="fas fa-times me-2"></i>Hủy đơn hàng
-            </button>
+            <!-- Footer với các action -->
+            <div class="modal-footer" ng-if="selectedInvoice && !detailLoading && !detailError">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Đóng
+                </button>
+                <button type="button" class="btn btn-success" ng-if="selectedInvoice.trangthai === 0"
+                    ng-click="updateInvoiceStatus(selectedInvoice.id, 1)">
+                    <i class="fas fa-check me-2"></i>Xác nhận đơn hàng
+                </button>
+                <button type="button" class="btn btn-info" ng-if="selectedInvoice.trangthai === 1"
+                    ng-click="updateInvoiceStatus(selectedInvoice.id, 2)">
+                    <i class="fas fa-truck me-2"></i>Bắt đầu vận chuyển
+                </button>
+                <button type="button" class="btn btn-success" ng-if="selectedInvoice.trangthai === 2"
+                    ng-click="updateInvoiceStatus(selectedInvoice.id, 3)">
+                    <i class="fas fa-check-circle me-2"></i>Xác nhận hoàn thành
+                </button>
+                <button type="button" class="btn btn-danger" ng-if="selectedInvoice.trangthai < 3"
+                    ng-click="updateInvoiceStatus(selectedInvoice.id, 4)">
+                    <i class="fas fa-times me-2"></i>Hủy đơn hàng
+                </button>
+            </div>
         </div>
     </div>
 </div>
