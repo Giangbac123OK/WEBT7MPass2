@@ -146,5 +146,19 @@ app.controller('nhanvienController', function ($scope, $http, $location, $interv
             }
         });
     };
+    $scope.showEdit = function(id) {
+        $scope.isEditing = true;
+        
+        $http.get("https://localhost:7196/api/Nhanviens/" + id)
+            .then(function(response) {
+                $scope.edit = response.data;
+                $scope.edit.ngaysinh = new Date($scope.edit.ngaysinh); // chuyển thành đối tượng Date
+                $scope.edit.gioitinh = $scope.edit.gioitinh ? 'false' : 'true';
+            })
+            .catch(function(error) {
+                console.error(error);
+            });
+    };
+    
     
 });
