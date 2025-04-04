@@ -1,7 +1,7 @@
 <div class="container mt-4">
     <h3 class="mb-3">Quản Lý Size</h3>
     <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#sizeModal" ng-click="resetSize()">➕Thêm Size</button>
-
+    <hr>
     <table class="table table-bordered">
         <thead >
             <tr>
@@ -21,7 +21,7 @@
                 <td>
                     <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#sizeModal"
                         ng-click="editSize(size)">✏️Sửa</button>
-                    <button class="btn btn-danger btn-sm" ng-click="deleteSize(size.id)">🗑️Xóa</button>
+                    <button class="btn btn-danger btn-sm" ng-click="deleteSize(size.id)" ng-if="!size.isUsedInProduct">🗑️Xóa</button>
                 </td>
             </tr>
         </tbody>

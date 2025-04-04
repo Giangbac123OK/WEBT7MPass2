@@ -124,7 +124,8 @@ app.controller('QuanLyThuocTinhController', function ($scope, $http) {
                 return {
                     id: cl.id,
                     tenchatlieu: cl.tenchatlieu.toLowerCase(), // Chuyển về chữ thường để kiểm tra trùng
-                    trangthai: cl.trangthai
+                    trangthai: cl.trangthai,
+                    isUsedInProduct: cl.isUsedInProduct
                 };
             });
         }, function (error) {
@@ -215,7 +216,8 @@ app.controller('QuanLyThuocTinhController', function ($scope, $http) {
                 return {
                     id: size.id,
                     sosize: size.sosize,
-                    trangthai: size.trangthai
+                    trangthai: size.trangthai,
+                    isUsedInProduct: size.isUsedInProduct
                 };
             });
         }, function (error) {
@@ -288,6 +290,111 @@ app.controller('QuanLyThuocTinhController', function ($scope, $http) {
         }
     };
     $scope.getSizes();
-
+    $scope.thuongHieus = [];
+    $scope.newThuongHieu = { tenthuonghieu: '', tinhtrang: 0 };
+    $scope.editingThuongHieu = false;
+    $scope.formError2 = {};
+    
+    // Lấy danh sách thương hiệu
+    $scope.getThuongHieus = function () {
+        $http.get("https://localhost:7196/api/Thuonghieu").then(function (response) {
+            $scope.thuongHieus = response.data.map(function (thuonghieu) {
+                return {
+                    id: thuonghieu.id,
+                    tenthuonghieu: thuonghieu.tenthuonghieu,
+                    tinhtrang: thuonghieu.tinhtrang,
+                    isUsedInProduct: thuonghieu.isUsedInProduct
+                };
+            });
+        }, function (error) {
+            console.error("Lỗi khi lấy danh sách Thương Hiệu:", error);
+        });
+    };
+    
+    // Reset dữ liệu khi mở modal
+    $scope.resetThuongHieu = function () {
+        $scope.newThuongHieu = { tenthuonghieu: '', tinhtrang: 0 };
+        $scope.editingThuongHieu = false;
+        $scope.formError2 = {};
+    };
+    
+    // Validate tên thương hiệu
+    $scope.validateThuongHieu = function () {
+        let ten = $scope.newThuongHieu.tenthuonghieu.trim();
+        if (!ten) {
+            $scope.formError2.tenthuonghieu = "Tên thương hiệu không được để trống!";
+        } else if (ten.length < 2) {
+            $scope.formError2.tenthuonghieu = "Tên thương hiệu phải có ít nhất 2 ký tự!";
+        } else if (ten.length > 50) {
+            $scope.formError2.tenthuonghieu = "Tên thương hiệu không được vượt quá 50 ký tự!";
+        } else if ($scope.thuongHieus.some(th => th.tenthuonghieu.toLowerCase() === ten.toLowerCase() && th.id !== $scope.newThuongHieu.id)) {
+            $scope.formError2.tenthuonghieu = "Tên thương hiệu đã tồn tại!";
+        } else {
+            $scope.formError2.tenthuonghieu = null;
+        }
+    };
+    
+    // Thêm thương hiệu
+    $scope.addThuongHieu = function () {
+        $scope.validateThuongHieu();
+        if ($scope.formError2.tenthuonghieu) return;
+        $http.post("https://localhost:7196/api/Thuonghieu", {
+            tenthuonghieu: $scope.newThuongHieu.tenthuonghieu,
+            tinhtrang: $scope.newThuongHieu.tinhtrang
+        }).then(function (response) {
+            alert("Thêm thương hiệu thành công!");
+            $scope.getThuongHieus()
+            $scope.resetThuongHieu();
+            //dong modal sau khi thêm
+            var modal = bootstrap.Modal.getInstance(document.getElementById('addThuongHieuModal'));
+            if (modal) {
+                modal.hide();
+            }
+        }, function (error) {
+            console.error("Lỗi khi thêm thương hiệu:", error);
+        });
+    };
+    
+    // Cập nhật thương hiệu
+    $scope.updateThuongHieu = function () {
+        $scope.validateThuongHieu();
+        if ($scope.formError2.tenthuonghieu) return;
+        $http.put("https://localhost:7196/api/Thuonghieu/" + $scope.newThuongHieu.id, {
+            tenthuonghieu: $scope.newThuongHieu.tenthuonghieu,
+            tinhtrang: $scope.newThuongHieu.tinhtrang
+        }).then(function () {
+            alert("Cập nhật thương hiệu thành công!");
+            $scope.editingThuongHieu = false;
+            //dong modal sau khi cập nhật
+            var modal = bootstrap.Modal.getInstance(document.getElementById('addThuongHieuModal'));
+            if (modal) {
+                modal.hide();
+            }
+            $scope.getThuongHieus();
+            $scope.resetThuongHieu();
+        }, function (error) {
+            console.error("Lỗi khi cập nhật thương hiệu:", error);
+        });
+    };
+    
+    // Xóa thương hiệu
+    $scope.deleteThuongHieu = function (id) {
+        if (confirm("Bạn có chắc muốn xóa thương hiệu này?")) {
+            $http.delete("https://localhost:7196/api/Thuonghieu/" + id).then(function () {
+                $scope.getThuongHieus();
+                alert("Xóa thương hiệu thành công!");
+            }, function (error) {
+                console.error("Lỗi khi xóa thương hiệu:", error);
+            });
+        }
+    };
+    // Gán dữ liệu vào modal khi chỉnh sửa
+    $scope.editThuongHieu = function (thuonghieu) {
+        $scope.newThuongHieu = angular.copy(thuonghieu);
+        $scope.editingThuongHieu = true;
+    };
+    // Gọi danh sách thương hiệu khi trang tải
+    $scope.getThuongHieus();
+    
 
 });
