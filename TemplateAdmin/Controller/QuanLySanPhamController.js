@@ -1,4 +1,4 @@
-app.controller('QuanLySanPhamController', function ($scope) {
+app.controller('QuanLySanPhamController', function ($scope, $http) {
     $scope.categories = ['Bàn ăn', 'Ghế sofa', 'Tủ quần áo'];
     $scope.colors = [{ id: 1, name: 'Đỏ' }, { id: 2, name: 'Xanh' }, { id: 3, name: 'Vàng' }];
     $scope.sizes = [{ id: 1, name: 'S' }, { id: 2, name: 'M' }, { id: 3, name: 'L' }];
@@ -7,11 +7,23 @@ app.controller('QuanLySanPhamController', function ($scope) {
     $scope.product = {
         name: '',
         quantity: 0,
-        price: 0,
+        price: null,
         category: '',
         trangthai: true,
         variants: []
     };
+    $scope.loadProducts = function () {
+     $http.get("https://localhost:7196/api/Sanphams/GetALLSanPham")
+     .then(function (response) {
+        $scope.products = response.data;
+        console.log($scope.products);
+        
+    })
+        .catch(function (error) {
+            console.error("Lỗi khi tải danh sách sản phẩm:", error);
+        });
+    };
+    $scope.loadProducts(); // Gọi hàm tải sản phẩm khi trang được tải
 
     // Tạo biến thể mới khi mở modal
     $scope.newVariant = {};
