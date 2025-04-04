@@ -49,11 +49,7 @@ app.controller('dangnhapController', function ($scope, $http, $rootScope, $locat
                     icon: "success"
                 }).then(() => {
                     // Chuyển hướng dựa trên role nếu cần
-                    if (response.data.role === 0) {
-                        $location.path('/admin/dashboard');
-                    } else {
-                        $location.path('/employee/dashboard');
-                    }
+                    $location.path('#!')
                     $scope.$apply();
                 });
             } else {
