@@ -471,22 +471,7 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
                     return $http.put(`https://localhost:7196/api/Trahangs/UpdateTrangThaiHd/${$scope.idhd}`);
                 })
                 .then(() => {
-                    $http({
-                        method: 'POST',
-                        url: 'https://dev-online-gateway.ghn.vn/shiip/public-api/v2/switch-status/return',
-                        headers: {
-                            'token': '7b4f1e5c-0700-11f0-94b6-be01e07a48b5',
-                            'shop_id': '3846066',
-                            'Content-Type': 'application/json'
-                        },
-                        data: {
-                            "order_codes": [$scope.idhd]
-                        }
-                    }).then(function(response) {
-                        console.log("Response:", response.data);
-                    }, function(error) {
-                        console.error("Error:", error);
-                    });
+                    
                     
                     console.log("Xử lý trả hàng hoàn tất!");
                     Swal.fire("Đã gửi!", "Yêu cầu trả hàng của bạn đã được gửi thành công.", "success")
