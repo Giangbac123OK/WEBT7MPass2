@@ -470,6 +470,9 @@ const maxId = Math.max(...response.data.map(item => item.id));
                     $timeout(() => {
                         $location.path("/donhangcuaban");
                     });
+                    console.log("Xử lý trả hàng hoàn tất!");
+                    Swal.fire("Đã gửi!", "Yêu cầu trả hàng của bạn đã được gửi thành công.", "success")
+                        .then(() => $location.path("/donhangcuaban"));
                 })
                 .catch(error => {
                     console.error("Lỗi trong quá trình xử lý:", error);
