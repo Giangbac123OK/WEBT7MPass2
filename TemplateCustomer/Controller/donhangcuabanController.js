@@ -657,7 +657,7 @@ $scope.init = function () {
                         }
                     });
                 };
-                
-    
+    // $http.get("https://localhost:7196/api/Trahangs")
+    //     .then()
 });
 
