@@ -53,7 +53,7 @@
 
 </style>
 <div class="container">
-    <form ng-submit="addProduct()" class="p-3 border rounded shadow-sm bg-light ">
+    <form ng-submit="saveProduct()" class="p-3 border rounded shadow-sm bg-light ">
         <h4 class="mb-3">Thêm Sản Phẩm</h4>
         
         <hr style="border: 2px solid gold;">
@@ -67,20 +67,17 @@
          <hr>
         <div class="mb-2 mt-4">
             <label>Tên sản phẩm:</label>
-            <input type="text" class="form-control" ng-model="product.name" required placeholder="Nhập tên sản phẩm">
+            <input type="text" class="form-control" ng-model="product.tenSanpham" required placeholder="Nhập tên sản phẩm">
         </div>
         <div class="mb-2">
             <label>Giá tiền:</label>
-            <input type="number" class="form-control" ng-model="product.price" required placeholder="Nhập giá tiền">
+            <input type="number" class="form-control" ng-model="product.giaBan" required placeholder="Nhập giá tiền">
         </div>
 
         <div class="mb-2">
             <label>Thương hiệu:</label>
-            
-            <select class="form-select" ng-model="product.category" ng-options="c for c in categories"
-                required></select>
+            <select class="form-select" ng-model="product.idth" ng-options="c.id as c.tenthuonghieu for c in categories" required></select>
         </div>
-
         <hr>
 
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" ng-click="showAddVariantModal()">
@@ -93,27 +90,27 @@
                 <div class="col-xl-1-5 col-lg-1-5 col-md-3 col-sm-4 col-6 mb-3" ng-repeat="variant in product.variants">
                     <div class="card shadow-sm border-0 rounded-3">
                         <!-- Hình ảnh sản phẩm (chiếm toàn bộ phần trên) -->
-                        <img ng-if="variant.imagePreview" ng-src="{{variant.imagePreview}}"
+                        <img ng-if="variant.UrlHinhanh" ng-src="{{variant.UrlHinhanh}}"
                             class="card-img-top" alt="Ảnh biến thể"
                             style="width: 100%; height: 200px; object-fit: cover; border-top-left-radius: 8px; border-top-right-radius: 8px;">
                         
                         <div class="card-body text-center p-2">
                             <div class="d-flex justify-content-between">
                                 <h6 class="card-title text-primary fw-bold">💰 {{variant.Giathoidiemhientai | currency:"₫"}}</h6>
-                                <h6 class="card-title text-muted">📦 {{variant.soluong}}</h6>
+                                <h6 class="card-title text-muted">📦 {{variant.Soluong}}</h6>
                             </div>
                             <p class="card-text small">
-                                🖌️ {{ getColorName(variant.idmau) }} |
-                                👞 {{ getSizeName(variant.idsize) }} |
-                                🏭 {{ getMaterialName(variant.idchatlieu) }}
+                                🖌️ {{ getColorName(variant.IdMau) }} |
+                                👞 {{ getSizeName(variant.IdSize) }} |
+                                🏭 {{ getMaterialName(variant.IdChatLieu) }}
                             </p>
                             <span class="badge"
-                                ng-class="{'bg-success': variant.status === 0, 'bg-secondary': variant.status === 2}">
-                                {{ variant.status === 0 ? '🟢 Đang bán' : '⚫ Ngừng bán' }}
+                                ng-class="{'bg-success': variant.Trangthai === 0, 'bg-secondary': variant.Trangthai === 2}">
+                                {{ variant.Trangthai === 0 ? '🟢 Đang bán' : '⚫ Ngừng bán' }}
                             </span>
             
                             <div class="d-flex justify-content-between mt-2">
-                                <button class="btn btn-warning btn-sm">✏️ Sửa</button>
+                                <button class="btn btn-warning btn-sm" ng-click="showEditVariantModal(variant)">✏️ Sửa</button>
                                 <button class="btn btn-danger btn-sm" ng-click="removeVariant($index)">🗑️ Xóa</button>
                             </div>
                         </div>
@@ -122,15 +119,13 @@
             </div>
             
             
-            
-
         </div>
         <hr>
         <h5>Vận chuyển</h5>
         <div class="row">
             <div class="col-4">
                 <label>Trọng lượng</label>
-                <input type="number" class="form-control" ng-model="product.trongluong" placeholder="Trọng lượng (kg)"
+                <input type="number" class="form-control" ng-model="product.trongluong" placeholder="Trọng lượng (g)"
                     required>
             </div>
             <div class="col-4">
@@ -147,12 +142,16 @@
             <hr class="mt-4">
             <div class="mb-2">
                 <label>Mô tả sản phẩm:</label>
-                <textarea class="form-control" ng-model="product.description" rows="4"
+                <textarea class="form-control" ng-model="product.mota" rows="4"
                     placeholder="Nhập mô tả cho sản phẩm" required></textarea>
             </div>
-            <div class="form-check mt-3">
-                <input type="checkbox" class="form-check-input" ng-model="product.trangthai" id="toggleStatus">
-                <label class="form-check-label" for="toggleStatus">Trạng thái</label>
+            <div class="form-check form-switch mt-3">
+                <label>Trạng thái: </label>
+                <input class="form-check-input" type="checkbox" id="productStatus{{$index}}"
+                    ng-model="product.trangthai" ng-true-value="0" ng-false-value="2">
+                <label class="form-check-label" for="productStatus{{$index}}">
+                    {{ product.status === 0 ? 'Tắt' : 'Bật' }}
+                </label>
             </div>
 
             <div class="d-flex justify-content-center mt-3">
@@ -176,23 +175,20 @@
                         <div class="col-md-6">
                             <div class="mb-2 mt-3">
                                 <label>Chọn màu:</label>
-                                <select class="form-select" ng-model="newVariant.idmau"
-                                    ng-options="c.id as c.name for c in colors" required>
-                                    <option value="">Chọn màu</option>
+                                <select class="form-select" ng-model="newVariant.IdMau" required>
+                                    <option ng-value="item.id" ng-repeat="item in colors">{{item.tenmau}}</option>
                                 </select>
                             </div>
                             <div class="mb-2 mt-3">
                                 <label>Chọn size:</label>
-                                <select class="form-select" ng-model="newVariant.idsize"
-                                    ng-options="s.id as s.name for s in sizes" required>
-                                    <option value="">Chọn size</option>
+                                <select class="form-select" ng-model="newVariant.IdSize" required>
+                                    <option ng-value="item.id" ng-repeat="item in sizes">{{item.sosize}}</option>
                                 </select>
                             </div>
                             <div class="mb-2 mt-3">
                                 <label>Chọn chất liệu:</label>
-                                <select class="form-select" ng-model="newVariant.idchatlieu"
-                                    ng-options="cl.id as cl.name for cl in chatlieus" required>
-                                    <option value="">Chọn chất liệu</option>
+                                <select class="form-select" ng-model="newVariant.IdChatLieu" required>
+                                     <option ng-value="item.id" ng-repeat="item in chatlieus">{{item.tenchatlieu}}</option>
                                 </select>
                             </div>
                         </div>
@@ -201,7 +197,7 @@
                         <div class="col-md-6">
                             <div class="mb-2 mt-3">
                                 <label>Số lượng:</label>
-                                <input type="number" class="form-control" ng-model="newVariant.soluong"
+                                <input type="number" class="form-control" ng-model="newVariant.Soluong"
                                     placeholder="Số lượng" required>
                             </div>
                             <div class="mb-2 mt-3">
@@ -221,20 +217,20 @@
                             </div>
                             <div class="mb-2 mt-3 position-relative">
                                 <!-- Ẩn nút "Thêm Hình Ảnh" khi đã có ảnh -->
-                                <label class="btn-upload" for="imageUpload" ng-if="!newVariant.imagePreview">
+                                <label class="btn-upload" for="imageUpload" ng-if="!newVariant.UrlHinhanh">
                                     <i class="bi bi-camera-fill"></i> Thêm Hình Ảnh
                                 </label>
                                 <input type="file" id="imageUpload" class="hidden-input" multiple
                                     onchange="angular.element(this).scope().handleFileSelect(event, 'newVariant')"
-                                    ng-if="!newVariant.imagePreview">
+                                    ng-if="!newVariant.UrlHinhanh">
 
                                 <!-- Hiển thị ảnh với nút X để xóa -->
-                                <div class="position-relative d-inline-block mt-2" ng-if="newVariant.imagePreview">
-                                    <img ng-src="{{newVariant.imagePreview}}" alt="Ảnh biến thể" class="img-thumbnail"
+                                <div class="position-relative d-inline-block mt-2" ng-if="newVariant.UrlHinhanh">
+                                    <img ng-src="{{newVariant.UrlHinhanh}}" alt="Ảnh biến thể" class="img-thumbnail"
                                         style="width: 150px; height: 150px;">
                                     <button type="button"
                                         class="btn btn-danger btn-sm position-absolute top-0 start-100 translate-middle"
-                                        ng-click="newVariant.imagePreview = null">
+                                        ng-click="newVariant.UrlHinhanh = null">
                                         X
                                     </button>
                                 </div>
@@ -244,9 +240,9 @@
                             <div class="form-check form-switch mt-3">
                                 <label>Trạng thái: </label>
                                 <input class="form-check-input" type="checkbox" id="variantStatus{{$index}}"
-                                    ng-model="newVariant.status" ng-true-value="0" ng-false-value="2">
+                                    ng-model="newVariant.Trangthai" ng-true-value="0" ng-false-value="2">
                                 <label class="form-check-label" for="variantStatus{{$index}}">
-                                    {{ newVariant.status === 0 ? 'Bật' : 'Tắt' }}
+                                    {{ newVariant.Trangthai === 0 ? 'Bật' : 'Tắt' }}
                                 </label>
                             </div>
 
@@ -254,7 +250,7 @@
                         <!--thêm mô tả-->
                         <div class="mb-2 mt-3 col-md-12">
                             <label>Mô tả:</label>
-                            <textarea class="form-control" ng-model="newVariant.description" rows="2"
+                            <textarea class="form-control" ng-model="newVariant.Mota" rows="2"
                                 placeholder="Nhập mô tả cho biến thể"></textarea>
                         </div>
                         <button type="submit" class="btn btn-success w-100 mt-3">Lưu</button>
