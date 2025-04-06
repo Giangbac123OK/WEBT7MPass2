@@ -702,6 +702,40 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
                 alert("Thanh toán thất bại!");
             });
     };    
-    
+    // Load danh sách trả hàng
+    $scope.dataTraHang = [];
+    $http.get("https://localhost:7196/api/Trahangs")
+        .then(function(response) {
+            $scope.dataTraHang = response.data;
+            console.log("Danh sách trả hàng: ", $scope.dataTraHang);
+        })
+        .catch(function(error) {
+            console.log("Lỗi lấy danh sách trả hàng: ", error);
+        });
+
+    // Load chi tiết trả hàng theo ID
+    $scope.chiTietTraHang = function(id) {
+        $http.get("https://localhost:7196/api/Trahangs/" + id)
+            .then(function(response) {
+                $scope.chitietbyIdth = response.data;
+                console.log("Chi tiết trả hàng: ", $scope.chitietbyIdth);
+            })
+            .catch(function(error) {
+                console.log("Lỗi chi tiết trả hàng: ", error);
+            });
+    };
+
+    // Load chi tiết sản phẩm theo ID
+    $scope.sanPhamChiTiet = function(id) {
+        $http.get("https://localhost:7196/api/Sanphamchitiets/" + id)
+            .then(function(response) {
+                $scope.spchitietbyIdthct = response.data;
+                console.log("Chi tiết sản phẩm: ", $scope.spchitietbyIdthct);
+            })
+            .catch(function(error) {
+                console.log("Lỗi chi tiết sản phẩm: ", error);
+            });
+    };
+
 });
 
