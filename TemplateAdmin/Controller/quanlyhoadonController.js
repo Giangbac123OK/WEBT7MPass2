@@ -191,7 +191,7 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q, $timeout) 
     };
 
     // Hàm cập nhật trạng thái hóa đơn
-    $scope.updateInvoiceStatus = function (invoiceId, newStatus) {
+    $scope.updateInvoicestatus = function (invoiceId, newStatus) {
         const userInfoString = localStorage.getItem("userInfo");
         const userInfo = JSON.parse(userInfoString);
         var statusMessage = "";

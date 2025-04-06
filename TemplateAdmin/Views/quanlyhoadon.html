@@ -498,31 +498,6 @@
             </div>
         </div>
     </div>
-    
-    <!-- Order Detail Modal -->
-    <div class="modal fade" id="orderDetailModal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Chi tiết đơn hàng {{selectedOrder && selectedOrder.id}}</h5>
-                    <button type="button" class="close" data-dismiss="modal">
-                        <span>&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div ng-if="selectedOrder">
-                        <p><strong>Khách hàng:</strong> {{selectedOrder.customerName}}</p>
-                        <p><strong>Ngày đặt:</strong> {{selectedOrder.orderDate | date:'dd/MM/yyyy HH:mm'}}</p>
-                        <p><strong>Tổng tiền:</strong> {{selectedOrder.totalAmount | currency:"":0}}₫</p>
-                        <p><strong>Trạng thái:</strong> {{selectedOrder.status}}</p>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <ul class="nav nav-tabs" id="orderTabs" role="tablist">
         <li class="nav-item" role="presentation">
