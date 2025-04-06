@@ -102,15 +102,31 @@
            <a href="#"><img src="./Images/logo.png" width="100px" height="100px" alt="Logo"></a>
         </div>
         
-        <form class="col-6 d-flex justify-content-center align-items-center" role="search">
-          <div class="input-group" ng-controller="mainController">
-              <input class="form-control" type="search" placeholder="Search" ng-model="search" aria-label="Search">
-              <button class="btn btn-outline-light" type="submit" ng-click="btntimkiem()">
-                  <i class="bi bi-search"></i>
-                 
-              </button>
-          </div>
-      </form>
+        <!-- Thay thế phần form tìm kiếm trong header -->
+<form class="col-6 d-flex justify-content-center align-items-center" role="search">
+  <div class="input-group position-relative" ng-controller="mainController">
+    <input class="form-control" type="search" placeholder="Tìm kiếm sản phẩm..." 
+           ng-model="search" 
+           ng-change="updateSuggestions()" 
+           aria-label="Search">
+    <button class="btn btn-outline-secondary" type="submit" ng-click="btntimkiem()">
+      <i class="bi bi-search"></i>
+    </button>
+    
+    <!-- Gợi ý tìm kiếm -->
+    <div class="position-absolute w-100 bg-white border rounded shadow-sm" 
+         style="top: 100%; z-index: 1000; max-height: 300px; overflow-y: auto;" 
+         ng-show="showSuggestions && filteredSuggestions.length > 0">
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item list-group-item-action" 
+            ng-repeat="suggestion in filteredSuggestions" 
+            ng-click="selectSuggestion(suggestion)">
+          {{suggestion}}
+        </li>
+      </ul>
+    </div>
+  </div>
+</form>
         <div class="col-3 d-flex justify-content-center align-items-center">
           <a href="#!giohang" class="cartme position-relative">
             <i style="font-size: 24px;" class="bi bi-cart4"></i>

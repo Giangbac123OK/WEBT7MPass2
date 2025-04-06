@@ -90,31 +90,74 @@ app.config(function ($routeProvider) {
 })
 
 
-app.controller('mainController', function ($scope, $location) {
- 
+app.controller('mainController', function ($scope, $location, $http, $document) {
+  $scope.search = '';
+  $scope.showSuggestions = false;
+  $scope.filteredSuggestions = [];
   
-
+  // Dữ liệu gợi ý tìm kiếm (fake data)
+  $scope.suggestions = [
+    "Giày đá bóng Nike",
+    "Giày thể thao Adidas",
+    "Giày chạy bộ Puma",
+    "Giày futsal Desporte",
+    "Giày đá banh X-Munich",
+    "Giày thể thao Grand Sport",
+    "Giày bóng rổ Nike",
+    "Giày tennis Adidas",
+    "Giày cầu lông Puma"
+  ];
+  
+  // Cập nhật gợi ý khi người dùng nhập
+  $scope.updateSuggestions = function() {
+    if ($scope.search && $scope.search.length > 0) {
+      $scope.filteredSuggestions = $scope.suggestions.filter(function(suggestion) {
+        return suggestion.toLowerCase().includes($scope.search.toLowerCase());
+      });
+      $scope.showSuggestions = $scope.filteredSuggestions.length > 0;
+    } else {
+      $scope.filteredSuggestions = [];
+      $scope.showSuggestions = false;
+    }
+  };
+  
+  // Chọn gợi ý
+  $scope.selectSuggestion = function(suggestion) {
+    $scope.search = suggestion;
+    $scope.showSuggestions = false;
+    $scope.btntimkiem();
+  };
+  
+  // Tìm kiếm
   $scope.btntimkiem = function () {
     if ($scope.search && $scope.search.trim() !== '') {
       $location.path('/timkiem/' + $scope.search);
       $scope.search = '';
+      $scope.showSuggestions = false;
     } else {
       Swal.fire({
         title: 'Thông báo',
-        text: 'Vui lòng nhập từ khóa để tìm kiếm!',//ss
+        text: 'Vui lòng nhập từ khóa để tìm kiếm!',
         icon: 'info',
         confirmButtonText: 'OK',
         confirmButtonColor: '#3085d6',
         background: '#fff',
         color: '#333',
         customClass: {
-            popup: 'custom-popup',
+          popup: 'custom-popup',
         }
-    });
+      });
     }
-    $http.get()
   };
   
+  // Ẩn gợi ý khi click ra ngoài
+  $document.on('click', function(event) {
+    if (!$(event.target).closest('.input-group, .list-group-item').length) {
+      $scope.$apply(function() {
+        $scope.showSuggestions = false;
+      });
+    }
+  });
 });
 app.service('ThuongHieuService', function($http) {
   const apiUrl = 'https://localhost:7196/api/Thuonghieu'; // Thay URL API của bạn
