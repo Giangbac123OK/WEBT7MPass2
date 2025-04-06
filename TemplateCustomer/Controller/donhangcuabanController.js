@@ -69,11 +69,11 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
         }
     }
     // select hóa đơn theo mã khách hàng
-
+    
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));
     console.log(userInfo);
     let idkh = userInfo.id;
-
+    $scope.idkh =userInfo.id;
     // Hàm gọi API lấy dữ liệu hóa đơn
     $scope.loadHoaDon = function () {
         let api = "https://localhost:7196/api/Hoadons/hoa-don-theo-ma-kh-" + idkh;
@@ -706,7 +706,7 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
     $scope.dataTraHang = [];
     $http.get("https://localhost:7196/api/Trahangs")
         .then(function(response) {
-            $scope.dataTraHang = response.data;
+            $scope.dataTraHang = response.data.find(x=>x.idkh==$scope.idkh);
             console.log("Danh sách trả hàng: ", $scope.dataTraHang);
         })
         .catch(function(error) {

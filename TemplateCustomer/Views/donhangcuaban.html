@@ -168,7 +168,7 @@
       <!-- Nội Dung Tab -->
       <div class="tab-content mt-3 py-3" id="myTabContent">
         <div class="tab-pane fade show active" id="tab1" role="tabpanel">
-          <div ng-repeat="x in dataHoaDon" class="mb-3 bg-light">
+          <div ng-repeat="x in dataHoaDon" ng-if="x.idkh==idkh" class="mb-3 bg-light">
             <div class="row border-bottom">
               <div class="col m-3 text-uppercase text-en fw-semibold">
                 <span>Mã hóa đơn: #{{x.id}}</span> 
@@ -257,7 +257,7 @@
           </div>
         </div>
         <div class="tab-pane fade" id="tab2" role="tabpanel">
-          <div ng-repeat="x in dataHoaDon" ng-if="x.trangthai==0" class="mb-3 bg-light">
+          <div ng-repeat="x in dataHoaDon" ng-if="x.idkh==idkh" ng-if="x.trangthai==0" class="mb-3 bg-light">
             <div class="row border-bottom">
               <div class="col m-3 text-uppercase text-en fw-semibold">
                 <span>Mã hóa đơn: #{{x.id}}</span> 
@@ -344,7 +344,7 @@
         </div>
 
         <div class="tab-pane fade" id="tab3" role="tabpanel">
-          <div ng-repeat="x in dataHoaDon" ng-if="x.trangthai==1" class="mb-3 bg-light">
+          <div ng-repeat="x in dataHoaDon" ng-if="x.idkh==idkh" ng-if="x.trangthai==1" class="mb-3 bg-light">
             <div class="row border-bottom">
               <div class="col m-3 text-uppercase text-en fw-semibold">
                 <span>Mã hóa đơn: #{{x.id}}</span> 
@@ -429,7 +429,7 @@
           </div>
         </div>
         <div class="tab-pane fade" id="tab4" role="tabpanel">
-          <div ng-repeat="x in dataHoaDon" ng-if="x.trangthai==2" class="mb-3 bg-light">
+          <div ng-repeat="x in dataHoaDon" ng-if="x.idkh==idkh" ng-if="x.trangthai==2" class="mb-3 bg-light">
             <div class="row border-bottom">
               <div class="col m-3 text-uppercase text-en fw-semibold">
                 <span>Mã hóa đơn: #{{x.id}}</span> 
@@ -514,7 +514,7 @@
           </div>
         </div>
         <div class="tab-pane fade" id="tab5" role="tabpanel">
-          <div ng-repeat="x in dataHoaDon" ng-if="x.trangthai==3||x.trangthai==5" class="mb-3 bg-light">
+          <div ng-repeat="x in dataHoaDon" ng-if="x.idkh==idkh" ng-if="x.trangthai==3||x.trangthai==5" class="mb-3 bg-light">
             <div class="row border-bottom">
               <div class="col m-3 text-uppercase text-en fw-semibold">
                 <span>Mã hóa đơn: #{{x.id}}</span> 
@@ -600,7 +600,7 @@
           </div>
         </div>
         <div class="tab-pane fade" id="tab6" role="tabpanel">
-          <div ng-repeat="x in dataHoaDon" ng-if="x.trangthai==4" class="mb-3 bg-light">
+          <div ng-repeat="x in dataHoaDon" ng-if="x.idkh==idkh" ng-if="x.trangthai==4" class="mb-3 bg-light">
             <div class="row border-bottom">
               <div class="col m-3 text-uppercase text-en fw-semibold">
                 <span>Mã hóa đơn: #{{x.id}}</span> 
