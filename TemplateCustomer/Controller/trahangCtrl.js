@@ -127,55 +127,7 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
         $scope.selectAll = $scope.dataSp.every(sp => sp.selected);
     };
 
-    // ========== GHN API Functions ==========
-    // Lấy danh sách tỉnh/thành phố
-    $http.get("https://online-gateway.ghn.vn/shiip/public-api/master-data/province", {
-        headers: { "Token": $scope.token }
-    })
-        .then(response => $scope.provinces = response.data.data)
-        .catch(error => console.error("Lỗi lấy tỉnh/thành:", error));
-
-    // Khi chọn tỉnh/thành → Lấy danh sách quận/huyện
-    $scope.getDistricts = function () {
-        if (!$scope.selectedInfo.provinceId) return;
-        $scope.districts = [];
-        $scope.wards = [];
-        $scope.selectedInfo.districtId = null;
-        $scope.selectedInfo.wardCode = null;
-
-        $http.get("https://online-gateway.ghn.vn/shiip/public-api/master-data/district", {
-            headers: { "Token": $scope.token },
-            params: { province_id: $scope.selectedInfo.provinceId }
-        })
-            .then(response => $scope.districts = response.data.data)
-            .catch(error => console.error("Lỗi lấy quận/huyện:", error));
-    };
-
-    // Khi chọn quận/huyện → Lấy danh sách phường/xã
-    $scope.getWards = function () {
-        if (!$scope.selectedInfo.districtId) return;
-        $scope.wards = [];
-        $scope.selectedInfo.wardCode = null;
-
-        $http.get("https://online-gateway.ghn.vn/shiip/public-api/master-data/ward", {
-            headers: { "Token": $scope.token },
-            params: { district_id: $scope.selectedInfo.districtId }
-        })
-            .then(response => $scope.wards = response.data.data)
-            .catch(error => console.error("Lỗi lấy phường/xã:", error));
-    };
-
-    // Khi chọn phường/xã, cập nhật địa chỉ và tính ngày giao hàng
-    $scope.selectWard = function () {
-        $scope.selectedInfo.wardName = $scope.wards.find(w => w.WardCode === $scope.selectedInfo.wardCode)?.WardName || "";
-        $scope.selectedInfo.districtName = $scope.districts.find(d => d.DistrictID === $scope.selectedInfo.districtId)?.DistrictName || "";
-        $scope.selectedInfo.provinceName = $scope.provinces.find(p => p.ProvinceID === $scope.selectedInfo.provinceId)?.ProvinceName || "";
-
-        $scope.chuthich = `Địa chỉ lấy hàng: ${$scope.fullAddress}, ${$scope.selectedInfo.wardName}, ${$scope.selectedInfo.districtName}, ${$scope.selectedInfo.provinceName}`;
-        console.log("Địa chỉ lấy hàng:", $scope.chuthich);
-
-        $scope.calculateEstimatedDelivery();
-    };
+    
 
 
     // ========== Image Handling Functions ==========
@@ -353,7 +305,7 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
             });
         });
     }
-
+    
     // ========== Bank List ==========
     $scope.ListNganHang = [];
     $scope.selectedBank = "";
@@ -420,13 +372,13 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
                 lydotrahang: $scope.returnReason || "Không có lý do",
                 trangthai: 0,
                 phuongthuchoantien: $scope.refundMethod || "Số dư TK Shopee",
-                ngaytrahangdukien: new Date().toISOString(),
-                ngaytrahangthucte: null,
+                ngaytrahangthucte: new Date().toISOString()||nullull,
                 chuthich: $scope.mota || "Không có chú thích",
                 hinhthucxuly: $scope.hinhthucxuly || "Không xác định",
                 tennganhang: $scope.selectedBank || "Không xác định",
                 sotaikhoan: $scope.cardNumber || "0000000000",
-                tentaikhoan: $scope.accountName || "Không xác định"
+                tentaikhoan: $scope.accountName || "Không xác định",
+                diachiship:""
             };
 
             // === 4. Gửi yêu cầu trả hàng và xử lý tiếp theo ===
