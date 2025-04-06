@@ -101,12 +101,16 @@
         <div class="col-3">
            <a href="#"><img src="./Images/logo.png" width="100px" height="100px" alt="Logo"></a>
         </div>
-        <div class="col-6 d-flex justify-content-center align-items-center">
-          <form class="d-flex w-100" role="search">
-              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-              <button class="btn btn-outline-success" type="submit"><i class="bi bi-search"></i></button>
-          </form>
-        </div>
+        
+        <form class="col-6 d-flex justify-content-center align-items-center" role="search">
+          <div class="input-group" ng-controller="mainController">
+              <input class="form-control" type="search" placeholder="Search" ng-model="search" aria-label="Search">
+              <button class="btn btn-outline-light" type="submit" ng-click="btntimkiem()">
+                  <i class="bi bi-search"></i>
+                 
+              </button>
+          </div>
+      </form>
         <div class="col-3 d-flex justify-content-center align-items-center">
           <a href="#!giohang" class="cartme position-relative">
             <i style="font-size: 24px;" class="bi bi-cart4"></i>
@@ -214,6 +218,7 @@
   <script src="./Controller/hoadongiohangController.js"></script>
   <script src="./Controller/trahangCtrl.js"></script>
   <script src="./Controller/voucherController.js"></script>
+  <script src="./Controller/timkiemController.js"></script>
   
   <script>
     

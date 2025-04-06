@@ -1,871 +1,109 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tìm Kiếm Sản Phẩm</title>
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Bootstrap Icons -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-  <style>
-    body {
-      background-color: #f5f5f5;
-    }
-    
-    .filter-section {
-      background-color: #f0f0f0;
-      border-radius: 8px;
-      padding: 15px;
-    }
-    
-    .filter-title {
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 15px;
-      color: #333;
-    }
-    
-    .filter-group {
-      margin-bottom: 20px;
-    }
-    
-    .filter-group-title {
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 10px;
-      color: #333;
-    }
-    
-    .product-card {
-      background-color: #fff;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      transition: transform 0.3s, box-shadow 0.3s;
-      margin-bottom: 20px;
-      overflow: hidden;
-      position: relative;
-    }
-    
-    .product-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    }
-    
-    .discount-badge {
-      position: absolute;
-      top: 10px;
-      left: 0;
-      background-color: #ff4d4d;
-      color: white;
-      padding: 4px 8px;
-      font-size: 12px;
-      font-weight: bold;
-      z-index: 1;
-    }
-    
-    .product-image-container {
-      position: relative;
-      padding-top: 100%;
-      overflow: hidden;
-    }
-    
-    .product-image {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.3s;
-    }
-    
-    .product-card:hover .product-image {
-      transform: scale(1.05);
-    }
-    
-    .product-details {
-      padding: 15px;
-    }
-    
-    .product-brand {
-      font-size: 14px;
-      color: #888;
-      margin-bottom: 5px;
-    }
-    
-    .product-name {
-      font-size: 16px;
-      font-weight: 700;
-      margin-bottom: 10px;
-      color: #333;
-    }
-    
-    .product-price {
-      display: flex;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    
-    .original-price {
-      text-decoration: line-through;
-      color: #888;
-      font-size: 14px;
-      margin-right: 10px;
-    }
-    
-    .sale-price {
-      color: #ff4d4d;
-      font-weight: 700;
-      font-size: 18px;
-    }
-    
-    .product-rating {
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-    }
-    
-    .rating-stars {
-      color: #ffb700;
-      margin-right: 5px;
-    }
-    
-    .sold-count {
-      font-size: 14px;
-      color: #666;
-    }
-    
-    .action-buttons {
-      display: flex;
-      justify-content: space-between;
-      padding: 0 15px 15px;
-    }
-    
-    .action-button {
-      background: transparent;
-      border: none;
-      color: #666;
-      transition: color 0.2s;
-      padding: 5px;
-    }
-    
-    .action-button:hover {
-      color: #ff4d4d;
-    }
-    
-    .wishlist-button {
-      border: 1px solid #ddd;
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #ff4d4d;
-    }
-    
-    .wishlist-button:hover {
-      background-color: #fff0f0;
-    }
-    
-    .filter-apply-btn {
-      background: linear-gradient(to right, #007bff, #0056b3);
-      border: none;
-      color: white;
-      width: 100%;
-      padding: 10px;
-      border-radius: 5px;
-      font-weight: 600;
-      transition: opacity 0.3s;
-    }
-    
-    .filter-apply-btn:hover {
-      opacity: 0.9;
-    }
-    
-    .form-check-input:checked {
-      background-color: #007bff;
-      border-color: #007bff;
-    }
-    
-    .mobile-filter-toggle {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 50px;
-      height: 50px;
-      background-color: #007bff;
-      color: white;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-      z-index: 1000;
-      display: none;
-    }
-    
-    @media (max-width: 991.98px) {
-      .filter-sidebar {
-        position: fixed;
-        top: 0;
-        left: -300px;
-        width: 280px;
-        height: 100vh;
-        background-color: white;
-        z-index: 1000;
-        transition: left 0.3s;
-        overflow-y: auto;
-        padding: 20px;
-        box-shadow: 0 0 20px rgba(0,0,0,0.2);
-      }
-      
-      .filter-sidebar.show {
-        left: 0;
-      }
-      
-      .mobile-filter-toggle {
-        display: flex;
-      }
-      
-      .filter-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0,0,0,0.5);
-        z-index: 999;
-        display: none;
-      }
-      
-      .filter-overlay.show {
-        display: block;
-      }
-    }
-    
-    .search-box {
-      position: relative;
-      margin-bottom: 20px;
-    }
-    
-    .search-input {
-      width: 100%;
-      padding: 10px 15px;
-      padding-right: 40px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      font-size: 14px;
-    }
-    
-    .search-button {
-      position: absolute;
-      right: 5px;
-      top: 5px;
-      border: none;
-      background: transparent;
-      color: #666;
-      padding: 5px 10px;
-    }
-    
-    .sort-dropdown {
-      background-color: white;
-      border: 1px solid #ddd;
-      padding: 5px 10px;
-      border-radius: 5px;
-      margin-left: 10px;
-    }
-  </style>
-</head>
-<body>
-  <div class="container py-4">
-    <header class="mb-4">
-      <div class="row align-items-center">
-        <div class="col-md-6">
-          <h1 class="h4 mb-0">Kết quả tìm kiếm</h1>
-        </div>
-        <div class="col-md-6">
-          <div class="search-box">
-            <input type="text" class="search-input" placeholder="Tìm kiếm sản phẩm...">
-            <button class="search-button">
-              <i class="bi bi-search"></i>
-            </button>
+<div class="container mt-5">
+  <h2 class="text-center mb-4">Kết quả tìm kiếm cho: "{{searchKey}}"</h2>
+
+  <!-- Error Message Section -->
+  <div ng-if="errorMessage" class="alert alert-danger text-center">
+    {{errorMessage}}
+  </div>
+
+  <div class="row">
+    <!-- Filter Section -->
+    <div class="col-md-3">
+      <div class="card shadow-sm p-3 mb-4">
+        <h5 class="mb-3"><i class="bi bi-funnel"></i> Bộ lọc tìm kiếm</h5>
+
+        <!-- Price Filtear -->
+        <div class="mb-4">
+          <h6 class="font-weight-bold">Theo giá sản phẩm</h6>
+          <label class="form-label">Từ</label>
+          <input type="number" class="form-control mb-2" ng-model="priceFilter.min" min="0" placeholder="Nhập giá thấp nhất">
+          <label class="form-label">Đến</label>
+          <input type="number" class="form-control mb-3" ng-model="priceFilter.max" min="0" placeholder="Nhập giá cao nhất">
+        </div><!--ádfghxj-->
+
+        <!-- Brand Filter -->
+        <div class="mb-4">
+          <h6 class="font-weight-bold">Theo thương hiệu</h6>
+          <div class="form-check" ng-repeat="brand in dataThuonghieu" ng-if="brand.tinhtrang==0">
+            <input class="form-check-input" type="checkbox" ng-model="brandFilter[brand.id]">
+              <label class="form-check-label">{{brand.tenthuonghieu}}</label>
           </div>
+        </div>
+<!--gaaaa-->
+        <!-- Apply and Reset Buttons -->
+        <button class="btn btn-danger w-100 mb-2" ng-click="applyAllFilters()">Áp dụng</button>
+        <button class="btn btn-secondary w-100" ng-click="resetFilters()">Xóa tất cả</button>
+      </div><!--gaaaa-->  <!--gaaaa-->  
+    </div>
+    <!--gaaaa-->  <!--gaaaa--> 
+    <!-- Product List Section -->
+    <div class="col-md-9">
+      
+      <!--aaaaaaa-->
+      <div class="row product-grid">
+        <!-- Product Cards -->
+        <div ng-repeat="item in displayResults" class="col-lg-2 col-md-3 col-sm-4 col-6 mb-4" style="height:350px;">
+          <a class="card shadow-sm product-card text-decoration-none" href="#!sanphamchitiet/{{item.id}}">
+            <img ng-src="{{item.urlHinhanh}}" alt="{{item.tensp}}" class="card-img-top img-fluid rounded">
+            <div class="card-body">
+              <div ng-repeat="brand in dataThuonghieu">
+                <h6 class="fw-bold" ng-if="brand.id==item.idth">[{{brand.tenthuonghieu}}] - {{item.tensp}}</h6>
+              </div>
+              <p class="text-muted">Giá sản phẩm: <span class="fw-bold">{{item.giaban | number}} VNĐ</span></p>
+            </div>
+          </a>
         </div>
       </div>
-    </header>
-    
-    <div class="row g-4">
-      <!-- Filter Sidebar -->
-      <div class="col-lg-3">
-        <div class="filter-sidebar">
-          <div class="d-flex justify-content-between align-items-center mb-3 d-lg-none">
-            <h5 class="mb-0">Bộ lọc</h5>
-            <button class="btn-close filter-close"></button>
-          </div>
-          
-          <div class="filter-section">
-            <h2 class="filter-title">Lọc sản phẩm</h2>
-            <form id="filterForm">
-              <!-- Price Filter -->
-              <div class="filter-group">
-                <h3 class="filter-group-title">Giá</h3>
-                <div class="form-check mb-2">
-                  <input class="form-check-input" type="radio" name="priceRange" id="price1" value="0-1000000" checked>
-                  <label class="form-check-label" for="price1">DƯỚI 1,000,000₫</label>
-                </div>
-                <div class="form-check mb-2">
-                  <input class="form-check-input" type="radio" name="priceRange" id="price2" value="1000000-2000000">
-                  <label class="form-check-label" for="price2">1,000,000₫-&gt;2,000,000₫</label>
-                </div>
-                <div class="form-check mb-2">
-                  <input class="form-check-input" type="radio" name="priceRange" id="price3" value="2000000-3000000">
-                  <label class="form-check-label" for="price3">2,000,000₫-&gt;3,000,000₫</label>
-                </div>
-                <div class="form-check mb-2">
-                  <input class="form-check-input" type="radio" name="priceRange" id="price4" value="3000000-4000000">
-                  <label class="form-check-label" for="price4">3,000,000₫-&gt;4,000,000₫</label>
-                </div>
-                <div class="form-check mb-2">
-                  <input class="form-check-input" type="radio" name="priceRange" id="price5" value="4000000-">
-                  <label class="form-check-label" for="price5">TRÊN 4,000,000₫</label>
-                </div>
-              </div>
-              
-              <!-- Brand Filter -->
-              <div class="filter-group">
-                <h3 class="filter-group-title">Thương hiệu</h3>
-                <div class="form-check mb-2">
-                  <input class="form-check-input" type="checkbox" name="brand" id="brand1" value="ADIDAS">
-                  <label class="form-check-label" for="brand1">ADIDAS</label>
-                </div>
-                <div class="form-check mb-2">
-                  <input class="form-check-input" type="checkbox" name="brand" id="brand2" value="NIKE" checked>
-                  <label class="form-check-label" for="brand2">NIKE</label>
-                </div>
-                <div class="form-check mb-2">
-                  <input class="form-check-input" type="checkbox" name="brand" id="brand3" value="PUMA">
-                  <label class="form-check-label" for="brand3">PUMA</label>
-                </div>
-                <div class="form-check mb-2">
-                  <input class="form-check-input" type="checkbox" name="brand" id="brand4" value="DESPORTE">
-                  <label class="form-check-label" for="brand4">DESPORTE</label>
-                </div>
-                <div class="form-check mb-2">
-                  <input class="form-check-input" type="checkbox" name="brand" id="brand5" value="X-MUNICH">
-                  <label class="form-check-label" for="brand5">X-MUNICH</label>
-                </div>
-                <div class="form-check mb-2">
-                  <input class="form-check-input" type="checkbox" name="brand" id="brand6" value="GRAND SPORT">
-                  <label class="form-check-label" for="brand6">GRAND SPORT</label>
-                </div>
-              </div>
-              
-              <!-- Size Filter -->
-              <div class="filter-group">
-                <h3 class="filter-group-title">Size</h3>
-                <div class="form-check mb-2">
-                  <input class="form-check-input" type="checkbox" name="size" id="size1" value="37.5">
-                  <label class="form-check-label" for="size1">37.5</label>
-                </div>
-                <div class="form-check mb-2">
-                  <input class="form-check-input" type="checkbox" name="size" id="size2" value="38">
-                  <label class="form-check-label" for="size2">38</label>
-                </div>
-                <div class="form-check mb-2">
-                  <input class="form-check-input" type="checkbox" name="size" id="size3" value="38.5">
-                  <label class="form-check-label" for="size3">38.5</label>
-                </div>
-                <div class="form-check mb-2">
-                  <input class="form-check-input" type="checkbox" name="size" id="size4" value="X">
-                  <label class="form-check-label" for="size4">X</label>
-                </div>
-                <div class="form-check mb-2">
-                  <input class="form-check-input" type="checkbox" name="size" id="size5" value="XL">
-                  <label class="form-check-label" for="size5">XL</label>
-                </div>
-              </div>
-              
-              <button type="button" id="applyFilter" class="filter-apply-btn">Áp dụng</button>
-            </form>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Product Listing -->
-      <div class="col-lg-9">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <p class="mb-0"><span id="productCount">6</span> sản phẩm</p>
-          <div class="d-flex align-items-center">
-            <span>Sắp xếp theo:</span>
-            <select class="sort-dropdown ms-2" id="sortDropdown">
-              <option value="popularity">Phổ biến</option>
-              <option value="newest">Mới nhất</option>
-              <option value="priceAsc">Giá: Thấp đến cao</option>
-              <option value="priceDesc">Giá: Cao đến thấp</option>
-            </select>
-          </div>
-        </div>
-        
-        <div class="row g-3" id="productContainer">
-          <!-- Product 1 -->
-          <div class="col-md-6 col-lg-4 product-item" data-price="1000000" data-brand="NIKE" data-size="38">
-            <div class="product-card">
-              <div class="discount-badge">20% GIẢM</div>
-              <div class="product-image-container">
-                <img src="https://via.placeholder.com/300x300.png?text=Nike+Mercurial" alt="Nike Mercurial" class="product-image">
-              </div>
-              <div class="product-details">
-                <div class="product-brand">NIKE</div>
-                <h3 class="product-name">NIKE MERCURIAL</h3>
-                <div class="product-price">
-                  <span class="original-price">1,000,000₫</span>
-                  <span class="sale-price">800,000₫</span>
-                </div>
-                <div class="product-rating">
-                  <div class="rating-stars">
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-half"></i>
-                  </div>
-                  <span class="sold-count">79 đã bán</span>
-                </div>
-              </div>
-              <div class="action-buttons">
-                <div>
-                  <button class="action-button">
-                    <i class="bi bi-cart"></i>
-                  </button>
-                  <button class="action-button">
-                    <i class="bi bi-search"></i>
-                  </button>
-                </div>
-                <button class="wishlist-button">
-                  <i class="bi bi-heart"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Product 2 -->
-          <div class="col-md-6 col-lg-4 product-item" data-price="1000000" data-brand="NIKE" data-size="38.5">
-            <div class="product-card">
-              <div class="discount-badge">20% GIẢM</div>
-              <div class="product-image-container">
-                <img src="https://via.placeholder.com/300x300.png?text=Nike+Mercurial" alt="Nike Mercurial" class="product-image">
-              </div>
-              <div class="product-details">
-                <div class="product-brand">NIKE</div>
-                <h3 class="product-name">NIKE MERCURIAL</h3>
-                <div class="product-price">
-                  <span class="original-price">1,000,000₫</span>
-                  <span class="sale-price">800,000₫</span>
-                </div>
-                <div class="product-rating">
-                  <div class="rating-stars">
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-half"></i>
-                  </div>
-                  <span class="sold-count">79 đã bán</span>
-                </div>
-              </div>
-              <div class="action-buttons">
-                <div>
-                  <button class="action-button">
-                    <i class="bi bi-cart"></i>
-                  </button>
-                  <button class="action-button">
-                    <i class="bi bi-search"></i>
-                  </button>
-                </div>
-                <button class="wishlist-button">
-                  <i class="bi bi-heart"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Product 3 -->
-          <div class="col-md-6 col-lg-4 product-item" data-price="1500000" data-brand="NIKE" data-size="38.5">
-            <div class="product-card">
-              <div class="discount-badge">20% GIẢM</div>
-              <div class="product-image-container">
-                <img src="https://via.placeholder.com/300x300.png?text=Nike+Mercurial" alt="Nike Mercurial" class="product-image">
-              </div>
-              <div class="product-details">
-                <div class="product-brand">NIKE</div>
-                <h3 class="product-name">NIKE MERCURIAL</h3>
-                <div class="product-price">
-                  <span class="original-price">1,000,000₫</span>
-                  <span class="sale-price">800,000₫</span>
-                </div>
-                <div class="product-rating">
-                  <div class="rating-stars">
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-half"></i>
-                  </div>
-                  <span class="sold-count">79 đã bán</span>
-                </div>
-              </div>
-              <div class="action-buttons">
-                <div>
-                  <button class="action-button">
-                    <i class="bi bi-cart"></i>
-                  </button>
-                  <button class="action-button">
-                    <i class="bi bi-search"></i>
-                  </button>
-                </div>
-                <button class="wishlist-button">
-                  <i class="bi bi-heart"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Product 4 -->
-          <div class="col-md-6 col-lg-4 product-item" data-price="2500000" data-brand="NIKE" data-size="39">
-            <div class="product-card">
-              <div class="discount-badge">20% GIẢM</div>
-              <div class="product-image-container">
-                <img src="https://via.placeholder.com/300x300.png?text=Nike+Mercurial" alt="Nike Mercurial" class="product-image">
-              </div>
-              <div class="product-details">
-                <div class="product-brand">NIKE</div>
-                <h3 class="product-name">NIKE MERCURIAL</h3>
-                <div class="product-price">
-                  <span class="original-price">1,000,000₫</span>
-                  <span class="sale-price">800,000₫</span>
-                </div>
-                <div class="product-rating">
-                  <div class="rating-stars">
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-half"></i>
-                  </div>
-                  <span class="sold-count">79 đã bán</span>
-                </div>
-              </div>
-              <div class="action-buttons">
-                <div>
-                  <button class="action-button">
-                    <i class="bi bi-cart"></i>
-                  </button>
-                  <button class="action-button">
-                    <i class="bi bi-search"></i>
-                  </button>
-                </div>
-                <button class="wishlist-button">
-                  <i class="bi bi-heart"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Product 5 -->
-          <div class="col-md-6 col-lg-4 product-item" data-price="3500000" data-brand="NIKE" data-size="X">
-            <div class="product-card">
-              <div class="discount-badge">20% GIẢM</div>
-              <div class="product-image-container">
-                <img src="https://via.placeholder.com/300x300.png?text=Nike+Mercurial" alt="Nike Mercurial" class="product-image">
-              </div>
-              <div class="product-details">
-                <div class="product-brand">NIKE</div>
-                <h3 class="product-name">NIKE MERCURIAL</h3>
-                <div class="product-price">
-                  <span class="original-price">1,000,000₫</span>
-                  <span class="sale-price">800,000₫</span>
-                </div>
-                <div class="product-rating">
-                  <div class="rating-stars">
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-half"></i>
-                  </div>
-                  <span class="sold-count">79 đã bán</span>
-                </div>
-              </div>
-              <div class="action-buttons">
-                <div>
-                  <button class="action-button">
-                    <i class="bi bi-cart"></i>
-                  </button>
-                  <button class="action-button">
-                    <i class="bi bi-search"></i>
-                  </button>
-                </div>
-                <button class="wishlist-button">
-                  <i class="bi bi-heart"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Product 6 -->
-          <div class="col-md-6 col-lg-4 product-item" data-price="4200000" data-brand="NIKE" data-size="XL">
-            <div class="product-card">
-              <div class="discount-badge">20% GIẢM</div>
-              <div class="product-image-container">
-                <img src="https://via.placeholder.com/300x300.png?text=Nike+Mercurial" alt="Nike Mercurial" class="product-image">
-              </div>
-              <div class="product-details">
-                <div class="product-brand">NIKE</div>
-                <h3 class="product-name">NIKE MERCURIAL</h3>
-                <div class="product-price">
-                  <span class="original-price">1,000,000₫</span>
-                  <span class="sale-price">800,000₫</span>
-                </div>
-                <div class="product-rating">
-                  <div class="rating-stars">
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-half"></i>
-                  </div>
-                  <span class="sold-count">79 đã bán</span>
-                </div>
-              </div>
-              <div class="action-buttons">
-                <div>
-                  <button class="action-button">
-                    <i class="bi bi-cart"></i>
-                  </button>
-                  <button class="action-button">
-                    <i class="bi bi-search"></i>
-                  </button>
-                </div>
-                <button class="wishlist-button">
-                  <i class="bi bi-heart"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Pagination -->
-        <nav aria-label="Page navigation" class="mt-4">
-          <ul class="pagination justify-content-center">
-            <li class="page-item disabled">
-              <a class="page-link" href="#" tabindex="-1" aria-disabled="true">
-                <i class="bi bi-chevron-left"></i>
-              </a>
-            </li>
-            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item">
-              <a class="page-link" href="#">
-                <i class="bi bi-chevron-right"></i>
-              </a>
-            </li>
-          </ul>
-        </nav>
+      <div ng-if="displayResults.length === 0 && !errorMessage" class="text-center text-danger mt-3">
+        <p>Không tìm thấy kết quả nào phù hợp.</p>
       </div>
     </div>
   </div>
-  
-  <!-- Mobile Filter Button & Overlay -->
-  <button class="mobile-filter-toggle" id="mobileFilterToggle">
-    <i class="bi bi-funnel-fill"></i>
-  </button>
-  <div class="filter-overlay" id="filterOverlay"></div>
-  
-  <!-- Bootstrap JS Bundle with Popper -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Filter Functionality
-      const filterForm = document.getElementById('filterForm');
-      const applyFilterBtn = document.getElementById('applyFilter');
-      const productItems = document.querySelectorAll('.product-item');
-      const productCountElement = document.getElementById('productCount');
-      
-      // Mobile Filter Toggle
-      const mobileFilterToggle = document.getElementById('mobileFilterToggle');
-      const filterSidebar = document.querySelector('.filter-sidebar');
-      const filterOverlay = document.getElementById('filterOverlay');
-      const filterCloseBtn = document.querySelector('.filter-close');
-      
-      // Open Filter Sidebar
-      mobileFilterToggle.addEventListener('click', function() {
-        filterSidebar.classList.add('show');
-        filterOverlay.classList.add('show');
-        document.body.style.overflow = 'hidden';
-      });
-      
-      // Close Filter Sidebar
-      filterCloseBtn.addEventListener('click', function() {
-        filterSidebar.classList.remove('show');
-        filterOverlay.classList.remove('show');
-        document.body.style.overflow = '';
-      });
-      
-      filterOverlay.addEventListener('click', function() {
-        filterSidebar.classList.remove('show');
-        filterOverlay.classList.remove('show');
-        document.body.style.overflow = '';
-      });
-      
-      // Apply Filter
-      applyFilterBtn.addEventListener('click', function() {
-        // Get selected price range
-        const selectedPriceRange = document.querySelector('input[name="priceRange"]:checked').value;
-        const [minPrice, maxPrice] = selectedPriceRange.split('-').map(p => p ? parseInt(p) : null);
-        
-        // Get selected brands
-        const selectedBrands = Array.from(document.querySelectorAll('input[name="brand"]:checked')).map(input => input.value);
-        
-        // Get selected sizes
-        const selectedSizes = Array.from(document.querySelectorAll('input[name="size"]:checked')).map(input => input.value);
-        
-        // Filter products
-        let visibleCount = 0;
-        
-        productItems.forEach(item => {
-          let isVisible = true;
-          const price = parseInt(item.getAttribute('data-price'));
-          const brand = item.getAttribute('data-brand');
-          const size = item.getAttribute('data-size');
-          
-          // Filter by price
-          if (minPrice !== null && price < minPrice) {
-            isVisible = false;
-          }
-          if (maxPrice !== null && price > maxPrice) {
-            isVisible = false;
-          }
-          
-          // Filter by brand
-          if (selectedBrands.length > 0 && !selectedBrands.includes(brand)) {
-            isVisible = false;
-          }
-          
-          // Filter by size
-          if (selectedSizes.length > 0 && !selectedSizes.includes(size)) {
-            isVisible = false;
-          }
-          
-          // Show/hide product
-          if (isVisible) {
-            item.style.display = '';
-            visibleCount++;
-          } else {
-            item.style.display = 'none';
-          }
-        });
-        
-        // Update product count
-        productCountElement.textContent = visibleCount;
-        
-        // Close sidebar on mobile
-        if (window.innerWidth < 992) {
-          filterSidebar.classList.remove('show');
-          filterOverlay.classList.remove('show');
-          document.body.style.overflow = '';
-        }
-      });
-      
-      // Sorting Functionality
-      const sortDropdown = document.getElementById('sortDropdown');
-      const productContainer = document.getElementById('productContainer');
-      
-      sortDropdown.addEventListener('change', function() {
-        const sortValue = this.value;
-        const products = Array.from(productItems);
-        
-        // Sort products
-        products.sort((a, b) => {
-          const priceA = parseInt(a.getAttribute('data-price'));
-          const priceB = parseInt(b.getAttribute('data-price'));
-          
-          switch (sortValue) {
-            case 'priceAsc':
-              return priceA - priceB;
-            case 'priceDesc':
-              return priceB - priceA;
-            case 'newest':
-              // For demo, we'll just reverse the current order
-              return -1;
-            case 'popularity':
-            default:
-              // For demo, we'll just keep the original order
-              return 0;
-          }
-        });
-        
-        // Reorder products in DOM
-        products.forEach(product => {
-          productContainer.appendChild(product);
-        });
-      });
-      
-      // Wishlist Button Toggle
-      const wishlistButtons = document.querySelectorAll('.wishlist-button');
-      
-      wishlistButtons.forEach(button => {
-        button.addEventListener('click', function() {
-          const icon = this.querySelector('i');
-          if (icon.classList.contains('bi-heart')) {
-            icon.classList.remove('bi-heart');
-            icon.classList.add('bi-heart-fill');
-          } else {
-            icon.classList.remove('bi-heart-fill');
-            icon.classList.add('bi-heart');
-          }
-        });
-      });
-      
-      // Search Functionality
-      const searchInput = document.querySelector('.search-input');
-      const searchButton = document.querySelector('.search-button');
-      
-      searchButton.addEventListener('click', performSearch);
-      searchInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-          performSearch();
-        }
-      });
-      
-      function performSearch() {
-        const searchTerm = searchInput.value.toLowerCase().trim();
-        
-        if (searchTerm === '') {
-          return;
-        }
-        
-        let visibleCount = 0;
-        
-        productItems.forEach(item => {
-          const productName = item.querySelector('.product-name').textContent.toLowerCase();
-          const productBrand = item.querySelector('.product-brand').textContent.toLowerCase();
-          
-          if (productName.includes(searchTerm) || productBrand.includes(searchTerm)) {
-            item.style.display = '';
-            visibleCount++;
-          } else {
-            item.style.display = 'none';
-          }
-        });
-        
-        // Update product count
-        productCountElement.textContent = visibleCount;
-      }
-    });
-  </script>
-</body>
-</html>
+</div>
+<style>
+  body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f4f4;
+}
+
+.product-card {
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.product-card:hover {
+  transform: scale(1.05);
+}
+
+.product-card img {
+  height: 200px;
+  object-fit: cover;
+}
+
+.product-card .card-body {
+  padding: 15px;
+  text-align: center;
+}
+
+.product-card .card-body h6 {
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.product-card .card-body p {
+  font-size: 12px;
+  color: #666;
+}
+
+.product-grid {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.product-grid .col-lg-2 {
+  margin-bottom: 20px;
+}
+
+</style>

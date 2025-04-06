@@ -82,11 +82,48 @@ app.config(function ($routeProvider) {
       templateUrl: './Views/doimatkhau22.html',
       controller: 'doimatkhau2'
     })
+    .when('/timkiem/:search', {
+      templateUrl: './Views/timkiem.html',
+      controller: 'timkiemController'
+    })
     .otherwise("/")
 })
 
 
+app.controller('mainController', function ($scope, $location) {
+ 
+  
 
+  $scope.btntimkiem = function () {
+    if ($scope.search && $scope.search.trim() !== '') {
+      $location.path('/timkiem/' + $scope.search);
+      $scope.search = '';
+    } else {
+      Swal.fire({
+        title: 'Thông báo',
+        text: 'Vui lòng nhập từ khóa để tìm kiếm!',//ss
+        icon: 'info',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#3085d6',
+        background: '#fff',
+        color: '#333',
+        customClass: {
+            popup: 'custom-popup',
+        }
+    });
+    }
+    $http.get()
+  };
+  
+});
+app.service('ThuongHieuService', function($http) {
+  const apiUrl = 'https://localhost:7196/api/Thuonghieu'; // Thay URL API của bạn
+
+  // Hàm lấy danh sách thương hiệu
+  this.getAllThuongHieu = function() {
+      return $http.get(apiUrl);
+  };
+});
 
 
 // Run block để khởi tạo ứng dụng
@@ -178,4 +215,6 @@ app.run(function ($rootScope, $location, $http) {
 
   });
 
+  
+  
 });
