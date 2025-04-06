@@ -1,1 +1,61 @@
-size
+<div class="container mt-4">
+    <h3 class="mb-3">Quản Lý Size</h3>
+    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#sizeModal" ng-click="resetSize()">➕Thêm Size</button>
+    <hr>
+    <table class="table table-bordered">
+        <thead >
+            <tr>
+                <th>Số Size</th>
+                <th>Trạng Thái</th>
+                <th>Hành Động</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="size in sizes">
+                <td>{{ size.sosize }}</td>
+                <td>
+                    <span class="badge" ng-class="size.trangthai == 0 ? 'bg-success' : 'bg-secondary'">
+                        {{ size.trangthai == 0 ? '✅Hoạt động' : '🚫Không hoạt động' }}
+                    </span>
+                </td>
+                <td>
+                    <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#sizeModal"
+                        ng-click="editSize(size)">✏️Sửa</button>
+                    <button class="btn btn-danger btn-sm" ng-click="deleteSize(size.id)" ng-if="!size.isUsedInProduct">🗑️Xóa</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="modal fade" id="sizeModal" tabindex="-1" aria-labelledby="sizeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="sizeModalLabel">{{ editingSize ? 'Cập Nhật Size' : 'Thêm Size' }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Nhập số size -->
+                <div class="mb-3">
+                    <label for="sosize" class="form-label">Số Size</label>
+                    <input type="number" id="sosize" class="form-control" ng-model="newSize.sosize"
+                        placeholder="Nhập số size (30 - 50)" required ng-change="validateSize()">
+                    <small class="text-danger" ng-if="formError1.sosize">{{ formError1.sosize }}</small>
+                </div>
+
+                <!-- Trạng thái -->
+                <div class="mb-3 form-check form-switch">
+                    <input type="checkbox" class="form-check-input" ng-model="newSize.trangthai" 
+                        ng-true-value="0" ng-false-value="2">
+                    <label class="form-check-label">Trạng Thái</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button class="btn btn-success" ng-click="addSize()" ng-if="!editingSize" data-bs-dismiss="modal">Thêm Size</button>
+                <button class="btn btn-warning" ng-click="updateSize()" ng-if="editingSize" data-bs-dismiss="modal">Cập Nhật Size</button>
+            </div>
+        </div>
+    </div>
+</div>

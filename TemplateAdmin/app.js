@@ -42,6 +42,10 @@ app.config(function ($routeProvider) {
             templateUrl: "./Views/ChatLieu.html",
             controller: 'QuanLyThuocTinhController'
         })
+        .when("/thuongHieu", {
+            templateUrl: "./Views/thuongHieu.html",
+            controller: 'QuanLyThuocTinhController'
+        })
         .when("/addSanPham", {
             templateUrl: "./Views/addSanPham.html",
             controller: "QuanLySanPhamController"
@@ -64,3 +68,33 @@ app.config(function ($routeProvider) {
         })
         .otherwise("/")
 });
+app.run(function($rootScope, $location) {
+    // Khôi phục thông tin user từ localStorage nếu có
+    var storedUser = localStorage.getItem('userInfo');
+    if (storedUser) {
+        $rootScope.userInfo = JSON.parse(storedUser);
+        $rootScope.isLoggedIn = true;
+    }
+
+    $rootScope.$on('$routeChangeStart', function(event, next, current) {
+        var publicPages = ["/dangnhap", "/quenmatkhau", "/datlaimatkhau"];
+        var path = $location.path();
+
+        // Nếu đã đăng nhập rồi mà lại vào /dangnhap thì chuyển về trang chính
+        if ($rootScope.userInfo && ["/dangnhap", "/quenmatkhau", "/datlaimatkhau"].includes(path)) {
+            event.preventDefault();
+            $location.path("/");
+            return;
+        }
+        
+
+        // Nếu chưa đăng nhập và truy cập trang yêu cầu đăng nhập → chuyển hướng
+        var restrictedPage = publicPages.indexOf(path) === -1;
+        if (restrictedPage && !$rootScope.userInfo) {
+            event.preventDefault();
+            $location.path("/dangnhap");
+        }
+    });
+});
+
+
