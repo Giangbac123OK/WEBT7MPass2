@@ -45,6 +45,13 @@
     text-align: center;
     padding: 10px 20px;
   }
+  .product-img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
 </style>
 
 
@@ -116,6 +123,7 @@
               <th>Số lượng</th>
               <th>Tình trạng</th>
               <th>Giá tiền</th>
+              <th>Ngày thêm mới</th>
               <th>Thương hiệu</th>
               <th>Chức năng</th>
             </tr>
@@ -123,17 +131,23 @@
           <tbody ng-repeat="product in products">
             <tr>
               <td><input type="checkbox"></td>
-              <td>{{product.tensp}}</td>
-              <td><img
                   src="https://drake.vn/image/catalog/H%C3%ACnh%20content/hinh-anh-giay-vans/hinh-anh-giay-vans-17.jpg"
-                  alt="Ảnh sản phẩm" class="img-thumbnail" width="100"></td>
+              <td>{{product.tenSanpham}}</td>
+              <td><img src="https://localhost:7196/picture/{{product.image}}" alt="Ảnh sản phẩm"
+                class="img-thumbnail product-img">
+              </td>
               <td>{{product.soluong}}</td>
-              <td><span class="badge badge-success">Còn hàng</span></td>
-              <td>{{product.giaban}}</td>
-              <td>{{product.thuongHieu}}</td>
+              <td>
+                <span class="badge badge-success" ng-if="product.soluong > 0">Còn hàng</span>
+                <span class="badge bg-secondary" ng-if="product.soluong === 0">Hết hàng</span>
+            </td>
+            
+              <td>{{product.giaBan | currency:"":0}}₫</td>
+              <td>{{product.ngayThemMoi | date:'dd/MM/yyyy'}}</td>
+              <td>{{getCategoriesName(product.idth)}}</td>
               <td>
                 <div class="d-flex align-items-center gap-2">
-                  <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                  <button class="btn btn-danger btn-sm" ng-click="deleteProduct(product)"><i class="fas fa-trash"></i></button>
                   <button class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></button>
                   <button class="btn btn-primary btn-sm"><i class="fas fa-eye"></i> Xem</button>
                   <div class="form-switch">
