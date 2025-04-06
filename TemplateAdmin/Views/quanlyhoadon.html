@@ -203,7 +203,7 @@
         font-size: 0.85rem;
     }
 
-    /* Status Badges */
+    /* status Badges */
     .badge {
         padding: 0.35rem 0.75rem;
         border-radius: 50px;
@@ -404,27 +404,124 @@
 <div class="container mt-4">
     <div class="page-header">
         <h2>Quản Lý Hóa Đơn</h2>
-        <button class="notification-btn" id="notificationBtn" ng-click="toggleNotification()">
+        <button class="notification-btn" id="notificationBtn" data-toggle="modal" data-target="#notificationModal">
             <i class="fas fa-bell"></i>
             <span class="badge" ng-if="unreadNotifications > 0">{{unreadNotifications}}</span>
         </button>
     </div>
 
-    <div class="notification-box" id="notificationBox" ng-show="showNotifications">
-        <div class="notification-header">
-            <span>Thông báo đơn hàng mới</span>
-            <span class="badge bg-white text-primary" ng-if="unreadNotifications > 0">{{unreadNotifications}} mới</span>
-        </div>
-        <div>
-            <div class="notification-item" ng-repeat="noti in notifications">
-                <div class="d-flex justify-content-between">
-                    <strong>Đơn hàng #{{noti.id}}</strong>
-                    <small class="text-muted">{{noti.time}}</small>
+    <div class="modal fade" id="notificationModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        Thông báo đơn hàng
+                        <span class="badge bg-primary" ng-if="unreadNotifications > 0">
+                            {{unreadNotifications}} mới
+                        </span>
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
                 </div>
-                <p class="mb-0 small">{{noti.customer}} - {{noti.total | currency:"":0}}₫</p>
+                <div class="modal-body p-0">
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link" ng-class="{'active': selectedTab === 'unread'}" 
+                               ng-click="selectTab('unread')">
+                               Chưa đọc
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" ng-class="{'active': selectedTab === 'read'}" 
+                               ng-click="selectTab('read')">
+                               Đã đọc
+                            </a>
+                        </li>
+                    </ul>               
+                    
+                    <!-- Tab content -->
+                    <div class="tab-content">
+                        <!-- Unread orders -->
+                        <div id="unread" ng-show="selectedTab === 'unread'">
+                            <div class="list-group" ng-if="unreadOrders.length > 0">
+                                <div class="list-group-item list-group-item-action" 
+                                     ng-repeat="order in unreadOrders" 
+                                     ng-click="showOrderDetail(order)">
+                                    <div class="d-flex justify-content-between">
+                                        <strong>Đơn hàng {{order.id}}</strong>
+                                        <small class="text-muted">{{order.orderDate | date:'dd/MM/yyyy HH:mm'}}</small>
+                                    </div>
+                                    <p class="mb-0">{{order.customerName}} - {{order.totalAmount | currency:"":0}}₫</p>
+                                    <div class="mt-1">
+                                        <span class="badge bg-info">{{order.status}}</span>
+                                        <span class="badge bg-danger">Mới</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-center p-3" ng-if="unreadOrders.length === 0">
+                                <small class="text-muted">Không có đơn hàng mới</small>
+                            </div>
+                        </div>
+                        
+                        <!-- Read orders -->
+                        <div id="read" ng-show="selectedTab === 'read'">
+                            <div class="list-group" ng-show="readOrders.length > 0">
+                                <div class="list-group-item list-group-item-action" 
+                                    ng-repeat="order in readOrders" 
+                                    ng-click="showOrderDetail(order)">
+                                    <div class="d-flex justify-content-between">
+                                        <strong>Đơn hàng {{order.id}}</strong>
+                                        <small class="text-muted">{{order.orderDate | date:'dd/MM/yyyy HH:mm'}}</small>
+                                    </div>
+                                    <p class="mb-0">{{order.customerName}} - {{order.totalAmount | currency:"":0}}₫</p>
+                                    <div class="mt-1">
+                                        <span class="badge bg-info">{{order.status}}</span>
+                                        <span class="badge bg-danger">Mới</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-center p-3" ng-if="readOrders.length === 0">
+                                <small class="text-muted">Không có đơn hàng đã đọc</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-primary" 
+                            ng-click="markAsRead(unreadOrders.map(o => o.id))" 
+                            ng-if="selectedTab === 'unread' && unreadOrders.length > 0">
+                        Đánh dấu tất cả đã đọc
+                    </button>
+                </div>
             </div>
         </div>
-        <button class="btn btn-light w-100 border-0 rounded-0" ng-click="markAsRead()">Đánh dấu đã đọc</button>
+    </div>
+    
+    <!-- Order Detail Modal -->
+    <div class="modal fade" id="orderDetailModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Chi tiết đơn hàng {{selectedOrder && selectedOrder.id}}</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div ng-if="selectedOrder">
+                        <p><strong>Khách hàng:</strong> {{selectedOrder.customerName}}</p>
+                        <p><strong>Ngày đặt:</strong> {{selectedOrder.orderDate | date:'dd/MM/yyyy HH:mm'}}</p>
+                        <p><strong>Tổng tiền:</strong> {{selectedOrder.totalAmount | currency:"":0}}₫</p>
+                        <p><strong>Trạng thái:</strong> {{selectedOrder.status}}</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <ul class="nav nav-tabs" id="orderTabs" role="tablist">
@@ -520,22 +617,22 @@
                     </button>
 
                     <button class="btn btn-sm btn-success" ng-if="invoice.trangthai === 0"
-                        ng-click="updateInvoiceStatus(invoice.id, 1)">
+                        ng-click="updateInvoicestatus(invoice.id, 1)">
                         <i class="fas fa-check"></i> Xác nhận
                     </button>
 
                     <button class="btn btn-sm btn-info" ng-if="invoice.trangthai === 1"
-                        ng-click="updateInvoiceStatus(invoice.id, 2)">
+                        ng-click="updateInvoicestatus(invoice.id, 2)">
                         <i class="fas fa-truck"></i> Vận chuyển
                     </button>
 
                     <button class="btn btn-sm btn-success" ng-if="invoice.trangthai === 2"
-                        ng-click="updateInvoiceStatus(invoice.id, 3)">
+                        ng-click="updateInvoicestatus(invoice.id, 3)">
                         <i class="fas fa-check-circle"></i> Hoàn thành
                     </button>
 
                     <button class="btn btn-sm btn-danger" ng-if="invoice.trangthai < 3"
-                        ng-click="updateInvoiceStatus(invoice.id, 4)">
+                        ng-click="updateInvoicestatus(invoice.id, 4)">
                         <i class="fas fa-times"></i> Hủy đơn
                     </button>
                 </div>
@@ -615,22 +712,22 @@
                     </button>
 
                     <button class="btn btn-sm btn-success" ng-if="invoice.trangthai === 0"
-                        ng-click="updateInvoiceStatus(invoice.id, 1)">
+                        ng-click="updateInvoicestatus(invoice.id, 1)">
                         <i class="fas fa-check"></i> Xác nhận
                     </button>
 
                     <button class="btn btn-sm btn-info" ng-if="invoice.trangthai === 1"
-                        ng-click="updateInvoiceStatus(invoice.id, 2)">
+                        ng-click="updateInvoicestatus(invoice.id, 2)">
                         <i class="fas fa-truck"></i> Vận chuyển
                     </button>
 
                     <button class="btn btn-sm btn-success" ng-if="invoice.trangthai === 2"
-                        ng-click="updateInvoiceStatus(invoice.id, 3)">
+                        ng-click="updateInvoicestatus(invoice.id, 3)">
                         <i class="fas fa-check-circle"></i> Hoàn thành
                     </button>
 
                     <button class="btn btn-sm btn-danger" ng-if="invoice.trangthai < 3"
-                        ng-click="updateInvoiceStatus(invoice.id, 4)">
+                        ng-click="updateInvoicestatus(invoice.id, 4)">
                         <i class="fas fa-times"></i> Hủy đơn
                     </button>
                 </div>
@@ -710,22 +807,22 @@
                     </button>
 
                     <button class="btn btn-sm btn-success" ng-if="invoice.trangthai === 0"
-                        ng-click="updateInvoiceStatus(invoice.id, 1)">
+                        ng-click="updateInvoicestatus(invoice.id, 1)">
                         <i class="fas fa-check"></i> Xác nhận
                     </button>
 
                     <button class="btn btn-sm btn-info" ng-if="invoice.trangthai === 1"
-                        ng-click="updateInvoiceStatus(invoice.id, 2)">
+                        ng-click="updateInvoicestatus(invoice.id, 2)">
                         <i class="fas fa-truck"></i> Vận chuyển
                     </button>
 
                     <button class="btn btn-sm btn-success" ng-if="invoice.trangthai === 2"
-                        ng-click="updateInvoiceStatus(invoice.id, 3)">
+                        ng-click="updateInvoicestatus(invoice.id, 3)">
                         <i class="fas fa-check-circle"></i> Hoàn thành
                     </button>
 
                     <button class="btn btn-sm btn-danger" ng-if="invoice.trangthai < 3"
-                        ng-click="updateInvoiceStatus(invoice.id, 4)">
+                        ng-click="updateInvoicestatus(invoice.id, 4)">
                         <i class="fas fa-times"></i> Hủy đơn
                     </button>
                 </div>
@@ -805,22 +902,22 @@
                     </button>
 
                     <button class="btn btn-sm btn-success" ng-if="invoice.trangthai === 0"
-                        ng-click="updateInvoiceStatus(invoice.id, 1)">
+                        ng-click="updateInvoicestatus(invoice.id, 1)">
                         <i class="fas fa-check"></i> Xác nhận
                     </button>
 
                     <button class="btn btn-sm btn-info" ng-if="invoice.trangthai === 1"
-                        ng-click="updateInvoiceStatus(invoice.id, 2)">
+                        ng-click="updateInvoicestatus(invoice.id, 2)">
                         <i class="fas fa-truck"></i> Vận chuyển
                     </button>
 
                     <button class="btn btn-sm btn-success" ng-if="invoice.trangthai === 2"
-                        ng-click="updateInvoiceStatus(invoice.id, 3)">
+                        ng-click="updateInvoicestatus(invoice.id, 3)">
                         <i class="fas fa-check-circle"></i> Hoàn thành
                     </button>
 
                     <button class="btn btn-sm btn-danger" ng-if="invoice.trangthai < 3"
-                        ng-click="updateInvoiceStatus(invoice.id, 4)">
+                        ng-click="updateInvoicestatus(invoice.id, 4)">
                         <i class="fas fa-times"></i> Hủy đơn
                     </button>
                 </div>
@@ -900,22 +997,22 @@
                     </button>
 
                     <button class="btn btn-sm btn-success" ng-if="invoice.trangthai === 0"
-                        ng-click="updateInvoiceStatus(invoice.id, 1)">
+                        ng-click="updateInvoicestatus(invoice.id, 1)">
                         <i class="fas fa-check"></i> Xác nhận
                     </button>
 
                     <button class="btn btn-sm btn-info" ng-if="invoice.trangthai === 1"
-                        ng-click="updateInvoiceStatus(invoice.id, 2)">
+                        ng-click="updateInvoicestatus(invoice.id, 2)">
                         <i class="fas fa-truck"></i> Vận chuyển
                     </button>
 
                     <button class="btn btn-sm btn-success" ng-if="invoice.trangthai === 2"
-                        ng-click="updateInvoiceStatus(invoice.id, 3)">
+                        ng-click="updateInvoicestatus(invoice.id, 3)">
                         <i class="fas fa-check-circle"></i> Hoàn thành
                     </button>
 
                     <button class="btn btn-sm btn-danger" ng-if="invoice.trangthai < 3"
-                        ng-click="updateInvoiceStatus(invoice.id, 4)">
+                        ng-click="updateInvoicestatus(invoice.id, 4)">
                         <i class="fas fa-times"></i> Hủy đơn
                     </button>
                 </div>
@@ -995,22 +1092,22 @@
                     </button>
 
                     <button class="btn btn-sm btn-success" ng-if="invoice.trangthai === 0"
-                        ng-click="updateInvoiceStatus(invoice.id, 1)">
+                        ng-click="updateInvoicestatus(invoice.id, 1)">
                         <i class="fas fa-check"></i> Xác nhận
                     </button>
 
                     <button class="btn btn-sm btn-info" ng-if="invoice.trangthai === 1"
-                        ng-click="updateInvoiceStatus(invoice.id, 2)">
+                        ng-click="updateInvoicestatus(invoice.id, 2)">
                         <i class="fas fa-truck"></i> Vận chuyển
                     </button>
 
                     <button class="btn btn-sm btn-success" ng-if="invoice.trangthai === 2"
-                        ng-click="updateInvoiceStatus(invoice.id, 3)">
+                        ng-click="updateInvoicestatus(invoice.id, 3)">
                         <i class="fas fa-check-circle"></i> Hoàn thành
                     </button>
 
                     <button class="btn btn-sm btn-danger" ng-if="invoice.trangthai < 3"
-                        ng-click="updateInvoiceStatus(invoice.id, 4)">
+                        ng-click="updateInvoicestatus(invoice.id, 4)">
                         <i class="fas fa-times"></i> Hủy đơn
                     </button>
                 </div>
@@ -1166,19 +1263,19 @@
                     <i class="fas fa-times me-2"></i>Đóng
                 </button>
                 <button type="button" class="btn btn-success" ng-if="selectedInvoice.trangthai === 0"
-                    ng-click="updateInvoiceStatus(selectedInvoice.id, 1)">
+                    ng-click="updateInvoicestatus(selectedInvoice.id, 1)">
                     <i class="fas fa-check me-2"></i>Xác nhận đơn hàng
                 </button>
                 <button type="button" class="btn btn-info" ng-if="selectedInvoice.trangthai === 1"
-                    ng-click="updateInvoiceStatus(selectedInvoice.id, 2)">
+                    ng-click="updateInvoicestatus(selectedInvoice.id, 2)">
                     <i class="fas fa-truck me-2"></i>Bắt đầu vận chuyển
                 </button>
                 <button type="button" class="btn btn-success" ng-if="selectedInvoice.trangthai === 2"
-                    ng-click="updateInvoiceStatus(selectedInvoice.id, 3)">
+                    ng-click="updateInvoicestatus(selectedInvoice.id, 3)">
                     <i class="fas fa-check-circle me-2"></i>Xác nhận hoàn thành
                 </button>
                 <button type="button" class="btn btn-danger" ng-if="selectedInvoice.trangthai < 3"
-                    ng-click="updateInvoiceStatus(selectedInvoice.id, 4)">
+                    ng-click="updateInvoicestatus(selectedInvoice.id, 4)">
                     <i class="fas fa-times me-2"></i>Hủy đơn hàng
                 </button>
             </div>

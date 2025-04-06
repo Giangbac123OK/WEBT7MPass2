@@ -1,7 +1,11 @@
-app.controller('quanlyhoadonController', function ($scope, $http, $q) {
+app.controller('quanlyhoadonController', function ($scope, $http, $q, $timeout) {
     // Biến quản lý trạng thái
     $scope.loading = true;
     $scope.showNotifications = false;
+    $scope.selectedTab = 'unread';
+    $scope.unreadOrders = [];
+    $scope.readOrders = [];
+    $scope.oldOrders = [];
     $scope.unreadNotifications = 0;
     $scope.notifications = [];
     $scope.invoices = [];
@@ -31,7 +35,6 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q) {
     // Hàm khởi tạo
     $scope.init = function () {
         $scope.loadInvoices();
-        $scope.loadNotifications();
     };
 
     // Hàm tải danh sách hóa đơn từ API
@@ -87,20 +90,7 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q) {
             console.error('Lỗi khi tải dữ liệu:', error);
             $scope.loading = false;
         });
-    };
-
-
-    // Hàm tải thông báo
-    $scope.loadNotifications = function () {
-        $http.get('/api/notifications')
-            .then(function (response) {
-                $scope.notifications = response.data;
-                $scope.unreadNotifications = $scope.notifications.filter(n => !n.read).length;
-            })
-            .catch(function (error) {
-                console.error('Lỗi khi tải thông báo:', error);
-            });
-    };
+    }; 
 
     // Hàm tính toán số lượng hóa đơn theo trạng thái
     $scope.calculateCounts = function () {
@@ -170,7 +160,7 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q) {
                     id: item.id,
                     idhd: item.idhd,
                     tensanpham: item.tensp || 'Không rõ',
-                    anh: item.urlHinhanh ? `https://localhost:7196/picture/${item.urlHinhanh}` : 'https://via.placeholder.com/60',
+                    anh: item.urlHinhanh ? `https://localhost:7196/picture/${item.urlHinhanh}` : 'https://i.pinimg.com/236x/1a/c8/1a/1ac81aed196c0ca212e6f307b9bdabfa.jpg',
                     dongia: parseFloat(item.giasp) || 0,
                     soluong: parseInt(item.soluong) || 0,
                     mau: item.mau || '-',
@@ -200,42 +190,10 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q) {
         }
     };
 
-    // Hàm lấy thông tin khách hàng
-    $scope.getCustomerInfo = function (customerId) {
-        if ($scope.customers[customerId]) {
-            return $q.resolve($scope.customers[customerId]);
-        }
-
-        return $http.get('/api/customers/' + customerId)
-            .then(function (response) {
-                $scope.customers[customerId] = response.data;
-                return response.data;
-            })
-            .catch(function (error) {
-                console.error('Lỗi khi lấy thông tin khách hàng:', error);
-                return { id: customerId, ten: 'Khách vãng lai' };
-            });
-    };
-
-    // Hàm lấy thông tin phương thức thanh toán
-    $scope.getPaymentMethodInfo = function (methodId) {
-        if ($scope.paymentMethods[methodId]) {
-            return $q.resolve($scope.paymentMethods[methodId]);
-        }
-
-        return $http.get('/api/payment-methods/' + methodId)
-            .then(function (response) {
-                $scope.paymentMethods[methodId] = response.data;
-                return response.data;
-            })
-            .catch(function (error) {
-                console.error('Lỗi khi lấy thông tin phương thức thanh toán:', error);
-                return { id: methodId, tenpttt: 'Không xác định' };
-            });
-    };
-
     // Hàm cập nhật trạng thái hóa đơn
     $scope.updateInvoiceStatus = function (invoiceId, newStatus) {
+        const userInfoString = localStorage.getItem("userInfo");
+        const userInfo = JSON.parse(userInfoString);
         var statusMessage = "";
         switch (newStatus) {
             case 1: statusMessage = "Xác nhận đơn hàng"; break;
@@ -249,7 +207,7 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q) {
             return;
         }
     
-        $http.put(`https://localhost:7196/api/Hoadons/trangthai/${invoiceId}?trangthai=${newStatus}`)
+        $http.put(`https://localhost:7196/api/Hoadons/trangthaiNV/${invoiceId}?trangthai=${newStatus}&idnv=${userInfo.id}`)
             .then(function (response) {
                 // Kiểm tra status code 200 (thành công)
                 if (response.status === 200) {
@@ -304,22 +262,76 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q) {
         }
     };
 
-    // Hàm hiển thị/ẩn thông báo
-    $scope.toggleNotification = function () {
-        $scope.showNotifications = !$scope.showNotifications;
-    };
+    $scope.selectTab = function(tabName) {
+        $scope.selectedTab = tabName;
+        loadTabData(tabName);
+    };    
+    
+    function loadTabData(tabName) {
+        switch(tabName) {
+            case 'unread':
+                loadUnreadOrders();
+                break;
+            case 'read':
+                loadReadOrders();
+                break;
+            case 'old':
+                loadOldOrders();
+                break;
+        }
+    }
+    
+    // Hàm tải đơn chưa đọc
+    function loadUnreadOrders() {
+        $http.get('https://localhost:7196/api/Hoadons/unread-orders')
+            .then(function(response) {
+                $scope.unreadOrders = response.data;
+                $scope.unreadNotifications = $scope.unreadOrders.length;
+            });
+    }
 
-    // Hàm đánh dấu đã đọc thông báo
-    $scope.markAsRead = function () {
-        $http.put('/api/notifications/mark-as-read')
-            .then(function () {
-                $scope.unreadNotifications = 0;
-                $scope.showNotifications = false;
-            })
-            .catch(function (error) {
-                console.error('Lỗi khi đánh dấu đã đọc:', error);
+    // Hàm tải đơn đã đọc
+    function loadReadOrders() {
+        $http.get('https://localhost:7196/api/Hoadons/read-orders')
+            .then(function(response) {
+                $scope.readOrders = response.data;
+            });
+    }
+
+    // Hàm tải đơn cũ
+    function loadOldOrders() {
+        $http.get('https://localhost:7196/api/Hoadons/old-orders')
+            .then(function(response) {
+                $scope.oldOrders = response.data;
+            });
+    }
+
+    // Hàm đánh dấu đã đọc
+    $scope.markAsRead = function(orderIds) {
+        $http.post('https://localhost:7196/api/Hoadons/mark-as-read', { orderIds: orderIds })
+            .then(function() {
+                // Cập nhật UI ngay lập tức
+                if (Array.isArray(orderIds)) {
+                    orderIds.forEach(function(id) {
+                        var index = $scope.unreadOrders.findIndex(o => o.id === id);
+                        if (index !== -1) {
+                            var order = $scope.unreadOrders[index];
+                            $scope.unreadOrders.splice(index, 1);
+                            $scope.readOrders.unshift(order);
+                        }
+                    });
+                    $scope.unreadNotifications = $scope.unreadOrders.length;
+                }
             });
     };
+
+    // Khi modal được mở
+    $('#notificationModal').on('shown.bs.modal', function() {
+        $scope.$apply(function() {
+            $scope.selectedTab = 'unread';
+            loadUnreadOrders();
+        });
+    });
 
     // Khởi tạo ứng dụng
     $scope.init();
