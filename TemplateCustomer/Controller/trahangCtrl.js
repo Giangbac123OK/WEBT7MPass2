@@ -360,7 +360,7 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
             Swal.fire("Lỗi!", errorMessages.join("<br>"), "error");
             return;
         }
-
+        
         // === 2. Hiển thị xác nhận gửi yêu cầu ===
         Swal.fire({
             title: "Xác nhận trả hàng?",
@@ -390,7 +390,7 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
                 tennganhang: $scope.selectedBank || "Không xác định",
                 sotaikhoan: $scope.cardNumber || "0000000000",
                 tentaikhoan: $scope.accountName || "Không xác định",
-                diachiship: ""
+                diachiship: diachi
             };
 
             // === 4. Gửi yêu cầu trả hàng và xử lý tiếp theo ===

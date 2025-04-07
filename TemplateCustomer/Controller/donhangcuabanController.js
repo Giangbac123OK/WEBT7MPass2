@@ -1,6 +1,6 @@
 
 app.controller('donhangcuabanController', function ($scope, $http, $location) {
-
+    
     GetByidKH1();
 
     async function GetByidKH1() {
@@ -703,10 +703,9 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
             });
     };    
     // Load danh sách trả hàng
-    $scope.dataTraHang = [];
     $http.get("https://localhost:7196/api/Trahangs")
         .then(function(response) {
-            $scope.dataTraHang = response.data.find(x=>x.idkh==$scope.idkh);
+            $scope.dataTraHang = response.data;
             console.log("Danh sách trả hàng: ", $scope.dataTraHang);
         })
         .catch(function(error) {
@@ -714,28 +713,13 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
         });
 
     // Load chi tiết trả hàng theo ID
-    $scope.chiTietTraHang = function(id) {
-        $http.get("https://localhost:7196/api/Trahangs/" + id)
-            .then(function(response) {
-                $scope.chitietbyIdth = response.data;
-                console.log("Chi tiết trả hàng: ", $scope.chitietbyIdth);
-            })
-            .catch(function(error) {
-                console.log("Lỗi chi tiết trả hàng: ", error);
-            });
-    };
-
-    // Load chi tiết sản phẩm theo ID
-    $scope.sanPhamChiTiet = function(id) {
-        $http.get("https://localhost:7196/api/Sanphamchitiets/" + id)
-            .then(function(response) {
-                $scope.spchitietbyIdthct = response.data;
-                console.log("Chi tiết sản phẩm: ", $scope.spchitietbyIdthct);
-            })
-            .catch(function(error) {
-                console.log("Lỗi chi tiết sản phẩm: ", error);
-            });
-    };
-
+    $http.get("https://localhost:7196/api/Trahangchitiets/SanphamByThct")
+                .then(function(response) {
+                    $scope.chitietTraHang = response.data;
+                    console.log("Chi tiết trả hàng: ", $scope.chitietTraHang);
+                })
+                .catch(function(error) {
+                    console.log("Lỗi chi tiết trả hàng: ", error);
+                });
 });
 
