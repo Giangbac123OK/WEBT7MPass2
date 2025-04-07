@@ -343,7 +343,7 @@ app.controller("hoadongiohangCtr", function ($document, $rootScope, $routeParams
                 productDetails.trongluong = sanPhamData.trongluong;
                 productDetails.chieudai = sanPhamData.chieudai;
                 productDetails.chieurong = sanPhamData.chieurong;
-                productDetails.chieucao = 20;
+                productDetails.chieucao = sanPhamData.chieucao;
 
                 const saleChiTiet = await fetchSaleChiTietBySPCTId(id);
                 let giaGiam = null; // Giá giảm mặc định là null
@@ -765,7 +765,7 @@ app.controller("hoadongiohangCtr", function ($document, $rootScope, $routeParams
             weight: parseInt(productDetails.trongluong), // Trọng lượng (gram)
             length: parseInt(productDetails.chieudai), // Chiều dài (cm)
             width: parseInt(productDetails.chieurong), // Chiều rộng (cm)
-            height: 20, // Chiều cao (cm)
+            height: parseInt(productDetails.chieucao), // Chiều cao (cm)
             from_district_id: 3440, // ID Quận/Huyện người gửi
         };
 
