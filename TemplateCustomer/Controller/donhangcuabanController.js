@@ -705,7 +705,7 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
     // Load danh sách trả hàng
     $http.get("https://localhost:7196/api/Trahangs")
         .then(function(response) {
-            $scope.dataTraHang = response.data.find(x=>x.idkh==$scope.idkh);
+            $scope.dataTraHang = response.data;
             console.log("Danh sách trả hàng: ", $scope.dataTraHang);
         })
         .catch(function(error) {
@@ -713,16 +713,6 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
         });
 
     // Load chi tiết trả hàng theo ID
-    $scope.chiTietTraHang = function() {
-        $http.get("https://localhost:7196/api/Trahangs/")
-            .then(function(response) {
-                $scope.chitietTraHang = response.data;
-                console.log("Chi tiết trả hàng: ", $scope.chitietTraHang);
-            })
-            .catch(function(error) {
-                console.log("Lỗi chi tiết trả hàng: ", error);
-            });
-    };
-
+    
 });
 
