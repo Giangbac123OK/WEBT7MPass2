@@ -713,6 +713,13 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
         });
 
     // Load chi tiết trả hàng theo ID
-    
+    $http.get("https://localhost:7196/api/Trahangchitiets/SanphamByThct")
+                .then(function(response) {
+                    $scope.chitietTraHang = response.data;
+                    console.log("Chi tiết trả hàng: ", $scope.chitietTraHang);
+                })
+                .catch(function(error) {
+                    console.log("Lỗi chi tiết trả hàng: ", error);
+                });
 });
 
