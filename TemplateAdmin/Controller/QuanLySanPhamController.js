@@ -8,11 +8,12 @@ app.controller('QuanLySanPhamController', function ($scope, $http, $location) {
         mota: "",
         trangthai: 0,
         soluong: 0,
-        giaBan: 0,
+        giaBan: null,
         ngayThemMoi: new Date().toISOString(),
-        chieudai: 0,
-        chieurong: 0,
-        trongluong: 0,
+        chieudai: null,
+        chieurong: null,
+        trongluong: null,
+        Chieucao: null,
         idth: 0
     };
     $scope.products = []; // Danh sách sản phẩm
@@ -45,6 +46,7 @@ app.controller('QuanLySanPhamController', function ($scope, $http, $location) {
             .then(function (response) {
                 $scope.categories = response.data;
                 console.log($scope.categories);
+             
             })
             .catch(function (error) {
                 console.error("Lỗi khi tải danh sách thương hiệu:", error);
@@ -207,7 +209,6 @@ app.controller('QuanLySanPhamController', function ($scope, $http, $location) {
             Soluong: $scope.newVariant.Soluong,
             Giathoidiemhientai: $scope.newVariant.Giathoidiemhientai,
             Trangthai: $scope.newVariant.Trangthai,
-            Mota: $scope.newVariant.Mota,
             UrlHinhanh: $scope.newVariant.UrlHinhanh,
             file: $scope.newVariant.file // Gán thủ công
         };
