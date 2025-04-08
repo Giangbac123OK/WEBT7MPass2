@@ -384,7 +384,7 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
                 lydotrahang: $scope.returnReason || "Không có lý do",
                 trangthai: 0,
                 phuongthuchoantien: $scope.refundMethod || "Số dư TK Shopee",
-                ngaytrahangthucte: new Date().toISOString() || nullull,
+                ngaytrahangthucte:  null,
                 chuthich: $scope.mota || "Không có chú thích",
                 hinhthucxuly: $scope.hinhthucxuly || "Không xác định",
                 tennganhang: $scope.selectedBank || "Không xác định",
@@ -408,7 +408,7 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
                             idth: maxId,
                             soluong: element.soluong,
                             tinhtrang: 0,
-                            ghichu: $scope.description,
+                            ghichu: $scope.description||"",
                             idhdct: element.id
                         };
                         return $http.post("https://localhost:7196/api/Trahangchitiets", datathct);
