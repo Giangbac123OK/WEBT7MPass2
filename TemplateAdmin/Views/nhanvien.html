@@ -1,277 +1,498 @@
-<div class="container">
-    <div class="card my-3">
-        <div class="d-flex justify-content-between p-2">
-            <h5>DANH SÁCH NHÂN VIÊN</h5>
-            <span>{{ time }}</span>
+<style>
+    .main-box {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.05);
+      margin-top: 60px;
+    }
+    #cropModal {
+      z-index: 1100 !important;
+    }
+    .image-container {
+      width: 100%;
+      max-height: 400px;
+      overflow: hidden;
+      border: 1px solid #dee2e6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 8px;
+    }
+  
+    #imagePreview {
+      max-width: 100%;
+      max-height: 400px;
+      display: block;
+    }
+  
+    .modal-body {
+      max-height: 500px;
+      overflow-y: auto;
+    }
+  
+    .btn i {
+      margin-right: 6px;
+    }
+  
+    .cropped-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+  
+    .delete-btn {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: rgba(255, 0, 0, 0.8);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+  
+    .delete-btn:hover {
+      background: red;
+    }
+  
+    .cropped-img {
+      width: 300px;
+      height: 300px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+  </style>
+  <div class="container">
+      <div class="card my-3">
+          <div class="d-flex justify-content-between p-2">
+              <h5>DANH SÁCH NHÂN VIÊN</h5>
+              <span>{{ time }}</span>
+          </div>
+      </div>
+  
+      <div class="card mb-3 py-3">
+          <div class="mx-3 mb-3">
+              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddModal">
+                  <i class="bi bi-plus"></i> Thêm nhân viên mới
+              </button>
+              <button type="button" class="btn btn-warning">
+                  <i class="bi bi-arrow-counterclockwise"></i> Hoàn tác
+              </button>
+              <button type="button" class="btn btn-danger">
+                  <i class="bi bi-trash3-fill"></i> Xoá tất cả
+              </button>
+          </div>
+          <hr class="mb-3">
+          <div class="m-3">
+              <table class="table table-bordered">
+                  <thead class="text-secondary text-center">
+                      <tr>
+                          <th><input type="checkbox"></th>
+                          <th>ID</th>
+                          <th>Họ và tên</th>
+                          <th>Avatar</th>
+                          <th>Ngày sinh</th>
+                          <th>Giới tính</th>
+                          <th>Số điện thoại</th>
+                          <th>Email</th>
+                          <th>Địa chỉ</th>
+                          <th>Chức vụ</th>
+                          <th>Hành động</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <tr ng-repeat="x in listNhanVien">
+                          <td class="text-center"><input type="checkbox"></td>
+                          <td class="text-center">#{{ x.id }}</td>
+                          <td>{{ x.hovaten }}</td>
+                          <td>
+                              <img ng-src="https://localhost:7196/picture/{{ x.avatar ? x.avatar : 'AnhNhanVien.png' }}" width="100px" height="100px" alt="{{ x.hovaten }}">
+                          </td>
+                          <td class="text-center">{{ x.ngaysinh | date:'dd/MM/yyyy' }}</td>
+                          <td class="text-center">{{ x.gioitinh }}</td>
+                          <td>{{ x.sdt }}</td>
+                          <td>{{ x.email }}</td>
+                          <td>{{ x.diachi }}</td>
+                          <td class="text-center">
+                              <span>{{x.role}}</span>
+                          </td>
+                          <td class="text-center">
+                              <button type="button" class="btn btn-success text-center" data-bs-toggle="modal" data-bs-target="#detailsModal" ng-click="showDetail(x)"><i class="bi bi-person-lines-fill"></i></button>
+                              <button type="button" class="btn btn-warning text-center" data-bs-toggle="modal" data-bs-target="#EditNVModal" ng-click="showUpdate(x)"><i class="bi bi-pen-fill"></i></button>
+                              <button type="button" class="btn btn-danger text-center" ng-click="btnDelete(x.id)"><i class="bi bi-trash3-fill"></i></button>
+                          </td>
+                      </tr>
+                  </tbody>
+              </table>
+          </div>
+      </div>
+  </div>
+  <!--Thêm nhân viên-->
+  <div class="modal fade" id="AddModal" tabindex="-1" aria-labelledby="AddModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="AddModalLabel">Thêm nhân viên</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                  <form name="frmAdd" novalidate>
+                      <div class="row mb-3">
+                        <div class="col">
+                          <label>Họ và tên</label>
+                          <input type="text" name="hoten" class="form-control" ng-model="add.hoten"
+                                 ng-pattern="/^[a-zA-ZÀ-ỹ\s]+$/" required>
+                          <span class="text-danger" ng-show="frmAdd.hoten.$touched && frmAdd.hoten.$error.required">
+                            Không được bỏ trống
+                          </span>
+                          <span class="text-danger" ng-show="frmAdd.hoten.$touched && frmAdd.hoten.$error.pattern">
+                            Chỉ được nhập chữ cái và khoảng trắng
+                          </span>
+                        </div>
+                    
+                        <div class="col">
+                          <label>Ngày sinh</label>
+                          <input type="date" name="ngaysinh" class="form-control" ng-model="add.ngaysinh" required ng-change="kiemTraTuoi()">
+                          <span class="text-danger" ng-show="frmAdd.ngaysinh.$touched && frmAdd.ngaysinh.$error.required">
+                            Không được bỏ trống
+                          </span>
+                          <span class="text-danger" ng-show="frmAdd.ngaysinh.$touched && loiTuoi">
+                              Nhân viên phải đủ 18 tuổi trở lên (tính theo năm)
+                          </span>
+                        </div>
+                      </div>
+                    
+                      <div class="row mb-3">
+                        <div class="col">
+                          <label>Địa chỉ</label>
+                          <input type="text" name="diachi" class="form-control" ng-model="add.diachi" required>
+                          <span class="text-danger" ng-show="frmAdd.diachi.$touched && frmAdd.diachi.$error.required">
+                            Không được bỏ trống
+                          </span>
+                        </div>
+                    
+                        <div class="col">
+                          <label>Giới tính</label>
+                          <select class="form-select" name="gioitinh" ng-model="add.gioitinh" required aria-label="Default select example">
+                              <option disabled selected>Chọn giới tính</option>
+                              <option value="true">Nam</option>
+                              <option value="false">Nữ</option>
+                          </select>
+                          <span class="text-danger" ng-show="frmAdd.gioitinh.$touched && frmAdd.gioitinh.$error.required">
+                            Không được bỏ trống
+                          </span>
+                        </div>
+                      </div>
+  
+                      <div class="row mb-3">
+                          <div class="col">
+                              <label>Số điện thoại</label>
+                              <input type="text" name="sdt" class="form-control" ng-model="add.sdt"
+                                  ng-change="kiemTraSdt()" ng-pattern="/^(0|\+84)[0-9]{9}$/" required>
+  
+                              <span class="text-danger" ng-show="frmAdd.sdt.$touched && frmAdd.sdt.$error.required">
+                                  Không được bỏ trống
+                              </span>
+                              <span class="text-danger" ng-show="frmAdd.sdt.$touched && frmAdd.sdt.$error.pattern">
+                                  Số điện thoại không hợp lệ. Ví dụ: 0987654321 hoặc +84987654321
+                              </span>
+                              <span class="text-danger" ng-show="loiSdt">
+                                  Số điện thoại đã tồn tại
+                              </span>
+                          </div>
+                      
+                          <div class="col">
+                              <label>Email</label>
+                              <input type="email" name="email" class="form-control"
+                                     ng-model="add.email"
+                                     ng-pattern="/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/"
+                                     required ng-change="kiemTraEmail()">
+                            
+                              <span class="text-danger" ng-show="frmAdd.email.$touched && frmAdd.email.$error.required">
+                                Không được bỏ trống
+                              </span>
+                              <span class="text-danger" ng-show="frmAdd.email.$touched && frmAdd.email.$error.pattern">
+                                Email không đúng định dạng. Ví dụ: ten@example.com
+                              </span>
+                              <span class="text-danger" ng-show="frmAdd.email.$touched && loiEmail">
+                                  Email đã tồn tại!
+                              </span>
+                          </div>
+                      </div>
+  
+                      <div class="row mb-3">
+                          <div class="col" ng-init="showPassword = false">
+                              <label>Mật khẩu</label>
+                              <div class="input-group mb-3">
+                                  <input ng-attr-type="{{showPassword ? 'text' : 'password'}}"
+                                  name="password"
+                                  class="form-control"
+                                  ng-model="add.password"
+                                  ng-pattern="/^(?=.*[A-Z])(?=.*[\W_])\S+$/"
+                                  ng-minlength="8"
+                                  ng-maxlength="50"
+                                  required>
+                                  <button id="basic-addon2" type="button" class="input-group-text btn btn-outline-dark" ng-click="showPassword = !showPassword">
+                                      <span ng-show="!showPassword"><i class="bi bi-eye-fill"></i></span> <!-- 👁 -->
+                                      <span ng-show="showPassword"><i class="bi bi-eye-slash-fill"></i></span>  <!-- 👁️‍🗨️ -->
+                                    </button>
+                              </div>
+                            
+                              <!-- Các thông báo lỗi -->
+                              <span class="text-danger" ng-show="frmAdd.password.$touched && frmAdd.password.$error.required">
+                                Không được bỏ trống
+                              </span>
+                              <span class="text-danger" ng-show="frmAdd.password.$touched && frmAdd.password.$error.pattern">
+                                Mật khẩu phải chứa ít nhất 1 ký tự in hoa, 1 ký tự đặc biệt và không có dấu cách
+                              </span>
+                              <span class="text-danger" ng-show="frmAdd.password.$touched && frmAdd.password.$error.minlength">
+                                Mật khẩu phải có ít nhất 8 ký tự
+                              </span>
+                              <span class="text-danger" ng-show="frmAdd.password.$touched && frmAdd.password.$error.maxlength">
+                                Mật khẩu không được vượt quá 50 ký tự
+                              </span>
+                            </div>
+                            
+                      
+                          <div class="col">
+                              <label>Phân quyền</label>
+                              <select class="form-select" name="role" ng-model="add.role"required aria-label="Default select example">
+                                  <option disabled selected>Chọn quyền hạn</option>
+                                  <option value="0">Quản lý</option>
+                                  <option value="1">Nhân viên</option>
+                              </select>
+                            
+                              <span class="text-danger" ng-show="frmAdd.role.$touched && frmAdd.role.$error.required">
+                                Không được bỏ trống
+                              </span>
+                          </div>
+                      </div>
+                      <div class="mb-3">
+                        <button class="btn btn-outline-primary mb-3" ng-click="openCropModal()" ng-disabled="croppedDataUrl">
+                          <i class="fa-solid fa-image"></i> Chọn và Cắt ảnh
+                        </button>
+                      
+                        <div ng-if="croppedDataUrl" class="text-center">
+                          <h6 class="mb-3 text-success">Ảnh sau khi cắt:</h6>
+                          <div class="cropped-wrapper">
+                            <img ng-src="{{croppedDataUrl}}" class="cropped-img img-thumbnail">
+                            <button class="delete-btn" ng-click="removeImage()" title="Xoá ảnh">
+                              <i class="fa-solid fa-times"></i>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                  </form>        
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                  <button type="button" class="btn btn-primary" ng-click="btnAdd()">Lưu</button>
+              </div>
+          </div>
+      </div>
+  </div>
+  <!-- Modal cắt ảnh -->
+  <div class="modal fade" id="cropModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title"><i class="fa-solid fa-crop"></i> Cắt ảnh</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
+        <div class="modal-body">
+          <input type="file" id="imageInput" accept="image/*" class="form-control mb-3" />
+          <div class="image-container">
+            <img id="imagePreview" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-success" ng-click="cropImage()">
+            <i class="fa-solid fa-check"></i> Cắt và lưu
+          </button>
+        </div>
+      </div>
     </div>
-
-    <div class="card mb-3 py-3">
-        <div class="mx-3 mb-3">
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ThemNVModal">
-                <i class="bi bi-plus"></i> Thêm nhân viên mới
-            </button>
-            <button type="button" class="btn btn-warning">
-                <i class="bi bi-arrow-counterclockwise"></i> Hoàn tác
-            </button>
-            <button type="button" class="btn btn-danger">
-                <i class="bi bi-trash3-fill"></i> Xoá tất cả
-            </button>
+  </div>
+  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content" style="border-radius: 12px; overflow: hidden;">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title" id="staticBackdropLabel">Chi tiết nhân viên</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
         </div>
-        <hr class="mb-3">
-        <div class="m-3">
-            <table class="table table-bordered">
-                <thead class="text-secondary text-center">
-                    <tr>
-                        <th><input type="checkbox"></th>
-                        <th>ID</th>
-                        <th>Họ và tên</th>
-                        <th>Avatar</th>
-                        <th>Ngày sinh</th>
-                        <th>Giới tính</th>
-                        <th>Số điện thoại</th>
-                        <th>Email</th>
-                        <th>Địa chỉ</th>
-                        <th>Chức vụ</th>
-                        <th>Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="x in listNhanVien">
-                        <td class="text-center"><input type="checkbox"></td>
-                        <td class="text-center">{{ x.id }}</td>
-                        <td>{{ x.hovaten }}</td>
-                        <td>
-                            <img ng-src="https://localhost:7196/picture/{{ x.avatar ? x.avatar : 'AnhNhanVien.png' }}" width="100px" height="100px" alt="{{ x.hovaten }}">
-                        </td>
-                        <td class="text-center">{{ x.ngaysinh | date:'dd/MM/yyyy' }}</td>
-                        <td class="text-center">{{ x.gioitinh }}</td>
-                        <td>{{ x.sdt }}</td>
-                        <td>{{ x.email }}</td>
-                        <td>{{ x.diachi }}</td>
-                        <td class="text-center">{{ x.role }}</td>
-                        <td class="text-center">
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#detailsModal" ng-click="showEdit(x.id)"><i class="bi bi-person-lines-fill"></i></button>
-                            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#EditNVModal" ng-click="showEdit(x.id)"><i class="bi bi-pen-fill"></i></button>
-                            <button type="button" class="btn btn-danger"><i class="bi bi-trash3-fill"></i></button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="modal-body" style="padding: 25px;">
+          <div class="row">
+            <div class="col-md-4 text-center">
+              <img ng-src="https://localhost:7196/picture/{{ detail.avatar ? detail.avatar : 'AnhNhanVien.png' }}"
+                   alt="Avatar"
+                   style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%; border: 3px solid #007bff;">
+              <p style="margin-top: 10px; font-weight: bold;">{{ detail.hovaten }}</p>
+              <span class="badge bg-info text-dark">{{ detail.role == 1 ?   'Nhân viên':'Quản lý' }}</span>
+            </div>
+            <div class="col-md-8">
+              <div class="mb-2 d-flex">
+                <strong class="me-2">Ngày sinh:</strong> <span>{{ detail.ngaysinh | date:'dd/MM/yyyy' }}</span>
+              </div>
+              <div class="mb-2 d-flex">
+                <strong class="me-2">Địa chỉ:</strong> <span>{{ detail.diachi }}</span>
+              </div>
+              <div class="mb-2 d-flex">
+                <strong class="me-2">Giới tính:</strong> <span>{{ detail.gioitinh ?  'Nữ':'Nam'  }}</span>
+              </div>
+              <div class="mb-2 d-flex">
+                <strong class="me-2">Số điện thoại:</strong> <span>{{ detail.sdt }}</span>
+              </div>
+              <div class="mb-2 d-flex">
+                <strong class="me-2">Email:</strong> <span>{{ detail.email }}</span>
+              </div>
+              <div class="mb-2 d-flex">
+                <strong class="me-2">Ngày tạo TK:</strong> <span>{{ detail.ngaytaotaikhoan | date:'dd/MM/yyyy' }}</span>
+              </div>
+              <div class="mb-2 d-flex">
+                <strong class="me-2">Trạng thái:</strong>
+                <span class="badge"
+                      ng-class="{'bg-success': detail.trangthai == 0, 'bg-secondary': detail.trangthai != 0}">
+                  {{ detail.trangthai == 0 ?  'Ngưng hoạt động': 'Hoạt động'}}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+        </div>
+      </div>
     </div>
-</div>
-
-<!-- Modal Add Nhân Viên -->
-<div class="modal fade" id="ThemNVModal" tabindex="-1" aria-labelledby="ThemNVModalLabel" aria-hidden="true">
+  </div>
+  <!-- Cập nhật nhân viên -->
+  <div class="modal fade" id="UpdateModal" tabindex="-1" aria-labelledby="UpdateModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="ThemNVModalLabel">Tạo mới nhân viên</h5>
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title" id="UpdateModalLabel">Cập nhật nhân viên</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+  
             <div class="modal-body">
-                <form id="AddNhanVienfrm" name="AddNhanVienfrm" ng-submit="btnAdd()" novalidate>
-                    <div class="mb-3 row">
-                        <div class="col-md">
-                            <label class="form-label">Họ và Tên</label>
-                            <input type="text" name="hovaten" ng-model="add.hovaten" ng-pattern="/^[A-Za-zÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƠĂẮẰẶẲẴẸẺẼỀẾỆỂỄỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰỲỴÝỶỸ\s]+$/" required maxlength="50" class="form-control">
-                            <span class="text-danger" ng-if="AddNhanVienfrm.hovaten.$touched && AddNhanVienfrm.hovaten.$error.maxlength">
-                                Vui lòng nhập họ và tên tối đa 50 ký tự.
-                            </span>
-                            <span class="text-danger" ng-if="AddNhanVienfrm.hovaten.$touched && AddNhanVienfrm.hovaten.$error.required">
-                                Vui lòng nhập họ và tên.
-                            </span>
-                            <span class="text-danger" ng-if="AddNhanVienfrm.hovaten.$touched && AddNhanVienfrm.hovaten.$error.pattern">
-                                Vui lòng nhập họ và tên không hợp lệ.
-                            </span>
+                <form name="frmUpdate" novalidate>
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label>Họ và tên</label>
+                            <input type="text" name="hoten" class="form-control" ng-model="update.hovaten"
+                                ng-pattern="/^[a-zA-ZÀ-ỹ\s]+$/" required>
+                            <span class="text-danger" ng-show="frmUpdate.hoten.$touched && frmUpdate.hoten.$error.required">Không được bỏ trống</span>
+                            <span class="text-danger" ng-show="frmUpdate.hoten.$touched && frmUpdate.hoten.$error.pattern">Chỉ được nhập chữ cái và khoảng trắng</span>
                         </div>
-                        <div class="col-md">
-                            <label class="form-label">Ngày sinh</label>
-                            <input type="date" name="ngaysinh" ng-model="add.ngaysinh" required 
-                                   class="form-control" max="{{ getMaxYear() }}">
-                            
-                            <span class="text-danger" ng-show="AddNhanVienfrm.ngaysinh.$touched && AddNhanVienfrm.ngaysinh.$error.required">
-                                Vui lòng chọn ngày sinh.
-                            </span>
-                            <span class="text-danger" ng-show="AddNhanVienfrm.ngaysinh.$touched && AddNhanVienfrm.ngaysinh.$error.max">
-                                Nhân viên phải từ 18 tuổi trở lên.
-                            </span>
+  
+                        <div class="col">
+                            <label>Ngày sinh</label>
+                            <input type="date" name="ngaysinh" class="form-control" ng-model="update.ngaysinh" required ng-change="kiemTraTuoiUpdate()">
+                            <span class="text-danger" ng-show="frmUpdate.ngaysinh.$touched && frmUpdate.ngaysinh.$error.required">Không được bỏ trống</span>
+                            <span class="text-danger" ng-show="frmUpdate.ngaysinh.$touched && loiTuoiUpdate">Phải đủ 18 tuổi</span>
                         </div>
+                    </div>
+  
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label>Địa chỉ</label>
+                            <input type="text" class="form-control" name="diachi" ng-model="update.diachi" required>
+                            <span class="text-danger" ng-show="frmUpdate.diachi.$touched && frmUpdate.diachi.$error.required">Không được bỏ trống</span>
+                        </div>
+  
+                        <div class="col">
+                          <label>Giới tính</label>
+                          <select class="form-select" name="gioitinh" ng-model="update.gioitinh" required>
+                            <option ng-value="true">Nam</option>
+                            <option ng-value="false">Nữ</option>
+                          </select>    
+                          <span class="text-danger" ng-show="frmUpdate.gioitinh.$touched && frmUpdate.gioitinh.$error.required">Không được bỏ trống</span>                    
+                        </div>
+                    </div>
+  
+                    <div class="row mb-3">
+                      <div class="col">
+                          <label>Số điện thoại</label>
+                          <input type="text" name="sdt" class="form-control" ng-model="update.sdt"
+                               ng-pattern="/^(0|\+84)[0-9]{9}$/" required>
+  
+                          <span class="text-danger" ng-show="frmUpdate.sdt.$touched && frmAdd.sdt.$error.required">
+                              Không được bỏ trống
+                          </span>
+                          <span class="text-danger" ng-show="frmUpdate.sdt.$touched && frmAdd.sdt.$error.pattern">
+                              Số điện thoại không hợp lệ. Ví dụ: 0987654321 hoặc +84987654321
+                          </span>
+                      </div>
+                  
+                      <div class="col">
+                          <label>Email</label>
+                          <input type="email" name="email" class="form-control"
+                                 ng-model="update.email"
+                                 ng-pattern="/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/"
+                                 required>
                         
-                    </div>
-                
-                    <div class="mb-3 row">
-                        <div class="col-md">
-                            <label class="form-label">Giới tính</label>
-                            <select class="form-select" name="gioitinh" ng-model="add.gioitinh" required>
-                                <option value="" disabled selected>Chọn giới tính</option>
-                                <option value="true">Nam</option>
-                                <option value="false">Nữ</option>
+                          <span class="text-danger" ng-show="frmUpdate.email.$touched && frmUpdate.email.$error.required">
+                            Không được bỏ trống
+                          </span>
+                          <span class="text-danger" ng-show="frmUpdate.email.$touched && frmUpdate.email.$error.pattern">
+                            Email không đúng định dạng. Ví dụ: ten@example.com
+                          </span>
+                      </div>
+                  </div>
+  
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label>Phân quyền</label>
+                            <select class="form-select" name="role" ng-model="update.role" required>
+                              <option ng-value="0">Quản lý</option>
+                              <option ng-value="1">Nhân viên</option>
                             </select>
-                            <span class="text-danger" ng-show="AddNhanVienfrm.gioitinh.$touched && AddNhanVienfrm.gioitinh.$error.required">
-                                Vui lòng chọn giới tính.
+                            <span class="text-danger" ng-show="frmUpdate.role.$touched && frmUpdate.role.$error.required">
+                              Không được bỏ trống
                             </span>
                         </div>
-                        <div class="col-md">
-                            <label class="form-label">Số điện thoại</label>
-                            <input type="tel" name="sdt" ng-model="add.sdt" required ng-pattern="/^0\d{9}$/" class="form-control">
-                            <span class="text-danger" ng-show="AddNhanVienfrm.sdt.$touched && AddNhanVienfrm.sdt.$error.pattern">
-                                Số điện thoại phải có 10 chữ số, bắt đầu bằng 0.
-                            </span>
-                            <span class="text-danger" ng-show="AddNhanVienfrm.sdt.$touched && AddNhanVienfrm.sdt.$error.required">
-                                Vui lòng nhập số điện thoại.
-                            </span>
-                        </div>
-                    </div>
-                
-                    <div class="mb-3 row">
-                        <div class="col-md">
-                            <label class="form-label">Email</label>
-                            <input type="email" name="email" ng-model="add.email" required class="form-control">
-                            <span class="text-danger" ng-show="AddNhanVienfrm.email.$touched && AddNhanVienfrm.email.$error.email">
-                                Vui lòng nhập email hợp lệ.
-                            </span>
-                            <span class="text-danger" ng-show="AddNhanVienfrm.email.$touched && AddNhanVienfrm.email.$error.required">
-                                Vui lòng nhập email.
-                            </span>
-                        </div>
-                        <div class="col-md">
-                            <label class="form-label">Địa chỉ</label>
-                            <input type="text" name="diachi" ng-model="add.diachi" required class="form-control">
-                            <span class="text-danger" ng-show="AddNhanVienfrm.diachi.$touched && AddNhanVienfrm.diachi.$error.required">
-                                Vui lòng nhập địa chỉ.
-                            </span>
+  
+                        <div class="col">
+                            <label>Trạng thái</label>
+                            <select class="form-select" name="trangthai" ng-model="update.trangthai" required>
+                              <option ng-value="0">Hoạt động</option>
+                              <option ng-value="1">Ngưng hoạt động</option>
+                          </select>
+                          <span class="text-danger" ng-show="frmUpdate.trangthai.$touched && frmUpdate.trangthai.$error.required">
+                            Không được bỏ trống
+                          </span>
                         </div>
                     </div>
-                
-                    <div class="mb-3 row">
-                        <div class="col-md">
-                            <label class="form-label">Chức vụ</label>
-                            <select class="form-select" name="chucvu" ng-model="add.chucvu" required>
-                                <option value="" disabled selected>Chọn chức vụ</option>
-                                <option value="0">Admin</option>
-                                <option value="1">Quản lý</option>
-                                <option value="2">Nhân viên</option>
-                            </select>
-                            <span class="text-danger" ng-show="AddNhanVienfrm.chucvu.$touched && AddNhanVienfrm.chucvu.$error.required">
-                                Vui lòng chọn chức vụ.
-                            </span>
+  
+                    <div class="mb-3">
+                      <button class="btn btn-outline-primary mb-3" ng-click="openCropModal()" ng-disabled="croppedDataUrl">
+                        <i class="fa-solid fa-image"></i> Chọn và Cắt ảnh
+                      </button>
+                    
+                      <div ng-if="croppedDataUrl" class="text-center">
+                        <h6 class="mb-3 text-success">Ảnh sau khi cắt:</h6>
+                        <div class="cropped-wrapper">
+                          <img ng-src="{{croppedDataUrl}}" class="cropped-img img-thumbnail">
+                          <button class="delete-btn" ng-click="removeImage()" title="Xoá ảnh">
+                            <i class="fa-solid fa-times"></i>
+                          </button>
                         </div>
-                        <div class="col-md">
-                            <label class="form-label">Mật khẩu</label>
-                            <input type="password" name="password" ng-model="add.password" required maxlength="50" class="form-control">
-                            <span class="text-danger" ng-show="AddNhanVienfrm.password.$touched && AddNhanVienfrm.password.$error.maxlength">
-                                Vui lòng nhập mật khẩu tối đa 50 ký tự.
-                            </span>
-                            <span class="text-danger" ng-show="AddNhanVienfrm.password.$touched && AddNhanVienfrm.password.$error.required">
-                                Vui lòng nhập mật khẩu.
-                            </span>
-                        </div>
+                      </div>
                     </div>
                 </form>
-                
             </div>
+  
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                <button type="button" class="btn btn-primary" ng-click="btnAdd()">Lưu</button>
+                <button type="button" class="btn btn-warning" ng-click="btnUpdate()">Lưu thay đổi</button>
             </div>
         </div>
-    </div>
-</div>
-<!-- Modal DetailDetail Nhân Viên -->
-<div class="modal fade" id="detailsModal" tabindex="-1" role="dialog" aria-labelledby="detailsModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="detailsModalLabel">Chi tiết nhân viên</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p><strong>Họ tên:</strong> {{ edit.hovaten }}</p>
-                <p><strong>Ngày sinh:</strong> {{ edit.ngaysinh | date:'dd/MM/yyyy' }}</p>
-                <p><strong>Địa chỉ:</strong> {{ edit.diachi }}</p>
-                <p><strong>Giới tính:</strong> {{ edit.gioitinh ? 'Nam' : 'Nữ' }}</p>
-                <p><strong>SĐT:</strong> {{ edit.sdt }}</p>
-                <p><strong>Email:</strong> {{ edit.email }}</p>
-                <p><strong>Chức vụ:</strong> {{ edit.role == 1 ? 'Quản trị viên' : 'Nhân viên' }}</p>
-                <p><strong>Ngày tạo tài khoản:</strong> {{ edit.ngaytaotaikhoan | date:'dd/MM/yyyy' }}</p>
-                <img ng-src="https://localhost:7196/picture/{{ edit.avatar ? edit.avatar : 'AnhNhanVien.png' }}" 
-                    width="100px" height="100px" alt="{{ edit.hovaten }}">
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Modal Edit Nhân Viên -->
-<div class="modal fade" id="EditNVModal" tabindex="-1" aria-labelledby="EditNVModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <form name="EditNhanVienfrm" ng-submit="btnEdit()" novalidate>
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="EditNVModalLabel">Chỉnh sửa nhân viên</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
-  
-          <div class="modal-body">
-            <div class="mb-3">
-              <label class="form-label">Họ và tên</label>
-              <input type="text" name="hovaten" ng-model="edit.hovaten" class="form-control"
-                     required maxlength="50"
-                     ng-pattern="/^[A-Za-zÀ-ỹ\s]+$/">
-              <span class="text-danger" ng-show="EditNhanVienfrm.hovaten.$touched && EditNhanVienfrm.hovaten.$error.required">Vui lòng nhập họ và tên.</span>
-            </div>
-  
-            <div class="mb-3">
-              <label class="form-label">Ngày sinh</label>
-              <input type="date" name="ngaysinh" ng-model="edit.ngaysinh" class="form-control"
-                     required max="{{ getMaxYear() }}">
-            </div>
-  
-            <div class="mb-3">
-              <label class="form-label">Giới tính</label>
-              <select name="gioitinh" ng-model="edit.gioitinh" class="form-select" required>
-                <option value="" disabled selected>Chọn giới tính</option>
-                <option value="true">Nam</option>
-                <option value="false">Nữ</option>
-              </select>
-            </div>
-  
-            <div class="mb-3">
-              <label class="form-label">SĐT</label>
-              <input type="tel" name="sdt" ng-model="edit.sdt" class="form-control"
-                     required ng-pattern="/^0\d{9}$/">
-            </div>
-  
-            <div class="mb-3">
-              <label class="form-label">Email</label>
-              <input type="email" name="email" ng-model="edit.email" class="form-control" required>
-            </div>
-  
-            <div class="mb-3">
-              <label class="form-label">Địa chỉ</label>
-              <input type="text" name="diachi" ng-model="edit.diachi" class="form-control" required>
-            </div>
-  
-            <div class="mb-3">
-              <label class="form-label">Chức vụ</label>
-              <select name="chucvu" ng-model="edit.chucvu" class="form-select" required>
-                <option value="" disabled selected>Chọn chức vụ</option>
-                <option value="0">Admin</option>
-                <option value="1">Quản lý</option>
-                <option value="2">Nhân viên</option>
-              </select>
-            </div>
-          </div>
-  
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-            <button type="submit" class="btn btn-primary">Cập nhật</button>
-          </div>
-        </div>
-      </form>
     </div>
   </div>
   
