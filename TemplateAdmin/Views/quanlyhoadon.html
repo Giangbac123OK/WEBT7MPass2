@@ -404,7 +404,7 @@
 <div class="container mt-4">
     <div class="page-header">
         <h2>Quản Lý Hóa Đơn</h2>
-        <button class="notification-btn" id="notificationBtn" data-toggle="modal" data-target="#notificationModal">
+        <button class="notification-btn" id="notificationBtn" ng-click="loadUnreadOrdersAndShowModal()">
             <i class="fas fa-bell"></i>
             <span class="badge" ng-if="unreadNotifications > 0">{{unreadNotifications}}</span>
         </button>
@@ -443,22 +443,17 @@
                         <div id="unread" ng-show="selectedTab === 'unread'">
                             <div class="list-group" ng-if="unreadOrders.length > 0">
                                 <div class="list-group-item list-group-item-action" 
-                                     ng-repeat="order in unreadOrders"  data-bs-toggle="modal"
-                                     data-bs-target="#orderDetailModal" ng-click="openOrderDetail(order)">
+                                     ng-repeat="order in unreadOrders" ng-click="openOrderDetail(order)">
                                     <div class="d-flex justify-content-between">
                                         <strong>Đơn hàng #HD-{{order.id}}</strong>
                                         <small class="text-muted">{{order.orderDate | date:'dd/MM/yyyy HH:mm'}}</small>
                                     </div>
-                                    <p class="mb-0">{{order.customerName}} - {{order.totalAmount | currency:"":0}}₫</p>
+                                    <p class="mb-0">{{order.customerName}} - {{order.totalAmount | currency:"":0}} VNĐ</p>
                                     <div class="mt-1 d-flex justify-content-between align-items-center">
                                         <div>
                                             <span class="badge bg-info">{{order.status}}</span>
                                             <span class="badge bg-danger">Mới</span>
                                         </div>
-                                        <button class="btn btn-sm btn-outline-primary" 
-                                                ng-click="markSingleAsRead(order.id, $event)">
-                                            Đánh dấu đã đọc
-                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -476,7 +471,7 @@
                                         <strong>Đơn hàng #HD-{{order.id}}</strong>
                                         <small class="text-muted">{{order.orderDate | date:'dd/MM/yyyy HH:mm'}}</small>
                                     </div>
-                                    <p class="mb-0">{{order.customerName}} - {{order.totalAmount | currency:"":0}}₫</p>
+                                    <p class="mb-0">{{order.customerName}} - {{order.totalAmount | currency:"":0}} VNĐ</p>
                                     <div class="mt-1">
                                         <span class="badge bg-info">{{order.status}}</span>
                                         <span class="badge bg-danger">Mới</span>
@@ -490,7 +485,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                     <button type="button" class="btn btn-primary" 
                             ng-click="markAsRead(getUnreadOrderIds())" 
                             ng-if="selectedTab === 'unread' && unreadOrders.length > 0">
@@ -538,12 +533,6 @@
         <!-- Tab Tất cả -->
         <div class="tab-pane fade show active" id="all" role="tabpanel">
             <!-- Danh sách hóa đơn -->
-            <div ng-if="loading" class="text-center py-5">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                <p class="mt-2">Đang tải dữ liệu...</p>
-            </div>
 
             <div ng-if="!loading && filteredInvoices.length === 0" class="text-center py-5">
                 <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
@@ -564,7 +553,7 @@
                         }">{{invoice.trangthaiStr}}</span>
                     </div>
                     <div class="text-end">
-                        <div class="total">{{invoice.tongtiencantra | currency:"":0}}₫</div>
+                        <div class="total">{{invoice.tongtiencantra | currency:"":0}} VNĐ</div>
                         <small class="order-date">{{invoice.thoigiandathang | date:'dd/MM/yyyy HH:mm'}}</small>
                     </div>
                 </div>
@@ -577,7 +566,7 @@
                         </div>
                         <div class="col-md-6">
                             <p><strong><i class="fas fa-map-marker-alt me-2"></i>Địa chỉ:</strong>
-                                {{invoice.diachiship}}</p>
+                                {{invoice.diachiship_display}}</p>
                             <p><strong><i class="fas fa-credit-card me-2"></i>Thanh toán:</strong>
                                 <span ng-if="invoice.trangthaithanhtoan === 1" class="badge bg-success">Đã thanh
                                     toán</span>
@@ -659,7 +648,7 @@
                         }">{{invoice.trangthaiStr}}</span>
                     </div>
                     <div class="text-end">
-                        <div class="total">{{invoice.tongtiencantra | currency:"":0}}₫</div>
+                        <div class="total">{{invoice.tongtiencantra | currency:"":0}} VNĐ</div>
                         <small class="order-date">{{invoice.thoigiandathang | date:'dd/MM/yyyy HH:mm'}}</small>
                     </div>
                 </div>
@@ -672,7 +661,7 @@
                         </div>
                         <div class="col-md-6">
                             <p><strong><i class="fas fa-map-marker-alt me-2"></i>Địa chỉ:</strong>
-                                {{invoice.diachiship}}</p>
+                                {{invoice.diachiship_display}}</p>
                             <p><strong><i class="fas fa-credit-card me-2"></i>Thanh toán:</strong>
                                 <span ng-if="invoice.trangthaithanhtoan === 1" class="badge bg-success">Đã thanh
                                     toán</span>
@@ -754,7 +743,7 @@
                         }">{{invoice.trangthaiStr}}</span>
                     </div>
                     <div class="text-end">
-                        <div class="total">{{invoice.tongtiencantra | currency:"":0}}₫</div>
+                        <div class="total">{{invoice.tongtiencantra | currency:"":0}} VNĐ</div>
                         <small class="order-date">{{invoice.thoigiandathang | date:'dd/MM/yyyy HH:mm'}}</small>
                     </div>
                 </div>
@@ -767,7 +756,7 @@
                         </div>
                         <div class="col-md-6">
                             <p><strong><i class="fas fa-map-marker-alt me-2"></i>Địa chỉ:</strong>
-                                {{invoice.diachiship}}</p>
+                                {{invoice.diachiship_display}}</p>
                             <p><strong><i class="fas fa-credit-card me-2"></i>Thanh toán:</strong>
                                 <span ng-if="invoice.trangthaithanhtoan === 1" class="badge bg-success">Đã thanh
                                     toán</span>
@@ -849,7 +838,7 @@
                         }">{{invoice.trangthaiStr}}</span>
                     </div>
                     <div class="text-end">
-                        <div class="total">{{invoice.tongtiencantra | currency:"":0}}₫</div>
+                        <div class="total">{{invoice.tongtiencantra | currency:"":0}} VNĐ</div>
                         <small class="order-date">{{invoice.thoigiandathang | date:'dd/MM/yyyy HH:mm'}}</small>
                     </div>
                 </div>
@@ -862,7 +851,7 @@
                         </div>
                         <div class="col-md-6">
                             <p><strong><i class="fas fa-map-marker-alt me-2"></i>Địa chỉ:</strong>
-                                {{invoice.diachiship}}</p>
+                                {{invoice.diachiship_display}}</p>
                             <p><strong><i class="fas fa-credit-card me-2"></i>Thanh toán:</strong>
                                 <span ng-if="invoice.trangthaithanhtoan === 1" class="badge bg-success">Đã thanh
                                     toán</span>
@@ -944,7 +933,7 @@
                         }">{{invoice.trangthaiStr}}</span>
                     </div>
                     <div class="text-end">
-                        <div class="total">{{invoice.tongtiencantra | currency:"":0}}₫</div>
+                        <div class="total">{{invoice.tongtiencantra | currency:"":0}} VNĐ</div>
                         <small class="order-date">{{invoice.thoigiandathang | date:'dd/MM/yyyy HH:mm'}}</small>
                     </div>
                 </div>
@@ -957,7 +946,7 @@
                         </div>
                         <div class="col-md-6">
                             <p><strong><i class="fas fa-map-marker-alt me-2"></i>Địa chỉ:</strong>
-                                {{invoice.diachiship}}</p>
+                                {{invoice.diachiship_display}}</p>
                             <p><strong><i class="fas fa-credit-card me-2"></i>Thanh toán:</strong>
                                 <span ng-if="invoice.trangthaithanhtoan === 1" class="badge bg-success">Đã thanh
                                     toán</span>
@@ -1039,7 +1028,7 @@
                         }">{{invoice.trangthaiStr}}</span>
                     </div>
                     <div class="text-end">
-                        <div class="total">{{invoice.tongtiencantra | currency:"":0}}₫</div>
+                        <div class="total">{{invoice.tongtiencantra | currency:"":0}} VNĐ</div>
                         <small class="order-date">{{invoice.thoigiandathang | date:'dd/MM/yyyy HH:mm'}}</small>
                     </div>
                 </div>
@@ -1052,7 +1041,7 @@
                         </div>
                         <div class="col-md-6">
                             <p><strong><i class="fas fa-map-marker-alt me-2"></i>Địa chỉ:</strong>
-                                {{invoice.diachiship}}</p>
+                                {{invoice.diachiship_display}}</p>
                             <p><strong><i class="fas fa-credit-card me-2"></i>Thanh toán:</strong>
                                 <span ng-if="invoice.trangthaithanhtoan === 1" class="badge bg-success">Đã thanh
                                     toán</span>
@@ -1147,7 +1136,7 @@
                     </div>
                     <div class="col-md-6">
                         <p><strong><i class="fas fa-map-marker-alt me-2"></i>Địa chỉ:</strong>
-                            {{selectedInvoice.diachiship}}</p>
+                            {{selectedInvoice.diachiship_display}}</p>
                         <p><strong><i class="fas fa-truck me-2"></i>Ngày giao:</strong> {{selectedInvoice.ngaygiaothucte
                             || 'Chưa giao'}}</p>
                         <p><strong><i class="fas fa-phone me-2"></i>SĐT:</strong> {{selectedInvoice.sdt}}</p>
@@ -1161,7 +1150,7 @@
                         <div class="summary-card">
                             <div class="card-body">
                                 <h6 class="card-title"><i class="fas fa-shopping-bag me-2"></i>Tổng tiền sản phẩm</h6>
-                                <p class="card-text">{{selectedInvoice.tongtiensanpham | currency:"":0}}₫</p>
+                                <p class="card-text">{{selectedInvoice.tongtiensanpham | currency:"":0}} VNĐ</p>
                             </div>
                         </div>
                     </div>
@@ -1169,7 +1158,7 @@
                         <div class="summary-card">
                             <div class="card-body">
                                 <h6 class="card-title"><i class="fas fa-shipping-fast me-2"></i>Phí vận chuyển</h6>
-                                <p class="card-text">{{selectedInvoice.phivanchuyen | currency:"":0}}₫</p>
+                                <p class="card-text">{{selectedInvoice.phivanchuyen | currency:"":0}} VNĐ</p>
                             </div>
                         </div>
                     </div>
@@ -1177,7 +1166,7 @@
                         <div class="summary-card">
                             <div class="card-body">
                                 <h6 class="card-title"><i class="fas fa-tag me-2"></i>Giảm giá</h6>
-                                <p class="card-text">{{selectedInvoice.tonggiamgia | currency:"":0}}₫</p>
+                                <p class="card-text">{{selectedInvoice.tonggiamgia | currency:"":0}} VNĐ</p>
                             </div>
                         </div>
                     </div>
@@ -1186,7 +1175,7 @@
                 <div class="summary-card total-card mb-4">
                     <div class="card-body">
                         <h5 class="card-title"><i class="fas fa-receipt me-2"></i>Tổng tiền cần trả</h5>
-                        <p class="card-text">{{selectedInvoice.tongtiencantra | currency:"":0}}₫</p>
+                        <p class="card-text">{{selectedInvoice.tongtiencantra | currency:"":0}} VNĐ</p>
                     </div>
                 </div>
 
@@ -1217,8 +1206,8 @@
                                 <td>{{item.size || '-'}}</td>
                                 <td>{{item.chatlieu || '-'}}</td>
                                 <td>{{item.soluong || '0'}}</td>
-                                <td>{{item.dongia | currency:"":0}}₫</td>
-                                <td>{{item.tong | currency:"":0}}₫</td>
+                                <td>{{item.dongia | currency:"":0}} VNĐ</td>
+                                <td>{{item.tong | currency:"":0}} VNĐ</td>
                             </tr>
                             <tr ng-if="!selectedInvoice.chitiethoadon || selectedInvoice.chitiethoadon.length === 0">
                                 <td colspan="8" class="text-center text-muted py-3">
@@ -1298,7 +1287,7 @@
                     </div>
                     <div class="col-md-6">
                         <p><strong><i class="fas fa-map-marker-alt me-2"></i>Địa chỉ:</strong>
-                            {{selectedInvoice.diachiship}}</p>
+                            {{selectedInvoice.diachiship_display}}</p>
                         <p><strong><i class="fas fa-truck me-2"></i>Ngày giao:</strong> {{selectedInvoice.ngaygiaothucte
                             || 'Chưa giao'}}</p>
                         <p><strong><i class="fas fa-phone me-2"></i>SĐT:</strong> {{selectedInvoice.sdt}}</p>
@@ -1312,7 +1301,7 @@
                         <div class="summary-card">
                             <div class="card-body">
                                 <h6 class="card-title"><i class="fas fa-shopping-bag me-2"></i>Tổng tiền sản phẩm</h6>
-                                <p class="card-text">{{selectedInvoice.tongtiensanpham | currency:"":0}}₫</p>
+                                <p class="card-text">{{selectedInvoice.tongtiensanpham | currency:"":0}} VNĐ</p>
                             </div>
                         </div>
                     </div>
@@ -1320,7 +1309,7 @@
                         <div class="summary-card">
                             <div class="card-body">
                                 <h6 class="card-title"><i class="fas fa-shipping-fast me-2"></i>Phí vận chuyển</h6>
-                                <p class="card-text">{{selectedInvoice.phivanchuyen | currency:"":0}}₫</p>
+                                <p class="card-text">{{selectedInvoice.phivanchuyen | currency:"":0}} VNĐ</p>
                             </div>
                         </div>
                     </div>
@@ -1328,7 +1317,7 @@
                         <div class="summary-card">
                             <div class="card-body">
                                 <h6 class="card-title"><i class="fas fa-tag me-2"></i>Giảm giá</h6>
-                                <p class="card-text">{{selectedInvoice.tonggiamgia | currency:"":0}}₫</p>
+                                <p class="card-text">{{selectedInvoice.tonggiamgia | currency:"":0}} VNĐ</p>
                             </div>
                         </div>
                     </div>
@@ -1337,7 +1326,7 @@
                 <div class="summary-card total-card mb-4">
                     <div class="card-body">
                         <h5 class="card-title"><i class="fas fa-receipt me-2"></i>Tổng tiền cần trả</h5>
-                        <p class="card-text">{{selectedInvoice.tongtiencantra | currency:"":0}}₫</p>
+                        <p class="card-text">{{selectedInvoice.tongtiencantra | currency:"":0}} VNĐ</p>
                     </div>
                 </div>
 
@@ -1368,8 +1357,8 @@
                                 <td>{{item.size || '-'}}</td>
                                 <td>{{item.chatlieu || '-'}}</td>
                                 <td>{{item.soluong || '0'}}</td>
-                                <td>{{item.dongia | currency:"":0}}₫</td>
-                                <td>{{item.tong | currency:"":0}}₫</td>
+                                <td>{{item.dongia | currency:"":0}} VNĐ</td>
+                                <td>{{item.tong | currency:"":0}} VNĐ</td>
                             </tr>
                             <tr ng-if="!selectedInvoice.chitiethoadon || selectedInvoice.chitiethoadon.length === 0">
                                 <td colspan="8" class="text-center text-muted py-3">
