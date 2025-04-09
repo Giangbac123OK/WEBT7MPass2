@@ -1,4 +1,4 @@
-app.controller('nhanvienController', function ($scope, $http, $location, $interval) {
+app.controller('nhanvienController', function ($scope, $http, $location, $interval, $timeout ) {
     // Hàm lấy thứ trong tuần bằng tiếng Việt
     function getVietnameseDay(dayIndex) {
         const days = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
@@ -24,68 +24,84 @@ app.controller('nhanvienController', function ($scope, $http, $location, $interv
 
     // Chạy ngay khi trang tải
     updateTime();
-    function LoadData(){
+    function LoadData() {
         $http.get("https://localhost:7196/api/Nhanviens")
-            .then(function(response) {
+            .then(function (response) {
                 $scope.listNhanVien = response.data;
                 console.log($scope.listNhanVien);
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 console.error(error);
             });
     }
     LoadData();
-    $scope.getMaxYear = function() {
+    $scope.getMaxYear = function () {
         const today = new Date();
         const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate()); // Trừ đúng 18 năm từ hôm nay
         return maxDate.toISOString().split("T")[0]; // Chuyển về yyyy-mm-dd
     };
+
     
+    $scope.add = {}; // Khởi tạo nếu chưa có
+
+    $scope.add.avatarFile = "";
+
+    // Hàm preview ảnh modal thêm
+    $scope.previewAvatar = function (file) {
+        if (file && file.type && file.type.startsWith('image/')) {
+            const imageUrl = URL.createObjectURL(file);
+            $timeout(function () {
+                document.getElementById('imagePreview').style.backgroundImage = 'url(' + imageUrl + ')';
+            });
     
-    $scope.btnAdd = function(){
+            file.previewUrl = imageUrl;
+            $scope.add.avatarFile = file;
+        } else {
+            document.getElementById('imagePreview').style.backgroundImage = '';
+            $scope.add.avatarFile = null;
+        }
+    };         
+
+    // Hàm preview ảnh mặc định modal thêm
+    $scope.setDefaultAvatar = function (type) {
+        const defaultUrl = "https://i.pinimg.com/736x/11/5e/8a/115e8a22e7ee37d2c662d1a1714a90bf.jpg";
+        $timeout(function () {
+            document.getElementById('imagePreview').style.backgroundImage = 'url(' + defaultUrl + ')';
+        });
+    
+        const defaultAvatar = {
+            isDefault: true,
+            previewUrl: defaultUrl
+        };
+    
+        if (type === 'add') {
+            $scope.add.avatarFile = defaultAvatar;
+        } else if (type === 'edit') {
+            $scope.edit.avatarFile = defaultAvatar;
+        }
+    };           
+
+    // Hàm thêm nhân viên
+    $scope.btnAdd = function () {
         if ($scope.AddNhanVienfrm.$invalid) {
             angular.forEach($scope.AddNhanVienfrm.$error, function (fields) {
                 angular.forEach(fields, function (field) {
                     field.$setTouched();
                 });
             });
-            return; // Dừng lại nếu form có lỗi
-        }
-        // Xử lý ngày sinh đúng múi giờ
-        const date = new Date($scope.add.ngaysinh); // Đảm bảo có giờ
-        const formattedDate = date.toISOString(); // Chuyển sang ISO UTC
-        const data = {
-            id: 0,
-            hovaten: $scope.add.hovaten,
-            ngaysinh: date, // Lưu dưới dạng ISO
-            diachi: $scope.add.diachi,
-            gioitinh: $scope.add.gioitinh === "true", // Đảm bảo đúng kiểu boolean
-            sdt: $scope.add.sdt,
-            email: $scope.add.email,
-            trangthai: 0,
-            password: $scope.add.password,
-            role: Number($scope.add.chucvu), // Đảm bảo số nguyên
-            ngaytaotaikhoan: new Date(), // Lưu thời gian tạo tài khoản
-            avatar: "giang.img"
-        };
-        if ($scope.listNhanVien.find(x => x.sdt === data.sdt)) {
-            Swal.fire({
-                title: "Lỗi",
-                text: "Số điện thoại đã tồn tại!",
-                icon: "error",
-                confirmButtonText: "OK"
-            });
             return;
         }
-        if ($scope.listNhanVien.find(x => x.email === data.email)) {
-            Swal.fire({
-                title: "Lỗi",
-                text: "Email đã tồn tại!",
-                icon: "error",
-                confirmButtonText: "OK"
-            });
+    
+        if ($scope.listNhanVien.find(x => x.sdt === $scope.add.sdt)) {
+            Swal.fire({ title: "Lỗi", text: "Số điện thoại đã tồn tại!", icon: "error" });
             return;
         }
+    
+        if ($scope.listNhanVien.find(x => x.email === $scope.add.email)) {
+            Swal.fire({ title: "Lỗi", text: "Email đã tồn tại!", icon: "error" });
+            return;
+        }
+    
         Swal.fire({
             title: "Xác nhận",
             text: "Bạn có chắc chắn muốn thêm nhân viên này?",
@@ -95,70 +111,161 @@ app.controller('nhanvienController', function ($scope, $http, $location, $interv
             cancelButtonText: "Hủy"
         }).then((result) => {
             if (result.isConfirmed) {
-                $http.post("https://localhost:7196/api/Nhanviens", data)
-                    .then(function(){
-                        const dataSendEmail = {
-                            toEmail: data.email,
-                            hoten: data.hovaten,
-                            password: data.password,
-                            role: data.role
-                        };
-                        
-                        $http.post("https://localhost:7196/api/Nhanviens/Send_Account_Creation_Email", null, { params: dataSendEmail })
-                            .then(() => {
-                                
-                                window.scroll(0,0);
-                                location.reload();
-                                Swal.fire({
-                                    title: "Thành công!",
-                                    text: "Nhân viên đã được thêm và email đã gửi.",
-                                    icon: "success",
-                                    confirmButtonText: "OK"
-                                });
-                                // Reset form
-                                $scope.add = {};
-                                $scope.AddNhanVienfrm.$setPristine();
-                                $scope.AddNhanVienfrm.$setUntouched();
-                            })
-                            .catch((error) => {
-                                console.error(error);
-                                let errorMessage = error.data?.message || "Lỗi khi gửi email!";
-                                Swal.fire({
-                                    title: "Lỗi",
-                                    text: errorMessage,
-                                    icon: "error",
-                                    confirmButtonText: "OK"
-                                });
-                            });
-                        
-                        
-                    })
-                    .catch(function(error){
-                        console.error("Error:", error);
-                        let errorMessage = error.data?.message || "Lỗi dữ liệu!";
+                var formData = new FormData();
+                formData.append('hovaten', $scope.add.hovaten);
+                formData.append('ngaysinh', new Date($scope.add.ngaysinh).toISOString());
+                formData.append('diachi', $scope.add.diachi);
+                formData.append('gioitinh', $scope.add.gioitinh);
+                formData.append('sdt', $scope.add.sdt);
+                formData.append('email', $scope.add.email);
+                formData.append('chucvu', $scope.add.chucvu);
+                formData.append('password', $scope.add.password);
+    
+                if ($scope.add.avatarFile && !$scope.add.avatarFile.isDefault) {
+                    formData.append('avatarFile', $scope.add.avatarFile);
+                }
+    
+                $http.post('https://localhost:7196/api/Nhanviens', formData, {
+                    transformRequest: angular.identity,
+                    headers: { 'Content-Type': undefined }
+                }).then(function (response) {
+                    const result = response.data;
+                    if (response.status === 200) {
+                        Swal.fire({
+                            title: "Thành công",
+                            text: result.Message || "Thêm nhân viên thành công!",
+                            icon: "success"
+                        });
+    
+                        $('#ThemNVModal').modal('hide');
+                        LoadData();
+    
+                        $scope.add = {};
+                        $scope.AddNhanVienfrm.$setPristine();
+                        $scope.AddNhanVienfrm.$setUntouched();
+                    } else {
                         Swal.fire({
                             title: "Lỗi",
-                            text: errorMessage,
-                            icon: "error",
-                            confirmButtonText: "OK"
+                            text: result.Message || "Có lỗi xảy ra khi thêm nhân viên",
+                            icon: "error"
                         });
+                    }
+                }).catch(function (error) {
+                    Swal.fire({
+                        title: "Lỗi",
+                        text: error.data?.Message || error.Message || "Có lỗi xảy ra",
+                        icon: "error"
                     });
+                });
             }
         });
+    };    
+
+    $scope.edit = {}; // Khởi tạo
+    $scope.edit.avatarFile = ""; // Mặc định chưa có ảnh
+
+    $scope.previewAvataredit = function (file, type) {
+        if (file && file.type && file.type.startsWith('image/')) {
+            const imageUrl = URL.createObjectURL(file);
+            $timeout(function () {
+                document.getElementById('imagePreviewedit').style.backgroundImage = 'url(' + imageUrl + ')';
+            });
+    
+            file.previewUrl = imageUrl;
+    
+            if (type === 'add') {
+                $scope.add.avatarFile = file;
+            } else if (type === 'edit') {
+                $scope.edit.avatarFile = file;
+            }
+        } else {
+            document.getElementById('imagePreviewedit').style.backgroundImage = '';
+            if (type === 'add') {
+                $scope.add.avatarFile = null;
+            } else if (type === 'edit') {
+                $scope.edit.avatarFile = null;
+            }
+        }
     };
-    $scope.showEdit = function(id) {
+
+    // Hàm preview ảnh mặc định modal thêm
+    $scope.setDefaultAvataredit = function (type) {
+        const defaultUrl = "https://i.pinimg.com/736x/11/5e/8a/115e8a22e7ee37d2c662d1a1714a90bf.jpg";
+        $timeout(function () {
+            document.getElementById('imagePreviewedit').style.backgroundImage = 'url(' + defaultUrl + ')';
+        });
+    
+        const defaultAvatar = {
+            isDefault: true,
+            previewUrl: defaultUrl
+        };
+    
+        if (type === 'add') {
+            $scope.add.avatarFile = defaultAvatar;
+        } else if (type === 'edit') {
+            $scope.edit.avatarFile = defaultAvatar;
+        }
+    };   
+
+    $scope.showEdit = function (id) {
         $scope.isEditing = true;
-        
+    
         $http.get("https://localhost:7196/api/Nhanviens/" + id)
-            .then(function(response) {
+            .then(function (response) {
                 $scope.edit = response.data;
-                $scope.edit.ngaysinh = new Date($scope.edit.ngaysinh); // chuyển thành đối tượng Date
+                $scope.edit.ngaysinh = new Date($scope.edit.ngaysinh);
                 $scope.edit.gioitinh = $scope.edit.gioitinh ? 'false' : 'true';
+    
+                const existingImageUrl = 'https://localhost:7196/picture/' + ($scope.edit.avatar || 'AnhNhanVien.png');
+                $timeout(function () {
+                    document.getElementById('imagePreviewedit').style.backgroundImage = 'url(' + existingImageUrl + ')';
+                });
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 console.error(error);
             });
     };
+      
+
+    
+    $scope.btnEdit = function () {
+        var formData = new FormData();
+    
+        formData.append("Hovaten", $scope.edit.hovaten);
+        formData.append("Ngaysinh", new Date($scope.edit.ngaysinh).toISOString());
+        formData.append("Gioitinh", $scope.edit.gioitinh === 'true'); // boolean
+        formData.append("Sdt", $scope.edit.sdt);
+        formData.append("Email", $scope.edit.email);
+        formData.append("Diachi", $scope.edit.diachi);
+        formData.append("Role", $scope.edit.chucvu);
+        formData.append("Id", $scope.edit.id);
+    
+        // Xử lý ảnh:
+        if ($scope.edit.avatarFile && !$scope.edit.avatarFile.isDefault) {
+            formData.append("avatarFile", $scope.edit.avatarFile);
+        }
+    
+        // Nếu là ảnh mặc định
+        if ($scope.edit.avatarFile && $scope.edit.avatarFile.isDefault) {
+            formData.append("isDefaultAvatar", true);
+        }
+    
+        $http.put("https://localhost:7196/api/Nhanviens/" + $scope.edit.id, formData, {
+            transformRequest: angular.identity,
+            headers: { 'Content-Type': undefined }
+        }).then(function (res) {
+            Swal.fire("Thành công", res.data.message, "success");
+            $('#EditNVModal').modal('hide');
+            $scope.getAll();
+        }).catch(function (error) {
+            Swal.fire("Lỗi", error.data.message, "error");
+        });
+    };
     
     
+
+    $scope.viewImage = function (avatarFileName) {
+        $scope.currentImage = 'https://localhost:7196/picture/' + (avatarFileName || 'AnhNhanVien.png');
+    };
+
 });
