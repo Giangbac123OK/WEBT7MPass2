@@ -343,7 +343,7 @@ app.controller("hoadongiohangCtr", function ($document, $rootScope, $routeParams
                 productDetails.trongluong = sanPhamData.trongluong;
                 productDetails.chieudai = sanPhamData.chieudai;
                 productDetails.chieurong = sanPhamData.chieurong;
-                productDetails.chieucao = 20;
+                productDetails.chieucao = sanPhamData.chieucao;
 
                 const saleChiTiet = await fetchSaleChiTietBySPCTId(id);
                 let giaGiam = null; // Giá giảm mặc định là null
@@ -443,6 +443,7 @@ app.controller("hoadongiohangCtr", function ($document, $rootScope, $routeParams
     }
 
     let addressTrangThai0 = null;
+    let addressTrangThai = null;
     let currentAddressId = null
 
     const loadAddressesByIdKH = async () => {
@@ -489,6 +490,7 @@ app.controller("hoadongiohangCtr", function ($document, $rootScope, $routeParams
                 if (address.trangthai === "0" && addressTrangThai0 === null) {
                     currentAddressId = address;
                     addressTrangThai0 = { ...address, tenThanhPho, tenQuanHuyen, tenPhuongXa };
+                    addressTrangThai = { ...address, tenThanhPho, tenQuanHuyen, tenPhuongXa };
                 }
             }
 
@@ -507,6 +509,7 @@ app.controller("hoadongiohangCtr", function ($document, $rootScope, $routeParams
 
                 // ✅ Lưu biến addressTrangThai0 ra ngoài để xử lý tiếp
                 window.addressTrangThai0 = addressTrangThai0;
+                console.log("addressTrangThai", addressTrangThai);
                 calculateShippingFee();
             }
 
@@ -638,6 +641,17 @@ app.controller("hoadongiohangCtr", function ($document, $rootScope, $routeParams
 
                 calculateShippingFee();
 
+                
+                // Cập nhật addressTrangThai0 với thông tin địa chỉ mới được chọn
+                addressTrangThai = {
+                    ...response.data,
+                    tenThanhPho,
+                    tenQuanHuyen,
+                    tenPhuongXa
+                };
+                
+                console.log("addressTrangThai Lưu", addressTrangThai);
+
                 Swal.fire("Thành Công", "Thay đổi địa chỉ thành công.", "success");
             } else {
                 Swal.fire("Lỗi", "Không tìm thấy thông tin địa chỉ.", "error");
@@ -686,6 +700,10 @@ app.controller("hoadongiohangCtr", function ($document, $rootScope, $routeParams
                     modal.hide();
 
                     calculateShippingFee();
+
+                    addressTrangThai = addressTrangThai0;
+                
+                    console.log("addressTrangThai thay đổi", addressTrangThai);
 
                     // Hiển thị thông báo lỗi giả
                     Swal.fire("Thành Công", "Khôi phục địa chỉ mặc định thành công.", "success");
@@ -765,7 +783,7 @@ app.controller("hoadongiohangCtr", function ($document, $rootScope, $routeParams
             weight: parseInt(productDetails.trongluong), // Trọng lượng (gram)
             length: parseInt(productDetails.chieudai), // Chiều dài (cm)
             width: parseInt(productDetails.chieurong), // Chiều rộng (cm)
-            height: 20, // Chiều cao (cm)
+            height: parseInt(productDetails.chieucao), // Chiều cao (cm)
             from_district_id: 3440, // ID Quận/Huyện người gửi
         };
 
@@ -1344,7 +1362,7 @@ app.controller("hoadongiohangCtr", function ($document, $rootScope, $routeParams
             trangthaidonhang: 0,
             donvitrangthai: 0,
             thoigiandathang: currentDate,
-            diachiship: diachi,
+            diachiship: `${addressTrangThai.diachicuthe || ''} - ${addressTrangThai.phuongxa} - ${addressTrangThai.quanhuyen} - ${addressTrangThai.thanhpho}`,
             ngaygiaothucte: currentDate,
             tongtiencantra: tongHoaDon,
             tongtiensanpham: tongSanPham,
