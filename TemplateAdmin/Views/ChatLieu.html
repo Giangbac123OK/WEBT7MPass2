@@ -42,7 +42,7 @@
                     <input type="text" id="tenchatlieu" class="form-control" 
                            ng-model="newChatLieu.tenchatlieu" 
                            ng-class="{'is-invalid': formError.tenchatlieu}" 
-                           ng-change="validateChatLieu()" required>
+                           ng-change="validateChatLieu()"  required>
                     <div class="invalid-feedback" ng-show="formError.tenchatlieu">
                         {{ formError.tenchatlieu }}
                     </div>
@@ -53,9 +53,9 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" ng-click="resetChatLieu()">Đóng</button>
                 <button class="btn btn-success" ng-click="addChatLieu()" ng-if="!editingChatLieu" data-bs-dismiss="modal">Thêm</button>
-                <button class="btn btn-warning" ng-click="updateChatLieu()" ng-if="editingChatLieu" data-bs-dismiss="modal">Cập Nhật</button>
+                <button class="btn btn-warning" ng-click="updateChatLieu()" ng-if="editingChatLieu" >Cập Nhật</button>
             </div>
         </div>
     </div>

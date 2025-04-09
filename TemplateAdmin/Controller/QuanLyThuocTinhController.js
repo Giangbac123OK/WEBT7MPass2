@@ -1,4 +1,4 @@
-app.controller('QuanLyThuocTinhController', function ($scope, $http) {
+app.controller('QuanLyThuocTinhController', function ($scope, $http, $timeout) {
     $scope.colors = [];
     $scope.getALlMau = function () {
         $http.get("https://localhost:7196/api/Color")
@@ -30,9 +30,30 @@ app.controller('QuanLyThuocTinhController', function ($scope, $http) {
     $scope.showAddColorModal = function () {
         $scope.newColor = { name: '', colorCode: '', status: 0 };
         $scope.editingColor = false;
-        var modal = new bootstrap.Modal(document.getElementById('addColorModal'));
-        modal.show();
+        $scope.duplicateName = false;
+        $scope.duplicateColorCode = false;
+        $scope.isModalVisible = false;
+    
+        $timeout(function () {
+            $scope.isModalVisible = true;
+    
+            // Dùng Bootstrap 5 để hiển thị modal
+            const modalElement = document.getElementById('addColorModal');
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+    
+            // Reset form sau khi modal đã hiển thị
+            setTimeout(() => {
+                $scope.$apply(function () {
+                    if ($scope.colorForm) {
+                        $scope.colorForm.$setPristine();
+                        $scope.colorForm.$setUntouched();
+                    }
+                });
+            }, 200); // Delay 200ms đảm bảo form đã khởi tạo
+        });
     };
+    
     //Thêm màu
     $scope.addColor = function () {
         if ($scope.editingColor) {
@@ -57,15 +78,52 @@ app.controller('QuanLyThuocTinhController', function ($scope, $http) {
     $scope.editColor = function (color) {
         $scope.newColor = angular.copy(color);
         $scope.editingColor = true;
-        console.log("Màu sửa", color);
-
+        $scope.duplicateName = false;
+        $scope.duplicateColorCode = false;
+        $scope.isModalVisible = false;
+    
+        $timeout(function () {
+            $scope.isModalVisible = true;
+    
+            const modalElement = document.getElementById('addColorModal');
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+    
+            setTimeout(() => {
+                $scope.$apply(function () {
+                    if ($scope.colorForm) {
+                        $scope.colorForm.$setPristine();
+                        $scope.colorForm.$setUntouched();
+                    }
+                });
+            }, 200);
+        });
     };
+    
     $scope.duplicateName = false;
     $scope.duplicateColorCode = false;
     $scope.checkDuplicateColor = function () {
-        $scope.duplicateName = $scope.colors.some(color => color.name.toLowerCase() === $scope.newColor.name.toLowerCase());
-        $scope.duplicateColorCode = $scope.colors.some(color => color.colorCode.toLowerCase() === $scope.newColor.colorCode.toLowerCase());
+        $scope.duplicateName = false;
+        $scope.duplicateColorCode = false;
+    
+        var currentId = $scope.newColor.id; // Nếu đang update, sẽ có ID
+    
+        $scope.colors.forEach(function (color) {
+            // Bỏ qua chính màu đang chỉnh sửa
+            if (currentId && color.id === currentId) return;
+    
+            // So sánh tên (không phân biệt hoa thường, bỏ khoảng trắng)
+            if (color.name.trim().toLowerCase() === $scope.newColor.name.trim().toLowerCase()) {
+                $scope.duplicateName = true;
+            }
+    
+            // So sánh mã màu
+            if (color.colorCode.trim().toLowerCase() === $scope.newColor.colorCode.trim().toLowerCase()) {
+                $scope.duplicateColorCode = true;
+            }
+        });
     };
+    
     //Cập nhật màu
     $scope.updateColor = function () {
         $http.put("https://localhost:7196/api/Color/" + $scope.newColor.id, {
@@ -123,7 +181,7 @@ app.controller('QuanLyThuocTinhController', function ($scope, $http) {
             $scope.chatLieus = response.data.map(function (cl) {
                 return {
                     id: cl.id,
-                    tenchatlieu: cl.tenchatlieu.toLowerCase(), // Chuyển về chữ thường để kiểm tra trùng
+                    tenchatlieu: cl.tenchatlieu, 
                     trangthai: cl.trangthai,
                     isUsedInProduct: cl.isUsedInProduct
                 };
@@ -138,8 +196,8 @@ app.controller('QuanLyThuocTinhController', function ($scope, $http) {
     $scope.resetChatLieu = function () {
         $scope.newChatLieu = { tenchatlieu: '', trangthai: 0 };
         $scope.editingChatLieu = false;
-        $scope.formError = {};
-    };
+        $scope.formError = {}; // <- RESET lỗi validate ở đây
+    };    
 
     //Kiểm tra dữ liệu hợp lệ
     $scope.validateChatLieu = function () {
@@ -150,7 +208,7 @@ app.controller('QuanLyThuocTinhController', function ($scope, $http) {
             $scope.formError.tenchatlieu = "Tên chất liệu phải có ít nhất 2 ký tự!";
         } else if (ten.length > 50) {
             $scope.formError.tenchatlieu = "Tên chất liệu không được vượt quá 50 ký tự!";
-        } else if ($scope.chatLieus.some(cl => cl.tenchatlieu === ten.toLowerCase() && cl.id !== $scope.newChatLieu.id)) {
+        }else if ($scope.chatLieus.some(cl => cl.tenchatlieu.toLowerCase() === ten.toLowerCase() && cl.id !== $scope.newChatLieu.id)) {
             $scope.formError.tenchatlieu = "Tên chất liệu đã tồn tại!";
         } else {
             $scope.formError.tenchatlieu = null;
@@ -176,6 +234,8 @@ app.controller('QuanLyThuocTinhController', function ($scope, $http) {
     $scope.editChatLieu = function (cl) {
         $scope.newChatLieu = angular.copy(cl);
         $scope.editingChatLieu = true;
+        $scope.formError = {}; // Reset lỗi validate
+        $scope.isModalVisible = false;
     };
     //Cập nhật chất liệu
     $scope.updateChatLieu = function () {
@@ -253,6 +313,11 @@ app.controller('QuanLyThuocTinhController', function ($scope, $http) {
             alert("Thêm size thành công!");
             $scope.getSizes(); // Lấy lại danh sách mới
             $scope.resetSize();
+            // Đóng modal sau khi thêm
+            var modal = bootstrap.Modal.getInstance(document.getElementById('sizeModal'));
+            if (modal) {
+                modal.hide();
+            }
         }, function (error) {
             console.error("Lỗi khi thêm size:", error);
         });
@@ -261,6 +326,7 @@ app.controller('QuanLyThuocTinhController', function ($scope, $http) {
         $scope.newSize = angular.copy(size);
         $scope.editingSize = true;
         console.log("Size sửa", size);
+        $scope.formError1 = {}; // Reset lỗi validate
         
     };
     $scope.updateSize = function () {
@@ -275,6 +341,12 @@ app.controller('QuanLyThuocTinhController', function ($scope, $http) {
             $scope.getSizes(); // Lấy lại danh sách mới
             $scope.editingSize = false;
             $scope.resetSize();
+            // Đóng modal sau khi cập nhật
+            var modal = bootstrap.Modal.getInstance(document.getElementById('sizeModal'));
+            if (modal) {
+                modal.hide();
+            }
+
         }, function (error) {
             console.error("Lỗi khi cập nhật size:", error);
         });
