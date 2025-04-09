@@ -103,71 +103,66 @@
     <div class="col-md-9">
       <div class="row">
         <!-- Product Cards -->
-        <div ng-repeat="product in displayResults" class="col-md-4 mb-4">
+        <div class="col-md-4 mb-4" ng-repeat="product in getPagedProducts()">
           <a href="#!SanpDetail/{{product.id}}" style="text-decoration: none;"
-             ng-class="{'disabled-link': product.soluong === 0}">
-            <div class="card rounded-0"
-                 ng-class="{'disabled-card': product.soluong === 0}">
-              <div class="card-img-container">
-                <div class="discount-badge"
-                     ng-if="product.giaTriGiam > 0 && product.giaTriGiam <= 100">
-                  -{{product.giaTriGiam}}%
-                </div>
-                <div class="discount-badge"
-                     ng-if="product.giaTriGiam > 0 && product.giaTriGiam > 100">
-                  -{{product.giaTriGiam| number : 0}}VNĐ
-                </div>
-                <img ng-src="{{product.hinhAnh}}" 
-                     alt="{{product.tensp}}" 
-                     height="300px"
-                     class="card-img-top rounded-0"
-                     onerror="this.src='assets/images/default-product.jpg'">
-              </div>
-              <div class="card-body">
-                <h5 class="card-title">{{product.tensp}}</h5>
-                <div class="d-flex justify-content-between">
-                  <!-- Nếu có giảm giá thì hiển thị giá gốc gạch ngang -->
-                  <div class="p-2 text-decoration-line-through text-start"
-                       ng-if="product.giaban > product.giasale && product.giasale !== product.giaban">
-                    {{product.giaban| number : 0}}VNĐ
+          ng-class="{'disabled-link': product.soluong === 0}">
+              <div class="card rounded-0"
+              ng-class="{'disabled-card': product.soluong === 0}">
+                  <div class="card-img-container">
+                      <div class="discount-badge"
+                          ng-if="product.giaTriGiam > 0 && product.giaTriGiam <= 100">
+                          -{{product.giaTriGiam}}%</div>
+                      <div class="discount-badge"
+                          ng-if="product.giaTriGiam > 0 && product.giaTriGiam > 100">
+                          -{{product.giaTriGiam| number : 0}}VNĐ</div>
+                      <img ng-src="{{product.hinhAnh}}" alt="Ảnh sản phẩm" height="300px"
+                          class="card-img-top  rounded-0" alt="...">
                   </div>
-                  <div class="p-2 text-end text-danger fw-bold ms-auto"
-                       ng-if="product.giasale === product.giaban">
-                    {{product.giaban| number : 0}}VNĐ
-                  </div>
-                  <!-- Hiển thị giá sale nếu có giảm giá -->
-                  <div class="p-2 text-end text-danger fw-bold"
-                       ng-if="product.giaban > product.giasale && product.giasale !== product.giaban">
-                    {{product.giasale| number : 0}}VNĐ
-                  </div>
-                </div>
+                  <div class="card-body">
 
-                <div class="d-flex justify-content-between">
-                  <div class="p-2 text-decoration-line-through text-start text-danger">
-                    <i class="bi bi-heart-fill"></i>
-                  </div>
-                  <div class="p-2 text-end" style="font-size: 12px;">
-                    <div class="d-flex align-items-center justify-content-between">
-                      <div class="rating-stars">
-                        <span ng-repeat="star in generateStars(product.trungBinhDanhGia) track by $index">
-                          <i class="bi" ng-class="{
-                                 'bi-star-fill text-warning': star === 'full',
-                                 'bi-star-half text-warning': star === 'half',
-                                 'bi-star text-muted': star === 'empty'
-                             }">
-                          </i>
-                        </span>
+                      <h5 class="card-title">{{product.tensp}}</h5>
+                      <div class="d-flex justify-content-between">
+                          <!-- Nếu có giảm giá thì hiển thị giá gốc gạch ngang -->
+                          <div class="p-2 text-decoration-line-through text-start "
+                              ng-if="product.giaban > product.giasale && product.giasale !== product.giaban">
+                              {{product.giaban| number : 0}}VNĐ
+                          </div>
+                          <div class="p-2 text-end text-danger fw-bold ms-auto"
+                              ng-if="product.giasale === product.giaban">
+                              {{product.giaban| number : 0}}VNĐ
+                          </div>
+                          <!-- Hiển thị giá sale nếu có giảm giá -->
+                          <div class="p-2 text-end text-danger fw-bold"
+                              ng-if="product.giaban > product.giasale && product.giasale !== product.giaban">
+                              {{product.giasale| number : 0}}VNĐ
+                          </div>
                       </div>
-                      <div class="ms-2">
-                        <i>{{ getTotalSPCT(product) }} đã bán</i>
+
+                      <div class="d-flex justify-content-between">
+                          <div class="p-2 text-decoration-line-through text-start text-danger"><i
+                                  class="bi bi-heart-fill"></i></div>
+                          <div class="p-2 text-end" style="font-size: 12px;">
+                              <div class="d-flex align-items-center justify-content-between">
+                                  <div class="rating-stars">
+                                      <span ng-repeat="star in generateStars(product.trungBinhDanhGia) track by $index">
+                                          <i class="bi" ng-class="{
+                                                 'bi-star-fill text-warning': star === 'full',
+                                                 'bi-star-half text-warning': star === 'half',
+                                                 'bi-star text-muted': star === 'empty'
+                                             }">
+                                          </i>
+                                      </span>
+                                  </div>
+                                  <div class="ms-2">
+                                      <i>{{ getTotalSPCT(product) }} đã bán</i>
+                                  </div>
+                              </div>
+                          </div>
                       </div>
-                    </div>
                   </div>
-                </div>
               </div>
-            </div>
           </a>
-        </div>
+      </div>
       </div>
       
       <!-- No Results Message -->
