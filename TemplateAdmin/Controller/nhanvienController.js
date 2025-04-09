@@ -29,12 +29,100 @@ app.controller('nhanvienController', function ($scope, $http, $location, $interv
             .then(function(response) {
                 $scope.listNhanVien = response.data;
                 console.log($scope.listNhanVien);
+                $scope.selectedNhanVien = [];
+                $scope.selectAll = false;
             })
             .catch(function(error) {
                 console.error(error);
             });
     }
     LoadData();
+    $scope.selectedNhanVien = [];
+    $scope.deleteSelectedNhanVien = function () {
+        if (!$scope.selectedNhanVien || $scope.selectedNhanVien.length === 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Vui lòng chọn nhân viên.',
+                text: 'Bạn chưa chọn nhân viên nào để xóa.'
+            });
+            return;
+        }
+    
+        Swal.fire({
+            title: 'Xác nhận',
+            text: 'Bạn có chắc chắn muốn xóa các nhân viên đã chọn?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Xóa',
+            cancelButtonText: 'Hủy'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                let promises = [];
+    
+                $scope.selectedNhanVien.forEach(element => {
+                    let deletePromise = $http.delete(api + "/" + element.id);
+                    promises.push(deletePromise);
+                });
+    
+                Promise.all(promises)
+                    .then(() => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Đã xóa',
+                            text: 'Tất cả nhân viên đã được xóa thành công!',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+    
+                        // Làm mới danh sách
+                        $scope.selectAll = false;
+                        $scope.selectedNhanVien = [];
+                        LoadData();
+                    })
+                    .catch((error) => {
+                        console.error("Chi tiết lỗi:", error);
+    
+                        let errorMsg = "Không thể xóa nhân viên. Vui lòng thử lại!";
+                        if (error.data && error.data.errors) {
+                            const firstField = Object.keys(error.data.errors)[0];
+                            errorMsg = error.data.errors[firstField][0];
+                        } else if (error.data && error.data.title) {
+                            errorMsg = error.data.title;
+                        }
+    
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Thất bại',
+                            text: errorMsg
+                        });
+                    });
+            }
+        });
+    };
+    
+    $scope.toggleNhanVien = function(nv) {
+        if (nv.selected) {
+            $scope.selectedNhanVien.push(nv);
+        } else {
+            const index = $scope.selectedNhanVien.findIndex(e => e.id === nv.id);
+            if (index > -1) {
+                $scope.selectedNhanVien.splice(index, 1);
+            }
+        }
+        console.log("Đã chọn:", $scope.selectedNhanVien);
+    };
+
+    $scope.toggleAll = function() {
+        $scope.selectedNhanVien = [];
+        angular.forEach($scope.listNhanVien, function(nv) {
+            nv.selected = $scope.selectAll;
+            if ($scope.selectAll) {
+                $scope.selectedNhanVien.push(nv);
+            }
+        });
+        console.log("Tất cả đã chọn:", $scope.selectedNhanVien);
+    };
+
     $scope.loiTuoi = false;
 
     $scope.kiemTraTuoi = function () {
@@ -190,20 +278,20 @@ app.controller('nhanvienController', function ($scope, $http, $location, $interv
                 $http.post(api, data)
                     .then(function () {
                         location.reload();
-                        window.scrollTo(0, 0);
-    
-                        // Reset form
-                        $scope.add = {};
-                        $scope.frmAdd.$setPristine();
-                        $scope.frmAdd.$setUntouched();
-    
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Đã thêm',
-                            text: 'Nhân viên đã được thêm thành công!',
-                            timer: 2000,
-                            showConfirmButton: false
-                        });
+                                window.scrollTo(0, 0);
+            
+                                // Reset form
+                                $scope.add = {};
+                                $scope.frmAdd.$setPristine();
+                                $scope.frmAdd.$setUntouched();
+            
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Đã thêm',
+                                    text: 'Nhân viên đã được thêm thành công.',
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
                     })
                     .catch(function (error) {
                         console.error("Chi tiết lỗi:", error.data);
