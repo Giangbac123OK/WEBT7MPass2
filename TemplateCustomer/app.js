@@ -93,71 +93,76 @@ app.config(function ($routeProvider) {
 app.controller('mainController', function ($scope, $location, $http, $document) {
   $scope.search = '';
   $scope.showSuggestions = false;
-  $scope.filteredSuggestions = [];
+  $scope.suggestions = []; // Will store all possible suggestions
+  $scope.filteredSuggestions = []; // Will store filtered suggestions based on user input
   
-  // Dữ liệu gợi ý tìm kiếm (fake data)
-  $scope.suggestions = [
-    "Giày đá bóng Nike",
-    "Giày thể thao Adidas",
-    "Giày chạy bộ Puma",
-    "Giày futsal Desporte",
-    "Giày đá banh X-Munich",
-    "Giày thể thao Grand Sport",
-    "Giày bóng rổ Nike",
-    "Giày tennis Adidas",
-    "Giày cầu lông Puma"
-  ];
+  // Load product names for suggestions when controller initializes
+  $http.get('https://localhost:7196/api/Sanphams/GetALLSanPham')
+      .then(function(response) {
+          // Extract unique product names from the response
+          $scope.suggestions = response.data
+              .filter(product => product.tensp) // Filter out products without names
+              .map(product => product.tensp)    // Extract just the names
+              .filter((value, index, self) => self.indexOf(value) === index); // Remove duplicates
+          
+          console.log('Loaded suggestions:', $scope.suggestions);
+      })
+      .catch(function(error) {
+          console.error('Error loading suggestions:', error);
+      });
   
-  // Cập nhật gợi ý khi người dùng nhập
+  // Update suggestions based on user input
   $scope.updateSuggestions = function() {
-    if ($scope.search && $scope.search.length > 0) {
-      $scope.filteredSuggestions = $scope.suggestions.filter(function(suggestion) {
-        return suggestion.toLowerCase().includes($scope.search.toLowerCase());
-      });
+      if (!$scope.search || $scope.search.trim() === '') {
+          $scope.showSuggestions = false;
+          $scope.filteredSuggestions = [];
+          return;
+      }
+      
+      // Filter suggestions based on user input
+      const searchTerm = $scope.search.toLowerCase();
+      $scope.filteredSuggestions = $scope.suggestions.filter(suggestion => 
+          suggestion.toLowerCase().includes(searchTerm)
+      );
+      
+      // Show suggestions if we have any matches
       $scope.showSuggestions = $scope.filteredSuggestions.length > 0;
-    } else {
-      $scope.filteredSuggestions = [];
-      $scope.showSuggestions = false;
-    }
+      console.log('Filtered suggestions:', $scope.filteredSuggestions);
   };
   
-  // Chọn gợi ý
+  // Handle suggestion selection
   $scope.selectSuggestion = function(suggestion) {
-    $scope.search = suggestion;
-    $scope.showSuggestions = false;
-    $scope.btntimkiem();
-  };
-  
-  // Tìm kiếm
-  $scope.btntimkiem = function () {
-    if ($scope.search && $scope.search.trim() !== '') {
-      $location.path('/timkiem/' + $scope.search);
-      $scope.search = '';
+      $scope.search = suggestion;
       $scope.showSuggestions = false;
-    } else {
-      Swal.fire({
-        title: 'Thông báo',
-        text: 'Vui lòng nhập từ khóa để tìm kiếm!',
-        icon: 'info',
-        confirmButtonText: 'OK',
-        confirmButtonColor: '#3085d6',
-        background: '#fff',
-        color: '#333',
-        customClass: {
-          popup: 'custom-popup',
-        }
-      });
-    }
+      // Perform search immediately after selection
+      $scope.btntimkiem();
   };
   
-  // Ẩn gợi ý khi click ra ngoài
-  $document.on('click', function(event) {
-    if (!$(event.target).closest('.input-group, .list-group-item').length) {
-      $scope.$apply(function() {
-        $scope.showSuggestions = false;
-      });
-    }
+  // Handle search button click
+  $scope.btntimkiem = function() {
+      if ($scope.search && $scope.search.trim() !== '') {
+          // Navigate to search results page with the search term
+          $location.path('/timkiem/' + encodeURIComponent($scope.search));
+      }
+  };
+  
+  // Close suggestions when clicking outside
+  document.addEventListener('click', function(event) {
+      if (!event.target.closest('.input-group')) {
+          $scope.$apply(function() {
+              $scope.showSuggestions = false;
+          });
+      }
   });
+});
+app.filter('range', function() {
+  return function(input, total) {
+    total = parseInt(total);
+    for (var i=1; i<=total; i++) {
+      input.push(i);
+    }
+    return input;
+  };
 });
 app.service('ThuongHieuService', function($http) {
   const apiUrl = 'https://localhost:7196/api/Thuonghieu'; // Thay URL API của bạn
