@@ -140,9 +140,13 @@
                 <div class="col-xl-1-5 col-lg-1-5 col-md-3 col-sm-4 col-6 mb-3" ng-repeat="variant in product.variants">
                     <div class="card shadow-sm border-0 rounded-3">
                         <!-- Hình ảnh sản phẩm (chiếm toàn bộ phần trên) -->
-                        <img ng-if="variant.UrlHinhanh" ng-src="{{variant.UrlHinhanh}}" class="card-img-top"
-                            alt="Ảnh biến thể"
-                            style="width: 100%; height: 200px; object-fit: cover; border-top-left-radius: 8px; border-top-right-radius: 8px;">
+                        <img 
+  ng-if="variant.UrlHinhanh"
+  ng-src="{{ variant.Id ? 'https://localhost:7196/picture/' + variant.UrlHinhanh : variant.UrlHinhanh }}" 
+  class="card-img-top"
+  alt="Ảnh biến thể"
+  style="width: 100%; height: 200px; object-fit: cover; border-top-left-radius: 8px; border-top-right-radius: 8px;">
+
 
                         <div class="card-body text-center p-2">
                             <div class="d-flex justify-content-between">

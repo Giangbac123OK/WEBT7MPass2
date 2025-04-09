@@ -50,6 +50,10 @@ app.config(function ($routeProvider) {
             templateUrl: "./Views/addSanPham.html",
             controller: "QuanLySanPhamController"
         })
+        .when("/editSanPham/:id", {
+            templateUrl: "./Views/editSanPham.html",
+            controller: "QuanLySanPhamController"
+        })
         .when("/sanpham", {
             templateUrl: "./Views/quanLySanPham.html",
             controller: "QuanLySanPhamController"
