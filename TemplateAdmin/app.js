@@ -56,6 +56,7 @@ app.config(function ($routeProvider) {
         })
         .when("/Rank", {
             templateUrl: "./Views/Rank.html",
+            controller: 'RankController'
             
         })
         .when("/thongtinAdmin", {
