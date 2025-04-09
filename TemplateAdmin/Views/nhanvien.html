@@ -63,7 +63,7 @@
                             <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#EditNVModal" ng-click="showEdit(x.id)">
                                 <i class="bi bi-pen-fill"></i>
                             </button>
-                            <button type="button" class="btn btn-sm btn-danger">
+                            <button type="button" class="btn btn-sm btn-danger" ng-click="confirmDelete(x.id)">
                                 <i class="bi bi-trash3-fill"></i>
                             </button>
                         </td>
@@ -100,11 +100,9 @@
                                     </div>
                                     <!-- Nút ảnh mặc định -->
                                     <div class="avatar-edit1">
-                                        <div class="avatar-edit1">
-                                            <button type="button" class="btn btn-sm btn-outline-secondary" ng-click="setDefaultAvatar()">
-                                                <i class="bi bi-person-fill"></i> Ảnh mặc định
-                                            </button>
-                                        </div>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" ng-click="setDefaultAvatar()">
+                                            <i class="bi bi-person-fill"></i> Ảnh mặc định
+                                        </button>
                                     </div>
                                     <div class="avatar-preview">
                                         <div id="imagePreview"></div>
@@ -314,9 +312,9 @@
                             <div class="mb-3">
                                 <div class="avatar-upload">
                                     <div class="avatar-edit">
-                                        <input type="file" id="avatarUpload" name="avatar" accept=".png, .jpg, .jpeg" file-model="edit.avatarFile"
-                                            onchange="angular.element(this).scope().previewAvataredit(this.files[0], 'edit')" class="d-none" />
-                                        <label for="avatarUpload" class="btn btn-sm btn-outline-primary">
+                                        <input type="file" id="avatarUploadEdit" name="avatar" accept=".png, .jpg, .jpeg" file-model="edit.avatarFile"
+                                            onchange="angular.element(this).scope().previewAvataredit(this.files[0])" class="d-none" />
+                                        <label for="avatarUploadEdit" class="btn btn-sm btn-outline-primary">
                                             <i class="bi bi-camera"></i> Chọn ảnh
                                         </label>
                                     </div>
@@ -327,7 +325,7 @@
                                         </button>
                                     </div>
                                     <div class="avatar-preview">
-                                        <div id="imagePreviewedit"></div>
+                                        <div id="editimagePreviewf"></div>
                                     </div>
                                 </div>
                             </div>
