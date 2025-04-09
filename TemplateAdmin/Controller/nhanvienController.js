@@ -27,13 +27,21 @@ app.controller('nhanvienController', function ($scope, $http, $location, $interv
     function LoadData() {
         $http.get("https://localhost:7196/api/Nhanviens")
             .then(function (response) {
-                $scope.listNhanVien = response.data;
-                console.log($scope.listNhanVien);
+                // Lọc bỏ user hiện tại khỏi danh sách
+                $scope.listNhanVien = response.data.filter(function(nhanvien) {
+                    return nhanvien.id !== userInfo.id;
+                });
+                console.log('Danh sách nhân viên (đã lọc):', $scope.listNhanVien);
             })
             .catch(function (error) {
-                console.error(error);
+                console.error('Lỗi khi tải dữ liệu nhân viên:', error);
+                Swal.fire('Lỗi', 'Không thể tải danh sách nhân viên', 'error');
             });
     }
+    
+    // Khởi tạo userInfo từ localStorage
+    const userInfoString = localStorage.getItem("userInfo");
+    const userInfo = JSON.parse(userInfoString);
     LoadData();
     $scope.getMaxYear = function () {
         const today = new Date();
@@ -164,27 +172,18 @@ app.controller('nhanvienController', function ($scope, $http, $location, $interv
     $scope.edit = {}; // Khởi tạo
     $scope.edit.avatarFile = ""; // Mặc định chưa có ảnh
 
-    $scope.previewAvataredit = function (file, type) {
+    $scope.previewAvataredit = function (file) {
         if (file && file.type && file.type.startsWith('image/')) {
             const imageUrl = URL.createObjectURL(file);
             $timeout(function () {
-                document.getElementById('imagePreviewedit').style.backgroundImage = 'url(' + imageUrl + ')';
+                document.getElementById('editimagePreviewf').style.backgroundImage = 'url(' + imageUrl + ')';
             });
     
             file.previewUrl = imageUrl;
-    
-            if (type === 'add') {
-                $scope.add.avatarFile = file;
-            } else if (type === 'edit') {
-                $scope.edit.avatarFile = file;
-            }
+            $scope.edit.avatarFile = file;
         } else {
-            document.getElementById('imagePreviewedit').style.backgroundImage = '';
-            if (type === 'add') {
-                $scope.add.avatarFile = null;
-            } else if (type === 'edit') {
-                $scope.edit.avatarFile = null;
-            }
+            document.getElementById('editimagePreviewf').style.backgroundImage = '';
+            $scope.edit.avatarFile = null;
         }
     };
 
@@ -192,7 +191,7 @@ app.controller('nhanvienController', function ($scope, $http, $location, $interv
     $scope.setDefaultAvataredit = function (type) {
         const defaultUrl = "https://i.pinimg.com/736x/11/5e/8a/115e8a22e7ee37d2c662d1a1714a90bf.jpg";
         $timeout(function () {
-            document.getElementById('imagePreviewedit').style.backgroundImage = 'url(' + defaultUrl + ')';
+            document.getElementById('editimagePreviewf').style.backgroundImage = 'url(' + defaultUrl + ')';
         });
     
         const defaultAvatar = {
@@ -214,11 +213,11 @@ app.controller('nhanvienController', function ($scope, $http, $location, $interv
             .then(function (response) {
                 $scope.edit = response.data;
                 $scope.edit.ngaysinh = new Date($scope.edit.ngaysinh);
-                $scope.edit.gioitinh = $scope.edit.gioitinh ? 'false' : 'true';
+                $scope.edit.gioitinh = $scope.edit.gioitinh ? 'true' : 'false';
     
                 const existingImageUrl = 'https://localhost:7196/picture/' + ($scope.edit.avatar || 'AnhNhanVien.png');
                 $timeout(function () {
-                    document.getElementById('imagePreviewedit').style.backgroundImage = 'url(' + existingImageUrl + ')';
+                    document.getElementById('editimagePreviewf').style.backgroundImage = 'url(' + existingImageUrl + ')';
                 });
             })
             .catch(function (error) {
@@ -229,16 +228,17 @@ app.controller('nhanvienController', function ($scope, $http, $location, $interv
 
     
     $scope.btnEdit = function () {
+        console.log('Dữ liệu edit trước khi gửi:', $scope.edit);
         var formData = new FormData();
     
+        formData.append("Id", $scope.edit.id);
         formData.append("Hovaten", $scope.edit.hovaten);
         formData.append("Ngaysinh", new Date($scope.edit.ngaysinh).toISOString());
+        formData.append("Diachi", $scope.edit.diachi);
         formData.append("Gioitinh", $scope.edit.gioitinh === 'true'); // boolean
         formData.append("Sdt", $scope.edit.sdt);
         formData.append("Email", $scope.edit.email);
-        formData.append("Diachi", $scope.edit.diachi);
         formData.append("Role", $scope.edit.chucvu);
-        formData.append("Id", $scope.edit.id);
     
         // Xử lý ảnh:
         if ($scope.edit.avatarFile && !$scope.edit.avatarFile.isDefault) {
@@ -256,12 +256,44 @@ app.controller('nhanvienController', function ($scope, $http, $location, $interv
         }).then(function (res) {
             Swal.fire("Thành công", res.data.message, "success");
             $('#EditNVModal').modal('hide');
-            $scope.getAll();
+            LoadData();
         }).catch(function (error) {
             Swal.fire("Lỗi", error.data.message, "error");
         });
     };
-    
+
+    $scope.confirmDelete = function(id) {
+        Swal.fire({
+            title: 'Xác nhận xóa',
+            text: 'Bạn có chắc chắn muốn xóa nhân viên này?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Xóa',
+            cancelButtonText: 'Hủy'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $http.delete('https://localhost:7196/api/Nhanviens/' + id)
+                    .then(function(response) {
+                        Swal.fire(
+                            'Đã xóa!',
+                            'Nhân viên đã được xóa thành công.',
+                            'success'
+                        );
+                        // Load lại dữ liệu sau khi xóa
+                        LoadData();
+                    })
+                    .catch(function(error) {
+                        Swal.fire(
+                            'Lỗi!',
+                            'Xóa nhân viên thất bại: ' + (error.data.message || error.statusText),
+                            'error'
+                        );
+                    });
+            }
+        });
+    };
     
 
     $scope.viewImage = function (avatarFileName) {
