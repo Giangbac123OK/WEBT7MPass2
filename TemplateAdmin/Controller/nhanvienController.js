@@ -1,5 +1,4 @@
 app.controller('nhanvienController', function ($scope, $http, $location, $interval, $timeout ) {
-app.controller('nhanvienController', function ($scope, $http, $location, $interval, $timeout) {
     // Hàm lấy thứ trong tuần bằng tiếng Việt
     function getVietnameseDay(dayIndex) {
         const days = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
@@ -22,21 +21,15 @@ app.controller('nhanvienController', function ($scope, $http, $location, $interv
 
     // Cập nhật mỗi giây
     $interval(updateTime, 1000);
-    let api ="https://localhost:7196/api/Nhanviens";
+
     // Chạy ngay khi trang tải
     updateTime();
     function LoadData() {
         $http.get("https://localhost:7196/api/Nhanviens")
             .then(function (response) {
                 // Lọc bỏ user hiện tại khỏi danh sách
-    function LoadData(){
-        $http.get(api)
-            .then(function(response) {
                 $scope.listNhanVien = response.data;
                 console.log('Danh sách nhân viên (đã lọc):', $scope.listNhanVien);
-                console.log($scope.listNhanVien);
-                $scope.selectedNhanVien = [];
-                $scope.selectAll = false;
             })
             .catch(function (error) {
                 console.error('Lỗi khi tải dữ liệu nhân viên:', error);
@@ -100,213 +93,8 @@ app.controller('nhanvienController', function ($scope, $http, $location, $interv
             angular.forEach($scope.AddNhanVienfrm.$error, function (fields) {
                 angular.forEach(fields, function (field) {
                     field.$setTouched();
-    $scope.selectedNhanVien = [];
-    $scope.deleteSelectedNhanVien = function () {
-        if (!$scope.selectedNhanVien || $scope.selectedNhanVien.length === 0) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Vui lòng chọn nhân viên.',
-                text: 'Bạn chưa chọn nhân viên nào để xóa.'
-            });
-            return;
-        }
-    
-        Swal.fire({
-            title: 'Xác nhận',
-            text: 'Bạn có chắc chắn muốn xóa các nhân viên đã chọn?',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Xóa',
-            cancelButtonText: 'Hủy'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                let promises = [];
-    
-                $scope.selectedNhanVien.forEach(element => {
-                    let deletePromise = $http.delete(api + "/" + element.id);
-                    promises.push(deletePromise);
-                });
-    
-                Promise.all(promises)
-                    .then(() => {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Đã xóa',
-                            text: 'Tất cả nhân viên đã được xóa thành công!',
-                            timer: 2000,
-                            showConfirmButton: false
-                        });
-    
-                        // Làm mới danh sách
-                        $scope.selectAll = false;
-                        $scope.selectedNhanVien = [];
-                        LoadData();
-                    })
-                    .catch((error) => {
-                        console.error("Chi tiết lỗi:", error);
-    
-                        let errorMsg = "Không thể xóa nhân viên. Vui lòng thử lại!";
-                        if (error.data && error.data.errors) {
-                            const firstField = Object.keys(error.data.errors)[0];
-                            errorMsg = error.data.errors[firstField][0];
-                        } else if (error.data && error.data.title) {
-                            errorMsg = error.data.title;
-                        }
-    
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Thất bại',
-                            text: errorMsg
-                        });
-                    });
-            }
-        });
-    };
-    
-    $scope.toggleNhanVien = function(nv) {
-        if (nv.selected) {
-            $scope.selectedNhanVien.push(nv);
-        } else {
-            const index = $scope.selectedNhanVien.findIndex(e => e.id === nv.id);
-            if (index > -1) {
-                $scope.selectedNhanVien.splice(index, 1);
-            }
-        }
-        console.log("Đã chọn:", $scope.selectedNhanVien);
-    };
-
-    $scope.toggleAll = function() {
-        $scope.selectedNhanVien = [];
-        angular.forEach($scope.listNhanVien, function(nv) {
-            nv.selected = $scope.selectAll;
-            if ($scope.selectAll) {
-                $scope.selectedNhanVien.push(nv);
-            }
-        });
-        console.log("Tất cả đã chọn:", $scope.selectedNhanVien);
-    };
-
-    $scope.loiTuoi = false;
-
-    $scope.kiemTraTuoi = function () {
-        if (!$scope.add.ngaysinh) {
-            $scope.loiTuoi = false;
-            return;
-        }
-
-        const namHienTai = new Date().getFullYear();
-        const namSinh=new Date($scope.add.ngaysinh).getFullYear();
-        $scope.loiTuoi = (namHienTai - namSinh) < 18;
-    };
-    $scope.loiEmail = false;
-    $scope.kiemTraEmail = function () {
-        if (!$scope.add.email) {
-            $scope.loiEmail = false;
-            return;
-        }
-
-        // Nếu tìm thấy email trùng, thì có lỗi
-        const trungEmail = $scope.listNhanVien.find(x => x.email === $scope.add.email);
-        $scope.loiEmail = trungEmail ? true : false;
-    };
-    $scope.loiSdt = false;
-
-    $scope.kiemTraSdt = function () {
-        if (!$scope.add.sdt) {
-            $scope.loiSdt = false;
-            return;
-        }
-
-        const sdtNhap = $scope.add.sdt.toString();
-        const trungSdt = $scope.listNhanVien.find(x => x.sdt.toString() === sdtNhap);
-
-    $scope.loiSdt = !!trungSdt;
-    };
-    var cropper;
-    var modalEl = document.getElementById('cropModal');
-    var bootstrapModal = new bootstrap.Modal(modalEl);
-    $scope.croppedDataUrl = null;
-
-    $scope.openCropModal = function () {
-      document.getElementById('imageInput').value = "";
-      document.getElementById('imagePreview').src = "";
-      if (cropper) {
-        cropper.destroy();
-        cropper = null;
-      }
-      bootstrapModal.show();
-    };
-
-    document.getElementById('imageInput').addEventListener('change', function (e) {
-      var file = e.target.files[0];
-      if (!file) return;
-
-      var reader = new FileReader();
-      reader.onload = function (evt) {
-        var image = document.getElementById('imagePreview');
-        image.src = evt.target.result;
-
-        image.onload = function () {
-          if (cropper) cropper.destroy();
-          cropper = new Cropper(image, {
-            aspectRatio: 1,
-            viewMode: 1
-          });
-        };
-      };
-      reader.readAsDataURL(file);
-    });
-
-    $scope.cropImage = function () {
-      if (!cropper) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Lỗi',
-            text: 'Vui lòng chọn ảnh trước khi cắt!'
-        });
-        return;
-      }
-
-      var canvas = cropper.getCroppedCanvas({
-        width: 300,
-        height: 300
-      });
-
-      $timeout(function () {
-        $scope.croppedDataUrl = canvas.toDataURL('image/png');
-        
-        if ($scope.update) {
-            $scope.update.avatar = $scope.croppedDataUrl;
-        }
-    
-        bootstrapModal.hide();
-    
-        // Hiện lại modal cập nhật
-        $('#UpdateModal').modal('show');
-    });
-      console.log($scope.croppedDataUrl)
-      bootstrapModal.hide();
-    };
-
-    $scope.removeImage = function () {
-        $scope.croppedDataUrl = null;
-        if ($scope.update) {
-            $scope.update.avatar = null;
-        }
-    };
-    $scope.nhanvien={}
-    $scope.btnAdd = function () {
-        $scope.kiemTraTuoi();
-        $scope.kiemTraEmail();
-        $scope.kiemTraSdt();
-        // Nếu form lỗi hoặc tuổi không hợp lệ → dừng lại
-        if ($scope.frmAdd.$invalid || $scope.loiTuoi) {
-            angular.forEach($scope.frmAdd.$error, function (field) {
-                angular.forEach(field, function (errorField) {
-                    errorField.$setTouched();
                 });
             });
-            return;
             return;
         }
     
@@ -320,34 +108,13 @@ app.controller('nhanvienController', function ($scope, $http, $location, $interv
             return;
         }
     
-    
-        // Chuẩn bị dữ liệu
-        const data = {
-            id: 0,
-            hovaten: $scope.add.hoten,
-            ngaysinh: $scope.add.ngaysinh,
-            diachi: $scope.add.diachi,
-            gioitinh: $scope.add.gioitinh === "true", // convert string to boolean
-            sdt: $scope.add.sdt,
-            email: $scope.add.email,
-            trangthai: 0,
-            password: $scope.add.password,
-            role: parseInt($scope.add.role), // convert string to number
-            ngaytaotaikhoan: new Date().toISOString(),
-            avatar: $scope.croppedDataUrl || ""
-        };
-    
-        // Kiểm tra log dữ liệu trước khi gửi
-        console.log("Dữ liệu gửi đi:", data);
-    
-        // Xác nhận trước khi gửi
         Swal.fire({
-            title: 'Xác nhận',
-            text: 'Bạn có chắc chắn muốn thêm nhân viên này?',
-            icon: 'question',
+            title: "Xác nhận",
+            text: "Bạn có chắc chắn muốn thêm nhân viên này?",
+            icon: "question",
             showCancelButton: true,
-            confirmButtonText: 'Thêm',
-            cancelButtonText: 'Hủy'
+            confirmButtonText: "Đồng ý",
+            cancelButtonText: "Hủy"
         }).then((result) => {
             if (result.isConfirmed) {
                 var formData = new FormData();
@@ -385,81 +152,6 @@ app.controller('nhanvienController', function ($scope, $http, $location, $interv
                         $scope.AddNhanVienfrm.$setPristine();
                         $scope.AddNhanVienfrm.$setUntouched();
                     } else {
-                $http.post(api, data)
-                    .then(function () {
-                        location.reload();
-                                window.scrollTo(0, 0);
-            
-                                // Reset form
-                                $scope.add = {};
-                                $scope.frmAdd.$setPristine();
-                                $scope.frmAdd.$setUntouched();
-            
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Đã thêm',
-                                    text: 'Nhân viên đã được thêm thành công.',
-                                    timer: 2000,
-                                    showConfirmButton: false
-                                });
-                    })
-                    .catch(function (error) {
-                        console.error("Chi tiết lỗi:", error.data);
-    
-                        let errorMsg = "Không thể thêm nhân viên. Vui lòng thử lại!";
-                        if (error.data && error.data.errors) {
-                            // Lấy lỗi đầu tiên (nếu có nhiều)
-                            const firstField = Object.keys(error.data.errors)[0];
-                            errorMsg = error.data.errors[firstField][0];
-                        } else if (error.data && error.data.title) {
-                            errorMsg = error.data.title;
-                        }
-    
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Thất bại',
-                            text: errorMsg
-                        });
-                    });
-            }
-        });
-    };
-    $scope.btnDelete = function (id) {
-       
-        Swal.fire({
-            title: 'Xác nhận',
-            text: 'Bạn có chắc chắn muốn xóa nhân viên này?',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Xóa',
-            cancelButtonText: 'Hủy'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $http.delete(api+"/"+id)
-                    .then(function () {
-                        location.reload();
-                        window.scrollTo(0, 0);
-    
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Đã xóa',
-                            text: 'Nhân viên đã xóa thành công!',
-                            timer: 2000,
-                            showConfirmButton: false
-                        });
-                    })
-                    .catch(function (error) {
-                        console.error("Chi tiết lỗi:", error.data);
-    
-                        let errorMsg = "Không thể xóa nhân viên. Vui lòng thử lại!";
-                        if (error.data && error.data.errors) {
-                            // Lấy lỗi đầu tiên (nếu có nhiều)
-                            const firstField = Object.keys(error.data.errors)[0];
-                            errorMsg = error.data.errors[firstField][0];
-                        } else if (error.data && error.data.title) {
-                            errorMsg = error.data.title;
-                        }
-    
                         Swal.fire({
                             title: "Lỗi",
                             text: result.Message || "Có lỗi xảy ra khi thêm nhân viên",
@@ -473,11 +165,6 @@ app.controller('nhanvienController', function ($scope, $http, $location, $interv
                         icon: "error"
                     });
                 });
-                            icon: 'error',
-                            title: 'Thất bại',
-                            text: errorMsg
-                        });
-                    });
             }
         });
     };    
@@ -537,89 +224,58 @@ app.controller('nhanvienController', function ($scope, $http, $location, $interv
                 console.error(error);
             });
     };
-    $scope.showDetail = function (nhanvien) {
-        $scope.detail = angular.copy(nhanvien);
-        const modal = new bootstrap.Modal(document.getElementById('staticBackdrop'));
-        modal.show();
-    };
-    $scope.showUpdate = function (nv) {
-        $scope.update = angular.copy(nv);
-
-        // Kiểm tra nếu dữ liệu từ backend là chuỗi
-        if (typeof nv.gioitinh === "string") {
-            $scope.update.gioitinh = nv.gioitinh === "Nam";
-        }
-
-        if (typeof nv.trangthai === "string") {
-            $scope.update.trangthai = nv.trangthai === "Hoạt động" ? 0 : 1;
-        }
-        if (typeof nv.role === "string") {
-            $scope.update.role = nv.role === "Quản lý" ? 0 : 1;
-        }
-        $scope.croppedDataUrl=nv.avatar
-        $scope.update.ngaysinh = new Date(nv.ngaysinh);
-
-        const modal = new bootstrap.Modal(document.getElementById('UpdateModal'));
-        modal.show();
-    };
+      
 
     
-    $scope.btnUpdate = function () {
-        
-        if ($scope.frmUpdate.$invalid || $scope.loiTuoiUpdate) {
-            angular.forEach($scope.frmUpdate.$error, function (field) {
-                angular.forEach(field, function (errorField) {
-                    errorField.$setTouched();
-                });
-            });
-            return;
-        }
-        
-        const dataUpdate = {
-            id: $scope.update.id,
-            hovaten: $scope.update.hovaten,
-            ngaysinh: $scope.update.ngaysinh,
-            diachi: $scope.update.diachi,
-            gioitinh: $scope.update.gioitinh,
-            sdt: $scope.update.sdt,
-            email: $scope.update.email,
-            trangthai: $scope.update.trangthai,
-            password: $scope.update.password,
-            role: $scope.update.role,
-            ngaytaotaikhoan: $scope.update.ngaytaotaikhoan,
-            avatar: $scope.update.avatar
-        };
-        Swal.fire({
-            title: 'Xác nhận',
-            text: 'Bạn có chắc muốn cập nhật thông tin?',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Cập nhật',
-            cancelButtonText: 'Hủy'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $http.put(api + "/" + $scope.update.id, dataUpdate)
-                    .then(function () {
-                        $('#UpdateModal').modal('hide');
-                        location.reload();
+    $scope.btnEdit = function () {
+        console.log('Dữ liệu edit trước khi gửi:', $scope.edit);
+        var formData = new FormData();
     
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Cập nhật thành công',
-                            timer: 2000,
-                            showConfirmButton: false
-                        });
-                    })
-                    .catch(function (error) {
-                        console.error(error);
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Lỗi cập nhật',
-                            text: 'Vui lòng thử lại!'
-                        });
-                    });
-            }
+        formData.append("Id", $scope.edit.id);
+        formData.append("Hovaten", $scope.edit.hovaten);
+        formData.append("Ngaysinh", new Date($scope.edit.ngaysinh).toISOString());
+        formData.append("Diachi", $scope.edit.diachi);
+        formData.append("Gioitinh", $scope.edit.gioitinh === 'true'); // boolean
+        formData.append("Sdt", $scope.edit.sdt);
+        formData.append("Email", $scope.edit.email);
+        formData.append("Role", $scope.edit.chucvu);
+    
+        // Xử lý ảnh:
+        if ($scope.edit.avatarFile && !$scope.edit.avatarFile.isDefault) {
+            formData.append("avatarFile", $scope.edit.avatarFile);
+        }
+    
+        // Nếu là ảnh mặc định
+        if ($scope.edit.avatarFile && $scope.edit.avatarFile.isDefault) {
+            formData.append("isDefaultAvatar", true);
+        }
+    
+        $http.put("https://localhost:7196/api/Nhanviens/" + $scope.edit.id, formData, {
+            transformRequest: angular.identity,
+            headers: { 'Content-Type': undefined }
+        }).then(function (res) {
+            Swal.fire("Thành công", res.data.message, "success");
+            $('#EditNVModal').modal('hide');
+            LoadData();
+            
+            location.reload();
+            window.scroll(0,0);
+        }).catch(function (error) {
+            Swal.fire("Lỗi", error.data.message, "error");
         });
     };
-    
+    $scope.viewImage = function (avatarFileName) {
+        $scope.currentImage = 'https://localhost:7196/picture/' + (avatarFileName || 'AnhNhanVien.png');
+    };
+    $scope.delete = function(nv){
+        $http.put("https://localhost:7196/api/Nhanviens/" + nv.id)
+            .then(function (res) {
+                Swal.fire("Thành công", res.data.message, "success");
+                LoadData();
+                location.reload();
+                window.scroll(0,0);
+            }).catch(function (error) {
+                Swal.fire("Lỗi", error.data.message, "error");
+            });
+    }
 });
