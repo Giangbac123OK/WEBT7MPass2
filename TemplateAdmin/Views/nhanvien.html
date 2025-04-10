@@ -1,3 +1,114 @@
+<div class="container">
+    <div class="card my-3">
+        <div class="d-flex justify-content-between p-2">
+            <h5>DANH SÁCH NHÂN VIÊN</h5>
+            <span>{{ time }}</span>
+        </div>
+    </div>
+
+    <div class="card mb-3 py-3">
+        <div class="mx-3 mb-3">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ThemNVModal">
+                <i class="bi bi-plus"></i> Thêm nhân viên mới
+            </button>
+            <button type="button" class="btn btn-warning">
+                <i class="bi bi-arrow-counterclockwise"></i> Hoàn tác
+            </button>
+            <button type="button" class="btn btn-danger">
+                <i class="bi bi-trash3-fill"></i> Xoá tất cả
+            </button>
+        </div>
+        <hr class="mb-3">
+        <div class="m-3">
+            <table class="table table-bordered table-hover">
+                <thead class="table-primary text-center">
+                    <tr>
+                        <th><input type="checkbox"></th>
+                        <th>ID</th>
+                        <th>Họ và tên</th>
+                        <th>Avatar</th>
+                        <th>Ngày sinh</th>
+                        <th>Giới tính</th>
+                        <th>Số điện thoại</th>
+                        <th>Email</th>
+                        <th>Địa chỉ</th>
+                        <th>Chức vụ</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="x in listNhanVien">
+                        <td class="text-center"><input type="checkbox"></td>
+                        <td class="text-center">{{ x.id }}</td>
+                        <td>{{ x.hovaten }}</td>
+                        <td class="text-center">
+                            <img ng-src="https://localhost:7196/picture/{{ x.avatar || 'AnhNhanVien.png' }}" width="60" height="60"
+                                class="rounded-circle object-fit-cover" alt="{{ x.hovaten }}" data-bs-toggle="modal"
+                                data-bs-target="#viewImageModal" ng-click="viewImage(x.avatar)">
+                        </td>
+                        <td class="text-center">{{ x.ngaysinh | date:'dd/MM/yyyy' }}</td>
+                        <td class="text-center">{{ x.gioitinh ? 'Nam' : 'Nữ' }}</td>
+                        <td>{{ x.sdt }}</td>
+                        <td>{{ x.email }}</td>
+                        <td>{{ x.diachi }}</td>
+                        <td class="text-center">
+                            <span ng-class="{'badge bg-success': x.role == 0, 'badge bg-primary': x.role == 1, 'badge bg-info': x.role == 2}">
+                                {{ x.role == 0 ? 'Admin' : (x.role == 1 ? 'Quản lý' : 'Nhân viên') }}
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#detailsModal" ng-click="showEdit(x.id)">
+                                <i class="bi bi-person-lines-fill"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#EditNVModal" ng-click="showEdit(x.id)">
+                                <i class="bi bi-pen-fill"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-danger" ng-click="confirmDelete(x.id)">
+                                <i class="bi bi-trash3-fill"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Add Nhân Viên -->
+<div class="modal fade" id="ThemNVModal" tabindex="-1" aria-labelledby="ThemNVModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="ThemNVModalLabel">Tạo mới nhân viên</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="AddNhanVienfrm" name="AddNhanVienfrm" ng-submit="btnAdd()" novalidate>
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            <div class="mb-3">
+                                <div class="avatar-upload">
+                                    <div class="avatar-edit">
+                                        <input type="file" id="avatarUpload" name="avatar" accept=".png, .jpg, .jpeg"
+                                            file-model="add.avatarFile"
+                                            onchange="angular.element(this).scope().previewAvatar(this.files[0])"
+                                            class="d-none" />
+                                        <label for="avatarUpload" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-camera"></i> Chọn ảnh
+                                        </label>
+                                    </div>
+                                    <!-- Nút ảnh mặc định -->
+                                    <div class="avatar-edit1">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" ng-click="setDefaultAvatar()">
+                                            <i class="bi bi-person-fill"></i> Ảnh mặc định
+                                        </button>
+                                    </div>
+                                    <div class="avatar-preview">
+                                        <div id="imagePreview"></div>
+                                    </div>
+                                </div>
+                            </div>
 <style>
     .main-box {
       max-width: 600px;
