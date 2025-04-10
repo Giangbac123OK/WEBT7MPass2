@@ -251,22 +251,22 @@
             </div>
             <div class="col-3">
                 <label>Chiều cao</label>
-                <input type="number" class="form-control" ng-model="product.Chieucao" name="Chieucao"
+                <input type="number" class="form-control" ng-model="product.chieucao" name="chieucao"
                     placeholder="Chiều cao (cm)" min="10" max="150" step="1" ng-keydown="blockInvalidKeys($event)" required>
                 <span class="text-danger"
-                    ng-show="(frm.Chieucao.$error.required && frm.Chieucao.$touched) || (frm.Chieucao.$error.required && frm.$submitted)">
+                    ng-show="(frm.chieucao.$error.required && frm.chieucao.$touched) || (frm.chieucao.$error.required && frm.$submitted)">
                     Không được để trống chiều cao
                 </span>
                 <span class="text-danger"
-                    ng-show="frm.Chieucao.$error.min && (frm.Chieucao.$touched || frm.$submitted)">
+                    ng-show="frm.chieucao.$error.min && (frm.chieucao.$touched || frm.$submitted)">
                     Chiều cao phải lớn hơn hoặc bằng 10
                 </span>
                 <span class="text-danger"
-                    ng-show="frm.Chieucao.$error.max && (frm.Chieucao.$touched || frm.$submitted)">
+                    ng-show="frm.chieucao.$error.max && (frm.chieucao.$touched || frm.$submitted)">
                     Chiều cao không được vượt quá 150
                 </span>
                 <span class="text-danger"
-                    ng-show="frm.Chieucao.$error.pattern && (frm.Chieucao.$touched || frm.$submitted)">
+                    ng-show="frm.chieucao.$error.pattern && (frm.chieucao.$touched || frm.$submitted)">
                     Chiều cao phải là một số nguyên hợp lệ
                 </span>
             </div>

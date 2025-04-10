@@ -141,11 +141,11 @@
                     <div class="card shadow-sm border-0 rounded-3">
                         <!-- Hình ảnh sản phẩm (chiếm toàn bộ phần trên) -->
                         <img 
-  ng-if="variant.UrlHinhanh"
-  ng-src="{{ variant.Id ? 'https://localhost:7196/picture/' + variant.UrlHinhanh : variant.UrlHinhanh }}" 
-  class="card-img-top"
-  alt="Ảnh biến thể"
-  style="width: 100%; height: 200px; object-fit: cover; border-top-left-radius: 8px; border-top-right-radius: 8px;">
+                        ng-if="variant.UrlHinhanh"
+                        ng-src="{{ variant.Id ? 'https://localhost:7196/picture/' + variant.UrlHinhanh : variant.UrlHinhanh }}" 
+                        class="card-img-top"
+                        alt="Ảnh biến thể"
+                        style="width: 100%; height: 200px; object-fit: cover; border-top-left-radius: 8px; border-top-right-radius: 8px;">
 
 
                         <div class="card-body text-center p-2">
@@ -255,22 +255,22 @@
             </div>
             <div class="col-3">
                 <label>Chiều cao</label>
-                <input type="number" class="form-control" ng-model="product.Chieucao" name="Chieucao"
+                <input type="number" class="form-control" ng-model="product.chieucao" name="chieucao"
                     placeholder="Chiều cao (cm)" min="10" max="150" step="1" ng-keydown="blockInvalidKeys($event)" required>
                 <span class="text-danger"
-                    ng-show="(frm.Chieucao.$error.required && frm.Chieucao.$touched) || (frm.Chieucao.$error.required && frm.$submitted)">
+                    ng-show="(frm.chieucao.$error.required && frm.chieucao.$touched) || (frm.chieucao.$error.required && frm.$submitted)">
                     Không được để trống chiều cao
                 </span>
                 <span class="text-danger"
-                    ng-show="frm.Chieucao.$error.min && (frm.Chieucao.$touched || frm.$submitted)">
+                    ng-show="frm.chieucao.$error.min && (frm.chieucao.$touched || frm.$submitted)">
                     Chiều cao phải lớn hơn hoặc bằng 10
                 </span>
                 <span class="text-danger"
-                    ng-show="frm.Chieucao.$error.max && (frm.Chieucao.$touched || frm.$submitted)">
+                    ng-show="frm.chieucao.$error.max && (frm.chieucao.$touched || frm.$submitted)">
                     Chiều cao không được vượt quá 150
                 </span>
                 <span class="text-danger"
-                    ng-show="frm.Chieucao.$error.pattern && (frm.Chieucao.$touched || frm.$submitted)">
+                    ng-show="frm.chieucao.$error.pattern && (frm.chieucao.$touched || frm.$submitted)">
                     Chiều cao phải là một số nguyên hợp lệ
                 </span>
             </div>
@@ -303,7 +303,7 @@
             </div>
 
             <div class="d-flex justify-content-center mt-3">
-                <button type="submit" class="btn btn-success">Thêm sản phẩm</button>
+                <button type="submit" class="btn btn-warning">Cập nhật sản phẩm</button>
             </div>
     </form>
 </div>
@@ -438,7 +438,7 @@
 
 
                                 <div class="position-relative d-inline-block mt-2" ng-if="newVariant.UrlHinhanh">
-                                    <img ng-src="{{newVariant.UrlHinhanh}}" alt="Ảnh biến thể" class="img-thumbnail"
+                                    <img  ng-src="{{ newVariant.Id ? 'https://localhost:7196/picture/' + newVariant.UrlHinhanh : newVariant.UrlHinhanh }} alt="Ảnh biến thể" class="img-thumbnail"
                                         style="width: 150px; height: 150px;">
                                     <button type="button"
                                         class="btn btn-danger btn-sm position-absolute top-0 start-100 translate-middle"
