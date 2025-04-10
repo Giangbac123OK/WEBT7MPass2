@@ -128,7 +128,7 @@
               <th>Chức năng</th>
             </tr>
           </thead>
-          <tbody ng-repeat="product in products">
+          <tbody ng-repeat="product in productsALL">
             <tr>
               <td><input type="checkbox"></td>
               <td>{{product.tenSanpham}}</td>
@@ -149,7 +149,7 @@
                   <button class="btn btn-danger btn-sm" ng-click="deleteProduct(product)"><i class="fas fa-trash"></i></button>
                   <a class="btn btn-warning btn-sm" href="#!/editSanPham/{{product.id}}"><i class="fas fa-edit"></i></a>
                   <button class="btn btn-primary btn-sm"><i class="fas fa-eye"></i> Xem</button>
-                  <div class="form-switch" ng-if="product.trangThai !== 1">
+                  <div class="form-switch" >
                     <input 
                       class="form-check-input" 
                       type="checkbox" 
@@ -244,7 +244,7 @@
               <td>
                 <div class="d-flex align-items-center gap-2">
                   <button class="btn btn-danger btn-sm" ng-click="deleteProduct(product)"><i class="fas fa-trash"></i></button>
-                  <button class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></button>
+                  <a class="btn btn-warning btn-sm" href="#!/editSanPham/{{product.id}}"><i class="fas fa-edit"></i></a>
                   <button class="btn btn-primary btn-sm"><i class="fas fa-eye"></i> Xem</button>
                   <div class="form-switch" ng-if="product.trangThai !== 1">
                     <input 
@@ -344,7 +344,7 @@
               <td>
                 <div class="d-flex align-items-center gap-2">
                   <button class="btn btn-danger btn-sm" ng-click="deleteProduct(product)"><i class="fas fa-trash"></i></button>
-                  <button class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></button>
+                  <a class="btn btn-warning btn-sm" href="#!/editSanPham/{{product.id}}"><i class="fas fa-edit"></i></a>
                   <button class="btn btn-primary btn-sm"><i class="fas fa-eye"></i> Xem</button>
                   <div class="form-switch" ng-if="product.trangThai !== 1">
                     <input 
@@ -444,7 +444,7 @@
               <td>
                 <div class="d-flex align-items-center gap-2">
                   <button class="btn btn-danger btn-sm" ng-click="deleteProduct(product)"><i class="fas fa-trash"></i></button>
-                  <button class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></button>
+                  <a class="btn btn-warning btn-sm" href="#!/editSanPham/{{product.id}}"><i class="fas fa-edit"></i></a>
                   <button class="btn btn-primary btn-sm"><i class="fas fa-eye"></i> Xem</button>
                   <div class="form-switch" ng-if="product.trangThai !== 1">
                     <input 
