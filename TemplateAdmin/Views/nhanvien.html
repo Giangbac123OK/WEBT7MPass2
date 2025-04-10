@@ -288,6 +288,59 @@
                             </button>
                           </div>
                         </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" ng-click="btnAdd()"
+                    ng-disabled="AddNhanVienfrm.$invalid">Lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Detail Nhân Viên -->
+<div class="modal fade" id="detailsModal" tabindex="-1" role="dialog" aria-labelledby="detailsModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h4 class="modal-title" id="detailsModalLabel">Chi tiết nhân viên</h4>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4 text-center">
+                        <img ng-src="https://localhost:7196/picture/{{edit.avatar}}" 
+                             class="img-thumbnail mb-3" style="max-width: 200px;"
+                             alt="{{ edit.hovaten }}">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <p><strong>Họ tên:</strong> {{ edit.hovaten }}</p>
+                                <p><strong>Ngày sinh:</strong> {{ edit.ngaysinh | date:'dd/MM/yyyy' }}</p>
+                                <p><strong>Tuổi:</strong> {{ calculateAge(edit.ngaysinh) }}</p>
+                                <p><strong>Giới tính:</strong> {{ edit.gioitinh ? 'Nam' : 'Nữ' }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>SĐT:</strong> {{ edit.sdt }}</p>
+                                <p><strong>Email:</strong> {{ edit.email }}</p>
+                                <p><strong>Chức vụ:</strong> 
+                                    <span class="badge" ng-class="{'bg-success': edit.role == 0, 'bg-primary': edit.role == 1, 'bg-info': edit.role == 2}">
+                                        {{ edit.role == 0 ? 'Admin' : (edit.role == 1 ? 'Quản lý' : 'Nhân viên') }}
+                                    </span>
+                                </p>
+                                <p><strong>Ngày tạo tài khoản:</strong> {{ edit.ngaytaotaikhoan | date:'dd/MM/yyyy' }}</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <p><strong>Địa chỉ:</strong> {{ edit.diachi }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                       </div>
                   </form>        
               </div>
@@ -336,6 +389,10 @@
               <p style="margin-top: 10px; font-weight: bold;">{{ detail.hovaten }}</p>
               <span class="badge bg-info text-dark">{{ detail.role == 1 ?   'Nhân viên':'Quản lý' }}</span>
             </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
             <div class="col-md-8">
               <div class="mb-2 d-flex">
                 <strong class="me-2">Ngày sinh:</strong> <span>{{ detail.ngaysinh | date:'dd/MM/yyyy' }}</span>
@@ -370,6 +427,107 @@
         </div>
       </div>
     </div>
+</div>
+
+<!-- Modal Edit Nhân Viên -->
+<div class="modal fade" id="EditNVModal" tabindex="-1" aria-labelledby="EditNVModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <form name="EditNhanVienfrm" ng-submit="btnEdit()" novalidate enctype="multipart/form-data">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-white">
+                    <h5 class="modal-title" id="EditNVModalLabel">Chỉnh sửa nhân viên</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            <div class="mb-3">
+                                <div class="avatar-upload">
+                                    <div class="avatar-edit">
+                                        <input type="file" id="avatarUploadEdit" name="avatar" accept=".png, .jpg, .jpeg" file-model="edit.avatarFile"
+                                            onchange="angular.element(this).scope().previewAvataredit(this.files[0])" class="d-none" />
+                                        <label for="avatarUploadEdit" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-camera"></i> Chọn ảnh
+                                        </label>
+                                    </div>
+                                    <!-- Nút ảnh mặc định -->
+                                    <div class="avatar-edit1">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" ng-click="setDefaultAvataredit('edit')">
+                                            <i class="bi bi-person-fill"></i> Ảnh mặc định
+                                        </button>
+                                    </div>
+                                    <div class="avatar-preview">
+                                        <div id="editimagePreviewf"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                        
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                                <input type="text" name="hovaten" ng-model="edit.hovaten" class="form-control"
+                                       required maxlength="50"
+                                       ng-pattern="/^[A-Za-zÀ-ỹ\s]+$/">
+                                <span class="text-danger small" ng-show="EditNhanVienfrm.hovaten.$touched && EditNhanVienfrm.hovaten.$error.required">Vui lòng nhập họ và tên.</span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Ngày sinh <span class="text-danger">*</span></label>
+                                <input type="date" name="ngaysinh" ng-model="edit.ngaysinh" class="form-control"
+                                       required max="{{ getMaxYear() }}">
+                                <span class="text-danger small" ng-show="EditNhanVienfrm.ngaysinh.$touched && EditNhanVienfrm.ngaysinh.$error.required">Vui lòng chọn ngày sinh.</span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Giới tính <span class="text-danger">*</span></label>
+                                <select name="gioitinh" ng-model="edit.gioitinh" class="form-select" required>
+                                    <option value="" disabled selected>Chọn giới tính</option>
+                                    <option value="true">Nam</option>
+                                    <option value="false">Nữ</option>
+                                </select>
+                                <span class="text-danger small" ng-show="EditNhanVienfrm.gioitinh.$touched && EditNhanVienfrm.gioitinh.$error.required">Vui lòng chọn giới tính.</span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">SĐT <span class="text-danger">*</span></label>
+                                <input type="tel" name="sdt" ng-model="edit.sdt" class="form-control"
+                                       required ng-pattern="/^0\d{9}$/">
+                                <span class="text-danger small" ng-show="EditNhanVienfrm.sdt.$touched && EditNhanVienfrm.sdt.$error.pattern">Số điện thoại phải có 10 chữ số, bắt đầu bằng 0.</span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Email <span class="text-danger">*</span></label>
+                                <input type="email" name="email" ng-model="edit.email" class="form-control" required>
+                                <span class="text-danger small" ng-show="EditNhanVienfrm.email.$touched && EditNhanVienfrm.email.$error.email">Vui lòng nhập email hợp lệ.</span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Địa chỉ <span class="text-danger">*</span></label>
+                                <input type="text" name="diachi" ng-model="edit.diachi" class="form-control" required>
+                                <span class="text-danger small" ng-show="EditNhanVienfrm.diachi.$touched && EditNhanVienfrm.diachi.$error.required">Vui lòng nhập địa chỉ.</span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Chức vụ <span class="text-danger">*</span></label>
+                                <select name="chucvu" ng-model="edit.chucvu" class="form-select" required>
+                                    <option value="" disabled selected>Chọn chức vụ</option>
+                                    <option value="0">Admin</option>
+                                    <option value="1">Quản lý</option>
+                                    <option value="2">Nhân viên</option>
+                                </select>
+                                <span class="text-danger small" ng-show="EditNhanVienfrm.chucvu.$touched && EditNhanVienfrm.chucvu.$error.required">Vui lòng chọn chức vụ.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-warning" ng-disabled="EditNhanVienfrm.$invalid">Cập nhật</button>
+                </div>
+            </div>
+        </form>
   </div>
   <!-- Cập nhật nhân viên -->
   <div class="modal fade" id="UpdateModal" tabindex="-1" aria-labelledby="UpdateModalLabel" aria-hidden="true">
@@ -494,5 +652,67 @@
             </div>
         </div>
     </div>
-  </div>
-  
+</div>
+
+<!-- Modal Xem ảnh lớn -->
+<div class="modal fade" id="viewImageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center">
+                <img ng-src="{{ currentImage }}" class="img-fluid" alt="Ảnh nhân viên">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .avatar-upload {
+        position: relative;
+        max-width: 200px;
+        margin: 0 auto;
+    }
+    
+    .avatar-edit {
+        position: absolute;
+        right: 57px;
+        bottom: -39px;
+        z-index: 1;
+    }
+
+    .avatar-edit1 {
+        position: absolute;
+        right: 42px;
+        bottom: -78px;
+        z-index: 1;
+    }
+    
+    .avatar-preview {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        border: 3px solid #5089db;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        overflow: hidden;
+        margin: 0 auto;
+    }
+    
+    .avatar-preview div {
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+    
+    .table th {
+        white-space: nowrap;
+    }
+    
+    .badge {
+        font-size: 0.9em;
+        padding: 5px 10px;
+    }
+</style>

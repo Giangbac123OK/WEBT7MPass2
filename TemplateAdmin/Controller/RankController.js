@@ -1,315 +1,216 @@
-const ranks = [
-    {
-        id: 1,
-        tenrank: "Bronze",
+app.controller('RankController', function ($scope, $http) {
+    $scope.ranks = [];
+    $scope.isLoading = true;
+    $scope.errorMessage = '';
+    $scope.statusFilter = 'all';
+    
+    // Form models
+    $scope.newRank = {
+        tenrank: '',
         minMoney: 0,
-        maxMoney: 1000000,
-        trangthai: 1,
-        khachhangs: 24,
-        vouchers: 2
-    },
-    {
-        id: 2,
-        tenrank: "Silver",
-        minMoney: 1000000,
-        maxMoney: 5000000,
-        trangthai: 1,
-        khachhangs: 56,
-        vouchers: 3
-    },
-    {
-        id: 3,
-        tenrank: "Gold",
-        minMoney: 5000000,
-        maxMoney: 10000000,
-        trangthai: 1,
-        khachhangs: 32,
-        vouchers: 5
-    },
-    {
-        id: 4,
-        tenrank: "Platinum",
-        minMoney: 10000000,
-        maxMoney: 20000000,
-        trangthai: 1,
-        khachhangs: 18,
-        vouchers: 7
-    },
-    {
-        id: 5,
-        tenrank: "Diamond",
-        minMoney: 20000000,
-        maxMoney: 50000000,
-        trangthai: 0,
-        khachhangs: 5,
-        vouchers: 0
-    }
-];
-
-// Format tiền tệ VND
-function formatCurrency(amount) {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
-}
-
-// Lấy trạng thái text
-function getStatusText(status) {
-    switch(parseInt(status)) {
-        case 0: return "Không hoạt động";
-        case 1: return "Hoạt động";
-        case 2: return "Đã xóa";
-        default: return "Không xác định";
-    }
-}
-
-// Lấy badge class cho rank
-function getRankBadgeClass(rankName) {
-    switch(rankName) {
-        case "Bronze": return "badge-bronze";
-        case "Silver": return "badge-silver";
-        case "Gold": return "badge-gold";
-        case "Platinum": return "badge-platinum";
-        case "Diamond": return "badge-diamond";
-        default: return "bg-secondary";
-    }
-}
-
-// Hiển thị danh sách rank
-function displayRanks(ranksData) {
-    const tableBody = document.getElementById('rankTableBody');
-    tableBody.innerHTML = '';
+        maxMoney: 0,
+        trangthai: 0  // Mặc định là hoạt động (0)
+    };
     
-    ranksData.forEach(rank => {
-        const row = document.createElement('tr');
-        
-        row.innerHTML = `
-            <td>${rank.id}</td>
-            <td><span class="badge ${getRankBadgeClass(rank.tenrank)}">${rank.tenrank}</span></td>
-            <td>${formatCurrency(rank.minMoney)}</td>
-            <td>${formatCurrency(rank.maxMoney)}</td>
-            <td>
-                <span class="badge ${rank.trangthai === 1 ? 'bg-success' : 'bg-secondary'}">
-                    ${getStatusText(rank.trangthai)}
-                </span>
-            </td>
-            <td>${rank.khachhangs}</td>
-            <td>${rank.vouchers}</td>
-            <td class="text-end">
-                <button class="btn btn-sm btn-outline-primary me-1 edit-btn" data-id="${rank.id}">
-                    <i class="bi bi-pencil"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${rank.id}">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </td>
-        `;
-        
-        tableBody.appendChild(row);
-    });
+    $scope.editRank = {
+        id: null,
+        tenrank: '',
+        minMoney: 0,
+        maxMoney: 0,
+        trangthai: 0
+    };
     
-    document.getElementById('totalRanks').textContent = ranksData.length;
+    $scope.deleteRankId = null;
     
-    // Thêm event listeners cho các nút
-    document.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const rankId = this.getAttribute('data-id');
-            openEditModal(rankId);
-        });
-    });
+    // Format tiền tệ VND
+    $scope.formatCurrency = function(amount) {
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+    };
     
-    document.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const rankId = this.getAttribute('data-id');
-            openDeleteModal(rankId);
-        });
-    });
-}
-
-// Mở modal sửa
-function openEditModal(rankId) {
-    const rank = ranks.find(r => r.id == rankId);
-    if (rank) {
-        document.getElementById('editRankId').value = rank.id;
-        document.getElementById('editTenrank').value = rank.tenrank;
-        document.getElementById('editMinMoney').value = rank.minMoney;
-        document.getElementById('editMaxMoney').value = rank.maxMoney;
-        document.getElementById('editTrangthai').value = rank.trangthai;
-        
-        const editModal = new bootstrap.Modal(document.getElementById('editRankModal'));
-        editModal.show();
-    }
-}
-
-// Mở modal xóa
-function openDeleteModal(rankId) {
-    document.getElementById('deleteRankId').value = rankId;
-    const deleteModal = new bootstrap.Modal(document.getElementById('deleteRankModal'));
-    deleteModal.show();
-}
-
-// Khi trang đã tải xong
-document.addEventListener('DOMContentLoaded', function() {
-    // Hiển thị danh sách rank ban đầu
-    displayRanks(ranks);
-    
-    // Xử lý lọc theo trạng thái
-    document.getElementById('statusFilter').addEventListener('change', function() {
-        const statusValue = this.value;
-        let filteredRanks = ranks;
-        
-        if (statusValue !== 'all') {
-            filteredRanks = ranks.filter(rank => rank.trangthai == statusValue);
+    // Lấy trạng thái text - ĐÃ CẬP NHẬT
+    $scope.getStatusText = function(status) {
+        switch(parseInt(status)) {
+            case 0: return "Hoạt động";
+            case 1: return "Không hoạt động";
+            case 2: return "Đã xóa";
+            default: return "Không xác định";
         }
-        
-        displayRanks(filteredRanks);
-    });
+    };
     
-    // Xử lý thêm rank mới
-    document.getElementById('saveRankBtn').addEventListener('click', function() {
-        const tenrank = document.getElementById('tenrank').value;
-        const minMoney = document.getElementById('minMoney').value;
-        const maxMoney = document.getElementById('maxMoney').value;
-        const trangthai = document.getElementById('trangthai').value;
-        
-        if (!tenrank || !minMoney || !maxMoney) {
+    // Lấy badge class cho rank
+    $scope.getRankBadgeClass = function(rankName) {
+        switch(rankName) {
+            case "Bronze": return "badge-bronze";
+            case "Silver": return "badge-silver";
+            case "Gold": return "badge-gold";
+            case "Platinum": return "badge-platinum";
+            case "Diamond": return "badge-diamond";
+            default: return "bg-secondary";
+        }
+    };
+    
+    // Lấy danh sách ranks từ API
+    $scope.loadRanks = function() {
+        $scope.isLoading = true;
+        $http.get('https://localhost:7196/api/Ranks')
+            .then(function(response) {
+                $scope.ranks = response.data;
+                $scope.isLoading = false;
+                $scope.applyFilter();
+            })
+            .catch(function(error) {
+                console.error('Error loading ranks:', error);
+                $scope.errorMessage = 'Không thể tải dữ liệu từ server. Vui lòng thử lại!';
+                $scope.isLoading = false;
+            });
+    };
+    
+    // Áp dụng bộ lọc trạng thái
+    $scope.applyFilter = function() {
+        if ($scope.statusFilter === 'all') {
+            $scope.filteredRanks = [...$scope.ranks];
+        } else {
+            $scope.filteredRanks = $scope.ranks.filter(rank => 
+                rank.trangthai == $scope.statusFilter
+            );
+        }
+    };
+    
+    // Mở modal thêm mới
+    $scope.openAddModal = function() {
+        $scope.newRank = {
+            tenrank: '',
+            minMoney: 0,
+            maxMoney: 0,
+            trangthai: 0  // Mặc định là hoạt động (0)
+        };
+        $('#addRankModal').modal('show');
+    };
+    
+    // Mở modal sửa
+    $scope.openEditModal = function(rank) {
+        $scope.editRank = {
+            id: rank.id,
+            tenrank: rank.tenrank,
+            minMoney: rank.minMoney,
+            maxMoney: rank.maxMoney,
+            trangthai: rank.trangthai
+        };
+        $('#editRankModal').modal('show');
+    };
+    
+    // Mở modal xóa
+    $scope.openDeleteModal = function(rankId) {
+        $scope.deleteRankId = rankId;
+        $('#deleteRankModal').modal('show');
+    };
+    
+    // Thêm rank mới
+    $scope.addRank = function() {
+        if (!$scope.newRank.tenrank || $scope.newRank.minMoney === null || $scope.newRank.maxMoney === null) {
             alert('Vui lòng điền đầy đủ thông tin bắt buộc');
             return;
         }
         
-        // Tạo đối tượng rank mới
-        const newRank = {
-            id: ranks.length + 1, // Trong thực tế, ID sẽ được tạo bởi server
-            tenrank: tenrank,
-            minMoney: parseFloat(minMoney),
-            maxMoney: parseFloat(maxMoney),
-            trangthai: parseInt(trangthai),
-            khachhangs: 0,
-            vouchers: 0
-        };
-        
-        // API call để thêm rank mới
-        // fetch('/api/ranks', {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify(newRank),
-        // })
-        // .then(response => response.json())
-        // .then(data => {
-        //     ranks.push(data);
-        //     displayRanks(ranks);
-        //     const modal = bootstrap.Modal.getInstance(document.getElementById('addRankModal'));
-        //     modal.hide();
-        //     document.getElementById('addRankForm').reset();
-        // })
-        // .catch(error => {
-        //     console.error('Error:', error);
-        //     alert('Đã xảy ra lỗi khi thêm rank mới');
-        // });
-        
-        // Mô phỏng thêm rank mới (xóa khi triển khai API thực tế)
-        ranks.push(newRank);
-        displayRanks(ranks);
-        const modal = bootstrap.Modal.getInstance(document.getElementById('addRankModal'));
-        modal.hide();
-        document.getElementById('addRankForm').reset();
-    });
+        $http.post('https://localhost:7196/api/Ranks', $scope.newRank)
+            .then(function(response) {
+                $scope.ranks.push(response.data);
+                $scope.applyFilter();
+                $('#addRankModal').modal('hide');
+                
+                // Reset form
+                $scope.newRank = {
+                    tenrank: '',
+                    minMoney: 0,
+                    maxMoney: 0,
+                    trangthai: 0  // Mặc định là hoạt động (0)
+                };
+                
+                // Hiển thị thông báo thành công
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công',
+                    text: 'Thêm rank mới thành công!'
+                });
+            })
+            .catch(function(error) {
+                console.error('Error adding rank:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Đã xảy ra lỗi khi thêm rank mới!'
+                });
+            });
+    };
     
-    // Xử lý cập nhật rank
-    document.getElementById('updateRankBtn').addEventListener('click', function() {
-        const rankId = document.getElementById('editRankId').value;
-        const tenrank = document.getElementById('editTenrank').value;
-        const minMoney = document.getElementById('editMinMoney').value;
-        const maxMoney = document.getElementById('editMaxMoney').value;
-        const trangthai = document.getElementById('editTrangthai').value;
-        
-        if (!tenrank || !minMoney || !maxMoney) {
+    // Cập nhật rank
+    $scope.updateRank = function() {
+        if (!$scope.editRank.tenrank || $scope.editRank.minMoney === null || $scope.editRank.maxMoney === null) {
             alert('Vui lòng điền đầy đủ thông tin bắt buộc');
             return;
         }
         
-        // Tạo đối tượng rank cập nhật
-        const updatedRank = {
-            id: parseInt(rankId),
-            tenrank: tenrank,
-            minMoney: parseFloat(minMoney),
-            maxMoney: parseFloat(maxMoney),
-            trangthai: parseInt(trangthai)
-        };
-        
-        // API call để cập nhật rank
-        // fetch(`/api/ranks/${rankId}`, {
-        //     method: 'PUT',
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify(updatedRank),
-        // })
-        // .then(response => response.json())
-        // .then(data => {
-        //     const index = ranks.findIndex(r => r.id == rankId);
-        //     if (index !== -1) {
-        //         ranks[index] = { ...ranks[index], ...updatedRank };
-        //     }
-        //     displayRanks(ranks);
-        //     const modal = bootstrap.Modal.getInstance(document.getElementById('editRankModal'));
-        //     modal.hide();
-        // })
-        // .catch(error => {
-        //     console.error('Error:', error);
-        //     alert('Đã xảy ra lỗi khi cập nhật rank');
-        // });
-        
-        // Mô phỏng cập nhật rank (xóa khi triển khai API thực tế)
-        const index = ranks.findIndex(r => r.id == rankId);
-        if (index !== -1) {
-            ranks[index] = { 
-                ...ranks[index], 
-                tenrank: tenrank,
-                minMoney: parseFloat(minMoney),
-                maxMoney: parseFloat(maxMoney),
-                trangthai: parseInt(trangthai)
-            };
-        }
-        displayRanks(ranks);
-        const modal = bootstrap.Modal.getInstance(document.getElementById('editRankModal'));
-        modal.hide();
-    });
+        $http.put('https://localhost:7196/api/Ranks/' + $scope.editRank.id, $scope.editRank)
+            .then(function(response) {
+                // Cập nhật rank trong mảng
+                const index = $scope.ranks.findIndex(r => r.id === $scope.editRank.id);
+                if (index !== -1) {
+                    $scope.ranks[index] = response.data;
+                }
+                $scope.applyFilter();
+                $('#editRankModal').modal('hide');
+                
+                // Hiển thị thông báo thành công
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công',
+                    text: 'Cập nhật rank thành công!'
+                });
+            })
+            .catch(function(error) {
+                console.error('Error updating rank:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Đã xảy ra lỗi khi cập nhật rank!'
+                });
+            });
+    };
     
-    // Xử lý xóa rank
-    document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
-        const rankId = document.getElementById('deleteRankId').value;
-        
-        // API call để xóa rank
-        // fetch(`/api/ranks/${rankId}`, {
-        //     method: 'DELETE',
-        // })
-        // .then(response => {
-        //     if (response.ok) {
-        //         const index = ranks.findIndex(r => r.id == rankId);
-        //         if (index !== -1) {
-        //             ranks.splice(index, 1);
-        //         }
-        //         displayRanks(ranks);
-        //         const modal = bootstrap.Modal.getInstance(document.getElementById('deleteRankModal'));
-        //         modal.hide();
-        //     } else {
-        //         throw new Error('Không thể xóa rank');
-        //     }
-        // })
-        // .catch(error => {
-        //     console.error('Error:', error);
-        //     alert('Đã xảy ra lỗi khi xóa rank');
-        // });
-        
-        // Mô phỏng xóa rank (xóa khi triển khai API thực tế)
-        const index = ranks.findIndex(r => r.id == rankId);
-        if (index !== -1) {
-            // Thay vì xóa hoàn toàn, chỉ đánh dấu là đã xóa
-            ranks[index].trangthai = 2;
-        }
-        displayRanks(ranks);
-        const modal = bootstrap.Modal.getInstance(document.getElementById('deleteRankModal'));
-        modal.hide();
-    });
+    // Xóa rank
+    $scope.deleteRank = function() {
+        $http.delete('https://localhost:7196/api/Ranks/' + $scope.deleteRankId)
+            .then(function() {
+                // Cập nhật trạng thái rank trong mảng
+                const index = $scope.ranks.findIndex(r => r.id === $scope.deleteRankId);
+                if (index !== -1) {
+                    $scope.ranks[index].trangthai = 2; // Đánh dấu là đã xóa
+                }
+                $scope.applyFilter();
+                $('#deleteRankModal').modal('hide');
+                
+                // Hiển thị thông báo thành công
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công',
+                    text: 'Xóa rank thành công!'
+                });
+            })
+            .catch(function(error) {
+                console.error('Error deleting rank:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Đã xảy ra lỗi khi xóa rank!'
+                });
+            });
+    };
+    
+    // Khởi tạo controller
+    $scope.init = function() {
+        $scope.loadRanks();
+    };
+    
+    // Gọi hàm khởi tạo
+    $scope.init();
 });

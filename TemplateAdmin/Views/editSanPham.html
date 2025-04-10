@@ -58,7 +58,7 @@
     }
 </style>
 <div class="container">
-    <form ng-submit="saveProduct()" class="p-3 border rounded shadow-sm bg-light " name="frm" novalidate>
+    <form ng-submit="updateProduct()" class="p-3 border rounded shadow-sm bg-light " name="frm" novalidate>
         <h4 class="mb-3">Thêm Sản Phẩm</h4>
 
         <hr style="border: 2px solid gold;">
@@ -145,9 +145,11 @@
                 <div class="col-xl-1-5 col-lg-1-5 col-md-3 col-sm-4 col-6 mb-3" ng-repeat="variant in product.variants">
                     <div class="card shadow-sm border-0 rounded-3">
                         <!-- Hình ảnh sản phẩm (chiếm toàn bộ phần trên) -->
-                        <img ng-if="variant.UrlHinhanh" ng-src="{{variant.UrlHinhanh}}" class="card-img-top"
-                            alt="Ảnh biến thể"
+                        <img ng-if="variant.UrlHinhanh"
+                        ng-src="{{ variant.UrlHinhanh.startsWith('data:') ? variant.UrlHinhanh : 'https://localhost:7196/picture/' + variant.UrlHinhanh }}"
+                            class="card-img-top" alt="Ảnh biến thể"
                             style="width: 100%; height: 200px; object-fit: cover; border-top-left-radius: 8px; border-top-right-radius: 8px;">
+
 
                         <div class="card-body text-center p-2">
                             <div class="d-flex justify-content-between">
@@ -308,7 +310,7 @@
             </div>
 
             <div class="d-flex justify-content-center mt-3">
-                <button type="submit" class="btn btn-success">Thêm sản phẩm</button>
+                <button type="submit" class="btn btn-warning">Cập nhật sản phẩm</button>
             </div>
     </form>
 </div>
@@ -317,10 +319,9 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">
+                <h5 class="modal-title" id="addVariantModalLabel">
                     {{ isEditing ? 'Chỉnh sửa Biến Thể ' + editingIndex : 'Thêm Biến Thể ' + variantIndexCounter }}
-                </h5>
-                  
+                  </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
                     ng-click="resetVariantForm()"></button>
             </div>
@@ -441,19 +442,20 @@
 
                                 <input type="file" id="imageUpload" class="hidden-input"
                                     onchange="angular.element(this).scope().handleFileSelect(event, 'newVariant')"
-                                    ng-show="!newVariant.UrlHinhanh || allowReplaceImage">
-
+                                    ng-show="!newVariant.UrlHinhanh || allowReplaceImage" />
 
                                 <div class="position-relative d-inline-block mt-2" ng-if="newVariant.UrlHinhanh">
-                                    <img ng-src="{{newVariant.UrlHinhanh}}" alt="Ảnh biến thể" class="img-thumbnail"
-                                        style="width: 150px; height: 150px;">
-                                    <button type="button"
+                                    <img ng-src="{{ newVariant.UrlHinhanh.startsWith('data:') ? newVariant.UrlHinhanh : 'https://localhost:7196/picture/' + newVariant.UrlHinhanh }}"
+                                    alt="Ảnh biến thể" class="img-thumbnail"
+                                    style="width: 150px; height: 150px;">
+
+                                        <button type="button"
                                         class="btn btn-danger btn-sm position-absolute top-0 start-100 translate-middle"
                                         ng-click="removeImage('newVariant')">
-                                        X
-                                    </button>
+                                    X
+                                </button>
+                                
                                 </div>
-
                                 <span class="text-danger" ng-show="variantForm.$submitted && !newVariant.UrlHinhanh">
                                     Bạn cần thêm một hình ảnh cho biến thể sản phẩm.
                                 </span>
