@@ -13,11 +13,11 @@ app.controller('QuanLySanPhamController', function ($scope, $http, $location, $t
         chieudai: null,
         chieurong: null,
         trongluong: null,
-        Chieucao: null,
+        chieucao: null,
         idth: 0
     };
-    $scope.products = []; // Danh sách sản phẩm
-    $scope.product.variants = []; // Danh sách biến thể của sản phẩm
+    $scope.products = []; 
+    $scope.product.variants = []; 
     $scope.loadProducts = function () {
         $http.get("https://localhost:7196/api/Sanphams")
             .then(function (response) {
@@ -286,10 +286,12 @@ app.controller('QuanLySanPhamController', function ($scope, $http, $location, $t
         $scope.newVariant = { Trangthai: 0 };
         $scope.variantEditingIndex = -1; // ✅ Đặt lại chế độ về "thêm mới"
         $scope.isPriceFieldVisible = false;
+        
         $timeout(function () {
             if ($scope.variantForm) {
                 $scope.variantForm.$setPristine();
                 $scope.variantForm.$setUntouched();
+                $scope.variantForm.$submitted = false;
             }
         });
 
@@ -325,6 +327,15 @@ app.controller('QuanLySanPhamController', function ($scope, $http, $location, $t
             );
             if (existingVariant) {
                 alert("❌ Biến thể đã tồn tại!");
+                //reset form
+                $scope.newVariant = { Trangthai: 0 };
+                $scope.isPriceFieldVisible = false;
+                $scope.variantEditingIndex = -1;
+                if ($scope.variantForm) {
+                    $scope.variantForm.$setPristine();
+                    $scope.variantForm.$setUntouched();
+                    $scope.variantForm.$submitted = false;
+                }
                 return;
             }
 
@@ -347,26 +358,26 @@ app.controller('QuanLySanPhamController', function ($scope, $http, $location, $t
             alert("✅ Đã thêm biến thể mới!");
             console.log("Biến thể mới:", $scope.newVariant);
 
-        } else {
-            // ✅ Cập nhật lại biến thể cũ
-            if (!$scope.newVariant.Giathoidiemhientai) {
-                $scope.newVariant.Giathoidiemhientai = $scope.product.giaBan;
-            }
-            let variantToEdit = {
-                IdMau: $scope.newVariant.IdMau,
-                IdSize: $scope.newVariant.IdSize,
-                IdChatLieu: $scope.newVariant.IdChatLieu,
-                Soluong: $scope.newVariant.Soluong,
-                Giathoidiemhientai: $scope.newVariant.Giathoidiemhientai,
-                Trangthai: $scope.newVariant.Trangthai,
-                UrlHinhanh: $scope.newVariant.UrlHinhanh,
-                file: $scope.newVariant.file
-            };
-            $scope.product.variants[$scope.variantEditingIndex] = variantToEdit;
+        }  else {
+            let oldVariant = $scope.product.variants[$scope.variantEditingIndex];
+        
+            // Cập nhật thông tin nhưng giữ lại Id và Idsp từ biến thể cũ
+            let updatedVariant = angular.copy(oldVariant);
+            updatedVariant.IdMau = $scope.newVariant.IdMau;
+            updatedVariant.IdSize = $scope.newVariant.IdSize;
+            updatedVariant.IdChatLieu = $scope.newVariant.IdChatLieu;
+            updatedVariant.Soluong = $scope.newVariant.Soluong;
+            updatedVariant.Giathoidiemhientai = $scope.newVariant.Giathoidiemhientai || $scope.product.giaBan;
+            updatedVariant.Trangthai = $scope.newVariant.Trangthai;
+            updatedVariant.UrlHinhanh = $scope.newVariant.UrlHinhanh;
+            updatedVariant.file = $scope.newVariant.file;
+        
+            $scope.product.variants[$scope.variantEditingIndex] = updatedVariant;
+        
             alert("✅ Đã cập nhật biến thể!");
-            console.log("Biến thể đã cập nhật:", $scope.newVariant);
+            console.log("Biến thể đã cập nhật:", updatedVariant);
         }
-
+        
         // Reset lại modal
         $scope.newVariant = { Trangthai: 0 };
         $scope.isPriceFieldVisible = false;
