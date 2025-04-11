@@ -838,7 +838,7 @@
 
               <div ng-repeat="spct in sanphamct" ng-if="spct.id == selectedProduct.idspct" class="product-info ms-3">
                 <p class="fs-5 tensp">{{SelectTenTH(spct.idsp)}} - {{SelecttenSp(spct.idsp)}}</p>
-                <p class="text-secondary">Phân loại: Da độn - Đen - 38</p>
+                <p class="text-secondary">Phân loại: <span ng-repeat="chatlieu in listChatlieu" ng-if="spct.idChatLieu==chatlieu.id">{{chatlieu.tenchatlieu}}</span> - <span ng-repeat="mau in listColor" ng-if="spct.idMau==mau.id">{{mau.tenmau}}</span> - <span ng-repeat="size in listSize" ng-if="spct.idSize==size.id">{{size.sosize}}</span></p>
               </div>
             </div>
 
