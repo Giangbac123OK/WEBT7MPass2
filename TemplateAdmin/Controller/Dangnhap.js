@@ -32,7 +32,7 @@ app.controller('dangnhapController', function ($scope, $http, $rootScope, $locat
                     role: response.data.role
                 };
 
-                localStorage.setItem('userInfo', JSON.stringify($rootScope.userInfo));
+                localStorage.setItem('userInfo1', JSON.stringify($rootScope.userInfo));
                 localStorage.setItem('lastLoginTime', Date.now());
                 
                 // Thêm thông báo phân quyền

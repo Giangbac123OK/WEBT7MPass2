@@ -75,7 +75,7 @@ app.config(function ($routeProvider) {
 });
 app.run(function($rootScope, $location) {
     // Khôi phục thông tin user từ localStorage nếu có
-    var storedUser = localStorage.getItem('userInfo');
+    var storedUser = localStorage.getItem('userInfo1');
     if (storedUser) {
         $rootScope.userInfo = JSON.parse(storedUser);
         $rootScope.isLoggedIn = true;
@@ -100,6 +100,15 @@ app.run(function($rootScope, $location) {
             $location.path("/dangnhap");
         }
     });
+
+    // Hàm đăng xuất
+    $rootScope.dangxuat = function () {
+        $rootScope.isLoggedIn = false;
+        $rootScope.userInfo = null;
+        localStorage.removeItem('userInfo1');
+        console.log("Đăng xuất thành công");
+        $location.path('/dangnhap');
+    };
 });
 
 
