@@ -18,57 +18,43 @@ app.controller('QuanLySanPhamController', function ($scope, $http, $location, $t
     };
     $scope.products = []; 
     $scope.product.variants = []; 
-    $scope.variantIndexCounter = 1;
     $scope.loadProducts = function () {
         $http.get("https://localhost:7196/api/Sanphams")
             .then(function (response) {
                 $scope.products = response.data;
-                $scope.productsALL = [];
                 $scope.productsStatus0 = [];
                 $scope.productsStatus1 = [];
                 $scope.productsStatus2 = [];
-    
+                
+
                 $scope.products.forEach(function (product) {
-                    product.trangThaiSwitch = product.trangthai === 0 || product.trangthai === 1;
-    
+                    product.trangThaiSwitch = product.trangthai === 0;
                     // Gọi API lấy biến thể từng sản phẩm
                     $http.get("https://localhost:7196/api/Sanphamchitiets/sanpham/" + product.id)
                         .then(function (res) {
-                            // 🔍 Lọc biến thể trạng thái khác 3
-                            const filteredVariants = res.data.filter(v => v.trangthai !== 3);
-                            product.variants = filteredVariants;
-    
-                            // Nếu không có biến thể hợp lệ, bỏ qua (nếu bạn muốn loại sản phẩm không có biến thể)
-                            if (product.variants.length === 0) return;
-    
-                            // Lấy ảnh đầu tiên hoặc ảnh mặc định
+                            product.variants = res.data;
                             product.image = product.variants.length > 0
                                 ? product.variants[0].urlHinhanh
                                 : 'default-image.jpg';
-    
-                            // Thêm vào danh sách theo trạng thái
-                            if (product.trangthai === 0 || product.trangthai === 1) {
+                            // Phân loại sản phẩm theo trạng thái
+                            if (product.trangthai === 0) {
                                 $scope.productsStatus0.push(product);
-                            }
-                            if (product.trangthai === 1) {
+                            } else if (product.trangthai === 1) {
                                 $scope.productsStatus1.push(product);
-                            }
-                            if (product.trangthai === 2) {
+                            } else if (product.trangthai === 2) {
                                 $scope.productsStatus2.push(product);
                             }
-                           if( product.trangthai !== 3) {
-                            $scope.productsALL.push(product);
-                            } // Nếu bạn muốn danh sách tổng
+                            console.log($scope.productsStatus0);
+                            
                         })
                         .catch(function () {
                             product.image = 'default-image.jpg';
                         });
                 });
-    
-                console.log( "sp 0",$scope.productsStatus0);
+                console.log($scope.products);
+
             });
     };
-    
     $scope.TatSanPham = function (product) {
         $http.put(`https://localhost:7196/api/Sanphams/${product.id}/cancel` )
             .then(function (response) {
@@ -217,11 +203,60 @@ app.controller('QuanLySanPhamController', function ($scope, $http, $location, $t
         }
     };
     $scope.isPriceFieldVisible = false;
-    
+    $scope.saveProduct = function () {
+        if ($scope.frm.$valid) {
+            $http.post("https://localhost:7196/api/Sanphams", $scope.product)
+                .then(function (response) {
+                    const createdProduct = response.data;
+                    const productId = createdProduct.id;
+                    console.log("✅ Sản phẩm đã được lưu:", createdProduct);
+
+                    // Gửi từng biến thể dưới dạng FormData
+                    let promises = [];
+                    for (let variant of $scope.product.variants) {
+                        variant.Idsp = productId;
+
+                        let formData = new FormData();
+                        for (let key in variant) {
+                            if (key !== 'file' && key !== 'UrlHinhanh') { // Không gửi base64
+                                formData.append(key, variant[key]);
+                            }
+                        }
+                        if (variant.file) {
+                            formData.append("file", variant.file); // Gửi file thật
+                        }
+                        let promise = $http.post("https://localhost:7196/api/Sanphamchitiets", formData, {
+                            headers: { 'Content-Type': undefined }
+                        })
+                            .then(function (response) {
+                                console.log("✅ Biến thể đã được lưu:", response.data);
+                            })
+                            .catch(function (error) {
+                                console.error("❌ Lỗi khi lưu biến thể:", error);
+                                alert("Có lỗi xảy ra khi lưu biến thể.");
+                            });
+
+                        promises.push(promise);
+                    }
+                    Promise.all(promises)
+                        .then(function () {
+                            alert("Sản phẩm và tất cả biến thể đã được lưu thành công!");
+                            $scope.loadProducts(); // Tải lại danh sách sản phẩm
+                            $location.url('/sanpham');
+                        })
+                        .catch(function () {
+                            alert("Có lỗi xảy ra khi lưu một hoặc nhiều biến thể.");
+                        });
+
+                })
+                .catch(function (error) {
+                    console.error("❌ Lỗi khi lưu sản phẩm:", error);
+                    alert("Có lỗi xảy ra khi lưu sản phẩm.");
+                });
+        }
+    };
     $scope.showEditVariantModal = function (variant, index) {
-        $scope.editingIndex = index + 1;
         let variantToEdit = {
-            Id: variant.Id,
             IdMau: variant.IdMau,
             IdSize: variant.IdSize,
             IdChatLieu: variant.IdChatLieu,
@@ -234,7 +269,6 @@ app.controller('QuanLySanPhamController', function ($scope, $http, $location, $t
         $scope.newVariant = variantToEdit
         $scope.variantEditingIndex = index; // ✅ Ghi nhớ vị trí cần cập nhật
         $scope.isPriceFieldVisible = true;
-        $scope.isEditing = true;
 
         $timeout(function () {
             if ($scope.variantForm) {
@@ -243,21 +277,15 @@ app.controller('QuanLySanPhamController', function ($scope, $http, $location, $t
                 $scope.variantForm.$submitted = false;
             }
         });
-        console.log("Biến thể cần chỉnh sửa:", $scope.newVariant);
-        
 
-        var modalEl = document.getElementById('addVariantModal');
-        modalEl.removeAttribute('aria-hidden');
-        var modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+        var modal = new bootstrap.Modal(document.getElementById('addVariantModal'));
         modal.show();
-
     };
     // Mở modal THÊM mới biến thể
     $scope.showAddVariantModal = function () {
         $scope.newVariant = { Trangthai: 0 };
         $scope.variantEditingIndex = -1; // ✅ Đặt lại chế độ về "thêm mới"
         $scope.isPriceFieldVisible = false;
-        $scope.isEditing = false;
         
         $timeout(function () {
             if ($scope.variantForm) {
@@ -281,15 +309,6 @@ app.controller('QuanLySanPhamController', function ($scope, $http, $location, $t
             $scope.variantForm.$setUntouched();
         }
     };
-    $scope.removeImage = function (variantType) {
-        $scope[variantType].UrlHinhanh = null;
-        $scope[variantType].file = null;
-    
-        // Reset luôn thẻ input file nếu có
-        const input = document.getElementById('imageUpload');
-        if (input) input.value = null;
-    };
-    
     $scope.saveVariant = function () {
         if ($scope.variantForm.$invalid) {
             angular.forEach($scope.variantForm.$error, function (field) {
@@ -300,15 +319,6 @@ app.controller('QuanLySanPhamController', function ($scope, $http, $location, $t
             $scope.variantForm.$setSubmitted();
             return;
         }
-        if (!($scope.newVariant.file || $scope.newVariant.UrlHinhanh)) {
-            alert("❌ Vui lòng chọn ảnh cho biến thể!");
-            return;
-        }
-        if ($scope.variantEditingIndex !== -1 && !$scope.newVariant.file) {
-            alert("❌ Vui lòng chọn ảnh mới khi cập nhật biến thể!");
-            return;
-        }
-        
 
         if ($scope.variantEditingIndex === -1) {
             // ✅ Kiểm tra trùng khi thêm mới
@@ -334,7 +344,6 @@ app.controller('QuanLySanPhamController', function ($scope, $http, $location, $t
             }
 
             let variantToAdd = {
-                
                 IdMau: $scope.newVariant.IdMau,
                 IdSize: $scope.newVariant.IdSize,
                 IdChatLieu: $scope.newVariant.IdChatLieu,
@@ -347,10 +356,7 @@ app.controller('QuanLySanPhamController', function ($scope, $http, $location, $t
 
             $scope.product.variants.push(variantToAdd);
             alert("✅ Đã thêm biến thể mới!");
-            $scope.variantIndexCounter++;
             console.log("Biến thể mới:", $scope.newVariant);
-            console.log("Danh sách biến thể hiện tại:", $scope.product.variants);
-            
 
         }  else {
             let oldVariant = $scope.product.variants[$scope.variantEditingIndex];
@@ -392,8 +398,6 @@ app.controller('QuanLySanPhamController', function ($scope, $http, $location, $t
     // Xóa biến thể
     $scope.removeVariant = function (index) {
         $scope.product.variants.splice(index, 1);
-        console.log("Danh sách sau xóa" + $scope.product.variants);
-        
     };
     // Hàm để chuyển đổi trạng thái hiển thị trường nhập liệu
     $scope.togglePriceField = function () {
@@ -607,8 +611,8 @@ app.controller('QuanLySanPhamController', function ($scope, $http, $location, $t
             })
             .then(function (response) {
                 const variantsRaw = response.data;
-                const filteredVariants = variantsRaw.filter(variant => variant.trangthai !== 3);
-                $scope.product.variants = filteredVariants.map(variant => ({
+
+                $scope.product.variants = variantsRaw.map(variant => ({
                     Id: variant.id,
                     Idsp: variant.idsp,
                     IdMau: variant.idMau,
@@ -620,163 +624,24 @@ app.controller('QuanLySanPhamController', function ($scope, $http, $location, $t
                     UrlHinhanh: variant.urlHinhanh,
                     file: variant.file || null
                 }));
-                $scope.variantIndexCounter = $scope.product.variants.length + 1;
+    
                 console.log("🎨 Biến thể đã xử lý:", $scope.product.variants);
-                console.log("Số biến thể hiện tại:", $scope.variantIndexCounter);
-                
             })
             .catch(function (error) {
                 console.error("❌ Lỗi khi tải sản phẩm hoặc biến thể:", error);
             });
     };
-    $scope.saveProduct = function () {
-        if ($scope.frm.$valid) {
-            $http.post("https://localhost:7196/api/Sanphams", $scope.product)
-                .then(function (response) {
-                    const createdProduct = response.data;
-                    const productId = createdProduct.id;
-                    console.log("✅ Sản phẩm đã được lưu:", createdProduct);
-
-                    // Gửi từng biến thể dưới dạng FormData
-                    let promises = [];
-                    for (let variant of $scope.product.variants) {
-                        variant.Idsp = productId;
-
-                        let formData = new FormData();
-                        for (let key in variant) {
-                            if (key !== 'file' && key !== 'UrlHinhanh') { // Không gửi base64
-                                formData.append(key, variant[key]);
-                            }
-                        }
-                        if (variant.file) {
-                            formData.append("file", variant.file); // Gửi file thật
-                        }
-                        let promise = $http.post("https://localhost:7196/api/Sanphamchitiets", formData, {
-                            headers: { 'Content-Type': undefined }
-                        })
-                            .then(function (response) {
-                                console.log("✅ Biến thể đã được lưu:", response.data);
-                            })
-                            .catch(function (error) {
-                                console.error("❌ Lỗi khi lưu biến thể:", error);
-                                alert("Có lỗi xảy ra khi lưu biến thể.");
-                            });
-
-                        promises.push(promise);
-                    }
-                    Promise.all(promises)
-                        .then(function () {
-                            alert("Sản phẩm và tất cả biến thể đã được lưu thành công!");
-                            $scope.loadProducts(); // Tải lại danh sách sản phẩm
-                            $location.url('/sanpham');
-                        })
-                        .catch(function () {
-                            alert("Có lỗi xảy ra khi lưu một hoặc nhiều biến thể.");
-                        });
-
-                })
-                .catch(function (error) {
-                    console.error("❌ Lỗi khi lưu sản phẩm:", error);
-                    alert("Có lỗi xảy ra khi lưu sản phẩm.");
-                });
-        }
-    };
-    //Cập nhật sản phẩm và biến thể
-    $scope.updateProduct = function () {
-        if ($scope.frm.$valid) {
-            // 1. Cập nhật sản phẩm chính
-            $http.put("https://localhost:7196/api/Sanphams/" + $scope.product.id, $scope.product)
-                .then(function (response) {
-                    console.log("✅ Sản phẩm đã được cập nhật:", response.data);
-    
-                    // 2. Lấy danh sách biến thể cũ từ server
-                    $http.get("https://localhost:7196/api/Sanphamchitiets/sanpham/" + $scope.product.id)
-                        .then(function (res) {
-                            const oldVariants = res.data; // biến thể cũ
-                            const currentVariantIds = $scope.product.variants.map(v => v.Id).filter(id => id); // ID biến thể hiện tại
-    
-                            let promises = [];
-    
-                            // 3. Xóa biến thể không còn trong danh sách hiện tại
-                            for (let old of oldVariants) {
-                                if (!currentVariantIds.includes(old.id)) {
-                                    let deletePromise = $http.delete("https://localhost:7196/api/Sanphamchitiets/" + old.id)
-                                        .then(() => {
-                                            console.log("🗑️ Đã xóa biến thể:", old.id);
-                                        })
-                                        .catch(error => {
-                                            console.error("❌ Lỗi khi xóa biến thể:", error);
-                                        });
-                                    promises.push(deletePromise);
-                                }
-                            }
-    
-                            // 4. Cập nhật và thêm mới biến thể
-                            for (let variant of $scope.product.variants) {
-                                let formData = new FormData();
-                                for (let key in variant) {
-                                    if (key !== 'file' && key !== 'UrlHinhanh') {
-                                        formData.append(key, variant[key]);
-                                    }
-                                }
-                                if (variant.file) {
-                                    formData.append("file", variant.file);
-                                }
-    
-                                // Cập nhật
-                                if (variant.Id) {
-                                    let updatePromise = $http.put("https://localhost:7196/api/Sanphamchitiets/" + variant.Id, formData, {
-                                        headers: { 'Content-Type': undefined }
-                                    }).then(response => {
-                                        console.log("✅ Biến thể cập nhật:", response.data);
-                                    }).catch(error => {
-                                        console.error("❌ Lỗi cập nhật biến thể:", error);
-                                    });
-                                    promises.push(updatePromise);
-                                }
-                                // Thêm mới
-                                else {
-                                    formData.append("Idsp", $scope.product.id);
-                                    let addPromise = $http.post("https://localhost:7196/api/Sanphamchitiets", formData, {
-                                        headers: { 'Content-Type': undefined }
-                                    }).then(response => {
-                                        console.log("✅ Biến thể mới:", response.data);
-                                    }).catch(error => {
-                                        console.error("❌ Lỗi thêm biến thể:", error);
-                                    });
-                                    promises.push(addPromise);
-                                }
-                            }
-    
-                            Promise.all(promises)
-                                .then(() => {
-                                    alert("Đã cập nhật sản phẩm và biến thể thành công.");
-                                    $scope.loadProducts();
-                                    $location.url('/sanpham');
-                                })
-                                .catch(() => {
-                                    alert("Có lỗi xảy ra khi xử lý biến thể.");
-                                });
-    
-                        })
-                        .catch(function (error) {
-                            console.error("❌ Không thể tải danh sách biến thể cũ:", error);
-                        });
-    
-                })
-                .catch(function (error) {
-                    console.error("❌ Lỗi khi cập nhật sản phẩm:", error);
-                    alert("Có lỗi xảy ra khi cập nhật sản phẩm.");
-                });
-        }
-    };
-    
-    
     
     if ($routeParams.id) {
         let id = $routeParams.id;
         $scope.getProductById(id);
     }
+    
+    
+    
+    
+    
+
 });
 app.directive('fileModel', ['$parse', function ($parse) {
     return {
