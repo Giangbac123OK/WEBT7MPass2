@@ -18,11 +18,16 @@ app.controller('dangnhapController', function ($scope, $http, $rootScope, $locat
             $scope.isLoading = false;
             
             if (response.data && response.data.trangthai === 1) {
-                $scope.errorMessage = "Tài khoản này đã bị khóa. Vui lòng liên hệ admin.";
+                $scope.errorMessage = "Tài khoản này ngưng hoạt động. Vui lòng liên hệ admin.";
                 return;
             }
 
-            if (response.data && response.data.message === "Đăng nhập thành công") {
+            if (response.data && response.data.trangthai === 2) {
+                $scope.errorMessage = "Tài khoản này đã bị khóa. Vui lòng liên hệ admin.";
+               return
+            }
+
+            if (response.data && response.data.message === "Đăng nhập thành công" && response.data.trangthai === 0) {
                 $rootScope.isLoggedIn = true;
                 $rootScope.userInfo = {
                     id: response.data.id,
@@ -38,10 +43,12 @@ app.controller('dangnhapController', function ($scope, $http, $rootScope, $locat
                 // Thêm thông báo phân quyền
                 let roleMessage = "";
                 if (response.data.role === 0) {
-                    roleMessage = "Bạn đang đăng nhập bằng tài khoản Quản lý";
+                    roleMessage = "Bạn đang đăng nhập bằng tài khoản Admin";
                 } else if (response.data.role === 1) {
+                    roleMessage = "Bạn đang đăng nhập bằng tài khoản Quản lý";
+                } else if (response.data.role === 2) {
                     roleMessage = "Bạn đang đăng nhập bằng tài khoản Nhân viên";
-                }
+                } 
 
                 Swal.fire({
                     title: "Thành Công",

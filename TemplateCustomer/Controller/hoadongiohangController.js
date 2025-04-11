@@ -1174,6 +1174,7 @@ app.controller("hoadongiohangCtr", function ($document, $rootScope, $routeParams
     
                 // Reset số tiền giảm
                 soTienGiamGia.textContent = '0 VNĐ';
+                soTienGiamGia.style.color = '';
     
                 // Lấy giá trị tổng sản phẩm
                 const tongSanPhamValue = parseInt(tongSanPhamElement.textContent.replace(/[VNĐ.]/g, '')) || 0;
@@ -1313,106 +1314,148 @@ app.controller("hoadongiohangCtr", function ($document, $rootScope, $routeParams
     observer.observe(tongHoaDonEl, { childList: true, subtree: true });
 
     $('#muaHangBtn').on('click', async function () {
-        const voucherCodeInputdata = document.getElementById('voucherCodeDisplay');
-        const tongHoaDon = parseInt(document.getElementById("tongHoaDon")?.innerText.replace(/[VNĐ.]/g, "") || 0) || 0;
-        const tongSanPham = parseInt(document.getElementById("tongSanPham")?.innerText.replace(/[VNĐ.]/g, "") || 0) || 0;
-        const tienvanchuyen = parseInt(document.getElementById("phiVanCHuyen")?.innerText.replace(/[VNĐ.]/g, "") || 0) || 0;
-
-        const soTienGiamGia = parseInt(document.getElementById("soTienGiamGia")?.innerText.replace(/[VNĐ.\-]/g, "") || 0) || 0;
-        const diachi = document.getElementById("diachi")?.innerText.trim();
-        if (diachi == "...") {
-            Swal.fire("Lỗi", "Bạn chưa thêm địa chỉ, vui lòng tạo địa chỉ giao hàng", "error");
-            return
-        }
-        const sdt = document.getElementById("sdt")?.innerText.trim() || "";
-        const voucherCodeInput = voucherCodeInputdata.getAttribute('data-value') || 0;
-        const voucherCodeInputINT = parseInt(voucherCodeInput) || 0;
-        const userId = GetByidKH();
-
-        const currentDate = new Date();
-        const vietnamTimezoneOffset = 0; // Múi giờ Việt Nam là UTC+7
-
-        // Điều chỉnh thời gian theo múi giờ Việt Nam
-        currentDate.setMinutes(currentDate.getMinutes() + vietnamTimezoneOffset - currentDate.getTimezoneOffset());
-
-        const vietnamDate = currentDate.toISOString();
-
-        console.log(vietnamDate); // Ngày giờ theo chuẩn ISO, tương ứng với múi giờ Việt Nam
-
-        const bankTransferLabel = getLabelByText("Chuyển khoản ngân hàng");
-
-        const bankTransferRadioId = bankTransferLabel ? bankTransferLabel.getAttribute('for') : null;
-
-        const bankTransferRadio = bankTransferRadioId ? document.getElementById(bankTransferRadioId) : null;
-
-        const paymentMethodElement = document.querySelector('input[name="paymentMethod"]:checked');
-
-        if (!paymentMethodElement) {
-            Swal.fire("Cảnh báo", "Vui lòng chọn phương thức thanh toán.", "warning");
-            return;
-        }
-
-        const paymentMethodId = parseInt(paymentMethodElement.value);
-
-        const hoadonData = {
-            id: 0,
-            idnv: 0,
-            idkh: userId,
-            trangthaithanhtoan: 0,
-            trangthaidonhang: 0,
-            donvitrangthai: 0,
-            thoigiandathang: currentDate,
-            diachiship: `${addressTrangThai.diachicuthe || ''} - ${addressTrangThai.phuongxa} - ${addressTrangThai.quanhuyen} - ${addressTrangThai.thanhpho}`,
-            ngaygiaothucte: currentDate,
-            tongtiencantra: tongHoaDon,
-            tongtiensanpham: tongSanPham,
-            sdt: sdt,
-            tonggiamgia: soTienGiamGia,
-            idgg: voucherCodeInputINT,
-            trangthai: 0,
-            phivanchuyen: tienvanchuyen,
-            idpttt: paymentMethodId,
-            ghichu: "",
-        };
-
+        const btn = this;
+        const btnText = $('#btnText');
+        const btnSpinner = $('#btnSpinner');
+        
+        // Vô hiệu hóa nút và hiển thị spinner
+        $(btn).prop('disabled', true);
+        btnText.text('Đang xử lý...');
+        btnSpinner.removeClass('d-none');
+        
         try {
-            if (tongHoaDon == 0 && bankTransferRadio.checked) {
-                Swal.fire("Lỗi", "Tổng sản phẩm = 0, không thể chuyển khoản", "error");
-                return
+            const voucherCodeInputdata = document.getElementById('voucherCodeDisplay');
+            const tongHoaDon = parseInt(document.getElementById("tongHoaDon")?.innerText.replace(/[VNĐ.]/g, "") || 0) || 0;
+            const tongSanPham = parseInt(document.getElementById("tongSanPham")?.innerText.replace(/[VNĐ.]/g, "") || 0) || 0;
+            const tienvanchuyen = parseInt(document.getElementById("phiVanCHuyen")?.innerText.replace(/[VNĐ.]/g, "") || 0) || 0;
+    
+            const soTienGiamGia = parseInt(document.getElementById("soTienGiamGia")?.innerText.replace(/[VNĐ.\-]/g, "") || 0) || 0;
+            const diachi = document.getElementById("diachi")?.innerText.trim();
+            if (diachi == "...") {
+                Swal.fire("Lỗi", "Bạn chưa thêm địa chỉ, vui lòng tạo địa chỉ giao hàng", "error");
+                // Khôi phục trạng thái nút trước khi return
+                $(btn).prop('disabled', false);
+                btnText.text('Mua Hàng');
+                btnSpinner.addClass('d-none');
+                return;
             }
+            
+            const sdt = document.getElementById("sdt")?.innerText.trim() || "";
+            const voucherCodeInput = voucherCodeInputdata.getAttribute('data-value') || 0;
+            const voucherCodeInputINT = parseInt(voucherCodeInput) || 0;
+            const userId = GetByidKH();
+    
+            const currentDate = new Date();
+            const vietnamTimezoneOffset = 0; // Múi giờ Việt Nam là UTC+7
+    
+            // Điều chỉnh thời gian theo múi giờ Việt Nam
+            currentDate.setMinutes(currentDate.getMinutes() + vietnamTimezoneOffset - currentDate.getTimezoneOffset());
+            const vietnamDate = currentDate.toISOString();
+    
+            console.log(vietnamDate);
+    
+            const bankTransferLabel = getLabelByText("Chuyển khoản ngân hàng");
+            const bankTransferRadioId = bankTransferLabel ? bankTransferLabel.getAttribute('for') : null;
+            const bankTransferRadio = bankTransferRadioId ? document.getElementById(bankTransferRadioId) : null;
+            const paymentMethodElement = document.querySelector('input[name="paymentMethod"]:checked');
+    
+            if (!paymentMethodElement) {
+                Swal.fire("Cảnh báo", "Vui lòng chọn phương thức thanh toán.", "warning");
+                // Khôi phục trạng thái nút trước khi return
+                $(btn).prop('disabled', false);
+                btnText.text('Mua Hàng');
+                btnSpinner.addClass('d-none');
+                return;
+            }
+    
+            const paymentMethodId = parseInt(paymentMethodElement.value);
+    
+            const hoadonData = {
+                id: 0,
+                idnv: 0,
+                idkh: userId,
+                trangthaithanhtoan: 0,
+                trangthaidonhang: 0,
+                donvitrangthai: 0,
+                thoigiandathang: currentDate,
+                diachiship: `${addressTrangThai.diachicuthe || ''} - ${addressTrangThai.phuongxa} - ${addressTrangThai.quanhuyen} - ${addressTrangThai.thanhpho}`,
+                ngaygiaothucte: currentDate,
+                tongtiencantra: tongHoaDon,
+                tongtiensanpham: tongSanPham,
+                sdt: sdt,
+                tonggiamgia: soTienGiamGia,
+                idgg: voucherCodeInputINT,
+                trangthai: 0,
+                phivanchuyen: tienvanchuyen,
+                idpttt: paymentMethodId,
+                ghichu: "",
+            };
+    
+            if (tongHoaDon == 0 && bankTransferRadio && bankTransferRadio.checked) {
+                Swal.fire("Lỗi", "Tổng sản phẩm = 0, không thể chuyển khoản", "error");
+                // Khôi phục trạng thái nút trước khi return
+                $(btn).prop('disabled', false);
+                btnText.text('Mua Hàng');
+                btnSpinner.addClass('d-none');
+                return;
+            }
+            
             // Kiểm tra xem checkbox điểm có được chọn hay không
             const diemsudungcheckbox = document.getElementById('diemsudungcheckbox');
-            if (diemsudungcheckbox.checked) {
+            if (diemsudungcheckbox && diemsudungcheckbox.checked) {
                 const diemsudung = diemTru;
-
-                // Nếu có sử dụng điểm, gọi hàm cập nhật điểm khách hàng
                 await UpdateDiem(diemsudung);
             }
-
+    
             const idhd = await taoHoaDon(hoadonData);
-            if (!idhd) return; // Dừng nếu tạo hóa đơn thất bại
-
-            const hoaDonChiTietResult = await themHoaDonChiTiet(idhd);
-            if (!hoaDonChiTietResult) return; // Dừng nếu thêm chi tiết hóa đơn thất bại
-
-            sessionStorage.clear();
-
-            await sendOrderSuccessEmail(idhd);
-
-            await deleteProduct();
-
-            if (bankTransferRadio.checked) {
-                const taoLinkThanhToanResult = await taoLinkThanhToan(idhd);
-                if (!taoLinkThanhToanResult) return; // Dừng nếu tạo link thanh toán thất bại
+            if (!idhd) {
+                // Khôi phục trạng thái nút nếu tạo hóa đơn thất bại
+                $(btn).prop('disabled', false);
+                btnText.text('Mua Hàng');
+                btnSpinner.addClass('d-none');
+                return;
             }
-            Swal.fire("Thành Công", "Đặt Hàng Thành Công.", "success");
-            $scope.$apply(() => {
-                $location.path(`/donhangcuaban`);
+    
+            const hoaDonChiTietResult = await themHoaDonChiTiet(idhd);
+            if (!hoaDonChiTietResult) {
+                // Khôi phục trạng thái nút nếu thêm chi tiết hóa đơn thất bại
+                $(btn).prop('disabled', false);
+                btnText.text('Mua Hàng');
+                btnSpinner.addClass('d-none');
+                return;
+            }
+    
+            sessionStorage.clear();
+            await sendOrderSuccessEmail(idhd);
+            await deleteProduct();
+    
+            if (bankTransferRadio && bankTransferRadio.checked) {
+                const taoLinkThanhToanResult = await taoLinkThanhToan(idhd);
+                if (!taoLinkThanhToanResult) {
+                    // Khôi phục trạng thái nút nếu tạo link thanh toán thất bại
+                    $(btn).prop('disabled', false);
+                    btnText.text('Mua Hàng');
+                    btnSpinner.addClass('d-none');
+                    return;
+                }
+            }
+            
+            Swal.fire("Thành Công", "Đặt Hàng Thành Công.", "success").then((result) => {
+                if (result.isConfirmed) {
+                    $scope.$apply(() => {
+                        $location.path(`/donhangcuaban`);
+                    })
+                }
             });
-
+    
         } catch (error) {
             console.error("Lỗi trong quá trình xử lý:", error);
-            // Không cần thông báo lỗi, chỉ dừng ở đây
+            Swal.fire("Lỗi", "Đã xảy ra lỗi trong quá trình đặt hàng", "error");
+        } finally {
+            // Khôi phục trạng thái ban đầu của nút
+            $(btn).prop('disabled', false);
+            btnText.text('Mua Hàng');
+            btnSpinner.addClass('d-none');
         }
     });
 
@@ -1450,7 +1493,6 @@ app.controller("hoadongiohangCtr", function ($document, $rootScope, $routeParams
             const result = await response.json();
 
             // Hiển thị thông báo thành công
-            Swal.fire("Thành công", result.message || "Cập nhật thành công", "success");
             return result;
 
         } catch (error) {

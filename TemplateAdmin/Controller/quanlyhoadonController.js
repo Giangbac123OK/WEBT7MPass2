@@ -483,7 +483,7 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q, $timeout) 
     };
 
     $scope.updateInvoicestatus = function (invoiceId, newStatus) {
-        const userInfoString = localStorage.getItem("userInfo");
+        const userInfoString = localStorage.getItem("userInfo1");
         const userInfo = JSON.parse(userInfoString);
         var statusMessage = "";
         switch (newStatus) {
