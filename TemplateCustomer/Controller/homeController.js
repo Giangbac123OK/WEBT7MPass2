@@ -19,9 +19,11 @@ app.controller('homeController', function ($scope, $http) {
 
     // Hàm xử lý dữ liệu sản phẩm (chung cho tất cả danh sách)
     function processSanPham(data, limit = 4) {
-        return data.slice(0, limit).map(sp => {
+        return data
+        .filter(sp => sp.soluong > 0) // Lọc sản phẩm có số lượng lớn hơn 0
+        .slice(0, limit).map(sp => {
             sp.hinhAnh = "default-image.jpg"; // Ảnh mặc định
-            if (sp.sanphamchitiets && sp.sanphamchitiets.length > 0) {
+            if (sp.sanphamchitiets && sp.sanphamchitiets.length > 0  ) {
                 let spct = sp.sanphamchitiets[0];
                 loadHinhAnh(spct.id, function (imgUrl) {
                     sp.hinhAnh = imgUrl;
@@ -92,6 +94,7 @@ app.controller('homeController', function ($scope, $http) {
             const grouped = {};
         
             products.forEach(sp => {
+                if (sp.soluong <= 0) return;
                 const thuongHieu = sp.thuongHieu || "Khác"; // Nhóm sản phẩm không có thương hiệu vào "Khác"
                 const idThuongHieu = sp.idThuongHieu || 0;
                 if (!grouped[thuongHieu]) {

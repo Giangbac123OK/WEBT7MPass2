@@ -386,7 +386,7 @@
                             </div>
 
                             <!-- Giá bán -->
-                            <div class="mb-2 mt-3">
+                            <div class="mb-2 mt-3" ng-if="!isEditing && variantIndexCounter >1 || isEditing && editingIndex > 1">
                                 <label>Giá bán:</label>
                                 <button type="button" class="btn btn-primary w-100 mb-2" ng-click="togglePriceField()"
                                     ng-show="!isPriceFieldVisible">
