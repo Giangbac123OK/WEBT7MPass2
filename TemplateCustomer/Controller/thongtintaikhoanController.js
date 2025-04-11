@@ -1,7 +1,7 @@
 app.controller('thongtintaikhoanController', function ($http, $scope) {
 
     GetByidKH1();
-    
+
     async function GetByidKH1() {
         try {
             // Kiểm tra và lấy thông tin user từ localStorage
@@ -10,64 +10,76 @@ app.controller('thongtintaikhoanController', function ($http, $scope) {
                 console.error("Không tìm thấy thông tin user trong localStorage");
                 return null;
             }
-    
+
             const userInfo = JSON.parse(userInfoString);
             if (!userInfo || !userInfo.id) {
                 console.error("Thông tin user không hợp lệ");
                 return null;
             }
-    
+
             // Lấy thông tin khách hàng từ API
             const infoResponse = await fetch(`https://localhost:7196/api/khachhangs/${userInfo.id}`);
             if (!infoResponse.ok) {
                 throw new Error(`Lỗi khi lấy thông tin khách hàng: ${infoResponse.status}`);
             }
             const customerData = await infoResponse.json();
-            
+
             if (!customerData) {
                 throw new Error("Dữ liệu khách hàng trả về rỗng");
             }
-    
+
             // Gán dữ liệu cho $scope
             $scope.dataTttk = customerData;
-    
+            document.getElementById("diemsudung").innerText = customerData.diemsudung || "0";
+
             // Kiểm tra và lấy thông tin rank nếu có idrank
             if (customerData.idrank) {
                 const rankResponse = await fetch(`https://localhost:7196/api/Ranks/${customerData.idrank}`);
                 if (!rankResponse.ok) {
                     console.error(`Lỗi khi lấy thông tin rank: ${rankResponse.status}`);
-                    $scope.datarank = null; // Gán null nếu không lấy được rank
+                    $scope.datarank = null;
                 } else {
                     const rankData = await rankResponse.json();
                     $scope.datarank = rankData;
+
+                    // Cập nhật biểu đồ tích điểm
+                    const currentPoints = customerData.tichdiem || 0;
+                    const maxPoints = rankData.maxMoney || 100;
+                    const rankName = rankData.tenrank || "Không xác định";
+
+                    createOrUpdateChart(currentPoints, maxPoints, rankName);
+
+                    // Cập nhật thông tin rank trên giao diện
+                    document.getElementById("userRank").textContent = `Thành Viên ${rankData.tenrank}`;
                 }
             } else {
                 $scope.datarank = null;
+                document.getElementById("userRank").textContent = "Thành Viên";
             }
-    
+
             // Kích hoạt $digest cycle để cập nhật view
             $scope.$apply();
-            
+
             return customerData;
         } catch (error) {
             console.error("Lỗi trong hàm GetByidKH1:", error);
-            
+
             // Xử lý lỗi cụ thể
             if (error instanceof SyntaxError) {
                 console.error("Lỗi phân tích JSON từ localStorage");
             } else if (error.name === 'TypeError') {
                 console.error("Lỗi kết nối hoặc API không phản hồi");
             }
-            
+
             // Gán giá trị mặc định cho $scope nếu có lỗi
             $scope.dataTttk = null;
             $scope.datarank = null;
             $scope.$apply();
-            
+
             return null;
         }
     }
-    
+
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));
     console.log(userInfo);
     let idkh = userInfo.id;
@@ -100,7 +112,7 @@ app.controller('thongtintaikhoanController', function ($http, $scope) {
             if (hasNewImage && croppedImageFile) {
                 const formData = new FormData();
                 formData.append("image", croppedImageFile);
-                
+
                 // Nếu có ảnh cũ thì thêm vào formData để xóa
                 if ($scope.originalAvatar) {
                     formData.append("oldFileName", $scope.originalAvatar);
@@ -114,10 +126,10 @@ app.controller('thongtintaikhoanController', function ($http, $scope) {
                     throw new Error(uploadResult.message || "Lỗi khi upload ảnh");
                 }
             }
-            
+
             const date = new Date($scope.dataTttk.ngaysinh);
             const isoDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 19);
-            
+
             const data = {
                 ten: $scope.dataTttk.ten,
                 sdt: $scope.dataTttk.sdt,
@@ -128,7 +140,7 @@ app.controller('thongtintaikhoanController', function ($http, $scope) {
             };
 
             console.log("Dữ liệu gửi lên API:", data);
-            
+
             $http.put(apiUrl + idkh, data)
                 .then(function (response) {
                     Swal.fire("Đã sửa!", "Dữ liệu của bạn đã được cập nhật.", "success")
@@ -154,7 +166,7 @@ app.controller('thongtintaikhoanController', function ($http, $scope) {
                 method: 'POST',
                 body: formData
             });
-            
+
             const result = await response.json();
             if (response.ok) {
                 console.log("Upload thành công:", result);
@@ -277,4 +289,110 @@ app.controller('thongtintaikhoanController', function ($http, $scope) {
         const randomString = Math.random().toString(36).substring(2, 8);
         return `img_${timestamp}_${randomString}`;
     }
+
+    let chart = null; // Biến toàn cục để lưu biểu đồ
+
+    function createOrUpdateChart(currentPoints, totalPoints, rankName) {
+        // Đảm bảo currentPoints là số nguyên
+        currentPoints = Math.round(Number(currentPoints)) || 0;
+        totalPoints = Math.round(Number(totalPoints)) || 100; // Giá trị mặc định nếu totalPoints = 0
+        
+        // Xử lý trường hợp totalPoints = 0 để tránh chia cho 0
+        if (totalPoints <= 0) totalPoints = 100;
+        
+        // Xử lý khi currentPoints vượt quá totalPoints
+        const displayPoints = Math.min(currentPoints, totalPoints);
+        const remainingPoints = Math.max(0, totalPoints - displayPoints);
+        
+        // Tính toán phần trăm (đảm bảo không vượt quá 100%)
+        const percentage = Math.min(100, Math.round((displayPoints / totalPoints) * 100));
+        
+        const ctx = document.getElementById('rankChart')?.getContext('2d');
+        if (!ctx) {
+            console.error('Không tìm thấy canvas hoặc không thể lấy context');
+            return;
+        }
+    
+        // Hủy biểu đồ cũ nếu tồn tại
+        if (chart) {
+            chart.destroy();
+        }
+    
+        try {
+            chart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Điểm đã tích', 'Điểm cần tích'],
+                    datasets: [{
+                        data: [displayPoints, remainingPoints],
+                        backgroundColor: ['#4e73df', '#e9ecef'],
+                        borderWidth: 0,
+                        borderRadius: 10
+                    }]
+                },
+                options: {
+                    cutout: '80%',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                boxWidth: 15,
+                                font: {
+                                    size: 14
+                                },
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            enabled: true,
+                            callbacks: {
+                                label: function (context) {
+                                    return `${context.label}: ${context.raw} điểm`;
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true
+                    }
+                }
+            });
+    
+            // Cập nhật text ở giữa biểu đồ
+            const rankTextEl = document.getElementById('rankText');
+            const pointsTextEl = document.getElementById('pointsText');
+            
+            if (rankTextEl) {
+                rankTextEl.textContent = rankName || 'Không xác định';
+                rankTextEl.style.fontSize = '15px';
+                rankTextEl.style.fontWeight = 'bold';
+                rankTextEl.style.color = '#4e73df';
+            }
+            
+            if (pointsTextEl) {
+                pointsTextEl.innerHTML = `
+                    <span style="font-size: 20px; font-weight: bold; color: #2e59d9">${percentage}%</span><br>
+                    <span style="font-size: 12px; color: #6c757d">${displayPoints}/${totalPoints} điểm</span>
+                `;
+                
+                // Thêm cảnh báo nếu điểm tích vượt hạn mức
+                if (currentPoints > totalPoints) {
+                    const warningEl = document.createElement('div');
+                    warningEl.style.fontSize = '10px';
+                    warningEl.style.color = '#dc3545';
+                    warningEl.style.marginTop = '5px';
+                    warningEl.textContent = `(Đã vượt ${currentPoints - totalPoints} điểm)`;
+                    pointsTextEl.appendChild(warningEl);
+                }
+            }
+        } catch (error) {
+            console.error('Lỗi khi tạo biểu đồ:', error);
+        }
+    }
+
 });

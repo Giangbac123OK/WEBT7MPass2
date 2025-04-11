@@ -631,10 +631,15 @@ app.controller('SanphamDetail', function ($scope, $routeParams, $location) {
                 const chatlieuName = chatlieuData.tenchatlieu;
 
                 chatlieuButtons.push(`
-                    <div class="chatlieu-option" data-chatlieu="${idchatlieu}" style:width: 45px; height: 40px; display: inline-flex; align-items: center; justify-content: center;margin-right: 10px; cursor: pointer;  border: 1px solid #dee2e6; background-color: #fff; transition: all 0.3s ease; >
+                    <div class="chatlieu-option" data-chatlieu="${idchatlieu}" 
+                        style="display: inline-flex; align-items: center; justify-content: center; 
+                               margin-right: 10px; cursor: pointer;
+                               background-color: #fff;
+                               padding: 0 12px;">
                         ${chatlieuName}
                     </div>
                 `);
+                
             }
 
             chatlieuContainer.innerHTML = chatlieuButtons.join('');
@@ -1066,11 +1071,6 @@ app.controller('SanphamDetail', function ($scope, $routeParams, $location) {
                         const spct = spctGroup.sanphamchitiets?.[0]; // Chỉ lấy phần tử đầu tiên
     
                         if (spct) { // Nếu có sản phẩm chi tiết
-                            const response = await fetch(`${apiSPCTUrl}/GetImageById/${spct.id}`);
-                            if (!response.ok) continue;
-    
-                            const blob = await response.blob();
-                            const imageUrl = URL.createObjectURL(blob);
     
                             // Kiểm tra giá hợp lệ trước khi tính phần trăm giảm
                             let giaban = parseFloat(data.giaban) || 0;
@@ -1086,7 +1086,7 @@ app.controller('SanphamDetail', function ($scope, $routeParams, $location) {
                                 tensp: data.tensp,
                                 giaban,
                                 giasale,
-                                anh: imageUrl || "default-image.jpg",
+                                anh: `https://localhost:7196/picture/${spct.urlHinhanh}`,
                                 phanTramGiam
                             });
                         }
