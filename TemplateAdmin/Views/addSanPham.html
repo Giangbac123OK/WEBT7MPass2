@@ -309,7 +309,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="addVariantModalLabel">
-                    {{ isEditing ? 'Chỉnh sửa Biến Thể' : 'Thêm Biến Thể Sản Phẩm' }}
+                    {{ isEditing ? 'Chỉnh sửa Biến Thể ' + editingIndex : 'Thêm Biến Thể ' + variantIndexCounter }}
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
                     ng-click="resetVariantForm()"></button>
