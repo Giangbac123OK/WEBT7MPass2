@@ -383,13 +383,14 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
                 sotienhoan: $scope.tongtien ?? 0,
                 lydotrahang: $scope.returnReason || "Không có lý do",
                 trangthai: 0,
-                phuongthuchoantien: $scope.refundMethod || "Số dư TK Shopee",
+                phuongthuchoantien: $scope.refundMethod || "Đổi điểm",
                 ngaytrahangthucte:  null,
                 chuthich: $scope.mota || "Không có chú thích",
                 hinhthucxuly: $scope.hinhthucxuly || "Không xác định",
                 tennganhang: $scope.selectedBank || "Không xác định",
                 sotaikhoan: $scope.cardNumber || "0000000000",
                 tentaikhoan: $scope.accountName || "Không xác định",
+                trangthaihoantien: 0,
                 diachiship: diachi
             };
 
