@@ -119,7 +119,7 @@ app.controller("GiohangCtrl", function ($document, $rootScope, $scope, $compile,
             if (!response.ok) throw new Error("Lỗi khi lấy dữ liệu sản phẩm!");
 
             const data = await response.json();
-            return data.tenSanpham;
+            return data;
         } catch (error) {
             console.error("Lỗi lấy sản phẩm:", error);
             return "N/A"; // Tránh lỗi nếu API thất bại
@@ -176,9 +176,9 @@ app.controller("GiohangCtrl", function ($document, $rootScope, $scope, $compile,
     async function hienThiGioHang(sanPhamChitiets) {
         const tbody = document.querySelector("tbody");
         tbody.innerHTML = ""; // Xóa nội dung cũ
-
+    
         console.log(sanPhamChitiets);
-
+    
         if (!sanPhamChitiets || sanPhamChitiets.length === 0 || sanPhamChitiets.every(sp => sp.length === 0)) {
             tbody.innerHTML = `
                 <tr>
@@ -189,23 +189,22 @@ app.controller("GiohangCtrl", function ($document, $rootScope, $scope, $compile,
             `;
             return;
         }
-
+    
         let tongTien = 0;
-
+    
         for (const sp of sanPhamChitiets) {
             for (const data of sp) {
                 let tenSanPham = "N/A";
-                let anhSanPham = data.urlHinhanh || "";
+                let anhSanPham = `https://localhost:7196/picture/${data.urlHinhanh}` || "";
                 let mau = "N/A";
                 let size = "N/A";
                 let chatLieu = "N/A";
                 let thanhTien = 0;
-                let isDisabled = data.trangthai === 1; // Kiểm tra trạng thái sản phẩm
-
+    
                 // Lấy giá gốc
                 let giaGoc = data.giathoidiemhientai || 0;
                 let giaSauGiam = giaGoc;
-
+    
                 // Kiểm tra giảm giá
                 const saleInfo = await fetchSaleChiTietBySPCTId(data.id);
                 if (saleInfo && saleInfo.giatrigiam) {
@@ -215,51 +214,56 @@ app.controller("GiohangCtrl", function ($document, $rootScope, $scope, $compile,
                         giaSauGiam = giaGoc - (giaGoc * saleInfo.giatrigiam / 100); // Giảm theo %
                     }
                 }
-
-                try {
-                    const response = await fetch(`${apiUrls.sanPhamChiTiet}/GetImageById/${data.id}`);
-                    if (response.ok) {
-                        const blob = await response.blob();
-                        anhSanPham = URL.createObjectURL(blob);
-                    }
-                } catch (error) {
-                    console.error("Lỗi tải ảnh:", error);
-                }
-
+    
                 if (data.idsp) {
-                    tenSanPham = await layTenSanPham(data.idsp);
+                    datasp = await layTenSanPham(data.idsp);
+                    tenSanPham = datasp.tenSanpham;
+                    trangthaisp = datasp.trangthai
                 }
+    
+                let isDisabled = data.trangthai === 1 || data.soluong <= 0; // Hết hàng
+                let isDisabled1 = trangthaisp === 2; // Tạm ngừng bán
+                let isProductUnavailable = isDisabled || isDisabled1; // Kết hợp cả 2 trạng thái
 
                 if (Array.isArray(sp.mau) && sp.mau.length > 0) {
                     const mauTimThay = sp.mau.find(m => m.id === data.idMau);
                     mau = mauTimThay ? mauTimThay.tenmau : "N/A";
                 }
-
+    
                 if (Array.isArray(sp.size) && sp.size.length > 0) {
                     const sizeTimThay = sp.size.find(s => s.id === data.idSize);
                     size = sizeTimThay ? sizeTimThay.sosize : "N/A";
                 }
-
+    
                 if (Array.isArray(sp.chatLieu) && sp.chatLieu.length > 0) {
                     const chatLieuTimThay = sp.chatLieu.find(cl => cl.id === data.idChatLieu);
                     chatLieu = chatLieuTimThay ? chatLieuTimThay.tenchatlieu : "N/A";
                 }
-
+    
                 if (giaSauGiam && sp.soluonggiohang) {
                     thanhTien = giaSauGiam * sp.soluonggiohang;
                 }
-
+    
                 tongTien += thanhTien;
-
+    
                 const row = document.createElement("tr");
-                row.className = `product-item ${isDisabled ? "disabled-product" : ""}`;
+                row.className = `product-item ${isProductUnavailable ? "disabled-product" : ""}`;
+                
+                // Xác định thông báo overlay
+                let overlayMessage = "";
+                if (isDisabled) {
+                    overlayMessage = '<div class="overlay">Sản phẩm đã hết</div>';
+                } else if (isDisabled1) {
+                    overlayMessage = '<div class="overlay">Sản phẩm tạm ngừng bán</div>';
+                }
+
                 row.innerHTML = `
                     <td class="align-middle">
-                        <input type="checkbox" class="product-checkbox" id="checkbox${data.id}" data-id="${data.id}" ${isDisabled ? "disabled" : ""}>
+                        <input type="checkbox" class="product-checkbox" id="checkbox${data.id}" data-id="${data.id}" ${isProductUnavailable ? "disabled" : ""}>
                     </td>
                     <td class="align-middle position-relative">
                         <img src="${anhSanPham}" alt="Ảnh sản phẩm" class="rounded" width="100px">
-                        ${isDisabled ? '<div class="overlay">Sản phẩm đã hết</div>' : ""}
+                        ${overlayMessage}
                     </td>
                     <td class="align-middle" style="width: 20%;"><strong>${tenSanPham}</strong></td>
                     <td class="align-middle">${mau}</td>
@@ -273,14 +277,14 @@ app.controller("GiohangCtrl", function ($document, $rootScope, $scope, $compile,
                     </td>
                     <td class="align-middle">
                         <div class="d-flex justify-content-center align-items-center">
-                            <button type="button" class="btn btn-sm btn-outline-dark" ng-click="capNhatSoLuong($event, false, ${data.id})" ${isDisabled ? "disabled" : ""}>-</button>
+                            <button type="button" class="btn btn-sm btn-outline-dark" ng-click="capNhatSoLuong($event, false, ${data.id})" ${isProductUnavailable ? "disabled" : ""}>-</button>
                             <span class="px-3 quantity-display">${sp.soluonggiohang || 0}</span>
-                            <button type="button" class="btn btn-sm btn-outline-dark" ng-click="capNhatSoLuong($event, true, ${data.id})" ${isDisabled ? "disabled" : ""}>+</button>
+                            <button type="button" class="btn btn-sm btn-outline-dark" ng-click="capNhatSoLuong($event, true, ${data.id})" ${isProductUnavailable ? "disabled" : ""}>+</button>
                         </div>
                     </td>
                     <td class="align-middle thanhTien">${Math.floor(thanhTien).toLocaleString('vi-VN')} VNĐ</td>
                     <td class="align-middle">
-                        <a class="text-danger" ng-click="deleteProduct('${data.id}')" ${isDisabled ? "style='pointer-events: none; opacity: 0.5;'" : ""}>
+                        <a class="text-danger" ng-click="deleteProduct('${data.id}')">
                             <i class="bi bi-trash3-fill"></i>
                         </a>
                     </td>
@@ -289,7 +293,7 @@ app.controller("GiohangCtrl", function ($document, $rootScope, $scope, $compile,
                 tbody.appendChild(compiledElement[0]);
             }
         }
-
+    
         // Cập nhật lại checkbox tổng sau khi render xong
         initializeCheckboxEvents();
     }
@@ -596,7 +600,6 @@ app.controller("GiohangCtrl", function ($document, $rootScope, $scope, $compile,
                 alert("Vui lòng chọn ít nhất một sản phẩm trong giỏ hàng.");
                 return false;
             }
-
             // Lấy ID khách hàng
             const idkh = GetByidKH();
             if (!idkh) {

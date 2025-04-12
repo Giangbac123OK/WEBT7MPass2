@@ -15,13 +15,65 @@ app.controller('SanphamDetail', function ($scope, $routeParams, $location) {
     let dataspct = []; // Sửa Set thành mảng
     let datasanpham = [];
 
+    async function checksoluongsanpham(sanPhamId){
+        try {
+            if (!sanPhamId) {
+                console.error("❌ ID sản phẩm không hợp lệ");
+                return [];
+            }
+
+            const response = await fetch(`${apiSPUrl}/${sanPhamId}`);
+            
+            if (!response.ok) {
+                throw new Error(`❌ Lỗi API sản phẩm chi tiết: ${response.status}`);
+            }
+    
+            const data = await response.json();
+            if(data.soluong <= 0 || data.trangthai == 1){
+                Swal.fire({
+                    title: "Lỗi",  
+                    text: "Sản Phẩm Đã Hết Hàng",
+                    icon: "error",
+                    confirmButtonText: "OK"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $scope.$apply(() => {
+                            $location.path('/'); // Chuyển hướng đến trang "Giỏ hàng"
+                        });
+                    }
+                    $scope.isLoading = false; // Kết thúc tải (nếu cần)
+                });  
+            }
+            
+            if(data.trangthai == 2){
+                Swal.fire({
+                    title: "Lỗi",  
+                    text: "Sản Phẩm Tạm Ngưng Bán",
+                    icon: "error",
+                    confirmButtonText: "OK"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $scope.$apply(() => {
+                            $location.path('/'); // Chuyển hướng đến trang "Giỏ hàng"
+                        });
+                    }
+                    $scope.isLoading = false; // Kết thúc tải (nếu cần)
+                });  
+            }
+    
+        } catch (error) {
+            console.error("❌ Lỗi khi lấy sản phẩm chi tiết:", error);
+            return [];
+        }
+    }
+
     async function fetchSanPhamChiTiet(sanPhamId) {
         try {
             if (!sanPhamId) {
                 console.error("❌ ID sản phẩm không hợp lệ");
                 return [];
             }
-    
+
             const response = await fetch(`${apiSPUrl}/GetALLSanPham/${sanPhamId}`);
             
             if (!response.ok) {
@@ -56,6 +108,7 @@ app.controller('SanphamDetail', function ($scope, $routeParams, $location) {
 
     async function fetchDataSanPhamChiTiet() {
         try {
+            await checksoluongsanpham(sanPhamId);
             const danhSachSPCT = await fetchSanPhamChiTiet(sanPhamId);
             if (!danhSachSPCT.length) return;
     
