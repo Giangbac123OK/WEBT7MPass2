@@ -9,6 +9,10 @@ app.config(function ($routeProvider) {
             templateUrl: "./Views/dangnhap.html",
             controller: "dangnhapController"
         })
+        .when("/trahang", {
+            templateUrl: "./Views/trahang.html",
+            controller: "trahangController"
+        })
         .when("/quenmatkhau", {
             templateUrl: "./Views/quenmatkhau.html"
         })

@@ -1169,7 +1169,7 @@
                                 ng-repeat="item in selectedInvoice.chitiethoadon">
                                 <td>
                                     <img ng-src="{{item.anh}}" alt="{{item.tensanpham}}" class="product-img"
-                                    >
+                                        onerror="this.src='https://via.placeholder.com/60'">
                                 </td>
                                 <td>{{item.tensanpham || '-'}}</td>
                                 <td>{{item.mau || '-'}}</td>
@@ -1320,7 +1320,7 @@
                                 ng-repeat="item in selectedInvoice.chitiethoadon">
                                 <td>
                                     <img ng-src="{{item.anh}}" alt="{{item.tensanpham}}" class="product-img"
-                                       >
+                                        onerror="this.src='https://via.placeholder.com/60'">
                                 </td>
                                 <td>{{item.tensanpham || '-'}}</td>
                                 <td>{{item.mau || '-'}}</td>

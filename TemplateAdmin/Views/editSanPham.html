@@ -59,7 +59,7 @@
 </style>
 <div class="container">
     <form ng-submit="updateProduct()" class="p-3 border rounded shadow-sm bg-light " name="frm" novalidate>
-        <h4 class="mb-3">Thêm Sản Phẩm</h4>
+        <h4 class="mb-3">Sửa Sản Phẩm </h4>
 
         <hr style="border: 2px solid gold;">
         <div class="d-flex">
@@ -143,6 +143,8 @@
             <h5>Danh sách biến thể</h5>
             <div class="row g-2 mt-4">
                 <div class="col-xl-1-5 col-lg-1-5 col-md-3 col-sm-4 col-6 mb-3" ng-repeat="variant in product.variants">
+                    <!--Thông báo ảnh bìa ở biến thể đầu tiên-->
+                    
                     <div class="card shadow-sm border-0 rounded-3">
                         <!-- Hình ảnh sản phẩm (chiếm toàn bộ phần trên) -->
                         <img ng-if="variant.UrlHinhanh"
@@ -398,7 +400,7 @@
                             </div>
 
                             <!-- Giá bán -->
-                            <div class="mb-2 mt-3">
+                            <div class="mb-2 mt-3" ng-if="!isEditing && variantIndexCounter >1 || isEditing && editingIndex > 1">
                                 <label>Giá bán:</label>
                                 <button type="button" class="btn btn-primary w-100 mb-2" ng-click="togglePriceField()"
                                     ng-show="!isPriceFieldVisible">

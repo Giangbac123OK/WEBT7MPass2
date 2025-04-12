@@ -220,6 +220,7 @@ app.controller('QuanLySanPhamController', function ($scope, $http, $location, $t
     
     $scope.showEditVariantModal = function (variant, index) {
         $scope.editingIndex = index + 1;
+        
         let variantToEdit = {
             Id: variant.Id,
             IdMau: variant.IdMau,
@@ -233,6 +234,11 @@ app.controller('QuanLySanPhamController', function ($scope, $http, $location, $t
         };
         $scope.newVariant = variantToEdit
         $scope.variantEditingIndex = index; // ✅ Ghi nhớ vị trí cần cập nhật
+        if ($scope.newVariant.Giathoidiemhientai !== $scope.product.giaBan) {
+            $scope.isPriceFieldVisible = true;
+        } else {
+            $scope.isPriceFieldVisible = false;
+        }
         $scope.isPriceFieldVisible = true;
         $scope.isEditing = true;
 
@@ -252,6 +258,20 @@ app.controller('QuanLySanPhamController', function ($scope, $http, $location, $t
         modal.show();
 
     };
+    $scope.$watch('product.giaBan', function (newGia, oldGia) {
+        if (newGia !== oldGia) {
+            $scope.product.variants.forEach(function (variant) {
+                if (variant.Giathoidiemhientai === oldGia) {
+                    variant.Giathoidiemhientai = newGia;
+                }
+            });
+    
+            // Nếu đang thêm hoặc sửa biến thể thì cũng cập nhật luôn:
+            if ($scope.newVariant && $scope.newVariant.Giathoidiemhientai === oldGia) {
+                $scope.newVariant.Giathoidiemhientai = newGia;
+            }
+        }
+    });    
     // Mở modal THÊM mới biến thể
     $scope.showAddVariantModal = function () {
         $scope.newVariant = { Trangthai: 0 };
@@ -304,12 +324,7 @@ app.controller('QuanLySanPhamController', function ($scope, $http, $location, $t
             alert("❌ Vui lòng chọn ảnh cho biến thể!");
             return;
         }
-        if ($scope.variantEditingIndex !== -1 && !$scope.newVariant.file) {
-            alert("❌ Vui lòng chọn ảnh mới khi cập nhật biến thể!");
-            return;
-        }
         
-
         if ($scope.variantEditingIndex === -1) {
             // ✅ Kiểm tra trùng khi thêm mới
             var existingVariant = $scope.product.variants.find(v =>
@@ -329,7 +344,7 @@ app.controller('QuanLySanPhamController', function ($scope, $http, $location, $t
                 return;
             }
 
-            if (!$scope.newVariant.Giathoidiemhientai) {
+            if (!$scope.newVariant.Giathoidiemhientai ) {
                 $scope.newVariant.Giathoidiemhientai = $scope.product.giaBan;
             }
 
