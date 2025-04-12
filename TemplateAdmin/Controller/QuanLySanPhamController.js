@@ -407,6 +407,7 @@ app.controller('QuanLySanPhamController', function ($scope, $http, $location, $t
     // Xóa biến thể
     $scope.removeVariant = function (index) {
         $scope.product.variants.splice(index, 1);
+        $scope.product.variants[0].Giathoidiemhientai = $scope.product.giaBan;
         console.log("Danh sách sau xóa" + $scope.product.variants);
         
     };
@@ -683,7 +684,7 @@ app.controller('QuanLySanPhamController', function ($scope, $http, $location, $t
                         .then(function () {
                             alert("Sản phẩm và tất cả biến thể đã được lưu thành công!");
                             $scope.loadProducts(); // Tải lại danh sách sản phẩm
-                            $location.url('/sanpham');
+                            //$location.url('/sanpham');
                         })
                         .catch(function () {
                             alert("Có lỗi xảy ra khi lưu một hoặc nhiều biến thể.");
@@ -792,6 +793,34 @@ app.controller('QuanLySanPhamController', function ($scope, $http, $location, $t
         let id = $routeParams.id;
         $scope.getProductById(id);
     }
+
+$scope.currentPage = 1;
+$scope.entriesPerPage = '10';
+$scope.searchText = '';
+
+// Khi thay đổi số lượng hiển thị
+$scope.updatePagination = function () {
+    $scope.currentPage = 1;
+};
+
+// Lấy danh sách số trang
+$scope.getPageNumbers = function () {
+    if (!$scope.filteredProducts) return [];
+    let totalPages = Math.ceil($scope.filteredProducts.length / $scope.entriesPerPage);
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+};
+// Chuyển trang
+$scope.changePage = function (page) {
+    if (page < 1 || page > $scope.getPageNumbers().length) return;
+    $scope.currentPage = page;
+};
+$scope.getToIndex = function () {
+    let page = parseInt($scope.currentPage) || 1;
+    let perPage = parseInt($scope.entriesPerPage) || 10;
+    let total = Array.isArray($scope.filteredProducts) ? $scope.filteredProducts.length : 0;
+    return Math.min(page * perPage, total);
+};
+
 });
 app.directive('fileModel', ['$parse', function ($parse) {
     return {
@@ -806,4 +835,22 @@ app.directive('fileModel', ['$parse', function ($parse) {
         }
     };
 }]);
+app.filter('searchByName', function () {
+    return function (items, searchText) {
+        if (!searchText) return items;
+        searchText = searchText.toLowerCase();
+        return items.filter(function (item) {
+            return item.tenSanpham && item.tenSanpham.toLowerCase().includes(searchText);
+        });
+    };
+});
+app.filter('startFrom', function () {
+    return function (input, start) {
+        if (!input || !input.length) return [];
+        return input.slice(+start);
+    };
+});
+
+
+
 

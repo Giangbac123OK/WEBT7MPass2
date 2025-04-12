@@ -81,7 +81,7 @@
         <div class="mb-2 mt-4">
             <label for="tenSanpham">Tên sản phẩm:</label>
             <input type="text" class="form-control" id="tenSanpham" name="tenSanpham" ng-minlength="2"
-                ng-maxlength="100" ng-model="product.tenSanpham" required placeholder="Nhập tên sản phẩm">
+                ng-maxlength="100" ng-model="product.tenSanpham" required placeholder="Nhập tên sản phẩm" ng-pattern="^[a-zA-Z].*">
             <span
                 ng-show="(frm.tenSanpham.$error.required && frm.tenSanpham.$touched) ||(frm.tenSanpham.$error.required && frm.$submitted)"
                 class="text-danger">Không để trống tên sản phẩm</span>
@@ -94,6 +94,10 @@
                 ng-show="frm.tenSanpham.$error.maxlength && (frm.tenSanpham.$touched || frm.$submitted)">
                 Tên sản phẩm không được vượt quá 100 ký tự
             </span>
+            <span class="text-danger"
+            ng-show="frm.tenSanpham.$error.pattern && (frm.tenSanpham.$touched || frm.$submitted)">
+            Tên sản phẩm phải bắt đầu bằng chữ cái
+        </span>
         </div>
         <div class="mb-2">
             <label>Giá bán:</label>
@@ -165,8 +169,6 @@
                                     type="button">
                                     ✏️ Sửa
                                 </button>
-
-
                                 <button class="btn btn-danger btn-sm" ng-click="removeVariant($index)">🗑️ Xóa</button>
                             </div>
                         </div>
