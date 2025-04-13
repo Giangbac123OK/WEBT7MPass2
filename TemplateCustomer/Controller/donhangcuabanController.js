@@ -721,5 +721,34 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
                 .catch(function(error) {
                     console.log("Lỗi chi tiết trả hàng: ", error);
                 });
+    $scope.itemsPerPage = 5;
+    $scope.currentPage = 1;
+
+    $scope.getPageNumbers = function () {
+        const filtered = $scope.dataHoaDon.filter(hd => hd.idkh == $scope.idkh);
+        $scope.totalPages = Math.ceil(filtered.length / $scope.itemsPerPage);
+        return Array.from({ length: $scope.totalPages }, (_, i) => i + 1);
+    };
+
+    $scope.setPage = function (page) {
+        if (page >= 1 && page <= $scope.totalPages) {
+            $scope.currentPage = page;
+        }
+    };
+
+    $scope.prevPage = function () {
+        if ($scope.currentPage > 1) {
+            $scope.currentPage--;
+        }
+    };
+
+    $scope.nextPage = function () {
+        if ($scope.currentPage < $scope.totalPages) {
+            $scope.currentPage++;
+        }
+    };
+
+
+
 });
 
