@@ -723,6 +723,7 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
                 });
     $scope.itemsPerPage = 5;
     $scope.currentPage = 1;
+    $scope.currentPage1 = 1;
 
     $scope.getPageNumbers = function () {
         const filtered = $scope.dataHoaDon.filter(hd => hd.idkh == $scope.idkh);
