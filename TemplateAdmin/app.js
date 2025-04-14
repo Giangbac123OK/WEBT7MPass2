@@ -67,6 +67,14 @@ app.config(function ($routeProvider) {
             controller: 'RankController'
             
         })
+        .when("/KhachHang", {
+            templateUrl: "./Views/quanLyKhachHang.html",
+            controller: 'quanLyKhachHangController'
+        })
+        .when("/addKhachHang", {
+            templateUrl: "./Views/addKhachHang.html",
+            controller: 'quanLyKhachHangController'
+        })
         .when("/thongtinAdmin", {
             templateUrl: "./Views/ThongtinAdmin.html",
             
