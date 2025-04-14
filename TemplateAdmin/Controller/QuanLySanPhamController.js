@@ -818,6 +818,9 @@ $scope.getToIndex = function () {
     let total = Array.isArray($scope.filteredProducts) ? $scope.filteredProducts.length : 0;
     return Math.min(page * perPage, total);
 };
+$scope.goToProductDetail = function (productId) {
+    window.location.href = '#!/chiTietSanPham/' + productId;
+};
 
 });
 app.directive('fileModel', ['$parse', function ($parse) {
