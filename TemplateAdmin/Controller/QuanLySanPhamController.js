@@ -684,7 +684,7 @@ app.controller('QuanLySanPhamController', function ($scope, $http, $location, $t
                         .then(function () {
                             alert("Sản phẩm và tất cả biến thể đã được lưu thành công!");
                             $scope.loadProducts(); // Tải lại danh sách sản phẩm
-                            //$location.url('/sanpham');
+                            $location.url('/sanpham');
                         })
                         .catch(function () {
                             alert("Có lỗi xảy ra khi lưu một hoặc nhiều biến thể.");
@@ -786,8 +786,6 @@ app.controller('QuanLySanPhamController', function ($scope, $http, $location, $t
                 });
         }
     };
-    
-    
     
     if ($routeParams.id) {
         let id = $routeParams.id;
