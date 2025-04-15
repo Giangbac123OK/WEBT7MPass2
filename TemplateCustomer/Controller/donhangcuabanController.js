@@ -729,22 +729,29 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
         $scope.totalPages = Math.ceil(filtered.length / $scope.itemsPerPage);
         return Array.from({ length: $scope.totalPages }, (_, i) => i + 1);
     };
-
+    $scope.getPageNumberTraHangs = function () {
+        const filtered = $scope.dataTraHang.filter(hd => hd.idkh == $scope.idkh);
+        $scope.totalPages = Math.ceil(filtered.length / $scope.itemsPerPage);
+        return Array.from({ length: $scope.totalPages }, (_, i) => i + 1);
+    };
     $scope.setPage = function (page) {
         if (page >= 1 && page <= $scope.totalPages) {
             $scope.currentPage = page;
+            window.scroll(0,0);
         }
     };
 
     $scope.prevPage = function () {
         if ($scope.currentPage > 1) {
             $scope.currentPage--;
+            window.scroll(0,0);
         }
     };
 
     $scope.nextPage = function () {
         if ($scope.currentPage < $scope.totalPages) {
             $scope.currentPage++;
+            window.scroll(0,0);
         }
     };
 

@@ -28,9 +28,7 @@ app.controller('nhanvienController', function ($scope, $http, $location, $interv
         $http.get("https://localhost:7196/api/Nhanviens")
             .then(function (response) {
                 // Lọc bỏ user hiện tại khỏi danh sách
-                $scope.listNhanVien = response.data.filter(function (nhanvien) {
-                    return nhanvien.id !== userInfo.id;
-                });
+                $scope.listNhanVien = response.data;
                 console.log('Danh sách nhân viên (đã lọc):', $scope.listNhanVien);
             })
             .catch(function (error) {
