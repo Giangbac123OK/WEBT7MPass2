@@ -934,7 +934,7 @@
             sanPhamChiTiet: productDetails,
           };
         } else {
-          apiUrl = 'https://localhost:7196/api/Hoadons/create';
+          apiUrl = 'https://localhost:7196/api/Hoadons/create/Admin';
           requestData = {
             idnv: 1,
             tongtiencantra: totalAmount.value,
@@ -1015,7 +1015,7 @@
           return;
         }
         fetch(
-          `https://localhost:7196/api/Hoadons/searchhd/Admin?name=${encodeURIComponent(searchQuery)}`
+          `https://localhost:7196/api/Sanphams/searchhd/Admin?name=${encodeURIComponent(searchQuery)}`
         )
           .then(response => response.json())
           .then(data => {
