@@ -87,6 +87,10 @@ app.config(function ($routeProvider) {
             templateUrl: "./Views/VocherAdmin.html",
             
         })
+          .when("/dashboard", {
+            templateUrl: "./Views/dashboard.html",
+            controller: "dashboardController"
+        })
         .otherwise("/")
 });
 app.run(function($rootScope, $location) {
@@ -114,6 +118,7 @@ app.run(function($rootScope, $location) {
         if (restrictedPage && !$rootScope.userInfo) {
             event.preventDefault();
             $location.path("/dangnhap");
+            //$location.path("/dashboard");
         }
     });
 
