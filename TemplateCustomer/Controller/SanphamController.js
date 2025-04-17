@@ -112,8 +112,17 @@ app.controller('SanphamController', function ($scope, $http) {
     return stars;
 };
 
-
-
-
- 
+//load lại trang khi có sự thay đổi trong danh sách sản phẩm
+$scope.$watch('sanPham', function(newVal, oldVal) {
+    if (newVal !== oldVal) {
+        $scope.totalPages = Math.ceil($scope.sanPham.length / $scope.pageSize);
+        $scope.currentPage = 1; // Reset về trang đầu tiên khi có sự thay đổi
+    }
+}, true);
+$scope.$watch('currentPage', function(newVal, oldVal) {
+    if (newVal !== oldVal) {
+        $scope.getPagedProducts(); // Cập nhật sản phẩm hiển thị khi trang thay đổi
+    }
+}
+, true);
 });

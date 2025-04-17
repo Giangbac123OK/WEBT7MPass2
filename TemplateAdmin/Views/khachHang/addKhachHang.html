@@ -1,0 +1,49 @@
+<div class="container mt-3">
+    <div class="col-md-12 ">
+        <h1 class="page-header">Thêm khách hàng</h1>
+    </div>
+    <form name="formKhachHang" ng-submit="themKhachHang()" novalidate>
+        <div class="col-md-12 mt-4">
+            <label for="ten" class="form-label">Tên khách hàng</label>
+            <input type="text" id="ten" ng-model="newkhachHang.ten" class="form-control" placeholder="Nhập tên khách hàng"
+                required>
+            
+
+            <label for="sdt" class="form-label">Số điện thoại</label>
+            <input type="text" id="sdt" ng-model="newkhachHang.sdt" class="form-control" placeholder="Nhập số điện thoại"
+                required>
+            
+            <div class="row mt-3">
+
+                <div class="col-md-6">
+                    <label for="ngaysinh" class="form-label">Ngày sinh</label>
+                    <input type="date" id="ngaysinh" ng-model="newkhachHang.ngaysinh" class="form-control" required>
+                </div>
+                <div class="col-md-6 mt-2">
+                    <label class="form-label d-block">Giới tính</label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" 
+                               name="gioitinh" id="gioitinhNam" 
+                               ng-model="newkhachHang.gioitinh" ng-value="true" required>
+                        <label class="form-check-label" for="gioitinhNam">Nam</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" 
+                               name="gioitinh" id="gioitinhNu" 
+                               ng-model="newkhachHang.gioitinh" ng-value="false">
+                        <label class="form-check-label" for="gioitinhNu">Nữ</label>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        <div class="d-flex justify-content-center gap-3 mt-3">
+            <a href="#!KhachHang" class="btn btn-secondary">
+                <i class="fas fa-times"></i> Đóng
+            </a>
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-plus"></i> Thêm khách hàng
+            </button>
+        </div>
+    </form>
+</div>
