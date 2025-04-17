@@ -72,11 +72,15 @@ app.config(function ($routeProvider) {
             
         })
         .when("/KhachHang", {
-            templateUrl: "./Views/quanLyKhachHang.html",
+            templateUrl: "./Views/khachHang/quanLyKhachHang.html",
             controller: 'quanLyKhachHangController'
         })
         .when("/addKhachHang", {
-            templateUrl: "./Views/addKhachHang.html",
+            templateUrl: "./Views/khachHang/addKhachHang.html",
+            controller: 'quanLyKhachHangController'
+        })
+        .when("/editKhachHang/:id", {
+            templateUrl: "./Views/khachHang/editKhachHang.html",
             controller: 'quanLyKhachHangController'
         })
         .when("/thongtinAdmin", {
