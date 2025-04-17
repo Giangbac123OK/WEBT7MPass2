@@ -700,9 +700,16 @@ app.controller('QuanLySanPhamController', function ($scope, $http, $location, $t
     //Cập nhật sản phẩm và biến thể
     $scope.updateProduct = function () {
         if ($scope.frm.$valid) {
+            if ($scope.product.variants.every(v => v.Trangthai === 2)) {
+                $scope.product.trangthai = 2;
+            } else {
+                $scope.product.trangthai = 0;
+            }
             // 1. Cập nhật sản phẩm chính
             $http.put("https://localhost:7196/api/Sanphams/" + $scope.product.id, $scope.product)
                 .then(function (response) {
+                    //nếu toàn bộ trạng thái biến thể là 2 thì cập nhật trạng thái sản phẩm là 2
+                    
                     console.log("✅ Sản phẩm đã được cập nhật:", response.data);
     
                     // 2. Lấy danh sách biến thể cũ từ server
