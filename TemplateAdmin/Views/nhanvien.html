@@ -213,7 +213,6 @@
                                     <label class="form-label">Chức vụ <span class="text-danger">*</span></label>
                                     <select class="form-select" name="chucvu" ng-model="add.chucvu" required>
                                         <option value="" disabled selected>Chọn chức vụ</option>
-                                        <option value="0">Admin</option>
                                         <option value="1">Quản lý</option>
                                         <option value="2">Nhân viên</option>
                                     </select>
@@ -377,11 +376,10 @@
                                 <span class="text-danger small" ng-show="EditNhanVienfrm.diachi.$touched && EditNhanVienfrm.diachi.$error.required">Vui lòng nhập địa chỉ.</span>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="mb-3" ng-if="edit.chucvu!=0">
                                 <label class="form-label">Chức vụ <span class="text-danger">*</span></label>
                                 <select name="chucvu" ng-model="edit.chucvu" class="form-select" required>
                                     <option value="" disabled selected>Chọn chức vụ</option>
-                                    <option value="0">Admin</option>
                                     <option value="1">Quản lý</option>
                                     <option value="2">Nhân viên</option>
                                 </select>
