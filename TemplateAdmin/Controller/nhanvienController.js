@@ -107,7 +107,6 @@ app.controller('nhanvienController', function ($scope, $http, $location, $interv
             Swal.fire({ title: "Lỗi", text: "Email đã tồn tại!", icon: "error" });
             return;
         }
-
         Swal.fire({
             title: "Xác nhận",
             text: "Bạn có chắc chắn muốn thêm nhân viên này?",
@@ -240,7 +239,7 @@ app.controller('nhanvienController', function ($scope, $http, $location, $interv
             Swal.fire("Lỗi", "Bạn không có quyền hạn chỉnh sửa.", "error");
             return;
         }
-        if(userInfo.role>nv.role){
+        if(userInfo.role>$scope.edit.chucvu){
             Swal.fire("Lỗi", "Bạn không được phép chỉnh sửa người có quyền hạn cao hơn.", "error");
             return;
         }
@@ -376,7 +375,7 @@ app.controller('nhanvienController', function ($scope, $http, $location, $interv
             let nv = selectedList[i];
     
             // Kiểm tra quyền hạn trước khi xóa
-            if (userInfo.id === nv.id) {
+            if (userInfo.id == nv.id) {
                 Swal.fire("Lỗi", "Bạn không được quyền hạn xóa chính mình.", "error");
                 return;
             }
