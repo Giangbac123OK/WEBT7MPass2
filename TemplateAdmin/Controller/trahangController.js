@@ -35,5 +35,7 @@ app.controller('trahangController', function ($scope, $http, $location, $interva
         $scope.idXacnhan = id;
         $("#XacnhanModal").modal('show');
     }
-
+     $scope.huydon = function(trahang){
+        
+     }
 });

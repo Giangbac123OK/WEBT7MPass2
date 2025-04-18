@@ -262,7 +262,7 @@ app.run(function ($rootScope, $location, $http) {
     console.error('Lỗi toàn cục:', error);
 
   });
-
+  
   
   
 });
