@@ -402,7 +402,7 @@
 </style>
 <div class="container mt-4">
     <div class="page-header">
-        <h2>Quản Lý Hóa Đơn</h2>
+        <h2>Quản Lý Trả Hàng</h2>
         <button class="notification-btn" id="notificationBtn">
             <i class="fas fa-bell"></i>
             <span class="badge">{{unreadNotifications}}</span>
@@ -461,8 +461,11 @@
                         <i class="fas fa-eye"></i> Chi tiết
                     </button>
 
-                    <button class="btn btn-sm btn-success" ng-click="OpenModalXacNhan(x.id)">
+                    <button class="btn btn-sm btn-success" ng-if="x.trangthai==0" ng-click="OpenModalXacNhan(x.id)">
                         <i class="fas fa-check"></i> Xác nhận
+                    </button>
+                    <button class="btn btn-sm btn-danger" ng-if="x.trangthai==0" ng-click="huydon(x)">
+                        <i class="fas fa-times"></i> Hủy đơn
                     </button>
                 </div>
             </div>
