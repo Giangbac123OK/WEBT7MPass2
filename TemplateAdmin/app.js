@@ -85,6 +85,7 @@ app.config(function ($routeProvider) {
         })
         .when("/thongtinAdmin", {
             templateUrl: "./Views/ThongtinAdmin.html",
+            controller: 'thongtinAdminController'
             
         })
         .when("/Vocher", {
