@@ -3,7 +3,8 @@ const app = angular.module("myApp", ['ngRoute']);
 app.config(function ($routeProvider) {
     $routeProvider
         .when("/", {
-            templateUrl: "./Views/home.html"
+            templateUrl: "./Views/dashboard.html",
+            controller: "dashboardController"
         })
         .when("/dangnhap", {
             templateUrl: "./Views/dangnhap.html",
@@ -95,7 +96,7 @@ app.config(function ($routeProvider) {
             templateUrl: "./Views/dashboard.html",
             controller: "dashboardController"
         })
-        .otherwise("/")
+        .otherwise("/dashboard")
 });
 app.run(function($rootScope, $location) {
     // Khôi phục thông tin user từ localStorage nếu có
