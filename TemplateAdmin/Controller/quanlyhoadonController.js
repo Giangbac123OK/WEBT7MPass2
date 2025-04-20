@@ -720,6 +720,100 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q, $timeout) 
                 console.error("Lỗi khi tải đơn chưa đọc:", error);
             });
     };    
+
+    // Khởi tạo biến
+    $scope.searchTerm = '';
+    $scope.searchType = 'id';
+    $scope.filterDate = '';
+    $scope.originalInvoices = []; // Lưu dữ liệu gốc
+    $scope.filteredData = []; // Lưu dữ liệu đã lọc
+
+    // Lưu trữ dữ liệu gốc khi nhận dữ liệu mới
+    $scope.$watch('invoices', function(newVal) {
+        if (newVal) {
+            $scope.originalInvoices = angular.copy(newVal);
+            $scope.resetFilteredData();
+        }
+    }, true);
+
+    // Reset dữ liệu đã lọc về trạng thái gốc
+    $scope.resetFilteredData = function() {
+        $scope.filteredData = angular.copy($scope.originalInvoices);
+        $scope.filteredInvoices = angular.copy($scope.filteredData);
+    };
+
+    // Hàm chuyển tab và xử lý dữ liệu
+    $scope.prepareSearch = function() {
+        // Reset về dữ liệu gốc
+        $scope.filteredData = angular.copy($scope.originalInvoices);
+    
+        // Chuyển tab "All" trước
+        var allTab = document.getElementById('all-tab');
+        if (allTab) {
+            allTab.click();
+    
+            // Đợi giao diện chuyển tab xong (~100ms), rồi mới lọc
+            setTimeout(function() {
+                $scope.applySearch();
+                $scope.$apply(); // Đảm bảo AngularJS cập nhật view
+            }, 100);
+        } else {
+            // Nếu không tìm thấy tab thì lọc luôn
+            $scope.applySearch();
+        }
+    };    
+
+    // Hàm tìm kiếm chính
+    $scope.applySearch = function() {
+        // Bắt đầu từ dữ liệu gốc đã reset
+        let filtered = angular.copy($scope.filteredData);
+        
+        // Áp dụng tìm kiếm
+        if ($scope.searchTerm) {
+            const term = $scope.searchTerm.toLowerCase();
+            filtered = filtered.filter(invoice => {
+                switch ($scope.searchType) {
+                    case 'id': 
+                        return invoice.id && invoice.id.toString().includes(term);
+                    case 'tenkhachhang': 
+                        return invoice.tenkhachhang && invoice.tenkhachhang.toLowerCase().includes(term);
+                    case 'sdt': 
+                        return invoice.sdt && invoice.sdt.includes(term);
+                    default: 
+                        return true;
+                }
+            });
+        }
+        
+        // Áp dụng bộ lọc ngày
+        if ($scope.filterDate) {
+            const selectedDate = new Date($scope.filterDate);
+            filtered = filtered.filter(invoice => {
+                if (!invoice.thoigiandathang) return false;
+                const invoiceDate = new Date(invoice.thoigiandathang);
+                return invoiceDate.toDateString() === selectedDate.toDateString();
+            });
+        }
+        
+        // Nếu không có điều kiện tìm kiếm/lọc, hiển thị tất cả
+        if (!$scope.searchTerm && !$scope.filterDate) {
+            filtered = angular.copy($scope.originalInvoices);
+        }
+        
+        // Cập nhật dữ liệu hiển thị
+        $scope.filteredInvoices = filtered;
+        $scope.changePage(1);
+    };
+
+    // Hàm gọi từ ô tìm kiếm
+    $scope.onSearch = function() {
+        $scope.prepareSearch();
+    };
+
+    // Hàm gọi từ bộ lọc ngày
+    $scope.onDateFilter = function() {
+        $scope.prepareSearch();
+    };
     
     // Khởi tạo ứng dụng
     $scope.init();

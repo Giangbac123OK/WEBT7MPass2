@@ -407,6 +407,7 @@ app.controller('QuanLySanPhamController', function ($scope, $http, $location, $t
     // Xóa biến thể
     $scope.removeVariant = function (index) {
         $scope.product.variants.splice(index, 1);
+        $scope.product.variants[0].Giathoidiemhientai = $scope.product.giaBan;
         console.log("Danh sách sau xóa" + $scope.product.variants);
         
     };
@@ -699,9 +700,16 @@ app.controller('QuanLySanPhamController', function ($scope, $http, $location, $t
     //Cập nhật sản phẩm và biến thể
     $scope.updateProduct = function () {
         if ($scope.frm.$valid) {
+            if ($scope.product.variants.every(v => v.Trangthai === 2)) {
+                $scope.product.trangthai = 2;
+            } else {
+                $scope.product.trangthai = 0;
+            }
             // 1. Cập nhật sản phẩm chính
             $http.put("https://localhost:7196/api/Sanphams/" + $scope.product.id, $scope.product)
                 .then(function (response) {
+                    //nếu toàn bộ trạng thái biến thể là 2 thì cập nhật trạng thái sản phẩm là 2
+                    
                     console.log("✅ Sản phẩm đã được cập nhật:", response.data);
     
                     // 2. Lấy danh sách biến thể cũ từ server
@@ -786,12 +794,41 @@ app.controller('QuanLySanPhamController', function ($scope, $http, $location, $t
         }
     };
     
-    
-    
     if ($routeParams.id) {
         let id = $routeParams.id;
         $scope.getProductById(id);
     }
+
+$scope.currentPage = 1;
+$scope.entriesPerPage = '10';
+$scope.searchText = '';
+
+// Khi thay đổi số lượng hiển thị
+$scope.updatePagination = function () {
+    $scope.currentPage = 1;
+};
+
+// Lấy danh sách số trang
+$scope.getPageNumbers = function () {
+    if (!$scope.filteredProducts) return [];
+    let totalPages = Math.ceil($scope.filteredProducts.length / $scope.entriesPerPage);
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+};
+// Chuyển trang
+$scope.changePage = function (page) {
+    if (page < 1 || page > $scope.getPageNumbers().length) return;
+    $scope.currentPage = page;
+};
+$scope.getToIndex = function () {
+    let page = parseInt($scope.currentPage) || 1;
+    let perPage = parseInt($scope.entriesPerPage) || 10;
+    let total = Array.isArray($scope.filteredProducts) ? $scope.filteredProducts.length : 0;
+    return Math.min(page * perPage, total);
+};
+$scope.goToProductDetail = function (productId) {
+    window.location.href = '#!/chiTietSanPham/' + productId;
+};
+
 });
 app.directive('fileModel', ['$parse', function ($parse) {
     return {
@@ -806,4 +843,22 @@ app.directive('fileModel', ['$parse', function ($parse) {
         }
     };
 }]);
+app.filter('searchByName', function () {
+    return function (items, searchText) {
+        if (!searchText) return items;
+        searchText = searchText.toLowerCase();
+        return items.filter(function (item) {
+            return item.tenSanpham && item.tenSanpham.toLowerCase().includes(searchText);
+        });
+    };
+});
+app.filter('startFrom', function () {
+    return function (input, start) {
+        if (!input || !input.length) return [];
+        return input.slice(+start);
+    };
+});
+
+
+
 

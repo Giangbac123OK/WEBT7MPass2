@@ -58,6 +58,10 @@ app.config(function ($routeProvider) {
             templateUrl: "./Views/editSanPham.html",
             controller: "QuanLySanPhamController"
         })
+        .when("/chiTietSanPham/:id", {
+            templateUrl: "./Views/chiTietSanPham.html",
+            controller: "QuanLySanPhamController"
+        })
         .when("/sanpham", {
             templateUrl: "./Views/quanLySanPham.html",
             controller: "QuanLySanPhamController"
@@ -67,13 +71,30 @@ app.config(function ($routeProvider) {
             controller: 'RankController'
             
         })
+        .when("/KhachHang", {
+            templateUrl: "./Views/khachHang/quanLyKhachHang.html",
+            controller: 'quanLyKhachHangController'
+        })
+        .when("/addKhachHang", {
+            templateUrl: "./Views/khachHang/addKhachHang.html",
+            controller: 'quanLyKhachHangController'
+        })
+        .when("/editKhachHang/:id", {
+            templateUrl: "./Views/khachHang/editKhachHang.html",
+            controller: 'quanLyKhachHangController'
+        })
         .when("/thongtinAdmin", {
             templateUrl: "./Views/ThongtinAdmin.html",
+            controller: 'thongtinAdminController'
             
         })
         .when("/Vocher", {
             templateUrl: "./Views/VocherAdmin.html",
             
+        })
+          .when("/dashboard", {
+            templateUrl: "./Views/dashboard.html",
+            controller: "dashboardController"
         })
         .otherwise("/")
 });
@@ -102,6 +123,7 @@ app.run(function($rootScope, $location) {
         if (restrictedPage && !$rootScope.userInfo) {
             event.preventDefault();
             $location.path("/dangnhap");
+            //$location.path("/dashboard");
         }
     });
 

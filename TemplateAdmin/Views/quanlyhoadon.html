@@ -496,6 +496,26 @@
         </div>
     </div>
 
+    <div class="row mb-3">
+        <div class="col-md-8">
+            <div class="input-group">
+                <select class="form-select" ng-model="searchType">
+                    <option value="id">Mã hóa đơn</option>
+                    <option value="tenkhachhang">Tên KH</option>
+                    <option value="sdt">Số điện thoại</option>
+                </select>
+                <input type="text" class="form-control" placeholder="Nhập từ khóa..." 
+                       ng-model="searchTerm" ng-change="onSearch()">
+                <button class="btn btn-outline-secondary" ng-click="onSearch()">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <input type="date" class="form-control" ng-model="filterDate" ng-change="onDateFilter()">
+        </div>
+    </div>
+
     <ul class="nav nav-tabs" id="orderTabs" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button"

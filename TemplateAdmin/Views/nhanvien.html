@@ -14,7 +14,7 @@
             <button type="button" class="btn btn-warning">
                 <i class="bi bi-arrow-counterclockwise"></i> Hoàn tác
             </button>
-            <button type="button" class="btn btn-danger">
+            <button type="button" class="btn btn-danger" ng-click="XoaNhieu()">
                 <i class="bi bi-trash3-fill"></i> Xoá tất cả
             </button>
         </div>
@@ -23,7 +23,8 @@
             <table class="table table-bordered table-hover">
                 <thead class="table-primary text-center">
                     <tr>
-                        <th><input type="checkbox"></th>
+                        <th><input type="checkbox" ng-model="selectAll" ng-change="toggleAll()"></th>
+                        <th>STT</th>
                         <th>ID</th>
                         <th>Họ và tên</th>
                         <th>Avatar</th>
@@ -38,8 +39,9 @@
                 </thead>
                 <tbody>
                     <tr ng-repeat="x in listNhanVien">
-                        <td class="text-center"><input type="checkbox"></td>
-                        <td class="text-center">{{ x.id }}</td>
+                        <td class="text-center"><input type="checkbox" ng-model="x.selected" ng-change="updateSelectAll()"></td>
+                        <td class="text-center"><span class="fw-bold">{{ $index + 1 }}</span></td>
+                        <td class="text-center"><span>#{{ x.id }}</span></td>
                         <td>{{ x.hovaten }}</td>
                         <td class="text-center">
                             <img ng-src="https://localhost:7196/picture/{{ x.avatar || 'AnhNhanVien.png' }}" width="60" height="60"
@@ -211,7 +213,6 @@
                                     <label class="form-label">Chức vụ <span class="text-danger">*</span></label>
                                     <select class="form-select" name="chucvu" ng-model="add.chucvu" required>
                                         <option value="" disabled selected>Chọn chức vụ</option>
-                                        <option value="0">Admin</option>
                                         <option value="1">Quản lý</option>
                                         <option value="2">Nhân viên</option>
                                     </select>
@@ -375,11 +376,10 @@
                                 <span class="text-danger small" ng-show="EditNhanVienfrm.diachi.$touched && EditNhanVienfrm.diachi.$error.required">Vui lòng nhập địa chỉ.</span>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="mb-3" ng-if="edit.chucvu!=0">
                                 <label class="form-label">Chức vụ <span class="text-danger">*</span></label>
                                 <select name="chucvu" ng-model="edit.chucvu" class="form-select" required>
                                     <option value="" disabled selected>Chọn chức vụ</option>
-                                    <option value="0">Admin</option>
                                     <option value="1">Quản lý</option>
                                     <option value="2">Nhân viên</option>
                                 </select>
