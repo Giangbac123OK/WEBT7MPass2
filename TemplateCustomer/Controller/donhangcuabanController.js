@@ -1,5 +1,9 @@
 
 app.controller('donhangcuabanController', function ($scope, $http, $location) {
+    const apiKey = "7b4f1e5c-0700-11f0-94b6-be01e07a48b5";
+    const apiProvince = "https://online-gateway.ghn.vn/shiip/public-api/master-data/province";
+    const apiDistrict = "https://online-gateway.ghn.vn/shiip/public-api/master-data/district";
+    const apiWard = "https://online-gateway.ghn.vn/shiip/public-api/master-data/ward";
     
     GetByidKH1();
 
@@ -93,13 +97,43 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
                 console.log("Dữ liệu PTTT:", dataPTTT);
 
                 // Gán tên phương thức thanh toán tương ứng vào từng hóa đơn
-                $scope.dataHoaDon.forEach(function (hd) {
+                $scope.dataHoaDon.forEach(async function (hd) {
                     const pttt = dataPTTT.find(pt => pt.id === hd.idpttt);
                     if (pttt && pttt.tenpttt === "Chuyển khoản ngân hàng") {
                         hd.tenpttt = 1; // Hoặc `pttt.name` nếu tên property là name
                     } else {
                         hd.tenpttt = 0;
                     }
+
+                    if (hd.diachiship) {
+                        const parts = hd.diachiship.split(' - ');
+                        if (parts.length === 4) {
+                            const [diachicuthe, phuongxaIdStr, quanhuyenIdStr, thanhphoIdStr] = parts;
+                            const idphuongxa = parseInt(phuongxaIdStr);
+                            const idquanhuyen = parseInt(quanhuyenIdStr);
+                            const idthanhpho = parseInt(thanhphoIdStr);
+        
+                            // Lưu lại các id địa chỉ
+                            hd.idphuongxa = idphuongxa;
+                            hd.idquanhuyen = idquanhuyen;
+                            hd.idthanhpho = idthanhpho;
+                            hd.diachicuthe = diachicuthe;
+        
+                            // Gọi API lấy tên địa chỉ
+                            const [phuongxa, quanhuyen, thanhpho] = await Promise.all([
+                                getWardName(idquanhuyen, idphuongxa),
+                                getDistrictName(idthanhpho, idquanhuyen),
+                                getProvinceName(idthanhpho)
+                            ]);
+        
+                            hd.diachiship_display = `${diachicuthe || ''} - ${phuongxa} - ${quanhuyen} - ${thanhpho}`;
+                        } else {
+                            hd.diachiship_display = "Địa chỉ không hợp lệ";
+                        }
+                    } else {
+                        hd.diachiship_display = "Không có địa chỉ";
+                    }
+
                 });
                 console.log("Dữ liệu hóa đơn:", $scope.dataHoaDon);
             })
@@ -755,6 +789,74 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
         }
     };
 
+    // Hàm lấy tên tỉnh/thành phố
+    async function getProvinceName(id) {
+        try {
+            const response = await fetch(apiProvince, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Token": apiKey // 🔹 Thêm Token vào headers
+                },
+                body: JSON.stringify({}) // Thêm body nếu cần
+            });
+
+            const data = await response.json();
+            if (data.code === 200) {
+                const province = data.data.find(p => p.ProvinceID == id);
+                return province ? province.NameExtension[1] : "Không xác định";
+            }
+        } catch (error) {
+            console.error("Lỗi lấy tỉnh/thành phố:", error);
+        }
+        return "Không xác định";
+    }
+
+    // Hàm lấy tên quận/huyện
+    async function getDistrictName(province_id, district_id) {
+        try {
+            const response = await fetch(apiDistrict, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Token": apiKey
+                },
+                body: JSON.stringify({ province_id: Number(province_id) }) // Sửa lại biến truyền đúng
+            });
+
+            const data = await response.json();
+            if (data.code === 200) {
+                const district = data.data.find(d => d.DistrictID == district_id);
+                return district ? district.DistrictName : "Không xác định";
+            }
+        } catch (error) {
+            console.error("Lỗi lấy quận/huyện:", error);
+        }
+        return "Không xác định";
+    }
+
+    // Hàm lấy tên phường/xã
+    async function getWardName(district_id, ward_id) {
+        try {
+            const response = await fetch(apiWard, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Token": apiKey
+                },
+                body: JSON.stringify({ district_id: Number(district_id) }) // Sửa lại biến truyền đúng
+            });
+
+            const data = await response.json();
+            if (data.code === 200) {
+                const ward = data.data.find(w => w.WardCode == ward_id);
+                return ward ? ward.WardName : "Không xác định";
+            }
+        } catch (error) {
+            console.error("Lỗi lấy phường/xã:", error);
+        }
+        return "Không xác định";
+    };
 
 
 });

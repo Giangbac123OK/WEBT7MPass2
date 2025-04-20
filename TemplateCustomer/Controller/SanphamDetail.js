@@ -946,8 +946,8 @@ app.controller('SanphamDetail', function ($scope, $routeParams, $location) {
             return;
         }
     
-        if (inputQuantity >= selectedSPCT.soluong) {
-            Swal.fire("Lỗi", `Bạn chỉ có thể mua tối đa ${selectedSPCT.soluong - 1} sản phẩm.`, "error");
+        if (inputQuantity > selectedSPCT.soluong) {
+            Swal.fire("Lỗi", `Bạn chỉ có thể mua tối đa ${selectedSPCT.soluong} sản phẩm.`, "error");
             return;
         }
     
