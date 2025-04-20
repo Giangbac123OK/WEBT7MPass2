@@ -59,14 +59,10 @@
 </style>
 <div class="container">
     <form ng-submit="updateProduct()" class="p-3 border rounded shadow-sm bg-light " name="frm" novalidate>
-        <h4 class="mb-3">Sửa Sản Phẩm </h4>
+        <h4 class="mb-3">Chi tiết sản phẩm</h4>
 
         <hr style="border: 2px solid gold;">
         <div class="d-flex">
-            <button class="btn btn-primary me-1" type="button" data-bs-toggle="modal" data-bs-target="#modalThuongHieu"
-                ng-click="resetThuongHieu()">
-                <i class="bi bi-tags"></i> Thêm thương hiệu
-            </button>
             <button class="btn btn-primary me-1" type="button" data-bs-toggle="modal" data-bs-target="#modalChatLieu"
                 ng-click="resetChatLieu()">
                 <i class="bi bi-box"></i> Thêm chất liệu
@@ -85,7 +81,7 @@
         <div class="mb-2 mt-4">
             <label for="tenSanpham">Tên sản phẩm:</label>
             <input type="text" class="form-control" id="tenSanpham" name="tenSanpham" ng-minlength="2"
-                ng-maxlength="100" ng-model="product.tenSanpham" required placeholder="Nhập tên sản phẩm">
+                ng-maxlength="100" ng-model="product.tenSanpham" required placeholder="Nhập tên sản phẩm" disabled>
             <span
                 ng-show="(frm.tenSanpham.$error.required && frm.tenSanpham.$touched) ||(frm.tenSanpham.$error.required && frm.$submitted)"
                 class="text-danger">Không để trống tên sản phẩm</span>
@@ -103,7 +99,7 @@
             <label>Giá bán:</label>
             <input type="number" class="form-control" ng-model="product.giaBan" name="giaBan" min="0" max="100000000"
                 ng-keydown="blockInvalidKeys($event)" required placeholder="Nhập giá tiền"
-                ng-keydown="blockInvalidKeys($event)">
+                ng-keydown="blockInvalidKeys($event)" disabled>
 
             <span class="text-danger" ng-show="(frm.giaBan.$error.required && frm.giaBan.$touched) || 
                    (frm.giaBan.$error.required && frm.$submitted)">
@@ -122,7 +118,7 @@
 
         <div class="mb-2">
             <label>Thương hiệu:</label>
-            <select class="form-select" name="idth" ng-model="product.idth" required>
+            <select class="form-select" name="idth" ng-model="product.idth" required disabled>
                 <option value="" disabled selected>Chọn thương hiệu</option> <!-- Mục mặc định -->
                 <option ng-value="item.id" ng-repeat="item in categories0">{{item.tenthuonghieu}}</option>
             </select>
@@ -193,12 +189,12 @@
 
         <hr>
         <h5>Vận chuyển</h5>
-        <div class="row">
+        <div class="row" >
             <div class="col-3">
                 <label>Trọng lượng</label>
                 <input type="number" name="trongluong" class="form-control" ng-model="product.trongluong"
                     placeholder="Trọng lượng (g)" required min="0" max="10000" step="1"
-                    ng-keydown="blockInvalidKeys($event)" required>
+                    ng-keydown="blockInvalidKeys($event)" required disabled>
                 <span class="text-danger"
                     ng-show="(frm.trongluong.$error.required && frm.trongluong.$touched) || (frm.trongluong.$error.required && frm.$submitted)">
                     Không được để trống trọng lượng
@@ -221,7 +217,7 @@
                 <label>Chiều dài</label>
                 <input type="number" name="chieudai" class="form-control" ng-model="product.chieudai"
                     placeholder="Chiều dài (cm)" min="10" max="150" step="1" ng-keydown="blockInvalidKeys($event)"
-                    required>
+                    required disabled>
                 <span class="text-danger"
                     ng-show="(frm.chieudai.$error.required && frm.chieudai.$touched) || (frm.chieudai.$error.required && frm.$submitted)">
                     Không được để trống chiều dài
@@ -243,7 +239,7 @@
                 <label>Chiều rộng</label>
                 <input type="number" class="form-control" ng-model="product.chieurong" name="chieurong"
                     placeholder="Chiều rộng (cm)" min="10" max="150" step="1" ng-keydown="blockInvalidKeys($event)"
-                    required>
+                    required disabled>
                 <span class="text-danger"
                     ng-show="(frm.chieurong.$error.required && frm.chieurong.$touched) || (frm.chieurong.$error.required && frm.$submitted)">
                     Không được để trống chiều rộng
@@ -265,7 +261,7 @@
                 <label>Chiều cao</label>
                 <input type="number" class="form-control" ng-model="product.chieucao" name="chieucao"
                     placeholder="Chiều cao (cm)" min="10" max="150" step="1" ng-keydown="blockInvalidKeys($event)"
-                    required>
+                    required disabled>
                 <span class="text-danger"
                     ng-show="(frm.chieucao.$error.required && frm.chieucao.$touched) || (frm.chieucao.$error.required && frm.$submitted)">
                     Không được để trống chiều cao
@@ -287,7 +283,7 @@
             <div class="mb-2">
                 <label>Mô tả sản phẩm:</label>
                 <textarea class="form-control" ng-model="product.mota" rows="4" name="mota" ng-minlength="2"
-                    ng-maxlength="200" placeholder="Nhập mô tả cho sản phẩm" required>
+                    ng-maxlength="200" placeholder="Nhập mô tả cho sản phẩm" required disabled> 
                 </textarea>
                 <small class="text-muted">{{ product.mota.length || 0 }}/200 ký tự</small>
                 <span class="text-danger"
@@ -301,23 +297,18 @@
                     Mô tả sản phẩm không được vượt quá 200 ký tự
                 </span>
             </div>
-            <div class="form-check form-switch mt-3">
-                <label>Trạng thái: </label>
-                <input class="form-check-input" type="checkbox" id="productStatus{{$index}}"
-                    ng-model="product.trangthai" ng-true-value="0" ng-false-value="2">
-                <label class="form-check-label" for="productStatus{{$index}}">
-                    {{ product.trangthai === 0 ? '🟢 Đang bán' : '⚫ Ngừng bán' }}
-                </label>
-
-            </div>
-
             <div class="d-flex justify-content-center gap-3 mt-3">
                 <a href="#!sanpham" class="btn btn-secondary">
                     <i class="fas fa-times"></i> Đóng
                 </a>
+            
                 <button type="submit" class="btn btn-warning">
-                    <i class="fas fa-save"></i> Cập nhật sản phẩm
+                    <i class="fas fa-save"></i> Lưu
                 </button>
+            
+                <a class="btn btn-info" href="#!/editSanPham/{{product.id}}" ng-if="product.id">
+                    <i class="fas fa-edit"></i> Sửa sản phẩm
+                </a>                
             </div>
             
     </form>
