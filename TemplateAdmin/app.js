@@ -3,8 +3,7 @@ const app = angular.module("myApp", ['ngRoute']);
 app.config(function ($routeProvider) {
     $routeProvider
         .when("/", {
-            templateUrl: "./Views/dashboard.html",
-            controller: "dashboardController"
+            templateUrl: "./Views/dashboard.html"
         })
         .when("/dangnhap", {
             templateUrl: "./Views/dangnhap.html",
@@ -52,19 +51,19 @@ app.config(function ($routeProvider) {
             controller: 'QuanLyThuocTinhController'
         })
         .when("/addSanPham", {
-            templateUrl: "./Views/addSanPham.html",
+            templateUrl: "./Views/sanPham/addSanPham.html",
             controller: "QuanLySanPhamController"
         })
         .when("/editSanPham/:id", {
-            templateUrl: "./Views/editSanPham.html",
+            templateUrl: "./Views/sanPham/editSanPham.html",
             controller: "QuanLySanPhamController"
         })
         .when("/chiTietSanPham/:id", {
-            templateUrl: "./Views/chiTietSanPham.html",
+            templateUrl: "./Views/sanPham/chiTietSanPham.html",
             controller: "QuanLySanPhamController"
         })
         .when("/sanpham", {
-            templateUrl: "./Views/quanLySanPham.html",
+            templateUrl: "./Views/sanPham/quanLySanPham.html",
             controller: "QuanLySanPhamController"
         })
         .when("/Rank", {
@@ -97,7 +96,7 @@ app.config(function ($routeProvider) {
             templateUrl: "./Views/dashboard.html",
             controller: "dashboardController"
         })
-        .otherwise("/dashboard")
+        .otherwise("/")
 });
 app.run(function($rootScope, $location) {
     // Khôi phục thông tin user từ localStorage nếu có
