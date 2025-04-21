@@ -5,6 +5,10 @@ app.config(function ($routeProvider) {
         .when("/", {
             templateUrl: "./Views/dashboard.html"
         })
+        .when("/addtrahang", {
+          templateUrl: "./Views/trahang.html",
+          controller: "trahangCtrl"
+        })
         .when("/dangnhap", {
             templateUrl: "./Views/dangnhap.html",
             controller: "dangnhapController"

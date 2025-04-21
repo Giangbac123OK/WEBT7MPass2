@@ -7,7 +7,6 @@ app.controller('trahangController', function ($scope, $http, $location, $interva
         success: 0,
         failed: 0,
     };
-
     const userInfoString = localStorage.getItem("userInfo1");
     const userInfo = JSON.parse(userInfoString);
 
@@ -27,12 +26,89 @@ app.controller('trahangController', function ($scope, $http, $location, $interva
 
         })
 
-    $scope.OpenModalXacNhan = function (id) {
-        $scope.idXacnhan = id;
-        $("#XacnhanModal").modal('show');
-    }
+        $scope.OpenModalXacNhan = function (id) {
+            Swal.fire({
+                title: 'Chọn phương thức hoàn tiền',
+                html: `
+                    <label class="mb-3">
+                        <input type="radio" name="refundMethod1" value="Hoàn trả sản phẩm và nhận tiền" /> Hoàn trả sản phẩm và nhận tiền
+                    </label>
+                    <label class="mb-3">
+                        <input type="radio" name="refundMethod1" value="Hoàn tiền không yêu cầu gửi lại sản phẩm" /> Hoàn tiền không yêu cầu gửi lại sản phẩm
+                    </label>
+                    <textarea class="mb-3 form-control" id="ghichu" placeholder="Ghi chú (nếu có)"></textarea>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Xác nhận',
+                cancelButtonText: 'Hủy',
+                preConfirm: () => {
+                    const selectedMethod = $('input[name="refundMethod1"]:checked').val();
+                    const ghiChu = $('#ghichu').val();
+        
+                    if (!selectedMethod) {
+                        Swal.showValidationMessage('Vui lòng chọn ít nhất một phương thức hoàn tiền.');
+                        return false;
+                    }
+        
+                    return {
+                        method1: selectedMethod,
+                        ghiChu: ghiChu
+                    };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const method1 = result.value.method1;
+                    const ghiChu = result.value.ghiChu;
+        
+                    if (!method1) {
+                        Swal.fire('Lỗi', 'Phương thức hoàn tiền là bắt buộc!', 'error');
+                        return;
+                    }
+        
+                    // Gọi API để lấy số tiền hoàn
+                    $http.get("https://localhost:7196/api/Trahangs/" + id)
+                        .then(function (response) {
+                            const sotienhoan = response.data.sotienhoan;
+        
+                            // Tạo URL cho yêu cầu PUT
+                            let api = `https://localhost:7196/api/Trahangs/Xacnhan?idth=${encodeURIComponent(id)}&hinhthuc=${encodeURIComponent(method1)}&tien=${encodeURIComponent(sotienhoan)}`;
+                            if (ghiChu != null && ghiChu !== "") {
+                                api += `&ghichu=${encodeURIComponent(ghiChu)}`;
+                            }
+        
+                            // Gửi yêu cầu API để xác nhận
+                            return $http.put(api);
+                        })
+                        .then(function (response) {
+                            location.reload(); // Tải lại trang sau khi xác nhận thành công
+                            window.scroll(0, 0); // Cuộn lên đầu trang
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Xác nhận thành công!',
+                                text: `Phương thức hoàn tiền: ${method1}`,
+                            });
+                        })
+                        .catch(function (error) {
+                            console.error("Lỗi API: ", error);
+                            let msg = error.data?.message || "Đã xảy ra lỗi. Vui lòng thử lại sau!";
+                            Swal.fire('Lỗi hệ thống', msg, 'error');
+                        });
+                }
+            });
+        };
+        
+        
     $scope.dataTrahang = {}
-
+    $http.get("https://localhost:7196/api/Hinhanh/")
+        .then(function (response) {
+            $scope.listHinhanh = response.data;
+            console.log("Dữ liệu trả hàng: ", $scope.listHinhanh);
+        })
+        .catch(function (error) {
+            console.error("Lỗi API: ", error);
+            let msg = error.data?.message || "Đã xảy ra lỗi. Vui lòng thử lại sau!";
+            Swal.fire('Lỗi hệ thống', msg, 'error');
+        });
     $scope.OpenModalChiTiet = function (idth) {
         // Hiển thị modal
         $("#returnDetailModal").modal('show');

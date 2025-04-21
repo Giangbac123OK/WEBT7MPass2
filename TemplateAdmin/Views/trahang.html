@@ -402,12 +402,15 @@
     }
 </style>
 <div class="container mt-4">
-    <div class="page-header">
-        <h2>Quản Lý Trả Hàng</h2>
-        <button class="notification-btn" id="notificationBtn">
-            <i class="fas fa-bell"></i>
-            <span class="badge">{{unreadNotifications}}</span>
-        </button>
+    <div class="page-header row">
+        <a href="#" class="col-1" style="color: white; font-size: 26px;"><i class="bi bi-arrow-left"></i></a>
+        <div class="col-11">
+            <h2>Quản Lý Trả Hàng</h2>
+            <button class="notification-btn" id="notificationBtn">
+                <i class="fas fa-bell"></i>
+                <span class="badge">{{unreadNotifications}}</span>
+            </button>
+        </div>
     </div>
 
     <ul class="nav nav-tabs" id="orderTabs" role="tablist">
@@ -435,6 +438,162 @@
     <div class="tab-content mt-3" id="orderTabsContent">
         <!-- Tab Tất cả -->
         <div class="tab-pane fade show active" id="all" role="tabpanel" ng-repeat="x in listTraHang">
+            <!-- Danh sách hóa đơn -->
+
+            <div class="order-card">
+                <div class="order-header">
+                    <div>
+                        <h5>Đơn hàng #HD-{{x.id}}</h5>
+                        <span ng-switch="x.trangthai">
+                            <span ng-switch-when="2" class="badge bg-danger">Đã hủy</span>
+                            <span ng-switch-when="1" class="badge bg-success">Hoàn thành</span>
+                            <span ng-switch-when="0" class="badge bg-warning">Chờ trả hàng</span>
+                            <span ng-switch-default class="badge bg-secondary">Chưa xác định</span>
+                        </span>     
+                    </div>
+                    <div class="text-end">
+                        <div class="total">{{x.sotienhoan | currency:"":0}} VNĐ</div>
+                        <small class="order-date">{{ x.ngaytrahangthucte ? (x.ngaytrahangthucte | date:'dd/MM/yyyy HH:mm') : 'Chưa xác định' }}</small>
+                    </div>
+                </div>
+                <div class="order-info">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong><i class="fas fa-user me-2"></i>Khách hàng: </strong>{{x.tenkhachhang||'Khách vãng lai'}} </p>
+                            <p><strong><i class="fas fa-map-marker-alt me-2"></i>Địa chỉ trả hàng: </strong>
+                                {{x.diachiship||'Tại cửa hàng'}}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong><i class="fas fa-credit-card me-2"></i>Thanh toán:</strong>
+                                <span class="badge bg-primary">{{x.phuongthuchoantien||'Chưa xác định'}}</span>
+                            </p>
+                            <p><strong><i class="fas fa-credit-card me-2"></i>Trạng thái thanh toán:</strong>
+                                <span class="badge bg-warning" ng-show="x.trangthaihoantien==0">Chưa hoàn tiền</span>
+                                <span class="badge bg-success" ng-show="x.trangthaihoantien==1">Đã hoàn tiền</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-actions">
+                    <button class="btn btn-sm btn-outline-primary" ng-click="OpenModalChiTiet(x.id)">
+                        <i class="fas fa-eye"></i> Chi tiết
+                    </button>
+
+                    <button class="btn btn-sm btn-success" ng-if="x.trangthai==0" ng-click="OpenModalXacNhan(x.id)">
+                        <i class="fas fa-check"></i> Xác nhận
+                    </button>
+                    <button class="btn btn-sm btn-danger" ng-if="x.trangthai==0" ng-click="huydon(x)">
+                        <i class="fas fa-times"></i> Hủy đơn
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Tab Chờ xác nhận -->
+        <div class="tab-pane fade show active" id="pending" role="tabpanel" ng-repeat="x in listTraHang" ng-if="x.trangthai==0">
+            <!-- Danh sách hóa đơn -->
+
+            <div class="order-card">
+                <div class="order-header">
+                    <div>
+                        <h5>Đơn hàng #HD-{{x.id}}</h5>
+                        <span ng-switch="x.trangthai">
+                            <span ng-switch-when="2" class="badge bg-danger">Đã hủy</span>
+                            <span ng-switch-when="1" class="badge bg-success">Hoàn thành</span>
+                            <span ng-switch-when="0" class="badge bg-warning">Chờ trả hàng</span>
+                            <span ng-switch-default class="badge bg-secondary">Chưa xác định</span>
+                        </span>     
+                    </div>
+                    <div class="text-end">
+                        <div class="total">{{x.sotienhoan | currency:"":0}} VNĐ</div>
+                        <small class="order-date">{{ x.ngaytrahangthucte ? (x.ngaytrahangthucte | date:'dd/MM/yyyy HH:mm') : 'Chưa xác định' }}</small>
+                    </div>
+                </div>
+                <div class="order-info">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong><i class="fas fa-user me-2"></i>Khách hàng: </strong>{{x.tenkhachhang||'Khách vãng lai'}} </p>
+                            <p><strong><i class="fas fa-map-marker-alt me-2"></i>Địa chỉ trả hàng: </strong>
+                                {{x.diachiship||'Tại cửa hàng'}}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong><i class="fas fa-credit-card me-2"></i>Thanh toán:</strong>
+                                <span class="badge bg-primary">{{x.phuongthuchoantien||'Chưa xác định'}}</span>
+                            </p>
+                            <p><strong><i class="fas fa-credit-card me-2"></i>Trạng thái thanh toán:</strong>
+                                <span class="badge bg-warning" ng-show="x.trangthaihoantien==0">Chưa hoàn tiền</span>
+                                <span class="badge bg-success" ng-show="x.trangthaihoantien==1">Đã hoàn tiền</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-actions">
+                    <button class="btn btn-sm btn-outline-primary" ng-click="OpenModalChiTiet(x.id)">
+                        <i class="fas fa-eye"></i> Chi tiết
+                    </button>
+
+                    <button class="btn btn-sm btn-success" ng-if="x.trangthai==0" ng-click="OpenModalXacNhan(x.id)">
+                        <i class="fas fa-check"></i> Xác nhận
+                    </button>
+                    <button class="btn btn-sm btn-danger" ng-if="x.trangthai==0" ng-click="huydon(x)">
+                        <i class="fas fa-times"></i> Hủy đơn
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Tab hoàn thành -->
+        <div class="tab-pane fade show active" id="confirmed" role="tabpanel" ng-repeat="x in listTraHang" ng-if="x.trangthai==1">
+            <!-- Danh sách hóa đơn -->
+
+            <div class="order-card">
+                <div class="order-header">
+                    <div>
+                        <h5>Đơn hàng #HD-{{x.id}}</h5>
+                        <span ng-switch="x.trangthai">
+                            <span ng-switch-when="2" class="badge bg-danger">Đã hủy</span>
+                            <span ng-switch-when="1" class="badge bg-success">Hoàn thành</span>
+                            <span ng-switch-when="0" class="badge bg-warning">Chờ trả hàng</span>
+                            <span ng-switch-default class="badge bg-secondary">Chưa xác định</span>
+                        </span>     
+                    </div>
+                    <div class="text-end">
+                        <div class="total">{{x.sotienhoan | currency:"":0}} VNĐ</div>
+                        <small class="order-date">{{ x.ngaytrahangthucte ? (x.ngaytrahangthucte | date:'dd/MM/yyyy HH:mm') : 'Chưa xác định' }}</small>
+                    </div>
+                </div>
+                <div class="order-info">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong><i class="fas fa-user me-2"></i>Khách hàng: </strong>{{x.tenkhachhang||'Khách vãng lai'}} </p>
+                            <p><strong><i class="fas fa-map-marker-alt me-2"></i>Địa chỉ trả hàng: </strong>
+                                {{x.diachiship||'Tại cửa hàng'}}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong><i class="fas fa-credit-card me-2"></i>Thanh toán:</strong>
+                                <span class="badge bg-primary">{{x.phuongthuchoantien||'Chưa xác định'}}</span>
+                            </p>
+                            <p><strong><i class="fas fa-credit-card me-2"></i>Trạng thái thanh toán:</strong>
+                                <span class="badge bg-warning" ng-show="x.trangthaihoantien==0">Chưa hoàn tiền</span>
+                                <span class="badge bg-success" ng-show="x.trangthaihoantien==1">Đã hoàn tiền</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-actions">
+                    <button class="btn btn-sm btn-outline-primary" ng-click="OpenModalChiTiet(x.id)">
+                        <i class="fas fa-eye"></i> Chi tiết
+                    </button>
+
+                    <button class="btn btn-sm btn-success" ng-if="x.trangthai==0" ng-click="OpenModalXacNhan(x.id)">
+                        <i class="fas fa-check"></i> Xác nhận
+                    </button>
+                    <button class="btn btn-sm btn-danger" ng-if="x.trangthai==0" ng-click="huydon(x)">
+                        <i class="fas fa-times"></i> Hủy đơn
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Tab hủy -->
+        <div class="tab-pane fade show active" id="shipping" role="tabpanel" ng-repeat="x in listTraHang" ng-if="x.trangthai==2">
             <!-- Danh sách hóa đơn -->
 
             <div class="order-card">
@@ -641,25 +800,3 @@
         </div>
     </div>
 </div>
-<!--Modal xác nhận-->
-<div class="modal fade" id="XacnhanModal" tabindex="-1" aria-labelledby="XacnhanModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="XacnhanModalLabel">Modal title</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-4" ng-repeat="x in listHinhanh" ng-if="x.idtrahang==idXacnhan">
-                        <img src="https://localhost:7196/picture/{{x.urlhinhanh}}" style="width: 75%; aspect-ratio: 1 / 1; object-fit: cover;">
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
-            </div>
-        </div>
-    </div>
-  </div>
