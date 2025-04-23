@@ -333,12 +333,13 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
     // ========== Submit Function ==========
     $scope.btnAdd = function () {
         let errorMessages = [];
-
+    
         const diachi = document.getElementById("diachi")?.innerText.trim();
         if (diachi == "...") {
             Swal.fire("Lỗi", "Bạn chưa thêm địa chỉ, vui lòng tạo địa chỉ giao hàng", "error");
-            return
+            return;
         }
+    
         // === 1. Kiểm tra hợp lệ dữ liệu đầu vào ===
         if (!$scope.selectedProducts || $scope.selectedProducts.length === 0) {
             errorMessages.push("Vui lòng chọn ít nhất một sản phẩm.");
@@ -355,12 +356,12 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
         if ($scope.refundMethod === 'bank' && (!$scope.bankName || !$scope.accountNumber)) {
             errorMessages.push("Vui lòng nhập ngân hàng & số tài khoản.");
         }
-
+    
         if (errorMessages.length > 0) {
             Swal.fire("Lỗi!", errorMessages.join("<br>"), "error");
             return;
         }
-        
+    
         // === 2. Hiển thị xác nhận gửi yêu cầu ===
         Swal.fire({
             title: "Xác nhận trả hàng?",
@@ -373,28 +374,38 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
             cancelButtonText: "Hủy"
         }).then((result) => {
             if (!result.isConfirmed) return;
-
-            // === 3. Chuẩn bị dữ liệu gửi lên ===
+    
+            let stk = "";
+            let nganhang = "";
+            let tentaikhoan = "";
+    
+            if ($scope.refundMethod === "bank") {
+                stk = $scope.accountNumber || "";
+                nganhang = $scope.bankName || "";
+                tentaikhoan = ($scope.accountName || "").toUpperCase();
+            }
+    
             const data = {
                 id: 0,
                 tenkhachhang: userInfo?.ten || "Không xác định",
                 idnv: 0,
-                idkh: userInfo.id || 0,
+                idkh: userInfo?.id || 0,
                 sotienhoan: $scope.tongtien ?? 0,
                 lydotrahang: $scope.returnReason || "Không có lý do",
                 trangthai: 0,
                 phuongthuchoantien: $scope.refundMethod || "Đổi điểm",
-                ngaytrahangthucte:  null,
+                ngaytrahangthucte: null,
                 chuthich: $scope.mota || "Không có chú thích",
                 hinhthucxuly: $scope.hinhthucxuly || "Không xác định",
-                tennganhang: $scope.selectedBank || "Không xác định",
-                sotaikhoan: $scope.cardNumber || "0000000000",
-                tentaikhoan: $scope.accountName || "Không xác định",
+                tennganhang: nganhang,
+                sotaikhoan: stk,
+                tentaikhoan: tentaikhoan,
                 trangthaihoantien: 0,
-                diachiship: diachi
+                diachiship: diachi,
+                ngaytaodon: new Date()
             };
-
-            // === 4. Gửi yêu cầu trả hàng và xử lý tiếp theo ===
+    
+            // Gửi dữ liệu
             $http.post("https://localhost:7196/api/Trahangs", data)
                 .then(() => $http.get("https://localhost:7196/api/Trahangs"))
                 .then(response => {
@@ -402,42 +413,33 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
                         throw new Error("Không có dữ liệu trả về từ API.");
                     }
                     const maxId = Math.max(...response.data.map(item => item.id));
-
-                    // === 5. Gửi chi tiết trả hàng ===
+    
                     const promises = $scope.selectedProducts.map(element => {
                         const datathct = {
                             idth: maxId,
                             soluong: element.soluong,
                             tinhtrang: 0,
-                            ghichu: $scope.description||"",
                             idhdct: element.id
                         };
+                        console.log("Dữ liệu gửi lên Trahangchitiet:", datathct);
                         return $http.post("https://localhost:7196/api/Trahangchitiets", datathct);
                     });
-
+    
                     return Promise.all(promises).then(() => maxId);
                 })
                 .then(maxId => {
-                    // === 6. Upload hình ảnh nếu có ===
                     if ($scope.images && $scope.images.length > 0) {
                         return uploadImages(maxId).then(() => maxId);
                     }
                     return maxId;
                 })
                 .then(() => {
-                    // === 7. Cập nhật trạng thái hóa đơn ===
-                    return $http.put(`https://localhost:7196/api/Trahangs/UpdateTrangThaiHd/${$scope.idhd}`);
-                })
-                .then(() => {
-                    return Swal.fire("Đã gửi!", "Yêu cầu trả hàng của bạn đã được gửi thành công.", "success");
-                })
-                .then(() => {
-                    $timeout(() => {
-                        $location.path("/donhangcuaban");
-                    });
-                    console.log("Xử lý trả hàng hoàn tất!");
                     Swal.fire("Đã gửi!", "Yêu cầu trả hàng của bạn đã được gửi thành công.", "success")
-                        .then(() => $location.path("/donhangcuaban"));
+                        .then(() => {
+                            $timeout(() => {
+                                $location.path("/donhangcuaban");
+                            });
+                        });
                 })
                 .catch(error => {
                     console.error("Lỗi trong quá trình xử lý:", error);
@@ -445,6 +447,7 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
                 });
         });
     };
+    
 
     let addressTrangThai0 = null;
     let currentAddressId = null

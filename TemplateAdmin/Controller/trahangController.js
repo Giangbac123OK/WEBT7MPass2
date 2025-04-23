@@ -5,16 +5,17 @@ app.controller('trahangController', function ($scope, $http, $location, $interva
         confirmed: 0,
         shipping: 0,
         success: 0,
-        failed: 0,
+        failed: 0
     };
     const userInfoString = localStorage.getItem("userInfo1");
     const userInfo = JSON.parse(userInfoString);
-
+    $scope.listTraHang = [];
     const api = "https://localhost:7196/api/Trahangs"
     $http.get(api)
         .then(function (response) {
             $scope.listTraHang = response.data;
             console.log("Data trả hàng: ", $scope.listTraHang)
+            $scope.updateCounts();
         })
         .catch(function (error) {
             console.error("Lỗi API: ", error);
@@ -26,75 +27,51 @@ app.controller('trahangController', function ($scope, $http, $location, $interva
 
         })
 
-        $scope.OpenModalXacNhan = function (id) {
+        $scope.updateCounts = function() {
+            $scope.counts = {
+                all: $scope.listTraHang.length,
+                pending: $scope.listTraHang.filter(x => x.trangthai == 0).length,
+                confirmed: $scope.listTraHang.filter(x => x.trangthai == 1).length,
+                shipping: $scope.listTraHang.filter(x => x.trangthai == 2).length,
+                success: 0,
+                failed: 0
+            };
+        };
+
+        $scope.OpenModalXacNhan = function (x) {
             Swal.fire({
-                title: 'Chọn phương thức hoàn tiền',
+                title: 'Bạn muốn xác nhận đơng hàng không?\nChọn một phương án xử lý:',
                 html: `
-                    <label class="mb-3">
-                        <input type="radio" name="refundMethod1" value="Hoàn trả sản phẩm và nhận tiền" /> Hoàn trả sản phẩm và nhận tiền
-                    </label>
-                    <label class="mb-3">
-                        <input type="radio" name="refundMethod1" value="Hoàn tiền không yêu cầu gửi lại sản phẩm" /> Hoàn tiền không yêu cầu gửi lại sản phẩm
-                    </label>
-                    <textarea class="mb-3 form-control" id="ghichu" placeholder="Ghi chú (nếu có)"></textarea>
+                    <div style="text-align: left;">
+                        <label><input type="radio" name="option" value="Trả hàng và hoàn tiền"> Trả hàng và hoàn tiền</label><br>
+                        <label><input type="radio" name="option" value="Trả hàng không hoàn tiền"> Trả hàng không hoàn tiền</label><br>
+                        <label><input type="radio" name="option" value="Không hoàn tiền và không hoàn hàng"> Không hoàn tiền và không hoàn hàng</label><br>
+                        
+                        <textarea id="ghichu" class="form-control" placeholder="Nhập chú thích (Nếu có)"></textarea>
+                    </div>
                 `,
                 showCancelButton: true,
                 confirmButtonText: 'Xác nhận',
-                cancelButtonText: 'Hủy',
                 preConfirm: () => {
-                    const selectedMethod = $('input[name="refundMethod1"]:checked').val();
-                    const ghiChu = $('#ghichu').val();
-        
-                    if (!selectedMethod) {
-                        Swal.showValidationMessage('Vui lòng chọn ít nhất một phương thức hoàn tiền.');
+                    const selected = document.querySelector('input[name="option"]:checked');
+                    const ghichu = document.getElementById('ghichu').value;
+                    if (!selected) {
+                        Swal.showValidationMessage('Bạn phải chọn một phương án');
                         return false;
                     }
-        
                     return {
-                        method1: selectedMethod,
-                        ghiChu: ghiChu
+                        option: selected.value,
+                        note: ghichu
                     };
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    const method1 = result.value.method1;
-                    const ghiChu = result.value.ghiChu;
-        
-                    if (!method1) {
-                        Swal.fire('Lỗi', 'Phương thức hoàn tiền là bắt buộc!', 'error');
-                        return;
-                    }
-        
-                    // Gọi API để lấy số tiền hoàn
-                    $http.get("https://localhost:7196/api/Trahangs/" + id)
-                        .then(function (response) {
-                            const sotienhoan = response.data.sotienhoan;
-        
-                            // Tạo URL cho yêu cầu PUT
-                            let api = `https://localhost:7196/api/Trahangs/Xacnhan?idth=${encodeURIComponent(id)}&hinhthuc=${encodeURIComponent(method1)}&tien=${encodeURIComponent(sotienhoan)}`;
-                            if (ghiChu != null && ghiChu !== "") {
-                                api += `&ghichu=${encodeURIComponent(ghiChu)}`;
-                            }
-        
-                            // Gửi yêu cầu API để xác nhận
-                            return $http.put(api);
-                        })
-                        .then(function (response) {
-                            location.reload(); // Tải lại trang sau khi xác nhận thành công
-                            window.scroll(0, 0); // Cuộn lên đầu trang
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Xác nhận thành công!',
-                                text: `Phương thức hoàn tiền: ${method1}`,
-                            });
-                        })
-                        .catch(function (error) {
-                            console.error("Lỗi API: ", error);
-                            let msg = error.data?.message || "Đã xảy ra lỗi. Vui lòng thử lại sau!";
-                            Swal.fire('Lỗi hệ thống', msg, 'error');
-                        });
+                    console.log('Phương án đã chọn:', result.value.option);
+                    console.log('Ghi chú:', result.value.note);
+                    
                 }
             });
+            
         };
         
         
@@ -112,119 +89,52 @@ app.controller('trahangController', function ($scope, $http, $location, $interva
     $scope.OpenModalChiTiet = function (idth) {
         // Hiển thị modal
         $("#returnDetailModal").modal('show');
-
-        // Reset dữ liệu cũ
-        $scope.dataTrahang = null;
-        $scope.detailLoading = true;
-
-        // 1) Lấy thông tin chung của trả hàng
-        $http.get(`https://localhost:7196/api/Trahangs/${idth}`)
-            .then(function (res) {
-                $scope.dataTrahang = res.data;
-                // 2) Lấy hình ảnh
-                return $http.get(`https://localhost:7196/api/Hinhanh/TraHang/${idth}`);
-            })
-            .then(function (imgRes) {
-                // Gán hình ảnh (nếu có)
-                $scope.dataTrahang.hinhanhs = imgRes.data.map(img => {
-                    if (img.url && !img.url.startsWith('http')) {
-                        img.url = 'https://localhost:7196/' + img.url.replace(/^\/+/, '');
-                    }
-                    return img;
-                });
-                // 3) Lấy danh sách sản phẩm trả hàng
-                return $http.get(`https://localhost:7196/api/Trahangchitiets/ListSanPhamByIdth/${idth}`);
-            })
-            .then(function (prodRes) {
-                // Gán danh sách chi tiết trả hàng
-                // Giả sử ViewModel của bạn có các trường:
-                //   urlHinhanh, tensp, mau, size, soluong, lydo
-                $scope.dataTrahang.trahangchitiets = prodRes.data.map(item => ({
-                    anh: `https://localhost:7196/picture/${item.urlHinhanh}`,
-                    tensanpham: item.tensp,
-                    mau: item.mau,
-                    size: item.size,
-                    soluong: item.soluong,
-                }));
-            })
-            .catch(function (error) {
-                console.error("Lỗi API: ", error);
-                let msg = error.data?.message || "Đã xảy ra lỗi. Vui lòng thử lại sau!";
-                Swal.fire('Lỗi hệ thống', msg, 'error');
-            })
-            .finally(function () {
-                $scope.detailLoading = false;
-                console.log("$scope.dataTrahang.trahangchitiets: ", $scope.dataTrahang.trahangchitiets);
-            });
+        
     };
 
 
     $scope.huydon = function (x) {
-        let chuthich = prompt("Nhập ghi chú lý do hủy (nếu có):");
-
-        if (x.id == null) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Lỗi',
-                text: 'ID không được để trống!',
-            });
-            return;
-        }
-
-        if (parseInt(x.trangthai) != 0) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Lỗi',
-                text: 'Hóa đơn này đã được xác nhận hoặc trả hàng thành công!',
-            });
-            return;
-        }
-
+        var lyDoHuy = prompt("Bạn có chắc chắn muốn hủy đơn hàng này không?\nVui lòng nhập lý do hủy (có thể để trống):");
+    
         Swal.fire({
-            title: 'Xác nhận hủy đơn',
+            title: 'Xác nhận hủy đơn hàng?',
             text: "Bạn có chắc chắn muốn hủy đơn hàng này không?",
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Có, hủy!',
-            cancelButtonText: 'Không, quay lại!'
+            confirmButtonText: 'Xác nhận',
+            cancelButtonText: 'Hủy'
         }).then((result) => {
             if (result.isConfirmed) {
-                const data = {
-                    id: parseInt(x.id),
-                    chuthich: chuthich || ""
-                };
-                let api = "https://localhost:7196/api/Trahangs/Huydon?id=" + data.id;
-                if (data.chuthich != "") {
-                    api += "&chuthich=" + encodeURIComponent(data.chuthich);
+                const id = x;
+                const idnv = userInfo.id;
+                let api = `https://localhost:7196/api/Trahangs/HuyDon?id=${id}&idnv=${idnv}`;
+    
+                if (lyDoHuy != null && lyDoHuy.trim() !== "") {
+                    api = `https://localhost:7196/api/Trahangs/HuyDon?id=${id}&idnv=${idnv}&chuthich=${encodeURIComponent(lyDoHuy)}`;
                 }
-
+    
+                console.log("API gửi đi:", api);
+    
                 $http.put(api)
                     .then(function (response) {
+                        console.log("Kết quả:", response.data);
                         Swal.fire({
                             icon: 'success',
-                            title: 'Thông báo',
-                            text: 'Hủy trả đơn hàng thành công!',
+                            title: 'Hủy đơn thành công!',
+                            text: `Đơn hàng đã được hủy.`,
                         }).then(() => {
+                            location.reload();
                             window.scroll(0, 0);
-                            location.reload(); // Load lại danh sách nếu có
                         });
                     })
                     .catch(function (error) {
                         console.error("Lỗi API: ", error);
-                        let errorMessage = "Đã xảy ra lỗi. Vui lòng thử lại sau!";
-                        if (error.data && error.data.message) {
-                            errorMessage = error.data.message;
-                        }
-
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Lỗi hệ thống',
-                            text: errorMessage,
-                        });
+                        let msg = error.data?.message || "Đã xảy ra lỗi. Vui lòng thử lại sau!";
+                        Swal.fire('Lỗi hệ thống', msg, 'error');
                     });
             }
         });
     };
+    
+    
 });
