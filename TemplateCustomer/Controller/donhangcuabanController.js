@@ -75,7 +75,7 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
     // select hóa đơn theo mã khách hàng
     
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-    console.log(userInfo);
+    
     let idkh = userInfo.id;
     $scope.idkh =userInfo.id;
     // Hàm gọi API lấy dữ liệu hóa đơn
@@ -94,7 +94,7 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
             })
             .then(function (response) {
                 const dataPTTT = response.data; // Danh sách tất cả phương thức thanh toán
-                console.log("Dữ liệu PTTT:", dataPTTT);
+                
 
                 // Gán tên phương thức thanh toán tương ứng vào từng hóa đơn
                 $scope.dataHoaDon.forEach(async function (hd) {
@@ -135,7 +135,7 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
                     }
 
                 });
-                console.log("Dữ liệu hóa đơn:", $scope.dataHoaDon);
+                
             })
             .catch(function (error) {
                 console.error("Lỗi khi lấy dữ liệu:", error);
@@ -189,8 +189,7 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
 
                 // Cập nhật tổng số file
                 $scope.totalSelectedFiles = $scope.imagePreview.length;
-
-                console.log("Ảnh đánh giá:", $scope.imagePreview);
+                
             })
             .catch(function (error) {
                 console.error("Lỗi khi lấy ảnh đánh giá:", error);
@@ -229,9 +228,7 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
             $scope.handleFileSelect(mockEvent);
         }
         $scope.totalSelectedFiles = $scope.imagePreview.length;
-        console.log("Tổng số file đã chọn:", $scope.totalSelectedFiles);
-        console.log("Đánh giá hiện tại:", currentRating);
-        console.log(inputElement.files);
+        
 
 
         // Hiển thị modal
@@ -292,7 +289,6 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
             transformRequest: angular.identity // Đảm bảo dữ liệu FormData không bị thay đổi
         })
             .then(function (response) {
-                console.log('Đánh giá thành công:', response);
 
                 // Hiển thị thông báo thành công
                 alert(isEditing ? 'Cập nhật đánh giá thành công!' : 'Cảm ơn bạn đã gửi đánh giá!');
@@ -332,7 +328,6 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
         }
         $http.delete(`https://localhost:7196/api/Danhgia/${id}`)
             .then(function (response) {
-                console.log("Xóa đánh giá thành công:", response);
                 alert("Đã xóa đánh giá!");
 
                 // Xóa đánh giá khỏi danh sách
@@ -378,7 +373,6 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
 
             // Thêm file vào danh sách
             $scope.files.push(file);
-            console.log("File đã chọn:", $scope.files);
 
 
             // Tạo URL xem trước ảnh
@@ -393,12 +387,9 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
 
                     // Cập nhật số lượng ảnh
                     $scope.totalSelectedFiles = $scope.imagePreview.length;
-                    console.log("Tổng số file đã chọn:", $scope.totalSelectedFiles);
                 });
             };
             reader.readAsDataURL(file);
-            console.log("File đã chọn:", file);
-            console.log("Danh sách ảnh xem trước:", $scope.imagePreview);
 
         }
     };
@@ -418,9 +409,6 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
 
         // Cập nhật lại tổng số ảnh đã chọn
         $scope.totalSelectedFiles = $scope.imagePreview.length;
-
-        console.log("Ảnh đã xóa ở vị trí:", index);
-        console.log("Danh sách ảnh còn lại:", $scope.imagePreview);
     };
 
     // Hàm tải đánh giá cho HDCT
@@ -442,8 +430,6 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
             .then(function (response) {
                 // Lưu dữ liệu vào danh sách
                 $scope.danhgiaById[id] = response.data;
-                console.log(`Đánh giá cho HDCT ${id}:`, $scope.danhgiaById[id]);
-                console.log("danhgiaById", $scope.danhgiaById);
 
             })
             .catch(function (error) {
@@ -461,7 +447,6 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
 
     $scope.loadAllDanhGia = function (listHdct) {
         if (!listHdct || !Array.isArray(listHdct)) return;
-        console.log("listHdct:", listHdct);
 
         listHdct.forEach(function (hdct) {
             // Gọi API để lấy đánh giá của từng hóa đơn chi tiết
@@ -474,7 +459,6 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
         }
         $http.delete(`https://localhost:7196/api/Danhgia/_KhachHang/${id}`)
             .then(function (response) {
-                console.log("Xóa đánh giá thành công:", response);
                 alert("Đã xóa đánh giá!");
 
                 // Tìm idhdct liên quan để cập nhật
@@ -504,7 +488,6 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
     $http.get('https://localhost:7196/api/Hoadonchitiets')
         .then(function (response) {
             $scope.dataHoaDonCT = response.data
-            console.log("HDCT", $scope.dataHoaDonCT)
             $scope.loadAllDanhGia($scope.dataHoaDonCT);
 
         })
@@ -523,7 +506,6 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
     $http.get("https://localhost:7196/api/Sanphamchitiets/")
         .then(function (response) {
             $scope.sanphamct = response.data;
-            console.log("sanphamct:", $scope.sanphamct);
         })
         .catch(function (error) {
             console.error("Lỗi khi lấy dữ liệu:", error);
@@ -531,7 +513,6 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
     $http.get("https://localhost:7196/api/Sanphams")
         .then(function (response) {
             $scope.sanphamList = response.data;
-            console.log("sanpham:", $scope.sanphamList);
         })
         .catch(function (error) {
             console.error("Lỗi khi lấy dữ liệu:", error);
@@ -540,7 +521,6 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
     $http.get("https://localhost:7196/api/Thuonghieu")
         .then(function (response) {
             $scope.ThuonghieuList = response.data;
-            console.log("Thuonghieu:", $scope.ThuonghieuList);
         })
         .catch(function (error) {
             console.error("Lỗi khi lấy dữ liệu:", error);
@@ -570,7 +550,6 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
     $http.get("https://localhost:7196/api/Phuongthucthanhtoans/")
         .then(function (response) {
             $scope.ListPttt = response.data;
-            console.log("Phương thức thanh toán:", $scope.ListPttt);
         })
         .catch(function (error) {
             console.error("Lỗi khi lấy dữ liệu:", error);
@@ -579,7 +558,6 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
     $http.get("https://localhost:7196/api/Khachhangs/" + idkh)
         .then(function (response) {
             $scope.dataTttk = response.data;
-            console.log("Dữ liệu tài khoản:", $scope.dataTttk);
         })
         .catch(function (error) {
             console.error("Lỗi khi lấy dữ liệu:", error);
@@ -589,7 +567,6 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
     $http.get("https://localhost:7196/api/Size")
         .then(function (response) {
             $scope.listSize = response.data;
-            console.log("Danh sách kích cỡ: " + $scope.listSize)
         })
         .catch(function (error) {
             console.error(error);
@@ -597,7 +574,6 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
     $http.get("https://localhost:7196/api/Color")
         .then(function (response) {
             $scope.listColor = response.data;
-            console.log("Danh sách kích cỡ: " + $scope.listColor)
         })
         .catch(function (error) {
             console.error(error);
@@ -606,7 +582,6 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
     $http.get("https://localhost:7196/api/ChatLieu")
         .then(function (response) {
             $scope.listChatlieu = response.data;
-            console.log("Danh sách kích cỡ: " + $scope.listChatlieu)
         })
         .catch(function (error) {
             console.error(error);
@@ -740,20 +715,19 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
     $http.get("https://localhost:7196/api/Trahangs")
         .then(function(response) {
             $scope.dataTraHang = response.data;
-            console.log("Danh sách trả hàng: ", $scope.dataTraHang);
         })
         .catch(function(error) {
-            console.log("Lỗi lấy danh sách trả hàng: ", error);
+            console.error("Lỗi lấy danh sách trả hàng: ", error);
         });
 
     // Load chi tiết trả hàng theo ID
     $http.get("https://localhost:7196/api/Trahangchitiets/SanphamByThct")
                 .then(function(response) {
                     $scope.chitietTraHang = response.data;
-                    console.log("Chi tiết trả hàng: ", $scope.chitietTraHang);
+                    
                 })
                 .catch(function(error) {
-                    console.log("Lỗi chi tiết trả hàng: ", error);
+                    console.error("Lỗi chi tiết trả hàng: ", error);
                 });
     $scope.itemsPerPage = 5;
     $scope.currentPage = 1;
@@ -858,6 +832,27 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
         return "Không xác định";
     };
 
-
+    $scope.doitra = function(x) {
+        if (!x.ngaygiaothucte) {
+            return false;
+        }
+    
+        const ngayGiao = new Date(x.ngaygiaothucte);
+        const homNay = new Date();
+    
+        // Đặt cả hai ngày về đầu ngày để so sánh chính xác theo số ngày
+        homNay.setHours(0, 0, 0, 0);
+        ngayGiao.setHours(0, 0, 0, 0);
+    
+        const bayNgay = 7 * 24 * 60 * 60 * 1000;
+        const khoangThoiGian = homNay - ngayGiao;
+        if((khoangThoiGian <= bayNgay && khoangThoiGian >= 0)&&x.trangthai==3){
+            return true;
+        }
+        console.log("Ngày giao:", ngayGiao.toLocaleString());
+        console.log("Hôm nay:", homNay.toLocaleString());
+        console.log("Khoảng thời gian:", khoangThoiGian, "ms");
+        return false;
+    }
 });
 
