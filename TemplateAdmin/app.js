@@ -24,7 +24,8 @@ app.config(function ($routeProvider) {
             templateUrl: "./Views/datlaimatkhau.html"
         })
         .when("/doimatkhau", {
-            templateUrl: "./Views/doimatkhau.html"
+            templateUrl: "./Views/doimatkhau.html",
+              controller: "doimatkhauController"
         })
         .when("/sale", {
             templateUrl: "./Views/sale.html",
@@ -103,7 +104,6 @@ app.config(function ($routeProvider) {
         .otherwise("/")
 });
 app.run(function($rootScope, $location) {
-    // Khôi phục thông tin user từ localStorage nếu có
     var storedUser = localStorage.getItem('userInfo1');
     if (storedUser) {
         $rootScope.userInfo = JSON.parse(storedUser);
@@ -111,27 +111,22 @@ app.run(function($rootScope, $location) {
     }
 
     $rootScope.$on('$routeChangeStart', function(event, next, current) {
-        var publicPages = ["/dangnhap", "/quenmatkhau", "/datlaimatkhau"];
+        var publicPages = ["/dangnhap", "/quenmatkhau", "/datlaimatkhau","/doimatkhau"];
         var path = $location.path();
-
-        // Nếu đã đăng nhập rồi mà lại vào /dangnhap thì chuyển về trang chính
         if ($rootScope.userInfo && ["/dangnhap", "/quenmatkhau", "/datlaimatkhau"].includes(path)) {
             event.preventDefault();
             $location.path("/");
             return;
         }
         
-
-        // Nếu chưa đăng nhập và truy cập trang yêu cầu đăng nhập → chuyển hướng
         var restrictedPage = publicPages.indexOf(path) === -1;
         if (restrictedPage && !$rootScope.userInfo) {
             event.preventDefault();
-            $location.path("/dangnhap");
-            //$location.path("/dashboard");
-        }
+           // $location.path("/dangnhap");
+            $location.path("/doimatkhau");
+        }doimatkhau
     });
 
-    // Hàm đăng xuất
     $rootScope.dangxuat = function () {
         $rootScope.isLoggedIn = false;
         $rootScope.userInfo = null;
