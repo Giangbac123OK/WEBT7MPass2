@@ -67,9 +67,11 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q, $timeout) 
             });
     
             const allInvoices = responses.invoices.data
-                .filter(invoice => invoice.trangthaidonhang >= 0 && invoice.trangthaidonhang <= 4 && invoice.trangthai == 0)
-                .sort((a, b) => b.id - a.id); // Sắp xếp id giảm dần
-                    
+                                .filter(invoice => 
+                                    [0, 1, 2, 3, 4, 6].includes(invoice.trangthaidonhang) && invoice.trangthai == 0
+                                )
+                                .sort((a, b) => b.id - a.id); // Sắp xếp id giảm dần
+
             // Duyệt từng hóa đơn để xử lý địa chỉ và gán tên khách hàng, phương thức
             for (const invoice of allInvoices) {
                 // Gán tên khách hàng
@@ -333,27 +335,33 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q, $timeout) 
             confirmed: $scope.invoices.filter(i => i.trangthaidonhang === 1).length,
             shipping: $scope.invoices.filter(i => i.trangthaidonhang === 2).length,
             success: $scope.invoices.filter(i => i.trangthaidonhang === 3).length,
-            failed: $scope.invoices.filter(i => i.trangthaidonhang === 4).length,
+            failed: $scope.invoices.filter(i => [4, 6].includes(i.trangthaidonhang)).length,
         };
     };
 
-    // Hàm lọc hóa đơn theo trạng thái
     $scope.filterInvoices = function (status) {
         $scope.currentFilter = status;
         $scope.currentPage = 1;
-
+    
         if (status === 'all') {
             $scope.filteredInvoices = $scope.invoices;
-            console.log("data hoá đơn:",$scope.filteredInvoices);
-        } else {
+        } 
+        else if (Array.isArray(status)) {
+            $scope.filteredInvoices = $scope.invoices.filter(function (invoice) {
+                return status.includes(invoice.trangthaidonhang);
+            });
+        } 
+        else {
             $scope.filteredInvoices = $scope.invoices.filter(function (invoice) {
                 return invoice.trangthaidonhang === status;
             });
         }
-
+    
+        console.log("data hoá đơn:", $scope.filteredInvoices);
         $scope.updatePagination();
         $scope.updatePagedInvoices();
     };
+    
 
     // Hàm cập nhật phân trang
     $scope.updatePagination = function () {
@@ -506,6 +514,7 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q, $timeout) 
             case 3: statusMessage = "Xác nhận đơn hàng thành công"; break;
             case 4: statusMessage = "Hủy đơn hàng"; break;
             case 5: statusMessage = "Đánh dấu đơn hàng trả hàng"; break;
+            case 6: statusMessage = "Đơn hàng giao thất bại"; break;
         }
     
         Swal.fire({
@@ -663,6 +672,7 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q, $timeout) 
             case 2: return 'Đơn hàng đang được giao';
             case 3: return 'Đơn hàng thành công';
             case 4: return 'Đơn hàng đã huỷ';
+            case 6: return 'Đơn hàng giao thất bại';
             default: return 'Không xác định';
         }
     };
