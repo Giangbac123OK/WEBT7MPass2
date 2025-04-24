@@ -1,5 +1,6 @@
 app.controller("trahangController", function ($http, $scope, $location, $routeParams, $timeout) {
     $scope.idhd = $routeParams.id;
+    window.scrollTo(0, 0);
     console.log($scope.idhd);
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));
     console.log(userInfo);
@@ -386,7 +387,6 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
             }
     
             const data = {
-                id: 0,
                 tenkhachhang: userInfo?.ten || "Không xác định",
                 idnv: 0,
                 idkh: userInfo?.id || 0,
@@ -432,6 +432,10 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
                         return uploadImages(maxId).then(() => maxId);
                     }
                     return maxId;
+                })
+                .then(() => {
+                    // === 7. Cập nhật trạng thái hóa đơn ===
+                    return $http.put(`https://localhost:7196/api/Trahangs/UpdateTrangThaiHd/${$scope.idhd}`);
                 })
                 .then(() => {
                     Swal.fire("Đã gửi!", "Yêu cầu trả hàng của bạn đã được gửi thành công.", "success")
