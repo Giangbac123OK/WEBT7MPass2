@@ -318,8 +318,6 @@
                             </div>
                           </div>
                         </div>
-
-                        <!-- Payment Method -->
                         <div class="mb-3">
                           <label for="paymentMethod" class="form-label"><strong>Phương Thức Thanh Toán:</strong></label>
                           <select
@@ -331,8 +329,6 @@
                             <option value="bank-transfer">Chuyển khoản</option>
                           </select>
                         </div>
-
-                        <!-- Vouchers for Loyal Customers -->
                         <div class="mb-3" v-if="activeInvoice.customer.type === 'loyal'">
                           <label for="selectedVoucher" class="form-label"><strong>Giảm Giá:</strong></label>
                           <select
@@ -351,8 +347,6 @@
                             </option>
                           </select>
                         </div>
-
-                        <!-- Points Used for Loyal Customers -->
                         <div class="mb-3" v-if="activeInvoice.customer.type === 'loyal'">
                           <label for="pointsUsed" class="form-label"><strong>Điểm Sử Dụng:</strong></label>
                           <div class="d-flex justify-content-between align-items-center">
@@ -412,8 +406,6 @@
                     </div>
                   </div> <!-- End of .row -->
                 </div>
-
-                <!-- Product Area Column -->
                 <div class="col-lg-9 col-md-8 col-sm-12">
                   <!-- Product Search -->
                   <div class="row align-items-center mb-3">
@@ -439,9 +431,10 @@
                         >
                           <img :src="product.urlHinhanh" alt="Product Image" />
                           <div>
-                            <strong>{{ product.tensp }}</strong>
+                            <strong>{{ product.tenSanpham }}</strong>
                             <br />
-                            {{ formatCurrency(product.giaban) }}
+                            {{ formatCurrency(product.giaBan
+) }}
                           </div>
                         </div>
                       </div>
@@ -467,8 +460,10 @@
                           v-for="item in activeInvoice.products || []"
                           :key="item.id"
                         >
-                          <td>{{ item.tensp }}</td>
-                          <td>{{ formatCurrency(item.giaban) }}</td>
+                        
+                        
+                          <td>{{ item.tenSanpham }}</td>
+                          <td>{{ formatCurrency(item.giaBan) }}</td>
                           <td>{{ formatCurrency(item.giagiam) }}</td>
                           <td>
                             <select
@@ -515,7 +510,7 @@
                   </div>
                 </div>
 
-              </div> <!-- End of .row -->
+              </div> 
             </div>
           </div>
         </div>
@@ -602,18 +597,15 @@
         return totalAmountBeforeDiscount.value - totalDiscount.value;
       });
 
-      // Tính tiền thừa
       const changeAmount = computed(() => {
         if (!activeInvoice.value) return 0;
         return (activeInvoice.value.customer.cashGiven || 0) - totalAmount.value;
       });
 
-      // Hàm định dạng tiền tệ
       function formatCurrency(amount) {
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
       }
 
-      // Hàm thêm sản phẩm vào hóa đơn (với yêu cầu chọn phân loại)
       async function addProductToInvoice(product) {
         const invoice = activeInvoice.value;
         if (!invoice) {
@@ -626,8 +618,6 @@
             `https://localhost:7196/api/Sanphams/active-products-with-attributes/Admin?id=${product.id}`
           );
           let attributesData = await response.json();
-
-          // Lọc các phân loại đã được thêm vào hóa đơn
           const existingAttributes = invoice.products
             .filter(p => p.productId === product.id)
             .map(p => p.selectedAttribute.idspct);
@@ -644,13 +634,11 @@
             return;
           }
 
-          // Tạo đối tượng cho lựa chọn phân loại
           const classificationOptions = availableAttributes.reduce((options, attr) => {
             options[attr.idspct] = attr.spctAttributes;
             return options;
           }, {});
 
-          // Hiển thị hộp thoại chọn phân loại
           const { value: selectedId } = await Swal.fire({
             title: 'Chọn phân loại sản phẩm',
             input: 'select',
@@ -669,11 +657,8 @@
           });
 
           if (!selectedId) {
-            // Người dùng hủy hoặc không chọn
             return;
           }
-
-          // selectedId từ string => number
           const selectedAttribute = availableAttributes.find(
             attr => attr.idspct === Number(selectedId)
           );
@@ -682,12 +667,12 @@
             return;
           }
 
-          const productPrice = selectedAttribute.giathoidiemhientai || product.giaban;
+          const productPrice = selectedAttribute.giathoidiemhientai || product.giaBan;
           const newProduct = {
-            id: Date.now(), // ID duy nhất cho sản phẩm trong hóa đơn
+            id: Date.now(),
             productId: product.id,
-            tensp: product.tensp,
-            giaban: product.giaban,
+            tenSanpham: product.tenSanpham,
+            giaBan: product.giaBan,
             giagiam: productPrice,
             attributes: availableAttributes,
             selectedAttribute: selectedAttribute,
@@ -727,13 +712,11 @@
             .find(p => p.id === product.id)
             .attributes.find(attr => attr.idspct === product.selectedAttribute.idspct);
           if (selectedAttr) {
-            product.giagiam = selectedAttr.giathoidiemhientai || product.giaban;
+            product.giagiam = selectedAttr.giathoidiemhientai || product.giaBan;
             product.totalPrice = product.giagiam * product.quantity;
           }
         }
       }
-
-      // Cập nhật tổng tiền khi thay đổi số lượng
       function updateTotal(invoiceId) {
         const invoice = invoices.value.find(inv => inv.id === invoiceId);
         if (invoice) {
@@ -742,8 +725,6 @@
           });
         }
       }
-
-      // Lấy phân loại khả dụng cho sản phẩm trong bảng
       function getAvailableAttributesForProduct(product) {
         const existingAttributes = activeInvoice.value.products
           .filter(p => p.productId === product.productId && p.id !== product.id)
@@ -751,7 +732,6 @@
         return product.attributes.filter(attr => !existingAttributes.includes(attr.idspct));
       }
 
-      // Thay đổi loại khách hàng
       function handleCustomerTypeChange(invoiceId) {
         const invoice = invoices.value.find(inv => inv.id === invoiceId);
         if (!invoice) return;
@@ -764,11 +744,9 @@
         if (invoice.customer.type === 'regular') {
           invoice.customer.availablePoints = 0;
         } else if (invoice.customer.type === 'loyal') {
-          // Nếu cần logic khác thì đặt ở đây
         }
       }
 
-      // Tìm kiếm khách hàng
       function searchCustomer(invoiceId) {
         const invoice = invoices.value.find(inv => inv.id === invoiceId);
         if (!invoice) return;
@@ -791,24 +769,21 @@
           });
       }
 
-      // Chọn khách hàng
       function selectCustomer(invoiceId, customer) {
         const invoice = invoices.value.find(inv => inv.id === invoiceId);
         if (invoice) {
           invoice.customer.selectedCustomerId = customer.id;
           invoice.customer.selectedCustomerName = customer.ten;
           invoice.customer.availablePoints = customer.diemsudung || 0;
-          invoice.customer.pointsUsed = 0; // reset khi chọn khách mới
+          invoice.customer.pointsUsed = 0; 
 
           loadDiscountVouchers(invoiceId, customer.id);
 
-          // Xóa nội dung tìm kiếm
           invoice.customer.searchQuery = '';
           invoice.customer.searchResults = [];
         }
       }
 
-      // Lấy voucher giảm giá theo khách hàng
       function loadDiscountVouchers(invoiceId, customerId) {
         fetch(`https://localhost:7196/api/Giamgias/vouchers-by-customer/${customerId}/Admin`)
           .then(response => response.json())
@@ -831,7 +806,6 @@
           });
       }
 
-      // Tính toán giảm giá dựa trên voucher
       function calculateDiscount(invoiceId) {
         const invoice = invoices.value.find(inv => inv.id === invoiceId);
         if (invoice) {
@@ -850,8 +824,6 @@
           }
         }
       }
-
-      // Áp dụng điểm (points) sử dụng
       function applyPoints(invoiceId) {
         const invoice = invoices.value.find(inv => inv.id === invoiceId);
         if (invoice) {
@@ -907,7 +879,7 @@
         const productDetails = invoice.products.map(product => ({
           idspct: product.selectedAttribute.idspct,
           soluong: product.quantity,
-          giasp: product.giaban,
+          giasp: product.giaBan,
           giamgia: product.selectedAttribute.giathoidiemhientai,
         }));
 
@@ -1020,7 +992,7 @@
           .then(response => response.json())
           .then(data => {
             invoice.productSearchResults = data || [];
-          })
+            console.log(data);})
           .catch(error => {
             console.error('Lỗi khi tìm kiếm sản phẩm:', error);
             invoice.productSearchResults = [];
@@ -1105,15 +1077,11 @@
       }
 
       onMounted(() => {
-        // Lắng nghe toggle-sidebar nếu bạn có sidebar
         window.addEventListener('toggle-sidebar', () => {
           isSidebarOpen.value = !isSidebarOpen.value;
         });
-        // Khởi tạo lần đầu
         handleCustomerTypeChange(invoices.value[0].id);
       });
-
-      // Trả về tất cả biến/hàm để sử dụng trong template
       return {
         invoices,
         invoiceCount,
