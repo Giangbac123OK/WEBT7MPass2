@@ -88,7 +88,7 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
         $http.get(api)
             .then(function (response) {
                 $scope.dataHoaDon = response.data;
-
+                console.log($scope.dataHoaDon);
                 // Gọi API lấy danh sách phương thức thanh toán
                 return $http.get("https://localhost:7196/api/PhuongThucThanhToans");
             })
