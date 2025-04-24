@@ -67,7 +67,7 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q, $timeout) 
             });
     
             const allInvoices = responses.invoices.data
-                .filter(invoice => invoice.trangthai >= 0 && invoice.trangthai <= 4)
+                .filter(invoice => invoice.trangthaidonhang >= 0 && invoice.trangthaidonhang <= 4 && invoice.trangthai == 0)
                 .sort((a, b) => b.id - a.id); // Sắp xếp id giảm dần
                     
             // Duyệt từng hóa đơn để xử lý địa chỉ và gán tên khách hàng, phương thức
@@ -285,20 +285,20 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q, $timeout) 
                     .then(res => {
                         var invoiceItem = $scope.invoices.find(i => i.id === id);
                         if (invoiceItem) {
-                            invoiceItem.trangthai = 2;
+                            invoiceItem.trangthaidonhang = 2;
                             invoiceItem.trangthaiStr = $scope.getStatusString(2);
                             invoiceItem.ngaygiaothucte = readableDate;
                         }
 
                         var filteredItem = $scope.filteredInvoices.find(i => i.id === id);
                         if (filteredItem) {
-                            filteredItem.trangthai = 2;
+                            filteredItem.trangthaidonhang = 2;
                             filteredItem.trangthaiStr = $scope.getStatusString(2);
                             filteredItem.ngaygiaothucte = readableDate;
                         }
 
                         if ($scope.selectedInvoice && $scope.selectedInvoice.id === id) {
-                            $scope.selectedInvoice.trangthai = 2;
+                            $scope.selectedInvoice.trangthaidonhang = 2;
                             $scope.selectedInvoice.trangthaiStr = $scope.getStatusString(2);
                             $scope.selectedInvoice.ngaygiaothucte = readableDate;
                         }
@@ -329,11 +329,11 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q, $timeout) 
     $scope.calculateCounts = function () {
         $scope.counts = {
             all: $scope.invoices.length,
-            pending: $scope.invoices.filter(i => i.trangthai === 0).length,
-            confirmed: $scope.invoices.filter(i => i.trangthai === 1).length,
-            shipping: $scope.invoices.filter(i => i.trangthai === 2).length,
-            success: $scope.invoices.filter(i => i.trangthai === 3).length,
-            failed: $scope.invoices.filter(i => i.trangthai === 4).length,
+            pending: $scope.invoices.filter(i => i.trangthaidonhang === 0).length,
+            confirmed: $scope.invoices.filter(i => i.trangthaidonhang === 1).length,
+            shipping: $scope.invoices.filter(i => i.trangthaidonhang === 2).length,
+            success: $scope.invoices.filter(i => i.trangthaidonhang === 3).length,
+            failed: $scope.invoices.filter(i => i.trangthaidonhang === 4).length,
         };
     };
 
@@ -347,7 +347,7 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q, $timeout) 
             console.log("data hoá đơn:",$scope.filteredInvoices);
         } else {
             $scope.filteredInvoices = $scope.invoices.filter(function (invoice) {
-                return invoice.trangthai === status;
+                return invoice.trangthaidonhang === status;
             });
         }
 
@@ -634,20 +634,20 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q, $timeout) 
     
         var invoice = $scope.invoices.find(i => i.id === invoiceId);
         if (invoice) {
-            invoice.trangthai = newStatus;
+            invoice.trangthaidonhang = newStatus;
             invoice.trangthaiStr = newStatusStr;
             if (ngaygiaohang) invoice.ngaygiaothucte = ngaygiaohang;
         }
     
         var filteredInvoice = $scope.filteredInvoices.find(i => i.id === invoiceId);
         if (filteredInvoice) {
-            filteredInvoice.trangthai = newStatus;
+            filteredInvoice.trangthaidonhang = newStatus;
             filteredInvoice.trangthaiStr = newStatusStr;
             if (ngaygiaohang) filteredInvoice.ngaygiaothucte = ngaygiaohang;
         }
     
         if ($scope.selectedInvoice && $scope.selectedInvoice.id === invoiceId) {
-            $scope.selectedInvoice.trangthai = newStatus;
+            $scope.selectedInvoice.trangthaidonhang = newStatus;
             $scope.selectedInvoice.trangthaiStr = newStatusStr;
             if (ngaygiaohang) $scope.selectedInvoice.ngaygiaothucte = ngaygiaohang;
         }

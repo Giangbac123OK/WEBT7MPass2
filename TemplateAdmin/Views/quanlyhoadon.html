@@ -563,12 +563,12 @@
                     <div>
                         <h5>Đơn hàng #HD-{{invoice.id}}</h5>
                         <span class="badge" ng-class="{
-                            'badge-waiting': invoice.trangthai === 0,
-                            'badge-confirmed': invoice.trangthai === 1,
-                            'badge-shipping': invoice.trangthai === 2,
-                            'badge-success': invoice.trangthai === 3,
-                            'badge-failed': invoice.trangthai === 4,
-                            'badge-canceled': invoice.trangthai === 5
+                            'badge-waiting': invoice.trangthaidonhang === 0,
+                            'badge-confirmed': invoice.trangthaidonhang === 1,
+                            'badge-shipping': invoice.trangthaidonhang === 2,
+                            'badge-success': invoice.trangthaidonhang === 3,
+                            'badge-failed': invoice.trangthaidonhang === 4,
+                            'badge-canceled': invoice.trangthaidonhang === 5
                         }">{{invoice.trangthaiStr}}</span>
                     </div>
                     <div class="text-end">
@@ -601,22 +601,22 @@
                         <i class="fas fa-eye"></i> Chi tiết
                     </button>
 
-                    <button class="btn btn-sm btn-success" ng-if="invoice.trangthai === 0"
+                    <button class="btn btn-sm btn-success" ng-if="invoice.trangthaidonhang === 0"
                         ng-click="updateInvoicestatus(invoice.id, 1)">
                         <i class="fas fa-check"></i> Xác nhận
                     </button>
 
-                    <button class="btn btn-sm btn-info" ng-if="invoice.trangthai === 1"
+                    <button class="btn btn-sm btn-info" ng-if="invoice.trangthaidonhang === 1"
                         ng-click="updateInvoicestatus(invoice.id, 2)">
                         <i class="fas fa-truck"></i> Vận chuyển
                     </button>
 
-                    <button class="btn btn-sm btn-success" ng-if="invoice.trangthai === 2"
+                    <button class="btn btn-sm btn-success" ng-if="invoice.trangthaidonhang === 2"
                         ng-click="updateInvoicestatus(invoice.id, 3)">
                         <i class="fas fa-check-circle"></i> Hoàn thành
                     </button>
 
-                    <button class="btn btn-sm btn-danger" ng-if="invoice.trangthai < 3"
+                    <button class="btn btn-sm btn-danger" ng-if="invoice.trangthaidonhang < 3"
                         ng-click="updateInvoicestatus(invoice.id, 4)">
                         <i class="fas fa-times"></i> Hủy đơn
                     </button>
@@ -652,12 +652,12 @@
                     <div>
                         <h5>Đơn hàng #HD-{{invoice.id}}</h5>
                         <span class="badge" ng-class="{
-                            'badge-waiting': invoice.trangthai === 0,
-                            'badge-confirmed': invoice.trangthai === 1,
-                            'badge-shipping': invoice.trangthai === 2,
-                            'badge-success': invoice.trangthai === 3,
-                            'badge-failed': invoice.trangthai === 4,
-                            'badge-canceled': invoice.trangthai === 5
+                            'badge-waiting': invoice.trangthaidonhang === 0,
+                            'badge-confirmed': invoice.trangthaidonhang === 1,
+                            'badge-shipping': invoice.trangthaidonhang === 2,
+                            'badge-success': invoice.trangthaidonhang === 3,
+                            'badge-failed': invoice.trangthaidonhang === 4,
+                            'badge-canceled': invoice.trangthaidonhang === 5
                         }">{{invoice.trangthaiStr}}</span>
                     </div>
                     <div class="text-end">
@@ -690,22 +690,22 @@
                         <i class="fas fa-eye"></i> Chi tiết
                     </button>
 
-                    <button class="btn btn-sm btn-success" ng-if="invoice.trangthai === 0"
+                    <button class="btn btn-sm btn-success" ng-if="invoice.trangthaidonhang === 0"
                         ng-click="updateInvoicestatus(invoice.id, 1)">
                         <i class="fas fa-check"></i> Xác nhận
                     </button>
 
-                    <button class="btn btn-sm btn-info" ng-if="invoice.trangthai === 1"
+                    <button class="btn btn-sm btn-info" ng-if="invoice.trangthaidonhang === 1"
                         ng-click="updateInvoicestatus(invoice.id, 2)">
                         <i class="fas fa-truck"></i> Vận chuyển
                     </button>
 
-                    <button class="btn btn-sm btn-success" ng-if="invoice.trangthai === 2"
+                    <button class="btn btn-sm btn-success" ng-if="invoice.trangthaidonhang === 2"
                         ng-click="updateInvoicestatus(invoice.id, 3)">
                         <i class="fas fa-check-circle"></i> Hoàn thành
                     </button>
 
-                    <button class="btn btn-sm btn-danger" ng-if="invoice.trangthai < 3"
+                    <button class="btn btn-sm btn-danger" ng-if="invoice.trangthaidonhang < 3"
                         ng-click="updateInvoicestatus(invoice.id, 4)">
                         <i class="fas fa-times"></i> Hủy đơn
                     </button>
@@ -741,12 +741,12 @@
                     <div>
                         <h5>Đơn hàng #HD-{{invoice.id}}</h5>
                         <span class="badge" ng-class="{
-                            'badge-waiting': invoice.trangthai === 0,
-                            'badge-confirmed': invoice.trangthai === 1,
-                            'badge-shipping': invoice.trangthai === 2,
-                            'badge-success': invoice.trangthai === 3,
-                            'badge-failed': invoice.trangthai === 4,
-                            'badge-canceled': invoice.trangthai === 5
+                            'badge-waiting': invoice.trangthaidonhang === 0,
+                            'badge-confirmed': invoice.trangthaidonhang === 1,
+                            'badge-shipping': invoice.trangthaidonhang === 2,
+                            'badge-success': invoice.trangthaidonhang === 3,
+                            'badge-failed': invoice.trangthaidonhang === 4,
+                            'badge-canceled': invoice.trangthaidonhang === 5
                         }">{{invoice.trangthaiStr}}</span>
                     </div>
                     <div class="text-end">
@@ -779,22 +779,22 @@
                         <i class="fas fa-eye"></i> Chi tiết
                     </button>
 
-                    <button class="btn btn-sm btn-success" ng-if="invoice.trangthai === 0"
+                    <button class="btn btn-sm btn-success" ng-if="invoice.trangthaidonhang === 0"
                         ng-click="updateInvoicestatus(invoice.id, 1)">
                         <i class="fas fa-check"></i> Xác nhận
                     </button>
 
-                    <button class="btn btn-sm btn-info" ng-if="invoice.trangthai === 1"
+                    <button class="btn btn-sm btn-info" ng-if="invoice.trangthaidonhang === 1"
                         ng-click="updateInvoicestatus(invoice.id, 2)">
                         <i class="fas fa-truck"></i> Vận chuyển
                     </button>
 
-                    <button class="btn btn-sm btn-success" ng-if="invoice.trangthai === 2"
+                    <button class="btn btn-sm btn-success" ng-if="invoice.trangthaidonhang === 2"
                         ng-click="updateInvoicestatus(invoice.id, 3)">
                         <i class="fas fa-check-circle"></i> Hoàn thành
                     </button>
 
-                    <button class="btn btn-sm btn-danger" ng-if="invoice.trangthai < 3"
+                    <button class="btn btn-sm btn-danger" ng-if="invoice.trangthaidonhang < 3"
                         ng-click="updateInvoicestatus(invoice.id, 4)">
                         <i class="fas fa-times"></i> Hủy đơn
                     </button>
@@ -830,12 +830,12 @@
                     <div>
                         <h5>Đơn hàng #HD-{{invoice.id}}</h5>
                         <span class="badge" ng-class="{
-                            'badge-waiting': invoice.trangthai === 0,
-                            'badge-confirmed': invoice.trangthai === 1,
-                            'badge-shipping': invoice.trangthai === 2,
-                            'badge-success': invoice.trangthai === 3,
-                            'badge-failed': invoice.trangthai === 4,
-                            'badge-canceled': invoice.trangthai === 5
+                            'badge-waiting': invoice.trangthaidonhang === 0,
+                            'badge-confirmed': invoice.trangthaidonhang === 1,
+                            'badge-shipping': invoice.trangthaidonhang === 2,
+                            'badge-success': invoice.trangthaidonhang === 3,
+                            'badge-failed': invoice.trangthaidonhang === 4,
+                            'badge-canceled': invoice.trangthaidonhang === 5
                         }">{{invoice.trangthaiStr}}</span>
                     </div>
                     <div class="text-end">
@@ -868,22 +868,22 @@
                         <i class="fas fa-eye"></i> Chi tiết
                     </button>
 
-                    <button class="btn btn-sm btn-success" ng-if="invoice.trangthai === 0"
+                    <button class="btn btn-sm btn-success" ng-if="invoice.trangthaidonhang === 0"
                         ng-click="updateInvoicestatus(invoice.id, 1)">
                         <i class="fas fa-check"></i> Xác nhận
                     </button>
 
-                    <button class="btn btn-sm btn-info" ng-if="invoice.trangthai === 1"
+                    <button class="btn btn-sm btn-info" ng-if="invoice.trangthaidonhang === 1"
                         ng-click="updateInvoicestatus(invoice.id, 2)">
                         <i class="fas fa-truck"></i> Vận chuyển
                     </button>
 
-                    <button class="btn btn-sm btn-success" ng-if="invoice.trangthai === 2"
+                    <button class="btn btn-sm btn-success" ng-if="invoice.trangthaidonhang === 2"
                         ng-click="updateInvoicestatus(invoice.id, 3)">
                         <i class="fas fa-check-circle"></i> Hoàn thành
                     </button>
 
-                    <button class="btn btn-sm btn-danger" ng-if="invoice.trangthai < 3"
+                    <button class="btn btn-sm btn-danger" ng-if="invoice.trangthaidonhang < 3"
                         ng-click="updateInvoicestatus(invoice.id, 4)">
                         <i class="fas fa-times"></i> Hủy đơn
                     </button>
@@ -919,12 +919,12 @@
                     <div>
                         <h5>Đơn hàng #HD-{{invoice.id}}</h5>
                         <span class="badge" ng-class="{
-                            'badge-waiting': invoice.trangthai === 0,
-                            'badge-confirmed': invoice.trangthai === 1,
-                            'badge-shipping': invoice.trangthai === 2,
-                            'badge-success': invoice.trangthai === 3,
-                            'badge-failed': invoice.trangthai === 4,
-                            'badge-canceled': invoice.trangthai === 5
+                            'badge-waiting': invoice.trangthaidonhang === 0,
+                            'badge-confirmed': invoice.trangthaidonhang === 1,
+                            'badge-shipping': invoice.trangthaidonhang === 2,
+                            'badge-success': invoice.trangthaidonhang === 3,
+                            'badge-failed': invoice.trangthaidonhang === 4,
+                            'badge-canceled': invoice.trangthaidonhang === 5
                         }">{{invoice.trangthaiStr}}</span>
                     </div>
                     <div class="text-end">
@@ -957,22 +957,22 @@
                         <i class="fas fa-eye"></i> Chi tiết
                     </button>
 
-                    <button class="btn btn-sm btn-success" ng-if="invoice.trangthai === 0"
+                    <button class="btn btn-sm btn-success" ng-if="invoice.trangthaidonhang === 0"
                         ng-click="updateInvoicestatus(invoice.id, 1)">
                         <i class="fas fa-check"></i> Xác nhận
                     </button>
 
-                    <button class="btn btn-sm btn-info" ng-if="invoice.trangthai === 1"
+                    <button class="btn btn-sm btn-info" ng-if="invoice.trangthaidonhang === 1"
                         ng-click="updateInvoicestatus(invoice.id, 2)">
                         <i class="fas fa-truck"></i> Vận chuyển
                     </button>
 
-                    <button class="btn btn-sm btn-success" ng-if="invoice.trangthai === 2"
+                    <button class="btn btn-sm btn-success" ng-if="invoice.trangthaidonhang === 2"
                         ng-click="updateInvoicestatus(invoice.id, 3)">
                         <i class="fas fa-check-circle"></i> Hoàn thành
                     </button>
 
-                    <button class="btn btn-sm btn-danger" ng-if="invoice.trangthai < 3"
+                    <button class="btn btn-sm btn-danger" ng-if="invoice.trangthaidonhang < 3"
                         ng-click="updateInvoicestatus(invoice.id, 4)">
                         <i class="fas fa-times"></i> Hủy đơn
                     </button>
@@ -1008,12 +1008,12 @@
                     <div>
                         <h5>Đơn hàng #HD-{{invoice.id}}</h5>
                         <span class="badge" ng-class="{
-                            'badge-waiting': invoice.trangthai === 0,
-                            'badge-confirmed': invoice.trangthai === 1,
-                            'badge-shipping': invoice.trangthai === 2,
-                            'badge-success': invoice.trangthai === 3,
-                            'badge-failed': invoice.trangthai === 4,
-                            'badge-canceled': invoice.trangthai === 5
+                            'badge-waiting': invoice.trangthaidonhang === 0,
+                            'badge-confirmed': invoice.trangthaidonhang === 1,
+                            'badge-shipping': invoice.trangthaidonhang === 2,
+                            'badge-success': invoice.trangthaidonhang === 3,
+                            'badge-failed': invoice.trangthaidonhang === 4,
+                            'badge-canceled': invoice.trangthaidonhang === 5
                         }">{{invoice.trangthaiStr}}</span>
                     </div>
                     <div class="text-end">
@@ -1046,22 +1046,22 @@
                         <i class="fas fa-eye"></i> Chi tiết
                     </button>
 
-                    <button class="btn btn-sm btn-success" ng-if="invoice.trangthai === 0"
+                    <button class="btn btn-sm btn-success" ng-if="invoice.trangthaidonhang === 0"
                         ng-click="updateInvoicestatus(invoice.id, 1)">
                         <i class="fas fa-check"></i> Xác nhận
                     </button>
 
-                    <button class="btn btn-sm btn-info" ng-if="invoice.trangthai === 1"
+                    <button class="btn btn-sm btn-info" ng-if="invoice.trangthaidonhang === 1"
                         ng-click="updateInvoicestatus(invoice.id, 2)">
                         <i class="fas fa-truck"></i> Vận chuyển
                     </button>
 
-                    <button class="btn btn-sm btn-success" ng-if="invoice.trangthai === 2"
+                    <button class="btn btn-sm btn-success" ng-if="invoice.trangthaidonhang === 2"
                         ng-click="updateInvoicestatus(invoice.id, 3)">
                         <i class="fas fa-check-circle"></i> Hoàn thành
                     </button>
 
-                    <button class="btn btn-sm btn-danger" ng-if="invoice.trangthai < 3"
+                    <button class="btn btn-sm btn-danger" ng-if="invoice.trangthaidonhang < 3"
                         ng-click="updateInvoicestatus(invoice.id, 4)">
                         <i class="fas fa-times"></i> Hủy đơn
                     </button>
@@ -1112,12 +1112,12 @@
                         </p>
                         <p><strong><i class="fas fa-tags me-2"></i>Trạng thái:</strong>
                             <span class="badge" ng-class="{
-                                'badge-waiting': selectedInvoice.trangthai === 0,
-                                'badge-confirmed': selectedInvoice.trangthai === 1,
-                                'badge-shipping': selectedInvoice.trangthai === 2,
-                                'badge-success': selectedInvoice.trangthai === 3,
-                                'badge-failed': selectedInvoice.trangthai === 4,
-                                'badge-canceled': selectedInvoice.trangthai === 5
+                                'badge-waiting': selectedInvoice.trangthaidonhang === 0,
+                                'badge-confirmed': selectedInvoice.trangthaidonhang === 1,
+                                'badge-shipping': selectedInvoice.trangthaidonhang === 2,
+                                'badge-success': selectedInvoice.trangthaidonhang === 3,
+                                'badge-failed': selectedInvoice.trangthaidonhang === 4,
+                                'badge-canceled': selectedInvoice.trangthaidonhang === 5
                             }">{{selectedInvoice.trangthaiStr}}</span>
                         </p>
                         <p><strong><i class="fas fa-calendar-alt me-2"></i>Ngày đặt:</strong>
@@ -1222,19 +1222,19 @@
                 <button type="button" class="btn btn-light" data-bs-dismiss="modal">
                     <i class="fas fa-times me-2"></i>Đóng
                 </button>
-                <button type="button" class="btn btn-success" ng-if="selectedInvoice.trangthai === 0"
+                <button type="button" class="btn btn-success" ng-if="selectedInvoice.trangthaidonhang === 0"
                     ng-click="updateInvoicestatus(selectedInvoice.id, 1)">
                     <i class="fas fa-check me-2"></i>Xác nhận đơn hàng
                 </button>
-                <button type="button" class="btn btn-info" ng-if="selectedInvoice.trangthai === 1"
+                <button type="button" class="btn btn-info" ng-if="selectedInvoice.trangthaidonhang === 1"
                     ng-click="updateInvoicestatus(selectedInvoice.id, 2)">
                     <i class="fas fa-truck me-2"></i>Bắt đầu vận chuyển
                 </button>
-                <button type="button" class="btn btn-success" ng-if="selectedInvoice.trangthai === 2"
+                <button type="button" class="btn btn-success" ng-if="selectedInvoice.trangthaidonhang === 2"
                     ng-click="updateInvoicestatus(selectedInvoice.id, 3)">
                     <i class="fas fa-check-circle me-2"></i>Xác nhận hoàn thành
                 </button>
-                <button type="button" class="btn btn-danger" ng-if="selectedInvoice.trangthai < 3"
+                <button type="button" class="btn btn-danger" ng-if="selectedInvoice.trangthaidonhang < 3"
                     ng-click="updateInvoicestatus(selectedInvoice.id, 4)">
                     <i class="fas fa-times me-2"></i>Hủy đơn hàng
                 </button>
@@ -1268,12 +1268,12 @@
                         </p>
                         <p><strong><i class="fas fa-tags me-2"></i>Trạng thái:</strong>
                             <span class="badge" ng-class="{
-                                'badge-waiting': selectedInvoice.trangthai === 0,
-                                'badge-confirmed': selectedInvoice.trangthai === 1,
-                                'badge-shipping': selectedInvoice.trangthai === 2,
-                                'badge-success': selectedInvoice.trangthai === 3,
-                                'badge-failed': selectedInvoice.trangthai === 4,
-                                'badge-canceled': selectedInvoice.trangthai === 5
+                                'badge-waiting': selectedInvoice.trangthaidonhang === 0,
+                                'badge-confirmed': selectedInvoice.trangthaidonhang === 1,
+                                'badge-shipping': selectedInvoice.trangthaidonhang === 2,
+                                'badge-success': selectedInvoice.trangthaidonhang === 3,
+                                'badge-failed': selectedInvoice.trangthaidonhang === 4,
+                                'badge-canceled': selectedInvoice.trangthaidonhang === 5
                             }">{{selectedInvoice.trangthaiStr}}</span>
                         </p>
                         <p><strong><i class="fas fa-calendar-alt me-2"></i>Ngày đặt:</strong>
@@ -1377,19 +1377,19 @@
                 <button type="button" class="btn btn-secondary" ng-click="closeModal()">
                     <i class="fas fa-times me-2"></i>Đóng
                 </button>
-                <button type="button" class="btn btn-success" ng-if="selectedInvoice.trangthai === 0"
+                <button type="button" class="btn btn-success" ng-if="selectedInvoice.trangthaidonhang === 0"
                     ng-click="updateInvoicestatus(selectedInvoice.id, 1)">
                     <i class="fas fa-check me-2"></i>Xác nhận đơn hàng
                 </button>
-                <button type="button" class="btn btn-info" ng-if="selectedInvoice.trangthai === 1"
+                <button type="button" class="btn btn-info" ng-if="selectedInvoice.trangthaidonhang === 1"
                     ng-click="updateInvoicestatus(selectedInvoice.id, 2)">
                     <i class="fas fa-truck me-2"></i>Bắt đầu vận chuyển
                 </button>
-                <button type="button" class="btn btn-success" ng-if="selectedInvoice.trangthai === 2"
+                <button type="button" class="btn btn-success" ng-if="selectedInvoice.trangthaidonhang === 2"
                     ng-click="updateInvoicestatus(selectedInvoice.id, 3)">
                     <i class="fas fa-check-circle me-2"></i>Xác nhận hoàn thành
                 </button>
-                <button type="button" class="btn btn-danger" ng-if="selectedInvoice.trangthai < 3"
+                <button type="button" class="btn btn-danger" ng-if="selectedInvoice.trangthaidonhang < 3"
                     ng-click="updateInvoicestatus(selectedInvoice.id, 4)">
                     <i class="fas fa-times me-2"></i>Hủy đơn hàng
                 </button>
