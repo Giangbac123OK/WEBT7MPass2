@@ -1122,7 +1122,7 @@
                         </p>
                         <p><strong><i class="fas fa-calendar-alt me-2"></i>Ngày đặt:</strong>
                             {{selectedInvoice.thoigiandathang | date:'dd/MM/yyyy HH:mm'}}</p>
-                            <p ng-if="selectedInvoice.trangthai == 4">
+                            <p ng-if="selectedInvoice.trangthaidonhang == 4">
                                 <strong><i class="fa-solid fa-pen-fancy"></i> Lý do huỷ:</strong>
                                 {{selectedInvoice.ghichu}}
                             </p>
@@ -1278,7 +1278,7 @@
                         </p>
                         <p><strong><i class="fas fa-calendar-alt me-2"></i>Ngày đặt:</strong>
                             {{selectedInvoice.thoigiandathang | date:'dd/MM/yyyy HH:mm'}}</p>
-                            <p ng-if="selectedInvoice.trangthai == 4">
+                            <p ng-if="selectedInvoice.trangthaidonhang == 4">
                                 <strong><i class="fa-solid fa-pen-fancy"></i> Lý do huỷ:</strong>
                                 {{selectedInvoice.ghichu}}
                             </p>                            
