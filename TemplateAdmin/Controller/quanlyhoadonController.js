@@ -20,6 +20,8 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q, $timeout) 
     $scope.currentPage = 1;
     $scope.itemsPerPage = 10;
     $scope.totalPages = 1;
+    $scope.pagedInvoices = [];
+
     $scope.pages = [];
 
     // Thống kê số lượng theo trạng thái
@@ -65,7 +67,7 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q, $timeout) 
             });
     
             const allInvoices = responses.invoices.data
-                .filter(invoice => invoice.trangthai >= 0 && invoice.trangthai <= 4)
+                .filter(invoice => invoice.trangthaidonhang >= 0 && invoice.trangthaidonhang <= 4 && invoice.trangthai == 0)
                 .sort((a, b) => b.id - a.id); // Sắp xếp id giảm dần
                     
             // Duyệt từng hóa đơn để xử lý địa chỉ và gán tên khách hàng, phương thức
@@ -113,6 +115,7 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q, $timeout) 
     
             $scope.invoices = allInvoices;
             $scope.filterInvoices($scope.currentFilter);
+            $scope.updatePagedInvoices();
             $scope.calculateCounts();
             $scope.loading = false;
             $scope.$apply(); // Cập nhật lại view do có await
@@ -121,6 +124,13 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q, $timeout) 
             $scope.loading = false;
         });
     };
+
+    $scope.updatePagedInvoices = function () {
+        var start = ($scope.currentPage - 1) * $scope.itemsPerPage;
+        var end = start + $scope.itemsPerPage;
+        $scope.pagedInvoices = $scope.filteredInvoices.slice(start, end);
+    };    
+    
 
     // Hàm lấy tên tỉnh/thành phố
     async function getProvinceName(id) {
@@ -275,26 +285,27 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q, $timeout) 
                     .then(res => {
                         var invoiceItem = $scope.invoices.find(i => i.id === id);
                         if (invoiceItem) {
-                            invoiceItem.trangthai = 2;
+                            invoiceItem.trangthaidonhang = 2;
                             invoiceItem.trangthaiStr = $scope.getStatusString(2);
                             invoiceItem.ngaygiaothucte = readableDate;
                         }
 
                         var filteredItem = $scope.filteredInvoices.find(i => i.id === id);
                         if (filteredItem) {
-                            filteredItem.trangthai = 2;
+                            filteredItem.trangthaidonhang = 2;
                             filteredItem.trangthaiStr = $scope.getStatusString(2);
                             filteredItem.ngaygiaothucte = readableDate;
                         }
 
                         if ($scope.selectedInvoice && $scope.selectedInvoice.id === id) {
-                            $scope.selectedInvoice.trangthai = 2;
+                            $scope.selectedInvoice.trangthaidonhang = 2;
                             $scope.selectedInvoice.trangthaiStr = $scope.getStatusString(2);
                             $scope.selectedInvoice.ngaygiaothucte = readableDate;
                         }
 
                         $scope.calculateCounts();
-                        alert("Chuyển sang trạng thái vận chuyển thành công!");
+                        
+                        Swal.fire('Thành công', `Chuyển sang trạng thái vận chuyển thành công!`, 'success');
                     })
                     .catch(err => {
                         console.error("Lỗi khi cập nhật trạng thái:", err);
@@ -318,11 +329,11 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q, $timeout) 
     $scope.calculateCounts = function () {
         $scope.counts = {
             all: $scope.invoices.length,
-            pending: $scope.invoices.filter(i => i.trangthai === 0).length,
-            confirmed: $scope.invoices.filter(i => i.trangthai === 1).length,
-            shipping: $scope.invoices.filter(i => i.trangthai === 2).length,
-            success: $scope.invoices.filter(i => i.trangthai === 3).length,
-            failed: $scope.invoices.filter(i => i.trangthai === 4).length,
+            pending: $scope.invoices.filter(i => i.trangthaidonhang === 0).length,
+            confirmed: $scope.invoices.filter(i => i.trangthaidonhang === 1).length,
+            shipping: $scope.invoices.filter(i => i.trangthaidonhang === 2).length,
+            success: $scope.invoices.filter(i => i.trangthaidonhang === 3).length,
+            failed: $scope.invoices.filter(i => i.trangthaidonhang === 4).length,
         };
     };
 
@@ -336,11 +347,12 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q, $timeout) 
             console.log("data hoá đơn:",$scope.filteredInvoices);
         } else {
             $scope.filteredInvoices = $scope.invoices.filter(function (invoice) {
-                return invoice.trangthai === status;
+                return invoice.trangthaidonhang === status;
             });
         }
 
         $scope.updatePagination();
+        $scope.updatePagedInvoices();
     };
 
     // Hàm cập nhật phân trang
@@ -363,8 +375,9 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q, $timeout) 
     $scope.changePage = function (page) {
         if (page >= 1 && page <= $scope.totalPages) {
             $scope.currentPage = page;
+            $scope.updatePagedInvoices(); // Thêm dòng này
         }
-    };
+    };    
 
     // Thêm hàm này vào controller của bạn
     $scope.modalInstance = null;
@@ -448,6 +461,7 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q, $timeout) 
                 // Gán bằng angular.copy để trigger binding
                 $scope.selectedInvoice.chitiethoadon = angular.copy(newDetails);
                 $scope.dataspct = angular.copy(newDetails);
+                console.log("chi tiết selectedInvoice.ghichu:", $scope.selectedInvoice);
             })
             .catch(error => {
                 console.error('Lỗi tải chi tiết:', error);
@@ -493,56 +507,108 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q, $timeout) 
             case 4: statusMessage = "Hủy đơn hàng"; break;
             case 5: statusMessage = "Đánh dấu đơn hàng trả hàng"; break;
         }
-
-        if (!confirm('Bạn có chắc chắn muốn ' + statusMessage.toLowerCase() + '?')) {
-            return;
-        }
-
-        // Nếu là trạng thái chuyển vận
-        if (newStatus == 2) {
-            return taoDiaChiGiaoHang(invoiceId, userInfo.id);
-        }
-
-        if (newStatus == 3) {
-            const vietnamDateString = getVietnamTimeString();
-        
-            return $http.put(`https://localhost:7196/api/Hoadons/trangthaiNV1/${invoiceId}?trangthai=${newStatus}&idnv=${userInfo.id}&ngaygiaohang=${encodeURIComponent(vietnamDateString)}`)
-                .then(function (response) {
-                    if (response.status === 200) {
-                        updateLocalInvoice(invoiceId, newStatus, vietnamDateString);
-                        alert(statusMessage + ' thành công!');
-                    } else {
-                        alert('Cập nhật trạng thái không thành công. Vui lòng thử lại.');
-                    }
-                })
-                .catch(function (error) {
-                    console.error('Lỗi khi cập nhật trạng thái:', error);
-                    var errorMsg = error.data && error.data.message
-                        ? error.data.message
-                        : 'Có lỗi xảy ra khi ' + statusMessage.toLowerCase() + '!';
-                    alert(errorMsg);
-                });
-        }
-        
     
-        // Các trạng thái còn lại
-        $http.put(`https://localhost:7196/api/Hoadons/trangthaiNV/${invoiceId}?trangthai=${newStatus}&idnv=${userInfo.id}`)
-            .then(function (response) {
-                if (response.status === 200) {
-                    updateLocalInvoice(invoiceId, newStatus);
-                    alert(statusMessage + (newStatus == 3 ? '' : ' thành công!'));
-                } else {
-                    alert('Cập nhật trạng thái không thành công. Vui lòng thử lại.');
-                }
-            })
-            .catch(function (error) {
-                console.error('Lỗi khi cập nhật trạng thái:', error);
-                var errorMsg = error.data && error.data.message
-                    ? error.data.message
-                    : 'Có lỗi xảy ra khi ' + statusMessage.toLowerCase() + '!';
-                alert(errorMsg);
-            });
-    };    
+        Swal.fire({
+            title: 'Xác nhận',
+            text: `Bạn có chắc chắn muốn ${statusMessage.toLowerCase()}?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Đồng ý',
+            cancelButtonText: 'Hủy bỏ'
+        }).then((result) => {
+            if (!result.isConfirmed) {
+                return;
+            }
+    
+            // Nếu là trạng thái chuyển vận
+            if (newStatus == 2) {
+                return taoDiaChiGiaoHang(invoiceId, userInfo.id);
+            }
+
+            if (newStatus == 4) {
+                Swal.fire({
+                    title: 'Nhập lý do huỷ đơn hàng',
+                    input: 'textarea',
+                    inputLabel: 'Lý do huỷ',
+                    inputPlaceholder: 'Nhập lý do huỷ tại đây...',
+                    inputAttributes: {
+                        'aria-label': 'Nhập lý do huỷ tại đây'
+                    },
+                    showCancelButton: true,
+                    confirmButtonText: 'Gửi lý do',
+                    cancelButtonText: 'Hủy bỏ'
+                }).then((result) => {
+                    if (result.isConfirmed && result.value && result.value.trim() !== "") {
+                        const lyDo = result.value.trim();
+            
+                        // Gọi API cập nhật trạng thái và lý do
+                        $http.put(`https://localhost:7196/api/Hoadons/trangthaiNVHuy/${invoiceId}?trangthai=${newStatus}&idnv=${userInfo.id}&ghichu=${encodeURIComponent(lyDo)}`)
+                            .then(function (response) {
+                                if (response.status === 200) {
+                                    updateLocalInvoice(invoiceId, newStatus, lyDo);
+                                    Swal.fire('Thành công', 'Huỷ đơn hàng thành công!', 'success');
+                                } else {
+                                    Swal.fire('Lỗi', 'Cập nhật trạng thái không thành công. Vui lòng thử lại.', 'error');
+                                }
+                            })
+                            .catch(function (error) {
+                                console.error('Lỗi khi huỷ đơn hàng:', error);
+                                var errorMsg = error.data && error.data.message
+                                    ? error.data.message
+                                    : 'Có lỗi xảy ra khi huỷ đơn hàng!';
+                                Swal.fire('Lỗi', errorMsg, 'error');
+                            });
+            
+                    } else if (result.dismiss !== Swal.DismissReason.cancel) {
+                        Swal.fire('Thông báo', 'Bạn cần nhập lý do để huỷ đơn hàng.', 'warning');
+                    }
+                });
+            
+                return; // Dừng hàm tại đây
+            }
+            
+    
+            if (newStatus == 3) {
+                const vietnamDateString = getVietnamTimeString();
+    
+                return $http.put(`https://localhost:7196/api/Hoadons/trangthaiNV1/${invoiceId}?trangthai=${newStatus}&idnv=${userInfo.id}&ngaygiaohang=${encodeURIComponent(vietnamDateString)}`)
+                    .then(function (response) {
+                        if (response.status === 200) {
+                            updateLocalInvoice(invoiceId, newStatus, vietnamDateString);
+                            Swal.fire('Thành công', `${statusMessage} thành công!`, 'success');
+                        } else {
+                            Swal.fire('Lỗi', 'Cập nhật trạng thái không thành công. Vui lòng thử lại.', 'error');
+                        }
+                    })
+                    .catch(function (error) {
+                        console.error('Lỗi khi cập nhật trạng thái:', error);
+                        var errorMsg = error.data && error.data.message
+                            ? error.data.message
+                            : `Có lỗi xảy ra khi ${statusMessage.toLowerCase()}!`;
+                        Swal.fire('Lỗi', errorMsg, 'error');
+                    });
+            } else {
+                // Các trạng thái còn lại
+                $http.put(`https://localhost:7196/api/Hoadons/trangthaiNV/${invoiceId}?trangthai=${newStatus}&idnv=${userInfo.id}`)
+                    .then(function (response) {
+                        if (response.status === 200) {
+                            updateLocalInvoice(invoiceId, newStatus);
+                            Swal.fire('Thành công', `${statusMessage} thành công!`, 'success');
+                        } else {
+                            Swal.fire('Lỗi', 'Cập nhật trạng thái không thành công. Vui lòng thử lại.', 'error');
+                        }
+                    })
+                    .catch(function (error) {
+                        console.error('Lỗi khi cập nhật trạng thái:', error);
+                        var errorMsg = error.data && error.data.message
+                            ? error.data.message
+                            : `Có lỗi xảy ra khi ${statusMessage.toLowerCase()}!`;
+                        Swal.fire('Lỗi', errorMsg, 'error');
+                    });
+            }
+        });
+    };
+       
 
     // Hàm lấy thời gian hiện tại theo giờ Việt Nam định dạng ISO (yyyy-MM-ddTHH:mm:ss)
     function getVietnamTimeString() {
@@ -568,20 +634,20 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q, $timeout) 
     
         var invoice = $scope.invoices.find(i => i.id === invoiceId);
         if (invoice) {
-            invoice.trangthai = newStatus;
+            invoice.trangthaidonhang = newStatus;
             invoice.trangthaiStr = newStatusStr;
             if (ngaygiaohang) invoice.ngaygiaothucte = ngaygiaohang;
         }
     
         var filteredInvoice = $scope.filteredInvoices.find(i => i.id === invoiceId);
         if (filteredInvoice) {
-            filteredInvoice.trangthai = newStatus;
+            filteredInvoice.trangthaidonhang = newStatus;
             filteredInvoice.trangthaiStr = newStatusStr;
             if (ngaygiaohang) filteredInvoice.ngaygiaothucte = ngaygiaohang;
         }
     
         if ($scope.selectedInvoice && $scope.selectedInvoice.id === invoiceId) {
-            $scope.selectedInvoice.trangthai = newStatus;
+            $scope.selectedInvoice.trangthaidonhang = newStatus;
             $scope.selectedInvoice.trangthaiStr = newStatusStr;
             if (ngaygiaohang) $scope.selectedInvoice.ngaygiaothucte = ngaygiaohang;
         }
@@ -686,23 +752,48 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q, $timeout) 
             });
     };
 
-    // Hàm đánh dấu đã đọc nhiều đơn
     $scope.markAsRead = function (orderIds) {
-        $http.post('https://localhost:7196/api/Hoadons/mark-as-read', orderIds)
-            .then(function () {
-                if (Array.isArray(orderIds)) {
-                    orderIds.forEach(function (id) {
-                        var index = $scope.unreadOrders.findIndex(o => o.id === id);
-                        if (index !== -1) {
-                            var order = $scope.unreadOrders[index];
-                            $scope.unreadOrders.splice(index, 1);
-                            $scope.readOrders.unshift(order);
-                        }
-                    });
-                    $scope.unreadNotifications = $scope.unreadOrders.length;
-                }
-            });
-    };
+        // Lấy danh sách mã hóa đơn tương ứng
+        const selectedOrders = $scope.unreadOrders.filter(o => orderIds.includes(o.id));
+        const maHoaDonList = selectedOrders.map(o => o.maHoaDon || `#${o.id}`); // fallback nếu không có mã
+    
+        Swal.fire({
+            title: 'Xác nhận đánh dấu đã đọc',
+            html: `
+                <p>Bạn có chắc chắn muốn đánh dấu các hóa đơn sau là đã đọc?</p>
+                <ul style="text-align: left; padding-left: 20px;">
+                    ${maHoaDonList.map(ma => `<li>${ma}</li>`).join('')}
+                </ul>
+            `,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Đồng ý',
+            cancelButtonText: 'Hủy bỏ'
+        }).then((result) => {
+            if (!result.isConfirmed) return;
+    
+            $http.post('https://localhost:7196/api/Hoadons/mark-as-read', orderIds)
+                .then(function () {
+                    if (Array.isArray(orderIds)) {
+                        orderIds.forEach(function (id) {
+                            var index = $scope.unreadOrders.findIndex(o => o.id === id);
+                            if (index !== -1) {
+                                var order = $scope.unreadOrders[index];
+                                $scope.unreadOrders.splice(index, 1);
+                                $scope.readOrders.unshift(order);
+                            }
+                        });
+                        $scope.unreadNotifications = $scope.unreadOrders.length;
+    
+                        Swal.fire('Thành công', 'Đã đánh dấu các hóa đơn là đã đọc.', 'success');
+                    }
+                })
+                .catch(function (error) {
+                    console.error('Lỗi khi đánh dấu hóa đơn:', error);
+                    Swal.fire('Lỗi', 'Không thể đánh dấu hóa đơn. Vui lòng thử lại.', 'error');
+                });
+        });
+    };    
 
 
     $scope.loadUnreadOrdersAndShowModal = function () {
@@ -720,6 +811,100 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q, $timeout) 
                 console.error("Lỗi khi tải đơn chưa đọc:", error);
             });
     };    
+
+    // Khởi tạo biến
+    $scope.searchTerm = '';
+    $scope.searchType = 'id';
+    $scope.filterDate = '';
+    $scope.originalInvoices = []; // Lưu dữ liệu gốc
+    $scope.filteredData = []; // Lưu dữ liệu đã lọc
+
+    // Lưu trữ dữ liệu gốc khi nhận dữ liệu mới
+    $scope.$watch('invoices', function(newVal) {
+        if (newVal) {
+            $scope.originalInvoices = angular.copy(newVal);
+            $scope.resetFilteredData();
+        }
+    }, true);
+
+    // Reset dữ liệu đã lọc về trạng thái gốc
+    $scope.resetFilteredData = function() {
+        $scope.filteredData = angular.copy($scope.originalInvoices);
+        $scope.filteredInvoices = angular.copy($scope.filteredData);
+    };
+
+    // Hàm chuyển tab và xử lý dữ liệu
+    $scope.prepareSearch = function() {
+        // Reset về dữ liệu gốc
+        $scope.filteredData = angular.copy($scope.originalInvoices);
+    
+        // Chuyển tab "All" trước
+        var allTab = document.getElementById('all-tab');
+        if (allTab) {
+            allTab.click();
+    
+            // Đợi giao diện chuyển tab xong (~100ms), rồi mới lọc
+            setTimeout(function() {
+                $scope.applySearch();
+                $scope.$apply(); // Đảm bảo AngularJS cập nhật view
+            }, 100);
+        } else {
+            // Nếu không tìm thấy tab thì lọc luôn
+            $scope.applySearch();
+        }
+    };    
+
+    // Hàm tìm kiếm chính
+    $scope.applySearch = function() {
+        // Bắt đầu từ dữ liệu gốc đã reset
+        let filtered = angular.copy($scope.filteredData);
+        
+        // Áp dụng tìm kiếm
+        if ($scope.searchTerm) {
+            const term = $scope.searchTerm.toLowerCase();
+            filtered = filtered.filter(invoice => {
+                switch ($scope.searchType) {
+                    case 'id': 
+                        return invoice.id && invoice.id.toString().includes(term);
+                    case 'tenkhachhang': 
+                        return invoice.tenkhachhang && invoice.tenkhachhang.toLowerCase().includes(term);
+                    case 'sdt': 
+                        return invoice.sdt && invoice.sdt.includes(term);
+                    default: 
+                        return true;
+                }
+            });
+        }
+        
+        // Áp dụng bộ lọc ngày
+        if ($scope.filterDate) {
+            const selectedDate = new Date($scope.filterDate);
+            filtered = filtered.filter(invoice => {
+                if (!invoice.thoigiandathang) return false;
+                const invoiceDate = new Date(invoice.thoigiandathang);
+                return invoiceDate.toDateString() === selectedDate.toDateString();
+            });
+        }
+        
+        // Nếu không có điều kiện tìm kiếm/lọc, hiển thị tất cả
+        if (!$scope.searchTerm && !$scope.filterDate) {
+            filtered = angular.copy($scope.originalInvoices);
+        }
+        
+        // Cập nhật dữ liệu hiển thị
+        $scope.filteredInvoices = filtered;
+        $scope.changePage(1);
+    };
+
+    // Hàm gọi từ ô tìm kiếm
+    $scope.onSearch = function() {
+        $scope.prepareSearch();
+    };
+
+    // Hàm gọi từ bộ lọc ngày
+    $scope.onDateFilter = function() {
+        $scope.prepareSearch();
+    };
     
     // Khởi tạo ứng dụng
     $scope.init();

@@ -4,7 +4,6 @@ app.controller('nhanvienController', function ($scope, $http, $location, $interv
         const days = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
         return days[dayIndex];
     }
-
     // Hàm cập nhật thời gian
     function updateTime() {
         var now = new Date();
@@ -28,9 +27,7 @@ app.controller('nhanvienController', function ($scope, $http, $location, $interv
         $http.get("https://localhost:7196/api/Nhanviens")
             .then(function (response) {
                 // Lọc bỏ user hiện tại khỏi danh sách
-                $scope.listNhanVien = response.data.filter(function (nhanvien) {
-                    return nhanvien.id !== userInfo.id;
-                });
+                $scope.listNhanVien = response.data;
                 console.log('Danh sách nhân viên (đã lọc):', $scope.listNhanVien);
             })
             .catch(function (error) {
@@ -42,6 +39,7 @@ app.controller('nhanvienController', function ($scope, $http, $location, $interv
     // Khởi tạo userInfo từ localStorage
     const userInfoString = localStorage.getItem("userInfo1");
     const userInfo = JSON.parse(userInfoString);
+    console.log(userInfo);
     LoadData();
     $scope.getMaxYear = function () {
         const today = new Date();
@@ -109,7 +107,6 @@ app.controller('nhanvienController', function ($scope, $http, $location, $interv
             Swal.fire({ title: "Lỗi", text: "Email đã tồn tại!", icon: "error" });
             return;
         }
-
         Swal.fire({
             title: "Xác nhận",
             text: "Bạn có chắc chắn muốn thêm nhân viên này?",
@@ -126,7 +123,7 @@ app.controller('nhanvienController', function ($scope, $http, $location, $interv
                 formData.append('gioitinh', $scope.add.gioitinh);
                 formData.append('sdt', $scope.add.sdt);
                 formData.append('email', $scope.add.email);
-                formData.append('chucvu', $scope.add.chucvu);
+                formData.append('role', $scope.add.chucvu);
                 formData.append('password', $scope.add.password);
                 formData.append('trangthai', 0);
 
@@ -238,6 +235,14 @@ app.controller('nhanvienController', function ($scope, $http, $location, $interv
     };
 
     $scope.btnEdit = function () {
+        if(userInfo.role==2){
+            Swal.fire("Lỗi", "Bạn không có quyền hạn chỉnh sửa.", "error");
+            return;
+        }
+        if(userInfo.role>$scope.edit.chucvu){
+            Swal.fire("Lỗi", "Bạn không được phép chỉnh sửa người có quyền hạn cao hơn.", "error");
+            return;
+        }
         console.log('Dữ liệu edit trước khi gửi:', $scope.edit);
         var formData = new FormData();
 
@@ -283,6 +288,18 @@ app.controller('nhanvienController', function ($scope, $http, $location, $interv
         $scope.currentImage = 'https://localhost:7196/picture/' + (avatarFileName);
     };
     $scope.delete = function (nv) {
+        if(userInfo.id==nv.id){
+            Swal.fire("Lỗi", "Bạn không được quyền hạn xóa chính mình.", "error");
+            return;
+        }
+        if(userInfo.role>nv.role){
+            Swal.fire("Lỗi", "Bạn không có quyền hạn chỉnh sửa người có quyền hạn cao hơn.", "error");
+            return;
+        }
+        if(userInfo.role==2){
+            Swal.fire("Lỗi", "Bạn không có quyền hạn chỉnh sửa.", "error");
+            return;
+        }
         $http.put("https://localhost:7196/api/Nhanviens/delete/" + nv.id)
             .then(function (res) {
                 Swal.fire({
@@ -316,4 +333,86 @@ app.controller('nhanvienController', function ($scope, $http, $location, $interv
     
         return age;
     }
+    $scope.selectAll = false; // Chọn tất cả hay không
+
+    // Toggle chọn tất cả
+    $scope.toggleAll = function () {
+        angular.forEach($scope.listNhanVien, function (nv) {
+            nv.selected = $scope.selectAll;
+        });
+        // Log thông tin khi chọn tất cả
+        console.log("Danh sách nhân viên đã chọn (tất cả):", $scope.getSelectedNhanVien());
+    };
+
+    // Cập nhật trạng thái checkbox "chọn tất cả" khi có thay đổi ở từng dòng
+    $scope.updateSelectAll = function () {
+        // Kiểm tra nếu tất cả nhân viên đều được chọn
+        $scope.selectAll = $scope.listNhanVien.every(function (nv) {
+            return nv.selected;
+        });
+        // Log thông tin khi thay đổi trạng thái checkbox từng nhân viên
+        console.log("Danh sách nhân viên đã chọn (từng người):", $scope.getSelectedNhanVien());
+    };
+
+    // Lấy danh sách nhân viên đã chọn
+    $scope.getSelectedNhanVien = function () {
+        return $scope.listNhanVien.filter(nv => nv.selected);
+    };
+
+    // Hàm Xóa nhiều nhân viên
+    $scope.XoaNhieu = function() {
+        var selectedList = $scope.getSelectedNhanVien();
+        if (selectedList.length === 0) {
+            Swal.fire("Lỗi", "Vui lòng chọn để xóa.", "error");
+            return;
+        }
+    
+        // Log danh sách nhân viên được chọn trước khi xóa
+        console.log("Danh sách nhân viên đã chọn:", selectedList);
+    
+        // Kiểm tra quyền hạn trước khi thực hiện xóa
+        for (let i = 0; i < selectedList.length; i++) {
+            let nv = selectedList[i];
+    
+            // Kiểm tra quyền hạn trước khi xóa
+            if (userInfo.id == nv.id) {
+                Swal.fire("Lỗi", "Bạn không được quyền hạn xóa chính mình.", "error");
+                return;
+            }
+    
+            if (userInfo.role > nv.role) {
+                Swal.fire("Lỗi", "Bạn không có quyền hạn chỉnh sửa người có quyền hạn cao hơn.", "error");
+                return;
+            }
+    
+            if (userInfo.role === 2) {
+                Swal.fire("Lỗi", "Bạn không có quyền hạn chỉnh sửa.", "error");
+                return;
+            }
+        }
+    
+        // Nếu không có lỗi, thực hiện xóa tất cả các nhân viên hợp lệ
+        for (let i = 0; i < selectedList.length; i++) {
+            let nv = selectedList[i];
+    
+            // Gửi yêu cầu xóa nhân viên
+            $http.put("https://localhost:7196/api/Nhanviens/delete/" + nv.id)
+                .then(function (res) {
+                    Swal.fire({
+                        title: "Thành công",
+                        text: res.data.message,
+                        icon: "success"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            location.reload();  // Tải lại trang
+                            window.scroll(0, 0); // Cuộn lên đầu trang
+                        }
+                    });
+                }).catch(function (error) {
+                    Swal.fire("Lỗi", error.data.message, "error");
+                });
+        }
+    };
+    
+
 });

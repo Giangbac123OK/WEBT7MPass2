@@ -358,7 +358,7 @@
     .summary-card .card-title {
         font-size: 0.8rem;
         color: #6c757d;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0;
         font-weight: 600;
     }
 
@@ -366,6 +366,7 @@
         font-size: 1.1rem;
         font-weight: 700;
         color: var(--dark-color);
+        margin-bottom: 0;
     }
 
     /* Total Card */
@@ -401,36 +402,54 @@
     }
 </style>
 <div class="container mt-4">
-    <div class="page-header">
-        <h2>Quản Lý Hóa Đơn</h2>
-        <button class="notification-btn" id="notificationBtn">
-            <i class="fas fa-bell"></i>
-            <span class="badge">{{unreadNotifications}}</span>
-        </button>
+    <div class="page-header row">
+        <a href="#" class="col-1" style="color: white; font-size: 26px;"><i class="bi bi-arrow-left"></i></a>
+        <div class="col-11">
+            <h2>Quản Lý Trả Hàng</h2>
+            <button class="notification-btn" id="notificationBtn">
+                <i class="fas fa-bell"></i>
+                <span class="badge">{{unreadNotifications}}</span>
+            </button>
+        </div>
     </div>
 
     <ul class="nav nav-tabs" id="orderTabs" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button"
-                role="tab">Tất cả <span
-                    class="badge bg-secondary">1</span></button>
+                role="tab" ng-click="filterInvoices('all')">Tất cả <span
+                    class="badge bg-secondary">{{counts.all}}</span></button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending" type="button"
-                role="tab">Chờ xác nhận <span
-                    class="badge bg-warning">1</span></button>
+                role="tab" ng-click="filterInvoices(0)">Chờ xác nhận <span
+                    class="badge bg-warning">{{counts.pending}}</span></button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="confirmed-tab" data-bs-toggle="tab" data-bs-target="#confirmed" type="button"
+                role="tab" ng-click="filterInvoices(1)">Hoàn thành <span
+                    class="badge bg-success">{{counts.confirmed}}</span></button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="shipping-tab" data-bs-toggle="tab" data-bs-target="#shipping" type="button"
+                role="tab" ng-click="filterInvoices(2)">Đã huỷ <span
+                    class="badge bg-danger">{{counts.shipping}}</span></button>
         </li>
     </ul>
     <div class="tab-content mt-3" id="orderTabsContent">
         <!-- Tab Tất cả -->
-        <div class="tab-pane fade show active" id="all" role="tabpanel" ng-repeat="x in listTraHang">
+        <div class="tab-pane fade show active" id="all" role="tabpanel">
             <!-- Danh sách hóa đơn -->
 
-            <div class="order-card">
+            <div class="order-card" ng-repeat="x in listTraHang">
                 <div class="order-header">
                     <div>
                         <h5>Đơn hàng #HD-{{x.id}}</h5>
-                        <span class="badge">Hoàn thành</span>
+                        <span ng-switch="x.trangthai">
+                            <span ng-switch-when="2" class="badge bg-danger">Đã hủy</span>
+                            <span ng-switch-when="1" class="badge bg-success">Hoàn thành</span>
+                            <span ng-switch-when="0" class="badge bg-warning">Chờ trả hàng</span>
+                            <span ng-switch-default class="badge bg-secondary">Chưa xác định</span>
+                        </span>     
                     </div>
                     <div class="text-end">
                         <div class="total">{{x.sotienhoan | currency:"":0}} VNĐ</div>
@@ -456,34 +475,178 @@
                     </div>
                 </div>
                 <div class="order-actions">
-                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
-                        data-bs-target="#returnDetailModal">
+                    <button class="btn btn-sm btn-outline-primary" ng-click="OpenModalChiTiet(x.id)">
                         <i class="fas fa-eye"></i> Chi tiết
                     </button>
 
-                    <button class="btn btn-sm btn-success">
+                    <button class="btn btn-sm btn-success" ng-if="x.trangthai==0" ng-click="OpenModalXacNhan(x.id)">
                         <i class="fas fa-check"></i> Xác nhận
+                    </button>
+                    <button class="btn btn-sm btn-danger" ng-if="x.trangthai==0" ng-click="huydon(x.id)">
+                        <i class="fas fa-times"></i> Hủy đơn
                     </button>
                 </div>
             </div>
+        </div>
+        <!-- Tab chờ xác nhận -->
+        <div class="tab-pane fade show" id="pending" role="tabpanel">
+            <!-- Danh sách hóa đơn -->
 
-            <!-- Phân trang -->
-            <nav aria-label="Page navigation">
-                <ul class="pagination justify-content-center">
-                    <li class="page-item">
-                        <a class="page-link" href="#">Trước</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="#">1</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="#">Sau</a>
-                    </li>
-                </ul>
-            </nav>
+            <div class="order-card" ng-repeat="x in listTraHang" ng-if="x.trangthai==0">
+                <div class="order-header">
+                    <div>
+                        <h5>Đơn hàng #HD-{{x.id}}</h5>
+                        <span ng-switch="x.trangthai">
+                            <span ng-switch-when="2" class="badge bg-danger">Đã hủy</span>
+                            <span ng-switch-when="1" class="badge bg-success">Hoàn thành</span>
+                            <span ng-switch-when="0" class="badge bg-warning">Chờ trả hàng</span>
+                            <span ng-switch-default class="badge bg-secondary">Chưa xác định</span>
+                        </span>     
+                    </div>
+                    <div class="text-end">
+                        <div class="total">{{x.sotienhoan | currency:"":0}} VNĐ</div>
+                        <small class="order-date">{{ x.ngaytrahangthucte ? (x.ngaytrahangthucte | date:'dd/MM/yyyy HH:mm') : 'Chưa xác định' }}</small>
+                    </div>
+                </div>
+                <div class="order-info">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong><i class="fas fa-user me-2"></i>Khách hàng: </strong>{{x.tenkhachhang||'Khách vãng lai'}} </p>
+                            <p><strong><i class="fas fa-map-marker-alt me-2"></i>Địa chỉ trả hàng: </strong>
+                                {{x.diachiship||'Tại cửa hàng'}}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong><i class="fas fa-credit-card me-2"></i>Thanh toán:</strong>
+                                <span class="badge bg-primary">{{x.phuongthuchoantien||'Chưa xác định'}}</span>
+                            </p>
+                            <p><strong><i class="fas fa-credit-card me-2"></i>Trạng thái thanh toán:</strong>
+                                <span class="badge bg-warning" ng-show="x.trangthaihoantien==0">Chưa hoàn tiền</span>
+                                <span class="badge bg-success" ng-show="x.trangthaihoantien==1">Đã hoàn tiền</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-actions">
+                    <button class="btn btn-sm btn-outline-primary" ng-click="OpenModalChiTiet(x.id)">
+                        <i class="fas fa-eye"></i> Chi tiết
+                    </button>
+
+                    <button class="btn btn-sm btn-success" ng-if="x.trangthai==0" ng-click="OpenModalXacNhan(x.id)">
+                        <i class="fas fa-check"></i> Xác nhận
+                    </button>
+                    <button class="btn btn-sm btn-danger" ng-if="x.trangthai==0" ng-click="huydon(x.id)">
+                        <i class="fas fa-times"></i> Hủy đơn
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Tab hoàn thành -->
+        <div class="tab-pane fade show" id="confirmed" role="tabpanel">
+            <!-- Danh sách hóa đơn -->
+
+            <div class="order-card" ng-repeat="x in listTraHang" ng-if="x.trangthai==1">
+                <div class="order-header">
+                    <div>
+                        <h5>Đơn hàng #HD-{{x.id}}</h5>
+                        <span ng-switch="x.trangthai">
+                            <span ng-switch-when="2" class="badge bg-danger">Đã hủy</span>
+                            <span ng-switch-when="1" class="badge bg-success">Hoàn thành</span>
+                            <span ng-switch-when="0" class="badge bg-warning">Chờ trả hàng</span>
+                            <span ng-switch-default class="badge bg-secondary">Chưa xác định</span>
+                        </span>     
+                    </div>
+                    <div class="text-end">
+                        <div class="total">{{x.sotienhoan | currency:"":0}} VNĐ</div>
+                        <small class="order-date">{{ x.ngaytrahangthucte ? (x.ngaytrahangthucte | date:'dd/MM/yyyy HH:mm') : 'Chưa xác định' }}</small>
+                    </div>
+                </div>
+                <div class="order-info">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong><i class="fas fa-user me-2"></i>Khách hàng: </strong>{{x.tenkhachhang||'Khách vãng lai'}} </p>
+                            <p><strong><i class="fas fa-map-marker-alt me-2"></i>Địa chỉ trả hàng: </strong>
+                                {{x.diachiship||'Tại cửa hàng'}}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong><i class="fas fa-credit-card me-2"></i>Thanh toán:</strong>
+                                <span class="badge bg-primary">{{x.phuongthuchoantien||'Chưa xác định'}}</span>
+                            </p>
+                            <p><strong><i class="fas fa-credit-card me-2"></i>Trạng thái thanh toán:</strong>
+                                <span class="badge bg-warning" ng-show="x.trangthaihoantien==0">Chưa hoàn tiền</span>
+                                <span class="badge bg-success" ng-show="x.trangthaihoantien==1">Đã hoàn tiền</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-actions">
+                    <button class="btn btn-sm btn-outline-primary" ng-click="OpenModalChiTiet(x.id)">
+                        <i class="fas fa-eye"></i> Chi tiết
+                    </button>
+
+                    <button class="btn btn-sm btn-success" ng-if="x.trangthai==0" ng-click="OpenModalXacNhan(x.id)">
+                        <i class="fas fa-check"></i> Xác nhận
+                    </button>
+                    <button class="btn btn-sm btn-danger" ng-if="x.trangthai==0" ng-click="huydon(x.id)">
+                        <i class="fas fa-times"></i> Hủy đơn
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Tab hủy -->
+        <div class="tab-pane fade show" id="shipping" role="tabpanel">
+            <!-- Danh sách hóa đơn -->
+
+            <div class="order-card" ng-repeat="x in listTraHang" ng-if="x.trangthai==2">
+                <div class="order-header">
+                    <div>
+                        <h5>Đơn hàng #HD-{{x.id}}</h5>
+                        <span ng-switch="x.trangthai">
+                            <span ng-switch-when="2" class="badge bg-danger">Đã hủy</span>
+                            <span ng-switch-when="1" class="badge bg-success">Hoàn thành</span>
+                            <span ng-switch-when="0" class="badge bg-warning">Chờ trả hàng</span>
+                            <span ng-switch-default class="badge bg-secondary">Chưa xác định</span>
+                        </span>     
+                    </div>
+                    <div class="text-end">
+                        <div class="total">{{x.sotienhoan | currency:"":0}} VNĐ</div>
+                        <small class="order-date">{{ x.ngaytrahangthucte ? (x.ngaytrahangthucte | date:'dd/MM/yyyy HH:mm') : 'Chưa xác định' }}</small>
+                    </div>
+                </div>
+                <div class="order-info">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong><i class="fas fa-user me-2"></i>Khách hàng: </strong>{{x.tenkhachhang||'Khách vãng lai'}} </p>
+                            <p><strong><i class="fas fa-map-marker-alt me-2"></i>Địa chỉ trả hàng: </strong>
+                                {{x.diachiship||'Tại cửa hàng'}}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong><i class="fas fa-credit-card me-2"></i>Thanh toán:</strong>
+                                <span class="badge bg-primary">{{x.phuongthuchoantien||'Chưa xác định'}}</span>
+                            </p>
+                            <p><strong><i class="fas fa-credit-card me-2"></i>Trạng thái thanh toán:</strong>
+                                <span class="badge bg-warning" ng-show="x.trangthaihoantien==0">Chưa hoàn tiền</span>
+                                <span class="badge bg-success" ng-show="x.trangthaihoantien==1">Đã hoàn tiền</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-actions">
+                    <button class="btn btn-sm btn-outline-primary" ng-click="OpenModalChiTiet(x.id)">
+                        <i class="fas fa-eye"></i> Chi tiết
+                    </button>
+
+                    <button class="btn btn-sm btn-success" ng-if="x.trangthai==0" ng-click="OpenModalXacNhan(x)">
+                        <i class="fas fa-check"></i> Xác nhận
+                    </button>
+                    <button class="btn btn-sm btn-danger" ng-if="x.trangthai==0" ng-click="huydon(x.id)">
+                        <i class="fas fa-times"></i> Hủy đơn
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
 <!-- Modal Chi tiết đơn hàng -->
 <div class="modal fade" id="returnDetailModal" tabindex="-1" aria-labelledby="returnDetailModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -491,7 +654,12 @@
             <!-- Header luôn hiển thị -->
             <div class="modal-header">
                 <h5 class="modal-title">
-                    {{selectedInvoice ? 'Chi tiết đơn hàng #HD-' + selectedInvoice.id : 'Đang tải...'}}
+                    <div ng-if="!dataTrahang || dataTrahang.id <= 0">
+                        Đang tải...
+                    </div>
+                    <div ng-if="dataTrahang && dataTrahang.id > 0">
+                        Chi tiết đơn trả hàng #HD-{{dataTrahang.id}}
+                    </div>
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -500,109 +668,113 @@
             <div class="modal-body">
                 <div class="row mb-4">
                     <div class="col-md-6">
-                        <p><strong><i class="fas fa-user me-2"></i>Khách hàng:</strong> {{selectedInvoice.tenkhachhang
-                            || 'Khách vãng lai'}}</p>
-                        <p><strong><i class="fas fa-credit-card me-2"></i>Thanh toán:</strong>
-                            <span ng-if="selectedInvoice.trangthaithanhtoan === 1" class="badge bg-success">Đã thanh
-                                toán</span>
-                            <span ng-if="selectedInvoice.trangthaithanhtoan === 0" class="badge bg-warning">Chưa thanh
-                                toán</span>
-                        </p>
+                        <p><strong><i class="fas fa-user me-2"></i>Khách hàng:</strong> {{dataTrahang.tenkhachhang || 'Khách vãng lai'}}</p>
                         <p><strong><i class="fas fa-tags me-2"></i>Trạng thái:</strong>
                             <span class="badge" ng-class="{
-                                'badge-waiting': selectedInvoice.trangthai === 0,
-                                'badge-confirmed': selectedInvoice.trangthai === 1,
-                                'badge-shipping': selectedInvoice.trangthai === 2,
-                                'badge-success': selectedInvoice.trangthai === 3,
-                                'badge-failed': selectedInvoice.trangthai === 4,
-                                'badge-canceled': selectedInvoice.trangthai === 5
-                            }">{{selectedInvoice.trangthaiStr}}</span>
+                                'badge-waiting': dataTrahang.trangthai === 0,
+                                'badge-confirmed': dataTrahang.trangthai === 1,
+                                'badge-shipping': dataTrahang.trangthai === 2
+                            }">{{dataTrahang.trangthaiStr}}</span>
                         </p>
-                        <p><strong><i class="fas fa-calendar-alt me-2"></i>Ngày đặt:</strong>
-                            {{selectedInvoice.thoigiandathang | date:'dd/MM/yyyy HH:mm'}}</p>
+                        <p><strong><i class="fas fa-calendar-day me-2"></i>Ngày trả hàng:</strong> 
+                            {{dataTrahang.ngaytrahangthucte ? (dataTrahang.ngaytrahangthucte | date:'dd/MM/yyyy') : 'Chưa có ngày trả hàng'}}
+                        </p>
                     </div>
                     <div class="col-md-6">
-                        <p><strong><i class="fas fa-map-marker-alt me-2"></i>Địa chỉ:</strong>
-                            {{selectedInvoice.diachiship_display}}</p>
-                        <p><strong><i class="fas fa-truck me-2"></i>Ngày giao:</strong> {{selectedInvoice.ngaygiaothucte
-                            || 'Chưa giao'}}</p>
-                        <p><strong><i class="fas fa-phone me-2"></i>SĐT:</strong> {{selectedInvoice.sdt}}</p>
-                        <p><strong><i class="fas fa-money-bill-wave me-2"></i>PTTT:</strong> {{selectedInvoice.tenpttt}}
-                        </p>
+                        <p><strong><i class="fas fa-comment me-2"></i>Lý do trả hàng:</strong> {{dataTrahang.lydotrahang || 'Không có'}}</p>
+                        <p ng-if="dataTrahang.trangthai !== 0"><strong><i class="fas fa-tasks me-2"></i>Hình thức xử lý:</strong> {{dataTrahang.hinhthucxuly || 'Không có'}}</p>
+                        <p><strong><i class="fas fa-money-bill-wave me-2"></i>Phương thức hoàn tiền:</strong> {{dataTrahang.phuongthuchoantien || 'Không có'}}</p>
                     </div>
                 </div>
 
+                <!-- Thông tin ngân hàng (chỉ hiển thị khi phương thức hoàn tiền phù hợp) -->
+                <div class="row mb-4" ng-if="dataTrahang.phuongthuchoantien === 'Thẻ tín dụng/ghi nợ/Tài khoản ngân hàng'">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-university me-2"></i>Thông tin ngân hàng</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <p><strong>Tên ngân hàng:</strong> {{dataTrahang.tennganhang || 'Không có'}}</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p><strong>Số tài khoản:</strong> {{dataTrahang.sotaikhoan || 'Không có'}}</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p><strong>Tên tài khoản:</strong> {{dataTrahang.tentaikhoan || 'Không có'}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phần Tổng tiền hoàn trả - Giữ nguyên CSS cũ nhưng điều chỉnh layout -->
                 <div class="row mb-4">
-                    <div class="col-md-4">
+                    <div class="col-md-12">
                         <div class="summary-card">
-                            <div class="card-body">
-                                <h6 class="card-title"><i class="fas fa-shopping-bag me-2"></i>Tổng tiền sản phẩm</h6>
-                                <p class="card-text">{{selectedInvoice.tongtiensanpham | currency:"":0}} VNĐ</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="summary-card">
-                            <div class="card-body">
-                                <h6 class="card-title"><i class="fas fa-shipping-fast me-2"></i>Phí vận chuyển</h6>
-                                <p class="card-text">{{selectedInvoice.phivanchuyen | currency:"":0}} VNĐ</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="summary-card">
-                            <div class="card-body">
-                                <h6 class="card-title"><i class="fas fa-tag me-2"></i>Giảm giá</h6>
-                                <p class="card-text">{{selectedInvoice.tonggiamgia | currency:"":0}} VNĐ</p>
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <h6 class="card-title mb-0"><i class="fas fa-money-bill-transfer me-2"></i>Tổng tiền hoàn trả</h6>
+                                <p class="card-text mb-0">{{dataTrahang.sotienhoan | currency:"":0}} VNĐ</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="summary-card total-card mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title"><i class="fas fa-receipt me-2"></i>Tổng tiền cần trả</h5>
-                        <p class="card-text">{{selectedInvoice.tongtiencantra | currency:"":0}} VNĐ</p>
+                <!-- Hình ảnh trả hàng -->
+                <div class="row mb-4" ng-if="dataTrahang.hinhanhs && dataTrahang.hinhanhs.length > 0">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-images me-2"></i>Hình ảnh trả hàng</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4" ng-repeat="image in dataTrahang.hinhanhs | limitTo:3">
+                                        <img ng-src="{{image.url}}" alt="Hình ảnh trả hàng" class="img-thumbnail" style="max-height: 150px;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <h5 class="mb-3"><i class="fas fa-boxes me-2"></i>Danh sách sản phẩm</h5>
+                <!-- Danh sách sản phẩm trả hàng -->
+                <h5 class="mb-3"><i class="fas fa-boxes me-2"></i>Danh sách sản phẩm trả hàng</h5>
                 <div class="table-responsive">
-                    <table class="table">
-                        <thead class="table-light">
+                    <table class="table table-return">
+                        <thead>
                             <tr>
-                                <th>Ảnh</th>
-                                <th>Tên sản phẩm</th>
-                                <th>Màu</th>
-                                <th>Size</th>
-                                <th>Chất liệu</th>
-                                <th>Số lượng</th>
-                                <th>Đơn giá</th>
-                                <th>Tổng</th>
+                                <th class="text-center">Ảnh</th>
+                                <th class="product-name">Tên sản phẩm</th>
+                                <th class="text-center">Màu</th>
+                                <th class="text-center">Size</th>
+                                <th class="text-center">Số lượng trả</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr ng-if="selectedInvoice.chitiethoadon && selectedInvoice.chitiethoadon.length > 0"
-                                ng-repeat="item in selectedInvoice.chitiethoadon">
-                                <td>
-                                    <img ng-src="{{item.anh}}" alt="{{item.tensanpham}}" class="product-img"
-                                        onerror="this.src='https://via.placeholder.com/60'">
+                            <tr ng-repeat="item in trahangchitiets">
+                                <td class="text-center">
+                                    <img ng-src="{{item.anh}}" 
+                                         alt="{{item.tensanpham}}"
+                                         class="product-img">
                                 </td>
-                                <td>{{item.tensanpham || '-'}}</td>
-                                <td>{{item.mau || '-'}}</td>
-                                <td>{{item.size || '-'}}</td>
-                                <td>{{item.chatlieu || '-'}}</td>
-                                <td>{{item.soluong || '0'}}</td>
-                                <td>{{item.dongia | currency:"":0}} VNĐ</td>
-                                <td>{{item.tong | currency:"":0}} VNĐ</td>
-                            </tr>
-                            <tr ng-if="!selectedInvoice.chitiethoadon || selectedInvoice.chitiethoadon.length === 0">
-                                <td colspan="8" class="text-center text-muted py-3">
+                                <td class="product-name">
+                                    <div class="product-name-content">{{item.tensanpham || '-'}}</div>
+                                </td>
+                                <td class="text-center">{{item.mau || '-'}}</td>
+                                <td class="text-center">{{item.size || '-'}}</td>
+                                <td class="text-center">{{item.soluong || 0}}</td>
+                            </tr>                            
+                            <tr ng-if="!trahangchitiets || trahangchitiets.length === 0">
+                                <td colspan="5" class="text-center text-muted py-4 no-products">
                                     <div ng-if="detailLoading">
                                         <i class="fas fa-spinner fa-spin"></i> Đang tải sản phẩm...
                                     </div>
                                     <div ng-if="!detailLoading">
-                                        Không có sản phẩm nào
+                                        Không có sản phẩm trả hàng nào
                                     </div>
                                 </td>
                             </tr>
@@ -610,26 +782,19 @@
                     </table>
                 </div>
             </div>
+            
             <!-- Footer với các action -->
-            <div class="modal-footer" ng-if="selectedInvoice && !detailLoading && !detailError">
+            <div class="modal-footer" ng-if="dataTrahang && !detailLoading && !detailError">
                 <button type="button" class="btn btn-light" data-bs-dismiss="modal">
                     <i class="fas fa-times me-2"></i>Đóng
                 </button>
-                <button type="button" class="btn btn-success" ng-if="selectedInvoice.trangthai === 0"
-                    ng-click="updateInvoicestatus(selectedInvoice.id, 1)">
-                    <i class="fas fa-check me-2"></i>Xác nhận đơn hàng
+                <button type="button" class="btn btn-success" ng-if="dataTrahang.trangthai === 0"
+                    ng-click="updateReturnStatus(dataTrahang.id, 1)">
+                    <i class="fas fa-check me-2"></i>Xác nhận trả hàng
                 </button>
-                <button type="button" class="btn btn-info" ng-if="selectedInvoice.trangthai === 1"
-                    ng-click="updateInvoicestatus(selectedInvoice.id, 2)">
-                    <i class="fas fa-truck me-2"></i>Bắt đầu vận chuyển
-                </button>
-                <button type="button" class="btn btn-success" ng-if="selectedInvoice.trangthai === 2"
-                    ng-click="updateInvoicestatus(selectedInvoice.id, 3)">
-                    <i class="fas fa-check-circle me-2"></i>Xác nhận hoàn thành
-                </button>
-                <button type="button" class="btn btn-danger" ng-if="selectedInvoice.trangthai < 3"
-                    ng-click="updateInvoicestatus(selectedInvoice.id, 4)">
-                    <i class="fas fa-times me-2"></i>Hủy đơn hàng
+                <button type="button" class="btn btn-danger" ng-if="dataTrahang.trangthai === 0"
+                    ng-click="updateReturnStatus(dataTrahang.id, 2)">
+                    <i class="fas fa-times me-2"></i>Từ chối trả hàng
                 </button>
             </div>
         </div>

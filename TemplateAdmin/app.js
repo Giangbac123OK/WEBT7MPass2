@@ -3,7 +3,11 @@ const app = angular.module("myApp", ['ngRoute']);
 app.config(function ($routeProvider) {
     $routeProvider
         .when("/", {
-            templateUrl: "./Views/home.html"
+            templateUrl: "./Views/dashboard.html"
+        })
+        .when("/addtrahang", {
+          templateUrl: "./Views/trahang.html",
+          controller: "trahangCtrl"
         })
         .when("/dangnhap", {
             templateUrl: "./Views/dangnhap.html",
@@ -52,19 +56,19 @@ app.config(function ($routeProvider) {
             controller: 'QuanLyThuocTinhController'
         })
         .when("/addSanPham", {
-            templateUrl: "./Views/addSanPham.html",
+            templateUrl: "./Views/sanPham/addSanPham.html",
             controller: "QuanLySanPhamController"
         })
         .when("/editSanPham/:id", {
-            templateUrl: "./Views/editSanPham.html",
+            templateUrl: "./Views/sanPham/editSanPham.html",
             controller: "QuanLySanPhamController"
         })
         .when("/chiTietSanPham/:id", {
-            templateUrl: "./Views/chiTietSanPham.html",
+            templateUrl: "./Views/sanPham/chiTietSanPham.html",
             controller: "QuanLySanPhamController"
         })
         .when("/sanpham", {
-            templateUrl: "./Views/quanLySanPham.html",
+            templateUrl: "./Views/sanPham/quanLySanPham.html",
             controller: "QuanLySanPhamController"
         })
         .when("/Rank", {
@@ -73,15 +77,20 @@ app.config(function ($routeProvider) {
             
         })
         .when("/KhachHang", {
-            templateUrl: "./Views/quanLyKhachHang.html",
+            templateUrl: "./Views/khachHang/quanLyKhachHang.html",
             controller: 'quanLyKhachHangController'
         })
         .when("/addKhachHang", {
-            templateUrl: "./Views/addKhachHang.html",
+            templateUrl: "./Views/khachHang/addKhachHang.html",
+            controller: 'quanLyKhachHangController'
+        })
+        .when("/editKhachHang/:id", {
+            templateUrl: "./Views/khachHang/editKhachHang.html",
             controller: 'quanLyKhachHangController'
         })
         .when("/thongtinAdmin", {
             templateUrl: "./Views/ThongtinAdmin.html",
+            controller: 'thongtinAdminController'
             
         })
         .when("/Vocher", {
