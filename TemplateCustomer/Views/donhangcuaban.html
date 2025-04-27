@@ -174,12 +174,12 @@
                 <span>Mã hóa đơn: #{{x.id}}</span> 
               </div>
               <div class="col m-3 text-uppercase text-end" style="color: orangered;">
-                <span ng-if="x.trangthai==0">Chờ xác nhận</span>
-                <span ng-if="x.trangthai==1">Đã xác nhận</span>
-                <span ng-if="x.trangthai==2">Đang giao</span>
-                <span ng-if="x.trangthai==3">Hoàn thành</span>
-                <span ng-if="x.trangthai==4">Đã huỷ</span>
-                <span ng-if="x.trangthai==5">Trả hàng - Hoàn tiền</span>
+                <span ng-if="x.trangthaidonhang==0">Chờ xác nhận</span>
+                <span ng-if="x.trangthaidonhang==1">Đã xác nhận</span>
+                <span ng-if="x.trangthaidonhang==2">Đang giao</span>
+                <span ng-if="x.trangthaidonhang==3">Hoàn thành</span>
+                <span ng-if="x.trangthaidonhang==4">Đã huỷ</span>
+                <span ng-if="x.trangthaidonhang==5">Trả hàng - Hoàn tiền</span>
               </div>
             </div>
             <div class="row" ng-init="showMore={}">
@@ -195,19 +195,19 @@
                   <p class="text-secondary">Phân loại: <span ng-repeat="chatlieu in listChatlieu" ng-if="spct.idChatLieu==chatlieu.id">{{chatlieu.tenchatlieu}}</span> - <span ng-repeat="mau in listColor" ng-if="spct.idMau==mau.id">{{mau.tenmau}}</span> - <span ng-repeat="size in listSize" ng-if="spct.idSize==size.id">{{size.sosize}}</span></p>
                   <p>x{{hdct.soluong}}</p>
                   <button type="button" class="btn btn-success" ng-click="openRatingModal(hdct)"
-                  ng-if="( danhgiaById[hdct.id].success === false) && x.trangthai === 3">
+                  ng-if="( danhgiaById[hdct.id].success === false) && x.trangthaidonhang === 3">
                   Đánh giá
                 </button>
 
                 <!-- Nút Sửa đánh giá -->
                 <button type="button" class="btn btn-warning" ng-click="openEditRatingModal(hdct)"
-                  ng-if=" danhgiaById[hdct.id].success !== false && x.trangthai === 3">
+                  ng-if=" danhgiaById[hdct.id].success !== false && x.trangthaidonhang === 3">
                   Sửa đánh giá
                 </button>
 
                 <!-- Nút Xóa đánh giá -->
                 <button type="button" class="btn btn-danger" ng-click="deleteRating(danhgiaById[hdct.id].id)"
-                  ng-if=" danhgiaById[hdct.id].success !== false && x.trangthai === 3">
+                  ng-if=" danhgiaById[hdct.id].success !== false && x.trangthaidonhang === 3">
                   Xóa đánh giá
                 </button>
                 </div>
@@ -243,10 +243,10 @@
                   <div class="d-flex justify-content-between">
                     <div class="p-2 bd-highlight text-secondary"></div>
                     <div class="p-2 bd-highlight">
-                      <a class="btn btn-danger" ng-if="x.trangthaithanhtoan == 0 && x.tenpttt == 1 && x.trangthai == 0" ng-click="thanhtoan(x.id)">Thanh toán</a>
-                      <a class="btn btn-danger" ng-if="doitra(x)" href="#!trahang/{{x.id}}">Trả hàng</a>
-                      <a class="btn btn-danger" ng-if="x.trangthai==4">Mua lại</a>
-                      <button class="btn btn-danger" ng-if="x.trangthai==0" ng-click="huydh(x.id)">Hủy đơn</button>
+                      <a class="btn btn-danger" ng-if="x.trangthaithanhtoan == 0 && x.tenpttt == 1 && x.trangthaidonhang == 0" ng-click="thanhtoan(x.id)">Thanh toán</a>
+                      <a class="btn btn-danger" ng-if="x.trangthaidonhang==3" href="#!trahang/{{x.id}}">Trả hàng</a>
+                      <a class="btn btn-danger" ng-if="x.trangthaidonhang==4">Mua lại</a>
+                      <button class="btn btn-danger" ng-if="x.trangthaidonhang==0" ng-click="huydh(x.id)">Hủy đơn</button>
                       <button class="btn btn-outline-dark" ng-click="chitietdh(x.id)">Chi tiết</button>
                       <a class="btn btn-outline-dark" href="tel:0867812095">Liên hệ người bán</a>
                     </div>
@@ -278,8 +278,8 @@
               <span>Mã hóa đơn: #{{x.id}}</span> 
             </div>
             <div class="col m-3 text-uppercase text-end" style="color: orangered;">
-              <span ng-if="x.trangthaidonhang ==0">Online</span>
-              <span ng-if="x.trangthaidonhang ==1">Tại quầy</span> | 
+              <span ng-if="x.trangthai ==0">Online</span>
+              <span ng-if="x.trangthai ==1">Tại quầy</span> | 
               
             </div>
           </div>
@@ -296,19 +296,19 @@
                 <p class="text-secondary">Phân loại: <span ng-repeat="chatlieu in listChatlieu" ng-if="spct.idChatLieu==chatlieu.id">{{chatlieu.tenchatlieu}}</span> - <span ng-repeat="mau in listColor" ng-if="spct.idMau==mau.id">{{mau.tenmau}}</span> - <span ng-repeat="size in listSize" ng-if="spct.idSize==size.id">{{size.sosize}}</span></p>
                 <p>x{{hdct.soluong}}</p>
                 <button type="button" class="btn btn-success" ng-click="openRatingModal(hdct)"
-                ng-if="( danhgiaById[hdct.id].success === false) && x.trangthai === 3">
+                ng-if="( danhgiaById[hdct.id].success === false) && x.trangthaidonhang === 3">
                 Đánh giá
               </button>
 
               <!-- Nút Sửa đánh giá -->
               <button type="button" class="btn btn-warning" ng-click="openEditRatingModal(hdct)"
-                ng-if=" danhgiaById[hdct.id].success !== false && x.trangthai === 3">
+                ng-if=" danhgiaById[hdct.id].success !== false && x.trangthaidonhang === 3">
                 Sửa đánh giá
               </button>
 
               <!-- Nút Xóa đánh giá -->
               <button type="button" class="btn btn-danger" ng-click="deleteRating(danhgiaById[hdct.id].id)"
-                ng-if=" danhgiaById[hdct.id].success !== false && x.trangthai === 3">
+                ng-if=" danhgiaById[hdct.id].success !== false && x.trangthaidonhang === 3">
                 Xóa đánh giá
               </button>
               </div>
@@ -344,10 +344,10 @@
                 <div class="d-flex justify-content-between">
                   <div class="p-2 bd-highlight text-secondary"></div>
                   <div class="p-2 bd-highlight">
-                    <a class="btn btn-danger" ng-if="x.trangthaithanhtoan == 0 && x.tenpttt == 1 && x.trangthai == 0" ng-click="thanhtoan(x.id)">Thanh toán</a>
+                    <a class="btn btn-danger" ng-if="x.trangthaithanhtoan == 0 && x.tenpttt == 1 && x.trangthaidonhang == 0" ng-click="thanhtoan(x.id)">Thanh toán</a>
                     <a class="btn btn-danger" ng-if="doitra(x)" href="#!trahang/{{x.id}}">Trả hàng</a>
-                    <a class="btn btn-danger" ng-if="x.trangthai==4">Mua lại</a>
-                    <button class="btn btn-danger" ng-if="x.trangthai==0" ng-click="huydh(x.id)">Hủy đơn</button>
+                    <a class="btn btn-danger" ng-if="x.trangthaidonhang==4">Mua lại</a>
+                    <button class="btn btn-danger" ng-if="x.trangthaidonhang==0" ng-click="huydh(x.id)">Hủy đơn</button>
                     <button class="btn btn-outline-dark" ng-click="chitietdh(x.id)">Chi tiết</button>
                     <a class="btn btn-outline-dark" href="tel:0867812095">Liên hệ người bán</a>
                   </div>
@@ -385,7 +385,7 @@
           
         </div>
         <div class="tab-pane fade" id="tab7" role="tabpanel">
-          <div class="mb-3 bg-light"ng-repeat="x in dataTraHang | filter:{idkh: idkh} | limitTo: itemsPerPage : (currentPage - 1) * itemsPerPage" ng-if="x.trangthai==1">
+          <div class="mb-3 bg-light"ng-repeat="x in dataTraHang | filter:{idkh: idkh} | limitTo: itemsPerPage : (currentPage - 1) * itemsPerPage" ng-if="x.trangthaidonhang==1">
             <div class="row border-bottom">
               <div class="col m-3 text-uppercase text-en fw-semibold">
                 <span>Mã hóa đơn: #{{x.id}}</span>
@@ -465,11 +465,11 @@
           <!-- Trạng thái đơn hàng -->
           <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
             <h5 class="text-uppercase text-danger">
-              <span ng-if="x.trangthai == 0">Chờ xác nhận</span>
-              <span ng-if="x.trangthai == 1">Đơn hàng đã được xác nhận</span>
-              <span ng-if="x.trangthai == 2">Đang được giao</span>
-              <span ng-if="x.trangthai == 3">Thành công</span>
-              <span ng-if="x.trangthai == 4">Đã huỷ</span>
+              <span ng-if="x.trangthaidonhang == 0">Chờ xác nhận</span>
+              <span ng-if="x.trangthaidonhang == 1">Đơn hàng đã được xác nhận</span>
+              <span ng-if="x.trangthaidonhang == 2">Đang được giao</span>
+              <span ng-if="x.trangthaidonhang == 3">Thành công</span>
+              <span ng-if="x.trangthaidonhang == 4">Đã huỷ</span>
             </h5>
           </div>
 
