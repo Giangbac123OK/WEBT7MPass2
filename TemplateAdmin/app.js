@@ -94,6 +94,7 @@ app.config(function ($routeProvider) {
         })
         .when("/Vocher", {
             templateUrl: "./Views/VocherAdmin.html",
+             controller: 'VoucherController'
             
         })
           .when("/dashboard", {

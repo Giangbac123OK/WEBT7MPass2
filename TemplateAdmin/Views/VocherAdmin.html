@@ -47,15 +47,16 @@
             </button>
         </div>
 
-        <div class="card mb-4">
+        <div class="card mb-4" ng-init="loadVouchers()">
             <div class="card-header">
                 <h5 class="card-title mb-0">Danh sách Voucher</h5>
             </div>
             <div class="card-body">
+                <!-- Bộ lọc -->
                 <div class="row mb-3">
                     <div class="col-md-4 mb-2">
-                        <select class="form-select" id="statusFilter">
-                            <option value="all" selected>Tất cả trạng thái</option>
+                        <select class="form-select" ng-model="statusFilter" ng-change="applyFilters()">
+                            <option value="">Tất cả trạng thái</option>
                             <option value="0">Đang chuẩn bị</option>
                             <option value="1">Sẵn sàng</option>
                             <option value="2">Đang hoạt động</option>
@@ -64,15 +65,15 @@
                         </select>
                     </div>
                     <div class="col-md-4 mb-2">
-                        <select class="form-select" id="typeFilter">
-                            <option value="all" selected>Tất cả loại</option>
+                        <select class="form-select" ng-model="typeFilter" ng-change="applyFilters()">
+                            <option value="">Tất cả loại</option>
                             <option value="0">Phần trăm</option>
                             <option value="1">Số tiền cố định</option>
                         </select>
                     </div>
                     <div class="col-md-4 mb-2">
-                        <select class="form-select" id="rankFilter">
-                            <option value="all" selected>Tất cả Rank</option>
+                        <select class="form-select" ng-model="rankFilter" ng-change="applyFilters()">
+                            <option value="">Tất cả Rank</option>
                             <option value="Bronze">Bronze</option>
                             <option value="Silver">Silver</option>
                             <option value="Gold">Gold</option>
@@ -81,7 +82,8 @@
                         </select>
                     </div>
                 </div>
-
+        
+                <!-- Bảng voucher -->
                 <div class="table-responsive">
                     <table class="table table-striped table-hover">
                         <thead>
@@ -96,21 +98,41 @@
                                 <th class="text-end">Thao tác</th>
                             </tr>
                         </thead>
-                        <tbody id="voucherTableBody">
-                            <!-- Dữ liệu sẽ được thêm vào bằng JavaScript -->
+                        <tbody>
+                            <tr ng-repeat="v in filteredVouchers">
+                                <td>{{ v.id }}</td>
+                                <td>{{ v.description }}</td>
+                                <td>{{ v.value }} {{ v.loai === 0 ? '%' : 'VNĐ' }}</td>
+                                <td>{{ v.soLuong }}</td>
+                                <td>{{ v.ngayBatDau | date:'dd/MM/yyyy' }} - {{ v.ngayKetThuc | date:'dd/MM/yyyy' }}</td>
+                                <td>
+                                    <span class="badge bg-secondary" ng-if="v.trangThai == 0">Đang chuẩn bị</span>
+                                    <span class="badge bg-primary" ng-if="v.trangThai == 1">Sẵn sàng</span>
+                                    <span class="badge bg-success" ng-if="v.trangThai == 2">Đang hoạt động</span>
+                                    <span class="badge bg-warning" ng-if="v.trangThai == 3">Đã sử dụng</span>
+                                    <span class="badge bg-danger" ng-if="v.trangThai == 4">Đã xoá</span>
+                                </td>
+                                <td>{{ v.rankName }}</td>
+                                <td class="text-end">
+                                    <button class="btn btn-sm btn-primary" ng-click="editVoucher(v)">Sửa</button>
+                                    <button class="btn btn-sm btn-danger" ng-click="deleteVoucher(v.id)">Xoá</button>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
+        
             <div class="card-footer d-flex justify-content-between align-items-center">
-                <div>Hiển thị <span id="totalVouchers">0</span> voucher</div>
+                <div>Hiển thị <span>{{ filteredVouchers.length }}</span> voucher</div>
+                <!-- Nút phân trang (tùy bạn muốn làm thêm JS để xử lý) -->
                 <div>
-                    <button class="btn btn-sm btn-outline-secondary me-2" id="prevPage" disabled>Trước</button>
-                    <button class="btn btn-sm btn-outline-secondary" id="nextPage">Sau</button>
+                    <button class="btn btn-sm btn-outline-secondary me-2" disabled>Trước</button>
+                    <button class="btn btn-sm btn-outline-secondary" disabled>Sau</button>
                 </div>
             </div>
         </div>
-    </div>
+        
 
     <!-- Modal Thêm Voucher -->
     <div class="modal fade" id="addVoucherModal" tabindex="-1" aria-labelledby="addVoucherModalLabel" aria-hidden="true">
