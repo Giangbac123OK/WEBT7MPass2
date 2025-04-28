@@ -95,7 +95,7 @@ app.config(function ($routeProvider) {
         })
         .when("/Vocher", {
             templateUrl: "./Views/VocherAdmin.html",
-            
+             controller: 'VoucherController'
         })
           .when("/dashboard", {
             templateUrl: "./Views/dashboard.html",
@@ -122,8 +122,8 @@ app.run(function($rootScope, $location) {
         var restrictedPage = publicPages.indexOf(path) === -1;
         if (restrictedPage && !$rootScope.userInfo) {
             event.preventDefault();
-           // $location.path("/dangnhap");
-            $location.path("/doimatkhau");
+           $location.path("/dangnhap");
+            // $location.path("/doimatkhau");
         }doimatkhau
     });
 
