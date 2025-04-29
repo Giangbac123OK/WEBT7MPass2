@@ -24,7 +24,7 @@
                         <option value="0">Đang phát hành</option>
                         <option value="1">Chuẩn bị phát hành</option>
                         <option value="2">Dừng phát hành</option>
-                      
+
                     </select>
                 </div>
                 <div class="col-md-4 mb-2">
@@ -58,14 +58,13 @@
                             <td>{{ v.soluong }}</td>
                             <td>{{ v.ngaybatdau | date:'dd/MM/yyyy' }} - {{ v.ngayketthuc | date:'dd/MM/yyyy' }}</td>
                             <td>
-                               
+
                                 {{ v.trangthai }}
                             </td>
-                          
+
                             <td class="text-end">
-                                <button class="btn btn-sm btn-primary"
-                                data-bs-toggle="modal" data-bs-target="#editVoucherModal"
-                                ng-click="editVoucher(v)">Sửa</button>
+                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#editVoucherModal" ng-click="editVoucher(v)">Sửa</button>
                                 <button class="btn btn-sm btn-danger" ng-click="deleteVoucher(v.id)">Xoá</button>
                             </td>
                         </tr>
@@ -78,258 +77,253 @@
             <div>Hiển thị <span>{{ filteredVouchers.length }}</span> voucher</div>
             <!-- Phân trang -->
             <div>
-                <button class="btn btn-sm btn-outline-secondary" ng-click="prevPage()" ng-disabled="currentPage === 1">Trước</button>
-                <button class="btn btn-sm btn-outline-secondary" ng-click="nextPage()" ng-disabled="currentPage === totalPages()">Sau</button>
+                <button class="btn btn-sm btn-outline-secondary" ng-click="prevPage()"
+                    ng-disabled="currentPage === 1">Trước</button>
+                <button class="btn btn-sm btn-outline-secondary" ng-click="nextPage()"
+                    ng-disabled="currentPage === totalPages()">Sau</button>
             </div>
         </div>
     </div>
 </div>
 
-    <!-- Modal Thêm Voucher -->
-    <div class="modal fade" id="addVoucherModal" tabindex="-1" aria-labelledby="addVoucherModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addVoucherModalLabel">Thêm Voucher mới</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="addVoucherForm">
-                        <div class="mb-3">
-                            <label for="mota" class="form-label">Mô tả</label>
-                            <input type="text" class="form-control" id="mota">
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="donvi" class="form-label">Đơn vị <span class="text-danger">*</span></label>
-                                <select class="form-select" id="donvi" required>
-                                    <option value="1">Phần trăm (%)</option>
-                                    <option value="0">Số tiền cố định (VNĐ)</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="giatri" class="form-label">Giá trị <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" id="giatri" required min="0">
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="soluong" class="form-label">Số lượng <span class="text-danger">*</span></label>
-                            <input type="number" class="form-control" id="soluong" required min="1">
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="ngaybatdau" class="form-label">Ngày bắt đầu <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control datepicker" id="ngaybatdau" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="ngayketthuc" class="form-label">Ngày kết thúc <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control datepicker" id="ngayketthuc" required>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="trangthai" class="form-label">Trạng thái</label>
-                            <select class="form-select" id="trangthai">
-                                <option value="">Tất cả trạng thái</option>
-                                <option value="0">Đang phát hành</option>
-                                <option value="1">Chuẩn bị phát hành</option>
-                                <option value="2">Dừng phát hành</option>
+<!-- Modal Thêm Voucher -->
+<div class="modal fade" id="addVoucherModal" tabindex="-1" aria-labelledby="addVoucherModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addVoucherModalLabel">Thêm Voucher mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addVoucherForm">
+                    <div class="mb-3">
+                        <label for="mota" class="form-label">Mô tả</label>
+                        <input type="text" class="form-control" id="mota">
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="donvi" class="form-label">Đơn vị <span class="text-danger">*</span></label>
+                            <select class="form-select" id="donvi" required>
+                                <option value="1">Phần trăm (%)</option>
+                                <option value="0">Số tiền cố định (VNĐ)</option>
                             </select>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Áp dụng cho Rank <span class="text-danger">*</span></label>
-                            <div class="row" id="rank_coupon">
-                                <div class="col-md-4 mb-2" ng-repeat="rank in ranks">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="rank_{{rank.id}}" ng-model="rank.selected">
-                                        <label class="form-check-label" for="rank_{{rank.id}}">
-                                            {{rank.tenrank}}
-                                        </label>
-                                    </div>
+                        <div class="col-md-6">
+                            <label for="giatri" class="form-label">Giá trị <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="giatri" required min="0">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="soluong" class="form-label">Số lượng <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" id="soluong" required min="1">
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="ngaybatdau" class="form-label">Ngày bắt đầu <span
+                                    class="text-danger">*</span></label>
+                            <input type="datetime-local" class="form-control" id="ngaybatdau" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="ngayketthuc" class="form-label">Ngày kết thúc <span
+                                    class="text-danger">*</span></label>
+                            <input type="datetime-local" class="form-control" id="ngayketthuc" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="trangthaiadd" class="form-label">Trạng thái</label>
+                        <select class="form-select" id="trangthaiadd">
+                            <option value="0">Đang phát hành</option>
+                            <option value="1">Chuẩn bị phát hành</option>
+                            <option value="2">Dừng phát hành</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Áp dụng cho Rank <span class="text-danger">*</span></label>
+                        <div class="row" id="rank_coupon">
+                            <div class="col-md-4 mb-2" ng-repeat="rank in ranks">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="rank_{{rank.id}}"
+                                        ng-model="rank.selected">
+                                    <label class="form-check-label" for="rank_{{rank.id}}">
+                                        {{rank.tenrank}}
+                                    </label>
                                 </div>
                             </div>
-                            
                         </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="button" class="btn btn-primary" id="saveVoucherBtn">Lưu</button>
-                </div>
+
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary" id="saveVoucherBtn">Lưu</button>
             </div>
         </div>
     </div>
+</div>
 
-  <!-- Modal Sửa Voucher -->
-  <div class="modal fade" id="editVoucherModal" tabindex="-1" aria-labelledby="editVoucherModalLabel" aria-hidden="true">
+<!-- Modal Sửa Voucher -->
+<div class="modal fade" id="editVoucherModal" tabindex="-1" aria-labelledby="editVoucherModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="editVoucherModalLabel">Sửa Voucher</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
-        </div>
-        <div class="modal-body">
-          <form name="editVoucherForm" novalidate>
-            <!-- Mô tả -->
-            <div class="mb-3">
-              <label class="form-label">Mô tả</label>
-              <input type="text" class="form-control" ng-model="editingVoucher.mota" required>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editVoucherModalLabel">Sửa Voucher</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
             </div>
-  
-            <!-- Đơn vị và Giá trị -->
-            <div class="row mb-3">
-              <div class="col-md-6">
-                <label class="form-label">Đơn vị</label>
-                <select class="form-select" ng-model="editingVoucher.donvi" required>
-                  <option value="1">Phần trăm (%)</option>
-                  <option value="0">Số tiền (VNĐ)</option>
-                </select>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">Giá trị</label>
-                <input type="number" class="form-control" ng-model="editingVoucher.giatri" required>
-              </div>
-            </div>
-  
-            <!-- Số lượng -->
-            <div class="mb-3">
-              <label class="form-label">Số lượng</label>
-              <input type="number" class="form-control" ng-model="editingVoucher.soluong" required>
-            </div>
-  
-            <!-- Ngày bắt đầu và Ngày kết thúc -->
-            <div class="row mb-3">
-              <div class="col-md-6">
-                <label class="form-label">Ngày bắt đầu</label>
-                <input type="datetime-local" class="form-control" ng-model="editingVoucher.ngaybatdau" required>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">Ngày kết thúc</label>
-                <input type="datetime-local" class="form-control" ng-model="editingVoucher.ngayketthuc" required>
-              </div>
-            </div>
-  
-            <!-- Trạng thái -->
-            <div class="mb-3">
-              <label class="form-label">Trạng thái</label>
-              <select class="form-select" ng-model="editingVoucher.trangthai" required>
-                <option value="0">Đang phát hành</option>
-                <option value="1">Chuẩn bị phát hành</option>
-                <option value="2">Dừng phát hành</option>
-              </select>
-            </div>
-  
-            <!-- Áp dụng cho Rank -->
-            <div class="mb-3">
-              <label class="form-label">Áp dụng cho Rank</label>
-              <div class="row" id="edit_rank_coupon">
-                <div class="col-md-4 mb-2" ng-repeat="rank in ranks">
-                  <div class="form-check">
-                    <input class="form-check-input" type="checkbox" ng-model="rank.selectedEdit">
-                    <label class="form-check-label">{{rank.tenrank}}</label>
-                  </div>
-                </div>
-              </div>
-            </div>
-  
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-          <button type="button" class="btn btn-primary" ng-click="updateVoucher()">Cập nhật</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-      
+            <div class="modal-body">
+                <form name="editVoucherForm" novalidate>
+                    <!-- Mô tả -->
+                    <div class="mb-3">
+                        <label class="form-label">Mô tả</label>
+                        <input type="text" class="form-control" ng-model="editingVoucher.mota" required>
+                    </div>
 
-    <!-- Modal Xác nhận xóa -->
-    <div class="modal fade" id="deleteVoucherModal" tabindex="-1" aria-labelledby="deleteVoucherModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteVoucherModalLabel">Xác nhận xóa</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Bạn có chắc chắn muốn xóa voucher này không?</p>
-                    <input type="hidden" id="deleteVoucherId">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Xóa</button>
-                </div>
+                    <!-- Đơn vị và Giá trị -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Đơn vị</label>
+                            <select class="form-select" ng-model="editingVoucher.donvi" required>
+                                <option value="%">Phần trăm (%)</option>
+                                <option value="VND">Số tiền (VNĐ)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Giá trị</label>
+                            <input type="number" class="form-control" ng-model="editingVoucher.giatri" required>
+                        </div>
+                    </div>
+
+                    <!-- Số lượng -->
+                    <div class="mb-3">
+                        <label class="form-label">Số lượng</label>
+                        <input type="number" class="form-control" ng-model="editingVoucher.soluong" required>
+                    </div>
+
+                    <!-- Ngày bắt đầu và Ngày kết thúc -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Ngày bắt đầu</label>
+                            <input type="text" class="form-control" ng-model="editingVoucher.ngaybatdau" required
+                                placeholder="dd/MM/yyyy HH:mm">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Ngày kết thúc</label>
+                            <input type="text" class="form-control" ng-model="editingVoucher.ngayketthuc" required
+                                placeholder="dd/MM/yyyy HH:mm">
+                        </div>
+                    </div>
+
+                    <!-- Trạng thái -->
+                    <div class="mb-3">
+                        <label class="form-label">Trạng thái</label>
+                        <select class="form-select" ng-model="editingVoucher.trangthai" required>
+                            <option value="Đang phát hành">Đang phát hành</option>
+                            <option value="Chuẩn bị phát hành">Chuẩn bị phát hành</option>
+                            <option value="Dừng phát hành">Dừng phát hành</option>
+                        </select>
+                    </div>
+
+                    <!-- Áp dụng cho Rank -->
+                    <!-- Áp dụng cho Rank -->
+                    <div class="mb-3">
+                        <label class="form-label">Áp dụng cho Rank</label>
+                        <div class="row" id="edit_rank_coupon">
+                            <div class="col-md-4 mb-2" ng-repeat="rank in allRanks">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" ng-model="rank.selectedEdit">
+                                    <label class="form-check-label">{{rank.tenrank}}</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary" ng-click="updateVoucher()">Cập nhật</button>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Bootstrap JS Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- Bootstrap Datepicker -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.vi.min.js"></script>
-    <style>
-        .datepicker-dropdown {
-            font-family: 'Arial', sans-serif;
-            font-size: 14px;
-            padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-            border: 1px solid #ddd;
-        }
-    
-        .datepicker table {
-            width: 100%;
-        }
-    
-        .datepicker table tr td,
-        .datepicker table tr th {
-            width: 36px;
-            height: 36px;
-            text-align: center;
-            vertical-align: middle;
-            font-weight: normal;
-            border-radius: 6px;
-        }
-    
-        .datepicker table tr td.day:hover,
-        .datepicker table tr td.day.focused {
-            background: #007bff;
-            color: white;
-            cursor: pointer;
-        }
-    
-        .datepicker table tr td.active,
-        .datepicker table tr td.active:hover {
-            background-color: #007bff;
-            color: white;
-        }
-    
-        .datepicker table tr td.today {
-            background: #ffc107;
-            color: white;
-        }
-    
-        .datepicker .datepicker-switch,
-        .datepicker .prev,
-        .datepicker .next {
-            font-weight: bold;
-            color: #333;
-        }
-    </style>
-    
-    <script>
-        $(document).ready(function () {
-            $('.datepicker').datepicker({
-                format: 'dd/mm/yyyy', // định dạng ngày: ngày/tháng/năm
-                todayHighlight: true, // bôi đậm ngày hôm nay
-                autoclose: true // tự động đóng khi chọn
-            });
+<!-- Modal Xác nhận xóa -->
+<div class="modal fade" id="deleteVoucherModal" tabindex="-1" aria-labelledby="deleteVoucherModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteVoucherModalLabel">Xác nhận xóa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xóa voucher này không?</p>
+                <input type="hidden" id="deleteVoucherId">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Xóa</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .datepicker-dropdown {
+        font-family: 'Arial', sans-serif;
+        font-size: 14px;
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        border: 1px solid #ddd;
+    }
+
+    .datepicker table {
+        width: 100%;
+    }
+
+    .datepicker table tr td,
+    .datepicker table tr th {
+        width: 36px;
+        height: 36px;
+        text-align: center;
+        vertical-align: middle;
+        font-weight: normal;
+        border-radius: 6px;
+    }
+
+    .datepicker table tr td.day:hover,
+    .datepicker table tr td.day.focused {
+        background: #007bff;
+        color: white;
+        cursor: pointer;
+    }
+
+    .datepicker table tr td.active,
+    .datepicker table tr td.active:hover {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .datepicker table tr td.today {
+        background: #ffc107;
+        color: white;
+    }
+
+    .datepicker .datepicker-switch,
+    .datepicker .prev,
+    .datepicker .next {
+        font-weight: bold;
+        color: #333;
+    }
+</style>
+
+<script>
+    $(document).ready(function () {
+        $('.datepicker').datepicker({
+            format: 'dd/mm/yyyy', // định dạng ngày: ngày/tháng/năm
+            todayHighlight: true, // bôi đậm ngày hôm nay
+            autoclose: true // tự động đóng khi chọn
         });
-    </script>
-    
-   
-</body>
-</html>
+    });
+</script>
