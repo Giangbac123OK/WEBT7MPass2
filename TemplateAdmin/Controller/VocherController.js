@@ -282,18 +282,30 @@ app.controller("VoucherController", function ($http, $scope, $timeout, $q) {
 
       // Chuyển đổi đơn vị giá trị sang dạng số
       updatedVoucher.donvi = updatedVoucher.donvi === "VND" ? 1 : 0;
+      updatedVoucher.rankNames = $scope.allRanks
+  .filter(r => r.selectedEdit)
+  .map(r => r.tenrank);
 
-      $http.put(`https://localhost:7196/api/Giamgia/${updatedVoucher.id}`, updatedVoucher)
+      $http.put(`https://localhost:7196/api/Giamgia/${updatedVoucher.id}/Admin`, {
+        mota: updatedVoucher.mota,
+        donvi: updatedVoucher.donvi,
+        soluong: updatedVoucher.soluong,
+        giatri: updatedVoucher.giatri,
+        ngaybatdau: updatedVoucher.ngaybatdau,
+        ngayketthuc: updatedVoucher.ngayketthuc,
+        trangthai: updatedVoucher.trangthai,
+        rankNames: updatedVoucher.rankNames // Phải là mảng, ví dụ: ["Vàng"]
+    })
     .then(function(response) {
         if (response.status === 200) {
             alert("Cập nhật mã giảm giá thành công!");
             var modal = bootstrap.Modal.getInstance(document.getElementById("editVoucherModal"));
             modal.hide();
-            loadVouchers(); // Reload lại danh sách voucher
+            loadVouchers();
         } else {
             alert("Cập nhật thất bại. Vui lòng thử lại.");
         }
-    })
+    })  
     .catch(function(err) {
         console.error('Lỗi khi cập nhật:', err);
         alert("Có lỗi xảy ra khi cập nhật!");
