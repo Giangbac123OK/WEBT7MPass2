@@ -21,9 +21,9 @@
                 <div class="col-md-4 mb-2">
                     <select class="form-select" ng-model="statusFilter" ng-change="applyFilters()">
                         <option value="">Tất cả trạng thái</option>
-                        <option value="0">Đang chuẩn bị</option>
-                        <option value="1">Đang hoạt động</option>
-                        <option value="2">Đã sử dụng</option>
+                        <option value="0">Đang phát hành</option>
+                        <option value="1">Chuẩn bị phát hành</option>
+                        <option value="2">Dừng phát hành</option>
                       
                     </select>
                 </div>
@@ -32,11 +32,6 @@
                         <option value="">Tất cả loại</option>
                         <option value="1">Phần trăm</option>
                         <option value="0">Số tiền cố định</option>
-                    </select>
-                </div>
-                <div class="col-md-4 mb-2">
-                    <select class="form-select" ng-model="rankFilter" ng-change="applyFilters()">
-                        <!-- Thêm từ API Rank -->
                     </select>
                 </div>
             </div>
@@ -52,7 +47,6 @@
                             <th>Số lượng</th>
                             <th>Thời gian</th>
                             <th>Trạng thái</th>
-                            <th>Áp dụng cho Rank</th>
                             <th class="text-end">Thao tác</th>
                         </tr>
                     </thead>
@@ -60,16 +54,18 @@
                         <tr ng-repeat="v in filteredVouchers | limitTo: itemsPerPage: (currentPage - 1) * itemsPerPage">
                             <td>{{ v.id }}</td>
                             <td>{{ v.mota }}</td>
-                            <td>{{ v.giatri }} {{ v.donvi === 0 ? '%' : 'VNĐ' }}</td>
+                            <td>{{ v.giatri }} {{ v.donvi }}</td>
                             <td>{{ v.soluong }}</td>
                             <td>{{ v.ngaybatdau | date:'dd/MM/yyyy' }} - {{ v.ngayketthuc | date:'dd/MM/yyyy' }}</td>
                             <td>
                                
                                 {{ v.trangthai }}
                             </td>
-                            <td>{{ v.tenrank }}</td>
+                          
                             <td class="text-end">
-                                <button class="btn btn-sm btn-primary" ng-click="editVoucher(v)">Sửa</button>
+                                <button class="btn btn-sm btn-primary"
+                                data-bs-toggle="modal" data-bs-target="#editVoucherModal"
+                                ng-click="editVoucher(v)">Sửa</button>
                                 <button class="btn btn-sm btn-danger" ng-click="deleteVoucher(v.id)">Xoá</button>
                             </td>
                         </tr>
@@ -107,8 +103,8 @@
                             <div class="col-md-6">
                                 <label for="donvi" class="form-label">Đơn vị <span class="text-danger">*</span></label>
                                 <select class="form-select" id="donvi" required>
-                                    <option value="0">Phần trăm (%)</option>
-                                    <option value="1">Số tiền cố định (VNĐ)</option>
+                                    <option value="1">Phần trăm (%)</option>
+                                    <option value="0">Số tiền cố định (VNĐ)</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
@@ -133,16 +129,25 @@
                         <div class="mb-3">
                             <label for="trangthai" class="form-label">Trạng thái</label>
                             <select class="form-select" id="trangthai">
-                                <option value="0">Đang chuẩn bị</option>
-                                <option value="1">Sẵn sàng</option>
-                                <option value="2">Đang hoạt động</option>
+                                <option value="">Tất cả trạng thái</option>
+                                <option value="0">Đang phát hành</option>
+                                <option value="1">Chuẩn bị phát hành</option>
+                                <option value="2">Dừng phát hành</option>
                             </select>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Áp dụng cho Rank <span class="text-danger">*</span></label>
-                            <div class="row">
-                              <!-- ...............  -->
+                            <div class="row" id="rank_coupon">
+                                <div class="col-md-4 mb-2" ng-repeat="rank in ranks">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="rank_{{rank.id}}" ng-model="rank.selected">
+                                        <label class="form-check-label" for="rank_{{rank.id}}">
+                                            {{rank.tenrank}}
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
+                            
                         </div>
                     </form>
                 </div>
@@ -154,112 +159,89 @@
         </div>
     </div>
 
-    <!-- Modal Sửa Voucher -->
-    <div class="modal fade" id="editVoucherModal" tabindex="-1" aria-labelledby="editVoucherModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editVoucherModalLabel">Sửa Voucher</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="editVoucherForm">
-                        <input type="hidden" id="editVoucherId">
-                        <div class="mb-3">
-                            <label for="editMota" class="form-label">Mô tả</label>
-                            <input type="text" class="form-control" id="editMota">
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="editDonvi" class="form-label">Đơn vị <span class="text-danger">*</span></label>
-                                <select class="form-select" id="editDonvi" required>
-                                    <option value="0">Phần trăm (%)</option>
-                                    <option value="1">Số tiền cố định (VNĐ)</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="editGiatri" class="form-label">Giá trị <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" id="editGiatri" required min="0">
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editSoluong" class="form-label">Số lượng <span class="text-danger">*</span></label>
-                            <input type="number" class="form-control" id="editSoluong" required min="1">
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="editNgaybatdau" class="form-label">Ngày bắt đầu <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control datepicker" id="editNgaybatdau" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="editNgayketthuc" class="form-label">Ngày kết thúc <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control datepicker" id="editNgayketthuc" required>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editTrangthai" class="form-label">Trạng thái</label>
-                            <select class="form-select" id="editTrangthai">
-                                <option value="0">Đang chuẩn bị</option>
-                                <option value="1">Sẵn sàng</option>
-                                <option value="2">Đang hoạt động</option>
-                                <option value="3">Đã sử dụng</option>
-                                <option value="4">Đã xóa</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Áp dụng cho Rank <span class="text-danger">*</span></label>
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="form-check">
-                                        <input class="form-check-input edit-rank-checkbox" type="checkbox" value="Bronze" id="editRankBronze">
-                                        <label class="form-check-label" for="editRankBronze">
-                                            Bronze
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-check">
-                                        <input class="form-check-input edit-rank-checkbox" type="checkbox" value="Silver" id="editRankSilver">
-                                        <label class="form-check-label" for="editRankSilver">
-                                            Silver
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-check">
-                                        <input class="form-check-input edit-rank-checkbox" type="checkbox" value="Gold" id="editRankGold">
-                                        <label class="form-check-label" for="editRankGold">
-                                            Gold
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-check">
-                                        <input class="form-check-input edit-rank-checkbox" type="checkbox" value="Platinum" id="editRankPlatinum">
-                                        <label class="form-check-label" for="editRankPlatinum">
-                                            Platinum
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-check">
-                                        <input class="form-check-input edit-rank-checkbox" type="checkbox" value="Diamond" id="editRankDiamond">
-                                        <label class="form-check-label" for="editRankDiamond">
-                                            Diamond
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="button" class="btn btn-primary" id="updateVoucherBtn">Cập nhật</button>
-                </div>
-            </div>
+  <!-- Modal Sửa Voucher -->
+  <div class="modal fade" id="editVoucherModal" tabindex="-1" aria-labelledby="editVoucherModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editVoucherModalLabel">Sửa Voucher</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
         </div>
+        <div class="modal-body">
+          <form name="editVoucherForm" novalidate>
+            <!-- Mô tả -->
+            <div class="mb-3">
+              <label class="form-label">Mô tả</label>
+              <input type="text" class="form-control" ng-model="editingVoucher.mota" required>
+            </div>
+  
+            <!-- Đơn vị và Giá trị -->
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label">Đơn vị</label>
+                <select class="form-select" ng-model="editingVoucher.donvi" required>
+                  <option value="1">Phần trăm (%)</option>
+                  <option value="0">Số tiền (VNĐ)</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Giá trị</label>
+                <input type="number" class="form-control" ng-model="editingVoucher.giatri" required>
+              </div>
+            </div>
+  
+            <!-- Số lượng -->
+            <div class="mb-3">
+              <label class="form-label">Số lượng</label>
+              <input type="number" class="form-control" ng-model="editingVoucher.soluong" required>
+            </div>
+  
+            <!-- Ngày bắt đầu và Ngày kết thúc -->
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label">Ngày bắt đầu</label>
+                <input type="datetime-local" class="form-control" ng-model="editingVoucher.ngaybatdau" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Ngày kết thúc</label>
+                <input type="datetime-local" class="form-control" ng-model="editingVoucher.ngayketthuc" required>
+              </div>
+            </div>
+  
+            <!-- Trạng thái -->
+            <div class="mb-3">
+              <label class="form-label">Trạng thái</label>
+              <select class="form-select" ng-model="editingVoucher.trangthai" required>
+                <option value="0">Đang phát hành</option>
+                <option value="1">Chuẩn bị phát hành</option>
+                <option value="2">Dừng phát hành</option>
+              </select>
+            </div>
+  
+            <!-- Áp dụng cho Rank -->
+            <div class="mb-3">
+              <label class="form-label">Áp dụng cho Rank</label>
+              <div class="row" id="edit_rank_coupon">
+                <div class="col-md-4 mb-2" ng-repeat="rank in ranks">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" ng-model="rank.selectedEdit">
+                    <label class="form-check-label">{{rank.tenrank}}</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+  
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+          <button type="button" class="btn btn-primary" ng-click="updateVoucher()">Cập nhật</button>
+        </div>
+      </div>
     </div>
+  </div>
+  
+      
 
     <!-- Modal Xác nhận xóa -->
     <div class="modal fade" id="deleteVoucherModal" tabindex="-1" aria-labelledby="deleteVoucherModalLabel" aria-hidden="true">
@@ -288,6 +270,65 @@
     <!-- Bootstrap Datepicker -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.vi.min.js"></script>
+    <style>
+        .datepicker-dropdown {
+            font-family: 'Arial', sans-serif;
+            font-size: 14px;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            border: 1px solid #ddd;
+        }
+    
+        .datepicker table {
+            width: 100%;
+        }
+    
+        .datepicker table tr td,
+        .datepicker table tr th {
+            width: 36px;
+            height: 36px;
+            text-align: center;
+            vertical-align: middle;
+            font-weight: normal;
+            border-radius: 6px;
+        }
+    
+        .datepicker table tr td.day:hover,
+        .datepicker table tr td.day.focused {
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+    
+        .datepicker table tr td.active,
+        .datepicker table tr td.active:hover {
+            background-color: #007bff;
+            color: white;
+        }
+    
+        .datepicker table tr td.today {
+            background: #ffc107;
+            color: white;
+        }
+    
+        .datepicker .datepicker-switch,
+        .datepicker .prev,
+        .datepicker .next {
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+    
+    <script>
+        $(document).ready(function () {
+            $('.datepicker').datepicker({
+                format: 'dd/mm/yyyy', // định dạng ngày: ngày/tháng/năm
+                todayHighlight: true, // bôi đậm ngày hôm nay
+                autoclose: true // tự động đóng khi chọn
+            });
+        });
+    </script>
     
    
 </body>

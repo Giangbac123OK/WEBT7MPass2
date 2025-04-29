@@ -35,9 +35,10 @@ app.controller('dangkyController', function ($scope, $http) {
         return ''; // Nếu hợp lệ, trả về chuỗi rỗng
     }
     function isValidPhoneNumber(phoneNumber) {
-        var phoneRegex = /^[0-9]{10}$/; // Kiểm tra số điện thoại từ 10
+        var phoneRegex = /^0[0-9]{9}$/; // Kiểm tra số điện thoại có số 0 ở đầu và 9 chữ số tiếp theo
         return phoneRegex.test(phoneNumber);
     }
+    
     function isValidEmail(email) {
         var emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
         return emailPattern.test(email);
