@@ -1,3 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+
 <style>
     /* Rank badge styles */
 .badge-bronze {
@@ -49,7 +59,7 @@
                         <option value="all">Tất cả trạng thái</option>
                         <option value="0">Đang hoạt động</option>
                         <option value="1">Không hoạt động</option>
-                        <option value="2">Đã xóa</option>
+                   
                     </select>
                 </div>
             </div>
@@ -78,8 +88,6 @@
                             <th>Mức chi tiêu tối thiểu</th>
                             <th>Mức chi tiêu tối đa</th>
                             <th>Trạng thái</th>
-                            <th>Số khách hàng</th>
-                            <th>Số voucher</th>
                             <th class="text-end">Thao tác</th>
                         </tr>
                     </thead>
@@ -92,12 +100,10 @@
                             <td>{{formatCurrency(rank.minMoney)}}</td>
                             <td>{{formatCurrency(rank.maxMoney)}}</td>
                             <td>
-                                <span class="badge" ng-class="{'bg-success': rank.trangthai == 0, 'bg-secondary': rank.trangthai == 1, 'bg-danger': rank.trangthai == 2}">
+                                <span class="badge" ng-class="{'bg-success': rank.trangthai == 0, 'bg-secondary': rank.trangthai == 1}">
                                     {{getStatusText(rank.trangthai)}}
                                 </span>
                             </td>
-                            <td>{{rank.khachhangs || 0}}</td>
-                            <td>{{rank.vouchers || 0}}</td>
                             <td class="text-end">
                                 <button class="btn btn-sm btn-outline-primary me-1" ng-click="openEditModal(rank)">
                                     <i class="bi bi-pencil"></i>
@@ -226,3 +232,5 @@
         </div>
     </div>
 </div>
+</body>
+</html>
