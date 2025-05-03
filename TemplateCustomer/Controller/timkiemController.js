@@ -1,18 +1,14 @@
 app.controller('timkiemController', function ($scope, $routeParams, $http, $timeout) {
-    // Decode the search parameter properly to handle Vietnamese characters
+    // Khởi tạo biến
     $scope.searchKey = decodeURIComponent($routeParams.search || '');
     $scope.filteredResults = [];
     $scope.displayResults = [];
-    $scope.errorMessage = '';
     $scope.isLoading = true;
-    
-    // Pagination settings
+    $scope.errorMessage = '';
     $scope.currentPage = 1;
     $scope.pageSize = 9;
     $scope.totalPages = 0;
     $scope.sortOption = 'newest';
-    
-    // Initialize filters
     $scope.filters = {
         priceRange: null,
         minPrice: null,
@@ -20,298 +16,145 @@ app.controller('timkiemController', function ($scope, $routeParams, $http, $time
         brands: {},
         sizes: {}
     };
-    
-    // Available sizes for filter
-    $scope.availableSizes = ['37', '37.5', '38', '38.5', '39', '40', '41', '42', 'S', 'M', 'L', 'XL'];
-    
-    // Image loading function
+
+    // Hàm tải ảnh sản phẩm
     function loadHinhAnh(idSPCT, callback) {
         fetch(`https://localhost:7196/api/Sanphamchitiets/GetImageById/${idSPCT}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
+            .then(response => response.ok ? response.blob() : Promise.reject())
+            .then(blob => callback(URL.createObjectURL(blob)))
+            .catch(() => callback('assets/images/default-product.jpg'));
+    }
+
+    // Gọi API lấy thương hiệu và size
+    $http.get('https://localhost:7196/api/Thuonghieu').then(res => {
+        $scope.dataThuonghieu = res.data;
+    });
+    $http.get('https://localhost:7196/api/Size').then(res => {
+        $scope.availableSizes = res.data;
+    });
+
+    // Hàm xử lý dữ liệu sản phẩm
+    function processSanphamList(list) {
+        return list
+            .filter(sp => sp.sanphamchitiets?.length > 0)
+            .map(sp => {
+                sp.hinhAnh = "assets/images/default-product.jpg";
+                sp.soLuongBan = sp.sanphamchitiets.reduce((total, spct) => total + (spct.soLuongBan || 0), 0);
+
+                let spct = sp.sanphamchitiets[0];
+                if (spct?.id) {
+                    loadHinhAnh(spct.id, imgUrl => {
+                        sp.hinhAnh = imgUrl;
+                        $timeout(() => $scope.$apply(), 0);
+                    });
                 }
-                return response.blob();
-            })
-            .then(blob => {
-                let imgUrl = URL.createObjectURL(blob);
-                callback(imgUrl);
-            })
-            .catch(error => {
-                console.error("Lỗi tải ảnh:", error);
-                callback('assets/images/default-product.jpg'); // Fallback image
+
+                return sp;
             });
     }
-  
-    // Fetch brand data
-    $http.get('https://localhost:7196/api/Thuonghieu')
-        .then(function (response) {
-            $scope.dataThuonghieu = response.data;
-            console.log('Loaded brands:', $scope.dataThuonghieu);
-        })
-        .catch(function (error) {
-            console.error('API Error loading brands:', error);
-        });
-  
-    // Log the search term for debugging
-    console.log('Searching for:', $scope.searchKey);
-    
-    // Fetch search results from API with proper encoding
+
+    // Gọi API tìm kiếm chính
     $http.get(`https://localhost:7196/api/Sanphams/search?name=${encodeURIComponent($scope.searchKey)}`)
-        .then(function (response) {
-            console.log('API Response:', response.data);
-            
-            if (response.data && response.data.length > 0) {
-                $scope.filteredResults = response.data
-                    .filter(sp => sp.sanphamchitiets && sp.sanphamchitiets.length > 0)
-                    .map(sp => {
-                        // Set default image
-                        sp.hinhAnh = "assets/images/default-product.jpg";
-                        
-                        // Calculate total sales for the product
-                        sp.soLuongBan = sp.sanphamchitiets.reduce(function(total, spct) {
-                            return total + (spct.soLuongBan || 0);
-                        }, 0);
-                        
-                        // Load image from first product detail
-                        if (sp.sanphamchitiets && sp.sanphamchitiets.length > 0) {
-                            let spct = sp.sanphamchitiets[0];
-                            loadHinhAnh(spct.id, function(imgUrl) {
-                                sp.hinhAnh = imgUrl;
-                                // Use $timeout to safely apply changes outside of Angular's digest cycle
-                                $timeout(function() {
-                                    $scope.$apply();
-                                }, 0);
-                            });
-                        }
-                        
-                        // Log the product data to see the structure
-                        console.log('Product data structure:', sp);
-                        
-                        return sp;
-                    });
-                    
+        .then(res => {
+            if (res.data?.length) {
+                $scope.filteredResults = processSanphamList(res.data);
                 $scope.displayResults = [...$scope.filteredResults];
-                console.log('Processed results:', $scope.displayResults);
-            } else {
-                console.log('No results found');
-                $scope.filteredResults = [];
-                $scope.displayResults = [];
             }
-            
-            $scope.isLoading = false;
-            
-            // Update total pages based on search results
             $scope.totalPages = Math.ceil($scope.displayResults.length / $scope.pageSize);
+            $scope.isLoading = false;
         })
-        .catch(function (error) {
+        .catch(() => {
             $scope.errorMessage = 'Không thể tải dữ liệu từ server. Vui lòng thử lại!';
-            console.error('API Error:', error);
             $scope.isLoading = false;
         });
-  
-    // Try a fallback search if no results are found
-    $scope.tryFallbackSearch = function() {
-        // If no results were found with the exact search, try a more flexible search
-        if ($scope.displayResults.length === 0) {
+
+    // Tìm kiếm dự phòng
+    $timeout(() => {
+        if ($scope.displayResults.length === 0 && !$scope.isLoading) {
             $http.get(`https://localhost:7196/api/Sanphams/GetALLSanPham`)
-                .then(function(response) {
-                    // Filter products that contain the search term in their name (case insensitive)
-                    const searchTerm = $scope.searchKey.toLowerCase();
-                    const matchingProducts = response.data.filter(product => 
-                        product.tensp && product.tensp.toLowerCase().includes(searchTerm)
-                    );
-                    
-                    if (matchingProducts.length > 0) {
-                        $scope.filteredResults = matchingProducts
-                            .filter(sp => sp.sanphamchitiets && sp.sanphamchitiets.length > 0)
-                            .map(sp => {
-                                // Set default image
-                                sp.hinhAnh = "assets/images/default-product.jpg";
-                                
-                                // Calculate total sales for the product
-                                sp.soLuongBan = sp.sanphamchitiets.reduce(function(total, spct) {
-                                    return total + (spct.soLuongBan || 0);
-                                }, 0);
-                                
-                                // Load image from first product detail
-                                if (sp.sanphamchitiets && sp.sanphamchitiets.length > 0) {
-                                    let spct = sp.sanphamchitiets[0];
-                                    loadHinhAnh(spct.id, function(imgUrl) {
-                                        sp.hinhAnh = imgUrl;
-                                        $timeout(function() {
-                                            $scope.$apply();
-                                        }, 0);
-                                    });
-                                }
-                                
-                                // Log the product data to see the structure
-                                console.log('Fallback product data structure:', sp);
-                                
-                                return sp;
-                            });
-                            
-                        $scope.displayResults = [...$scope.filteredResults];
-                        $scope.totalPages = Math.ceil($scope.displayResults.length / $scope.pageSize);
-                    }
-                })
-                .catch(function(error) {
-                    console.error('Fallback search error:', error);
+                .then(res => {
+                    const keyword = $scope.searchKey.toLowerCase();
+                    const matched = res.data.filter(p => p.tensp?.toLowerCase().includes(keyword));
+                    $scope.filteredResults = processSanphamList(matched);
+                    $scope.displayResults = [...$scope.filteredResults];
+                    $scope.totalPages = Math.ceil($scope.displayResults.length / $scope.pageSize);
                 });
         }
-    };
-    
-    // Call the fallback search after a short delay
-    $timeout(function() {
-        if ($scope.displayResults.length === 0 && !$scope.isLoading) {
-            $scope.tryFallbackSearch();
-        }
     }, 1000);
-  
-    // Generate star ratings
+
+    // Sinh sao đánh giá
     $scope.generateStars = function (rating) {
         rating = parseFloat(rating) || 0;
-        const fullStars = Math.floor(rating);
-        const halfStar = rating % 1 >= 0.5;
-        const emptyStars = 5 - Math.ceil(rating);
-  
-        let stars = [];
-        for (let i = 0; i < fullStars; i++) stars.push('full');
-        if (halfStar) stars.push('half');
-        for (let i = 0; i < emptyStars; i++) stars.push('empty');
-        return stars;
+        const full = Math.floor(rating);
+        const half = rating % 1 >= 0.5;
+        const empty = 5 - Math.ceil(rating);
+        return [
+            ...Array(full).fill('full'),
+            ...(half ? ['half'] : []),
+            ...Array(empty).fill('empty')
+        ];
     };
-    
-    // Get total sold items for a product
-    $scope.getTotalSPCT = function(product) {
-        if (!product || !product.sanphamchitiets) return 0;
-        return product.sanphamchitiets.reduce(function(total, spct) {
-            return total + (spct.soLuongBan || 0);
-        }, 0);
-    };
-  
-    // Apply all filters on button click
+
+    // Tổng sản phẩm đã bán
+    $scope.getTotalSPCT = product =>
+        product?.sanphamchitiets?.reduce((total, spct) => total + (spct.soLuongBan || 0), 0) || 0;
+
+    // Áp dụng bộ lọc
     $scope.applyAllFilters = function () {
-        // Handle price range radio buttons
-        if ($scope.filters.priceRange) {
-            switch($scope.filters.priceRange) {
-                case 'under1m':
-                    $scope.filters.minPrice = 0;
-                    $scope.filters.maxPrice = 1000000;
-                    break;
-                case '1m-2m':
-                    $scope.filters.minPrice = 1000000;
-                    $scope.filters.maxPrice = 2000000;
-                    break;
-                case '2m-3m':
-                    $scope.filters.minPrice = 2000000;
-                    $scope.filters.maxPrice = 3000000;
-                    break;
-                case '3m-4m':
-                    $scope.filters.minPrice = 3000000;
-                    $scope.filters.maxPrice = 4000000;
-                    break;
-                case 'over4m':
-                    $scope.filters.minPrice = 4000000;
-                    $scope.filters.maxPrice = null;
-                    break;
-            }
+        const { priceRange, brands, sizes } = $scope.filters;
+
+        if (priceRange) {
+            const ranges = {
+                'under1m': [0, 1000000],
+                '1m-2m': [1000000, 2000000],
+                '2m-3m': [2000000, 3000000],
+                '3m-4m': [3000000, 4000000],
+                'over4m': [4000000, null]
+            };
+            [$scope.filters.minPrice, $scope.filters.maxPrice] = ranges[priceRange];
         }
-        
-        // Get price range values
-        let minPrice = $scope.filters.minPrice;
-        let maxPrice = $scope.filters.maxPrice;
-        
-        // Get selected brands
-        const selectedBrands = Object.keys($scope.filters.brands)
-            .filter(key => $scope.filters.brands[key])
-            .map(key => parseInt(key));
-        
-        console.log('Selected brands:', selectedBrands);
-        
-        // Get selected sizes
-        const selectedSizes = Object.keys($scope.filters.sizes)
-            .filter(key => $scope.filters.sizes[key]);
-        
-        console.log('Selected sizes:', selectedSizes);
-  
-        // Apply filters to the original search results
+
+        const selectedBrands = Object.keys(brands).filter(k => brands[k]).map(Number);
+        const selectedSizes = Object.keys(sizes).filter(k => sizes[k]);
+
         $scope.displayResults = $scope.filteredResults.filter(item => {
-            // Price filter
-            const priceToCheck = item.giasale || item.giaban;
-            const matchesPrice = (!minPrice && !maxPrice) || 
-                                (priceToCheck >= (minPrice || 0) && 
-                                 priceToCheck <= (maxPrice || Infinity));
-            
-            // Brand filter - check both idth and idThuongHieu fields
-            // The API might be returning different field names
+            const price = item.giasale || item.giaban;
+            const matchesPrice = (!price || !$scope.filters.minPrice && !$scope.filters.maxPrice) ||
+                (price >= ($scope.filters.minPrice || 0) && price <= ($scope.filters.maxPrice ?? Infinity));
+
             const brandId = item.idth || item.idThuongHieu || item.idthuonghieu;
-            console.log(`Product ${item.tensp} has brand ID:`, brandId);
-            
-            // If no brands are selected, or the product's brand is in the selected brands
-            const matchesBrand = selectedBrands.length === 0 || 
-                                (brandId && selectedBrands.includes(parseInt(brandId)));
-            
-            // Size filter - check if any product detail has the selected size
-            const matchesSize = selectedSizes.length === 0 || 
-                              (item.sanphamchitiets && item.sanphamchitiets.some(spct => 
-                                selectedSizes.includes(spct.size)));
-            
-            const result = matchesPrice && matchesBrand && matchesSize;
-            console.log(`Product ${item.tensp}: Price match: ${matchesPrice}, Brand match: ${matchesBrand}, Size match: ${matchesSize}, Final: ${result}`);
-            
-            return result;
+            const matchesBrand = selectedBrands.length === 0 || selectedBrands.includes(+brandId);
+
+            const matchesSize = selectedSizes.length === 0 ||
+                item.sanphamchitiets?.some(spct => selectedSizes.includes(spct.size));
+
+            return matchesPrice && matchesBrand && matchesSize;
         });
-        
-        console.log('Filtered results:', $scope.displayResults);
-        
-        // Reset to first page after filtering
+
         $scope.currentPage = 1;
         $scope.totalPages = Math.ceil($scope.displayResults.length / $scope.pageSize);
     };
-  
-    // Reset Filters
+
+    // Xóa bộ lọc
     $scope.resetFilters = function () {
-        $scope.filters = {
-            priceRange: null,
-            minPrice: null,
-            maxPrice: null,
-            brands: {},
-            sizes: {}
-        };
+        $scope.filters = { priceRange: null, minPrice: null, maxPrice: null, brands: {}, sizes: {} };
         $scope.displayResults = [...$scope.filteredResults];
         $scope.currentPage = 1;
         $scope.totalPages = Math.ceil($scope.displayResults.length / $scope.pageSize);
     };
-  
-    // Get products for current page
-    $scope.getPagedProducts = function () {
-        let start = ($scope.currentPage - 1) * $scope.pageSize;
-        let end = start + $scope.pageSize;
-        return $scope.displayResults.slice(start, end);
+
+    // Phân trang
+    $scope.getPagedProducts = () => {
+        const start = ($scope.currentPage - 1) * $scope.pageSize;
+        return $scope.displayResults.slice(start, start + $scope.pageSize);
     };
-  
-    // Pagination functions
-    $scope.previousPage = function () {
-        if ($scope.currentPage > 1) {
-            $scope.currentPage--;
-        }
-    };
-  
-    $scope.nextPage = function () {
-        if ($scope.currentPage < $scope.totalPages) {
-            $scope.currentPage++;
-        }
-    };
-  
-    $scope.goToPage = function (page) {
-        if (page >= 1 && page <= $scope.totalPages) {
-            $scope.currentPage = page;
-        }
-    };
-  
-    // Sort search results
-    $scope.sortProducts = function() {
+    $scope.previousPage = () => { if ($scope.currentPage > 1) $scope.currentPage--; };
+    $scope.nextPage = () => { if ($scope.currentPage < $scope.totalPages) $scope.currentPage++; };
+    $scope.goToPage = page => { if (page >= 1 && page <= $scope.totalPages) $scope.currentPage = page; };
+
+    // Sắp xếp
+    $scope.sortProducts = function () {
+        const getPrice = p => p.giasale || p.giaban;
         switch ($scope.sortOption) {
             case 'newest':
                 $scope.displayResults.sort((a, b) => new Date(b.ngayThemSanPham) - new Date(a.ngayThemSanPham));
@@ -320,16 +163,15 @@ app.controller('timkiemController', function ($scope, $routeParams, $http, $time
                 $scope.displayResults.sort((a, b) => new Date(a.ngayThemSanPham) - new Date(b.ngayThemSanPham));
                 break;
             case 'lowToHigh':
-                $scope.displayResults.sort((a, b) => (a.giasale || a.giaban) - (b.giasale || b.giaban));
+                $scope.displayResults.sort((a, b) => getPrice(a) - getPrice(b));
                 break;
             case 'highToLow':
-                $scope.displayResults.sort((a, b) => (b.giasale || b.giaban) - (a.giasale || a.giaban));
+                $scope.displayResults.sort((a, b) => getPrice(b) - getPrice(a));
                 break;
             case 'bestseller':
                 $scope.displayResults.sort((a, b) => $scope.getTotalSPCT(b) - $scope.getTotalSPCT(a));
                 break;
         }
-        // Reset to first page after sorting
         $scope.currentPage = 1;
     };
-  });
+});

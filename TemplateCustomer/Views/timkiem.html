@@ -20,85 +20,64 @@
     <div class="col-md-3">
       <div class="card shadow-sm p-3 mb-4">
         <h5 class="mb-3"><i class="bi bi-funnel"></i> Bộ lọc tìm kiếm</h5>
-
+    
         <!-- Price Filter -->
         <div class="filter-section mb-4">
           <h6 class="mb-3">Giá</h6>
-          <div class="form-check mb-2">
-            <input class="form-check-input" type="radio" name="priceRange" id="price1" 
-                   ng-model="filters.priceRange" value="under1m">
-            <label class="form-check-label" for="price1">
-              DƯỚI 1,000,000Đ
+          <div class="form-check mb-2" ng-repeat="option in priceOptions">
+            <input class="form-check-input" type="radio" name="priceRange" 
+                   id="priceOption{{$index}}" ng-model="filters.priceRange" 
+                   ng-value="option.value" ng-change="clearCustomPrice()">
+            <label class="form-check-label" for="priceOption{{$index}}">
+              {{option.label}}
             </label>
           </div>
-          <div class="form-check mb-2">
-            <input class="form-check-input" type="radio" name="priceRange" id="price2"
-                   ng-model="filters.priceRange" value="1m-2m">
-            <label class="form-check-label" for="price2">
-              1,000,000Đ->2,000,000Đ
-            </label>
-          </div>
-          <div class="form-check mb-2">
-            <input class="form-check-input" type="radio" name="priceRange" id="price3"
-                   ng-model="filters.priceRange" value="2m-3m">
-            <label class="form-check-label" for="price3">
-              2,000,000Đ->3,000,000Đ
-            </label>
-          </div>
-          <div class="form-check mb-2">
-            <input class="form-check-input" type="radio" name="priceRange" id="price4"
-                   ng-model="filters.priceRange" value="3m-4m">
-            <label class="form-check-label" for="price4">
-              3,000,000Đ->4,000,000Đ
-            </label>
-          </div>
-          <div class="form-check mb-3">
-            <input class="form-check-input" type="radio" name="priceRange" id="price5"
-                   ng-model="filters.priceRange" value="over4m">
-            <label class="form-check-label" for="price5">
-              TRÊN 4,000,000Đ
-            </label>
-          </div>
-          
+    
           <!-- Custom price range -->
           <div class="mt-3">
             <label class="form-label">Từ</label>
-            <input type="number" class="form-control mb-2" ng-model="filters.minPrice" min="0" placeholder="Nhập giá thấp nhất">
+            <input type="number" class="form-control mb-2" ng-model="filters.minPrice"
+                   placeholder="Nhập giá thấp nhất" ng-change="clearPriceRange()">
             <label class="form-label">Đến</label>
-            <input type="number" class="form-control mb-3" ng-model="filters.maxPrice" min="0" placeholder="Nhập giá cao nhất">
+            <input type="number" class="form-control mb-3" ng-model="filters.maxPrice"
+                   placeholder="Nhập giá cao nhất" ng-change="clearPriceRange()">
           </div>
         </div>
-
+    
         <!-- Brand Filter -->
-       <!-- Brand Filter Section -->
-<div class="filter-section mb-4">
-  <h6 class="mb-3">Thương hiệu</h6>
-  <div ng-if="dataThuonghieu && dataThuonghieu.length > 0">
-    <div class="form-check mb-2" ng-repeat="brand in dataThuonghieu" ng-if="brand.tinhtrang==0">
-      <input class="form-check-input" type="checkbox" id="brand{{brand.id}}" 
-             ng-model="filters.brands[brand.id]">
-      <label class="form-check-label" for="brand{{brand.id}}">
-        {{brand.tenthuonghieu}}
-      </label>
-    </div>
-  </div>
-  <div ng-if="!dataThuonghieu || dataThuonghieu.length === 0" class="text-muted">
-    Đang tải thương hiệu...
-  </div>
-</div>
-
+        <div class="filter-section mb-4">
+          <h6 class="mb-3">Thương hiệu</h6>
+          <div ng-if="dataThuonghieu && dataThuonghieu.length > 0">
+            <div class="form-check mb-2" ng-repeat="brand in dataThuonghieu | filter:{tinhtrang:0}">
+              <input class="form-check-input" type="checkbox" 
+                     id="brand{{brand.id}}" ng-model="filters.brands[brand.id]">
+              <label class="form-check-label" for="brand{{brand.id}}">
+                {{brand.tenthuonghieu}}
+              </label>
+            </div>
+          </div>
+          <div ng-if="!dataThuonghieu || dataThuonghieu.length === 0" class="text-muted">
+            Đang tải thương hiệu...
+          </div>
+        </div>
+    
         <!-- Size Filter -->
         <div class="filter-section mb-4">
           <h6 class="mb-3">Size</h6>
-          <div class="form-check mb-2" ng-repeat="size in availableSizes">
-            <input class="form-check-input" type="checkbox" id="size{{$index}}" 
-                   ng-model="filters.sizes[size]">
-            <label class="form-check-label" for="size{{$index}}">
-              {{size}}
-            </label>
+          <div ng-if="availableSizes && availableSizes.length > 0">
+            <div class="form-check mb-2" ng-repeat="size in availableSizes">
+              <input class="form-check-input" type="checkbox" id="size{{size.sosize}}" 
+                     ng-model="filters.sizes[size.sosize]">
+              <label class="form-check-label" for="size{{size.sosize}}">
+                {{size.sosize}}
+              </label>
+            </div>
+          </div>
+          <div ng-if="!availableSizes || availableSizes.length === 0" class="text-muted">
+            Đang tải size...
           </div>
         </div>
-
+    
         <!-- Apply and Reset Buttons -->
         <button class="btn btn-primary w-100 mb-2" ng-click="applyAllFilters()">Áp dụng</button>
         <button class="btn btn-secondary w-100" ng-click="resetFilters()">Xóa tất cả</button>
