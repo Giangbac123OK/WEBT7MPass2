@@ -111,6 +111,66 @@ app.controller('SanphamController', function ($scope, $http) {
     for (let i = 0; i < emptyStars; i++) stars.push('empty'); // Sao trống
     return stars;
 };
+ 
+$scope.loadCategories = function () {
+    $http.get("https://localhost:7196/api/Thuonghieu")
+        .then(function (response) {
+            //Thương hiệu hoạt động
+            $scope.categories0 = []
+            $scope.categories = response.data;
+            $scope.categories.forEach(function (category) {
+                if (category.tinhtrang === 0) {
+                    $scope.categories0.push(category);
+                }
+                console.log("thanh", $scope.categories0);
+
+
+            });
+            console.log($scope.categories);
+
+        })
+        .catch(function (error) {
+            console.error("Lỗi khi tải danh sách thương hiệu:", error);
+        }
+        );
+}
+$scope.loadSizes = function () {
+    $http.get("https://localhost:7196/api/Size")
+        .then(function (response) {
+            //Size hoạt động
+            $scope.sizes0 = []
+            $scope.sizes = response.data;
+            $scope.sizes.forEach(function (size) {
+                if (size.trangthai === 0) {
+                    $scope.sizes0.push(size);
+                }
+            });
+            console.log($scope.sizes);
+        })
+        .catch(function (error) {
+            console.error("Lỗi khi tải danh sách kích thước:", error);
+        });
+}
+$scope.loadChatlieus = function () {
+    $http.get("https://localhost:7196/api/Chatlieu")
+        .then(function (response) {
+            //Chất liệu hoạt động
+            $scope.chatlieus0 = []
+            $scope.chatlieus = response.data;
+            $scope.chatlieus.forEach(function (chatlieu) {
+                if (chatlieu.trangthai === 0) {
+                    $scope.chatlieus0.push(chatlieu);
+                }
+            });
+            console.log($scope.chatlieus);
+        })
+        .catch(function (error) {
+            console.error("Lỗi khi tải danh sách chất liệu:", error);
+        });
+}
+$scope.loadCategories();
+$scope.loadSizes();
+$scope.loadChatlieus();
 
 //load lại trang khi có sự thay đổi trong danh sách sản phẩm
 $scope.$watch('sanPham', function(newVal, oldVal) {
