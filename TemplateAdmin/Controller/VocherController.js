@@ -217,30 +217,23 @@ app.controller("VoucherController", function ($http, $scope, $timeout, $q) {
     // So sánh với danh sách rank ban đầu
     var originalSelectedRanks = $scope.voucherRanks.map(r => r.idrank);
     
-    // Tìm các rank cần thêm
-    var ranksToAdd = newlySelectedRanks.filter(id => 
-        !originalSelectedRanks.includes(id));
-    
-    // Tìm các rank cần xóa
-    var ranksToRemove = originalSelectedRanks.filter(id => 
-        !newlySelectedRanks.includes(id));
+    var ranksToAdd = newlySelectedRanks.filter(id => !originalSelectedRanks.includes(id));
+    var ranksToRemove = originalSelectedRanks.filter(id => !newlySelectedRanks.includes(id));
 
-    // Tạo promise chain để xử lý tuần tự
     var updateChain = $q.when();
 
-    // Xử lý xóa các rank không còn chọn
+    // Xóa các rank không còn chọn
     ranksToRemove.forEach(rankId => {
         updateChain = updateChain.then(() => {
             return $http.delete(`https://localhost:7196/api/Giamgia_rank/idgiamgia/${$scope.editingVoucher.id}/idrank/${rankId}`)
                 .catch(err => {
                     console.error('Lỗi khi xóa rank:', err);
-                    // Vẫn tiếp tục xử lý các thao tác khác dù có lỗi
-                    return $q.resolve();
+                    return $q.resolve(); // Bỏ qua lỗi để tiếp tục
                 });
         });
     });
 
-    // Xử lý thêm các rank mới chọn
+    // Thêm các rank mới chọn
     ranksToAdd.forEach(rankId => {
         updateChain = updateChain.then(() => {
             var newRelation = {
@@ -255,49 +248,41 @@ app.controller("VoucherController", function ($http, $scope, $timeout, $q) {
         });
     });
 
-    // Cập nhật thông tin voucher chính
-    var updatedVoucher = angular.copy($scope.editingVoucher);
-      delete updatedVoucher.rankIds; // Xóa trường không cần thiết
+    // Sau khi hoàn tất thêm/xóa rank, cập nhật thông tin voucher
+    updateChain = updateChain.then(() => {
+        var updatedVoucher = angular.copy($scope.editingVoucher);
+        delete updatedVoucher.rankIds;
 
-      // Chuyển đổi trạng thái sang dạng số
-      switch(updatedVoucher.trangthai) {
-          case "Đang phát hành":
-              updatedVoucher.trangthai = 0;
-              break;
-          case "Chuẩn bị phát hành":
-              updatedVoucher.trangthai = 1;
-              break;
-          case "Dừng phát hành":
-              updatedVoucher.trangthai = 2;
-              break;
-          default:
-              updatedVoucher.trangthai = 1; // Mặc định nếu không khớp
-      }
+        // Chuyển đổi trạng thái
+        switch (updatedVoucher.trangthai) {
+            case "Đang phát hành": updatedVoucher.trangthai = 0; break;
+            case "Chuẩn bị phát hành": updatedVoucher.trangthai = 1; break;
+            case "Dừng phát hành": updatedVoucher.trangthai = 2; break;
+            default: updatedVoucher.trangthai = 1;
+        }
 
-      // Hàm chuyển đổi ngày sang định dạng ISO
+        updatedVoucher.ngaybatdau = convertToISODate(updatedVoucher.ngaybatdau);
+        updatedVoucher.ngayketthuc = convertToISODate(updatedVoucher.ngayketthuc);
+        updatedVoucher.donvi = updatedVoucher.donvi === "VND" ? 1 : 0;
+        updatedVoucher.rankNames = $scope.allRanks
+            .filter(r => r.selectedEdit)
+            .map(r => r.tenrank);
 
-      // Chuyển đổi ngày bắt đầu và kết thúc
-      updatedVoucher.ngaybatdau = convertToISODate(updatedVoucher.ngaybatdau);
-      updatedVoucher.ngayketthuc = convertToISODate(updatedVoucher.ngayketthuc);
+        return $http.put(`https://localhost:7196/api/Giamgia/${updatedVoucher.id}/Admin`, {
+            mota: updatedVoucher.mota,
+            donvi: updatedVoucher.donvi,
+            soluong: updatedVoucher.soluong,
+            giatri: updatedVoucher.giatri,
+            ngaybatdau: updatedVoucher.ngaybatdau,
+            ngayketthuc: updatedVoucher.ngayketthuc,
+            trangthai: updatedVoucher.trangthai,
+            rankNames: updatedVoucher.rankNames
+        });
+    });
 
-      // Chuyển đổi đơn vị giá trị sang dạng số
-      updatedVoucher.donvi = updatedVoucher.donvi === "VND" ? 1 : 0;
-      updatedVoucher.rankNames = $scope.allRanks
-  .filter(r => r.selectedEdit)
-  .map(r => r.tenrank);
-
-      $http.put(`https://localhost:7196/api/Giamgia/${updatedVoucher.id}/Admin`, {
-        mota: updatedVoucher.mota,
-        donvi: updatedVoucher.donvi,
-        soluong: updatedVoucher.soluong,
-        giatri: updatedVoucher.giatri,
-        ngaybatdau: updatedVoucher.ngaybatdau,
-        ngayketthuc: updatedVoucher.ngayketthuc,
-        trangthai: updatedVoucher.trangthai,
-        rankNames: updatedVoucher.rankNames // Phải là mảng, ví dụ: ["Vàng"]
-    })
-    .then(function(response) {
-        if (response.status === 200) {
+    // Xử lý kết quả cuối cùng
+    updateChain.then(response => {
+        if (response && (response.status === 200 || response.status === 204)) {
             alert("Cập nhật mã giảm giá thành công!");
             var modal = bootstrap.Modal.getInstance(document.getElementById("editVoucherModal"));
             modal.hide();
@@ -305,12 +290,12 @@ app.controller("VoucherController", function ($http, $scope, $timeout, $q) {
         } else {
             alert("Cập nhật thất bại. Vui lòng thử lại.");
         }
-    })  
-    .catch(function(err) {
-        console.error('Lỗi khi cập nhật:', err);
-        alert("Có lỗi xảy ra khi cập nhật!");
+    }).catch(err => {
+        console.error("Lỗi tổng khi cập nhật:", err);
+        alert("Có lỗi xảy ra trong quá trình cập nhật!");
     });
 };
+
 
 
 function convertToISODate(dateString) {

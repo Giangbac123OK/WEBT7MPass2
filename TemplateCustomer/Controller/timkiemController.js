@@ -116,7 +116,7 @@ app.controller('timkiemController', function ($scope, $routeParams, $http, $time
 
         const selectedBrands = Object.keys(brands).filter(k => brands[k]).map(Number);
         const selectedSizes = Object.keys(sizes).filter(k => sizes[k]);
-
+        console.log('selectedSizes', selectedSizes);
         $scope.displayResults = $scope.filteredResults.filter(item => {
             const price = item.giasale || item.giaban;
             const matchesPrice = (!price || !$scope.filters.minPrice && !$scope.filters.maxPrice) ||
@@ -124,10 +124,11 @@ app.controller('timkiemController', function ($scope, $routeParams, $http, $time
 
             const brandId = item.idth || item.idThuongHieu || item.idthuonghieu;
             const matchesBrand = selectedBrands.length === 0 || selectedBrands.includes(+brandId);
-
+           
+            const converted = selectedSizes.map(s => parseInt(s) - 30);
             const matchesSize = selectedSizes.length === 0 ||
-                item.sanphamchitiets?.some(spct => selectedSizes.includes(spct.size));
-
+                item.sanphamchitiets?.some(spct => converted.includes(spct.idSize));
+                console.log('convert',converted);
             return matchesPrice && matchesBrand && matchesSize;
         });
 
