@@ -3,7 +3,7 @@ const app = angular.module("myApp", ['ngRoute']);
 app.config(function ($routeProvider) {
     $routeProvider
         .when("/", {
-            templateUrl: "./Views/dashboard.html"
+            templateUrl: "./Views/home.html"
         })
         .when("/addtrahang", {
           templateUrl: "./Views/trahang.html",

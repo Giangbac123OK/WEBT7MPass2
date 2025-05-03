@@ -122,7 +122,6 @@
             <div class="col-lg-3">
                 <div class="filter-sidebar p-3 border rounded">
                     <h5 class="mb-3">Lọc sản phẩm</h5>
-
                     <!-- Price Filte giangr -->
                     <div class="filter-section mb-4">
                         <h6 class="mb-3">Giá</h6>
@@ -161,77 +160,25 @@
                     <!-- Brand Filter -->
                     <div class="filter-section mb-4">
                         <h6 class="mb-3">Thương hiệu</h6>
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="brand1">
-                            <label class="form-check-label" for="brand1">
-                                ADIDAS
+                        <div class="form-check mb-2" ng-repeat="Brand in categories0">
+                            <input class="form-check-input" type="checkbox" id="Brand{{Brand.id}}">
+                            <label class="form-check-label" for="Brand{{Brand.id}}">
+                                {{Brand.tenthuonghieu}}
                             </label>
                         </div>
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="brand2" checked>
-                            <label class="form-check-label" for="brand2">
-                                NIKE
-                            </label>
-                        </div>
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="brand3">
-                            <label class="form-check-label" for="brand3">
-                                PUMA
-                            </label>
-                        </div>
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="brand4">
-                            <label class="form-check-label" for="brand4">
-                                DESPORTE
-                            </label>
-                        </div>
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="brand5">
-                            <label class="form-check-label" for="brand5">
-                                X-MUNICH
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="brand6">
-                            <label class="form-check-label" for="brand6">
-                                GRAND SPORT
-                            </label>
-                        </div>
+                       
                     </div>
 
                     <!-- Size Filter -->
                     <div class="filter-section">
                         <h6 class="mb-3">Size</h6>
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="size1">
-                            <label class="form-check-label" for="size1">
-                                37.5
+                        <div class="form-check mb-2" ng-repeat="size in sizes0">
+                            <input class="form-check-input" type="checkbox" id="size{{size.id}}">
+                            <label class="form-check-label" for="size{{size.id}}">
+                                {{size.sosize}}
                             </label>
                         </div>
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="size2">
-                            <label class="form-check-label" for="size2">
-                                38
-                            </label>
-                        </div>
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="size3">
-                            <label class="form-check-label" for="size3">
-                                38.5
-                            </label>
-                        </div>
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="size4">
-                            <label class="form-check-label" for="size4">
-                                X
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="size5">
-                            <label class="form-check-label" for="size5">
-                                XL
-                            </label>
-                        </div>
+                       
                     </div>
 
                     <!-- Apply Filter Button -->
