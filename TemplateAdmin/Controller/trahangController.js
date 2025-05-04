@@ -39,6 +39,14 @@ app.controller('trahangController', function ($scope, $http, $location, $interva
         };
 
         $scope.OpenModalXacNhan = function (x) {
+            if(x.idkh== null || x.idkh == undefined) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Đơn hàng này không có thông tin khách hàng trên hệ thống hoặc đây là khách vãng lai!',
+                });
+                return;
+            }
             Swal.fire({
                 title: 'Bạn muốn xác nhận đơng hàng không?\nChọn một phương án xử lý:',
                 html: `
@@ -68,12 +76,33 @@ app.controller('trahangController', function ($scope, $http, $location, $interva
                 if (result.isConfirmed) {
                     console.log('Phương án đã chọn:', result.value.option);
                     console.log('Ghi chú:', result.value.note);
-                    if(x.phuongthuchoantien=="Thẻ tín dụng/ghi nợ/Tài khoản ngân hàng"){
-                        if(result.value.option == "Trả hàng và hoàn tiền"){
-                            
-                    }
+                    $http({
+                        method: 'PUT',
+                        url: 'https://localhost:7196/api/Trahangs/Xacnhan',
+                        params: {
+                            id: x.id,
+                            hinhthucxuly: result.value.option,
+                            idnv: userInfo.id,
+                            chuthich: result.value.note|| null
+                        }
+                    })
+                    .then(function (response) {
+                        console.log("Kết quả:", response.data);
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Xác nhận thành công!',
+                            text: `Đơn hàng đã được xác nhận.`,
+                        }).then(() => {
+                            location.reload();
+                            window.scroll(0, 0);
+                        });
+                    })
+                    .catch(function (error) {
+                        console.error("Lỗi API: ", error);
+                        let msg = error.data?.message || "Đã xảy ra lỗi. Vui lòng thử lại sau!";
+                        Swal.fire('Lỗi hệ thống', msg, 'error');
+                    });
                 }
-            }
             });
             
         };
