@@ -453,7 +453,7 @@
                     </div>
                     <div class="text-end">
                         <div class="total">{{x.sotienhoan | currency:"":0}} VNĐ</div>
-                        <small class="order-date">{{ x.ngaytrahangthucte ? (x.ngaytrahangthucte | date:'dd/MM/yyyy HH:mm') : 'Chưa xác định' }}</small>
+                        <small class="order-date">{{ x.ngaytaodon ? (x.ngaytaodon | date:'dd/MM/yyyy HH:mm') : 'Chưa xác định' }}</small>
                     </div>
                 </div>
                 <div class="order-info">
@@ -670,11 +670,9 @@
                     <div class="col-md-6">
                         <p><strong><i class="fas fa-user me-2"></i>Khách hàng:</strong> {{dataTrahang.tenkhachhang || 'Khách vãng lai'}}</p>
                         <p><strong><i class="fas fa-tags me-2"></i>Trạng thái:</strong>
-                            <span class="badge" ng-class="{
-                                'badge-waiting': dataTrahang.trangthai === 0,
-                                'badge-confirmed': dataTrahang.trangthai === 1,
-                                'badge-shipping': dataTrahang.trangthai === 2
-                            }">{{dataTrahang.trangthaiStr}}</span>
+                            <span class="badge bg-danger" ng-if="dataTrahang.trangthai === 2">Đã hủy</span>
+                            <span class="badge bg-success" ng-if="dataTrahang.trangthai === 1">Hoàn thành</span>
+                            <span class="badge bg-warning" ng-if="dataTrahang.trangthai === 0">Chờ trả hàng</span>
                         </p>
                         <p><strong><i class="fas fa-calendar-day me-2"></i>Ngày trả hàng:</strong> 
                             {{dataTrahang.ngaytrahangthucte ? (dataTrahang.ngaytrahangthucte | date:'dd/MM/yyyy') : 'Chưa có ngày trả hàng'}}
@@ -751,11 +749,14 @@
                                 <th class="product-name">Tên sản phẩm</th>
                                 <th class="text-center">Màu</th>
                                 <th class="text-center">Size</th>
+                                <th class="text-center">Chất liệu</th>
                                 <th class="text-center">Số lượng trả</th>
+                                <th class="text-center">Giá sản phẩm</th>
+                                <th class="text-center">Tổng giá sản phẩm</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="item in trahangchitiets">
+                            <tr ng-repeat="item in dataTrahang.trahangchitiets">
                                 <td class="text-center">
                                     <img ng-src="{{item.anh}}" 
                                          alt="{{item.tensanpham}}"
@@ -766,9 +767,12 @@
                                 </td>
                                 <td class="text-center">{{item.mau || '-'}}</td>
                                 <td class="text-center">{{item.size || '-'}}</td>
+                                <td class="text-center">{{item.chatlieu || '-'}}</td>
                                 <td class="text-center">{{item.soluong || 0}}</td>
+                                <td class="text-center">{{item.giasp | currency:"":0 || 0}} VNĐ</td>
+                                <td class="text-center">{{item.giasp * item.soluong | currency:"":0  || 0}} VNĐ</td>
                             </tr>                            
-                            <tr ng-if="!trahangchitiets || trahangchitiets.length === 0">
+                            <tr ng-if="!dataTrahang.trahangchitiets || dataTrahang.trahangchitiets.length === 0">
                                 <td colspan="5" class="text-center text-muted py-4 no-products">
                                     <div ng-if="detailLoading">
                                         <i class="fas fa-spinner fa-spin"></i> Đang tải sản phẩm...
@@ -789,11 +793,11 @@
                     <i class="fas fa-times me-2"></i>Đóng
                 </button>
                 <button type="button" class="btn btn-success" ng-if="dataTrahang.trangthai === 0"
-                    ng-click="updateReturnStatus(dataTrahang.id, 1)">
+                    ng-click="OpenModalXacNhan(dataTrahang.id)">
                     <i class="fas fa-check me-2"></i>Xác nhận trả hàng
                 </button>
                 <button type="button" class="btn btn-danger" ng-if="dataTrahang.trangthai === 0"
-                    ng-click="updateReturnStatus(dataTrahang.id, 2)">
+                    ng-click="huydon(dataTrahang.id)">
                     <i class="fas fa-times me-2"></i>Từ chối trả hàng
                 </button>
             </div>
