@@ -380,10 +380,10 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
             let nganhang = "";
             let tentaikhoan = "";
     
-            if ($scope.refundMethod === "bank") {
+            if ($scope.refundMethod === "Thẻ tín dụng/ghi nợ/Tài khoản ngân hàng") {
                 stk = $scope.accountNumber || "";
-                nganhang = $scope.bankName || "";
                 tentaikhoan = ($scope.accountName || "").toUpperCase();
+                nganhang = $scope.selectedBank ? $scope.selectedBank.name + ' (' + $scope.selectedBank.shortName + ')' : "";
             }
     
             const data = {

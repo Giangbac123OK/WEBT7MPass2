@@ -291,22 +291,18 @@
               <div class="row mb-4">
                 <div class="col">
                   <label for="bank" class="form-label fw-medium">Ngân hàng</label>
-                  <select class="form-select" id="bank" ng-model="selectedBank">
-                    <option disabled selected>Chọn ngân hàng</option>
-                    <option ng-repeat="nganhang in ListNganHang" value="{{nganhang.bin}}">
-                      {{nganhang.name}} ({{nganhang.shortName}})
-                    </option>
-                  </select>
+                  <select class="form-select" id="bank" ng-model="selectedBank"
+        ng-options="nganhang as (nganhang.name + ' (' + nganhang.shortName + ')') for nganhang in ListNganHang track by nganhang.bin">
+    <option disabled value="">Chọn ngân hàng</option>
+</select>
                 </div>
                 <div class="col">
                   <label for="accountNumber" class="form-label fw-medium">Số tài khoản/Số thẻ</label>
-                  <input type="text" id="accountNumber" class="form-control" ng-model="cardNumber"
-                    placeholder="Nhập số tài khoản">
+                  <input type="text" id="accountNumber" class="form-control" ng-model="accountNumber" placeholder="Nhập số tài khoản">
                 </div>
                 <div class="col">
-                  <label for="accountNumber" class="form-label fw-medium">Tên chủ tài khoản</label>
-                  <input type="text" id="accountNumber" class="form-control" ng-model="accountName"
-                    placeholder="Nhập số tài khoản" style="text-transform: uppercase">
+                  <label for="accountName" class="form-label fw-medium">Tên chủ tài khoản</label>
+                  <input type="text" id="accountName" class="form-control" ng-model="accountName" placeholder="Nhập tên tài khoản">                    
                 </div>
               </div>
               
