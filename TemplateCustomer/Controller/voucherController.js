@@ -172,8 +172,8 @@ app.controller('voucherController', function ($location, $scope) {
     }
 
     function sortVouchers(a, b) {
-        if (a.donvi === "%" && b.donvi !== "VND") return -1;
-        if (a.donvi !== "VND" && b.donvi === "%") return 1;
+        if (a.donvi === "%" && b.donvi !== "VNĐ") return -1;
+        if (a.donvi !== "VNĐ" && b.donvi === "%") return 1;
         return a.giatri - b.giatri;
     }
 

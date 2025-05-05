@@ -1,5 +1,6 @@
 app.controller('quanlyhoadonController', function ($scope, $http, $q, $timeout) {
     // Biến quản lý trạng thái
+    
     $scope.loading = true;
     $scope.showNotifications = false;
     $scope.selectedTab = 'unread';
@@ -36,7 +37,7 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q, $timeout) 
 
     // Hàm khởi tạo
     $scope.init = function () {
-        setInterval(loadUnreadOrders, 3000);
+        setInterval(loadUnreadOrders, 2000);
         $scope.loadInvoices();
     };
 
@@ -44,6 +45,8 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q, $timeout) 
     const apiProvince = "https://online-gateway.ghn.vn/shiip/public-api/master-data/province";
     const apiDistrict = "https://online-gateway.ghn.vn/shiip/public-api/master-data/district";
     const apiWard = "https://online-gateway.ghn.vn/shiip/public-api/master-data/ward";
+    
+    let previousInvoices = [];
 
     // Hàm tải danh sách hóa đơn từ API
     $scope.loadInvoices = function () {
@@ -116,6 +119,7 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q, $timeout) 
             }
     
             $scope.invoices = allInvoices;
+            previousInvoices = angular.copy(allInvoices); // Cập nhật bản lưu               
             $scope.filterInvoices($scope.currentFilter);
             $scope.updatePagedInvoices();
             $scope.calculateCounts();
@@ -704,24 +708,57 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q, $timeout) 
             .then(function (response) {
                 const currentUnreadOrders = response.data;
                 const currentCount = currentUnreadOrders.length;
-
-                // Nếu số lượng đơn chưa đọc tăng lên thì gọi loadInvoices
-                if (currentCount > previousUnreadCount) {
+    
+                if (currentCount !== previousUnreadCount) {
+                    // Nếu thay đổi về số lượng -> load lại danh sách đầy đủ
                     $scope.loadInvoices();
+                    previousUnreadCount = currentCount;
+                } else {
+                    // Nếu không thay đổi về số lượng -> vẫn kiểm tra nội dung chi tiết
+                    $scope.checkInvoiceChanges();
                 }
-
-                // Cập nhật scope và lưu lại số lượng mới
+    
                 $scope.unreadOrders = currentUnreadOrders;
                 $scope.unreadNotifications = currentCount;
-                previousUnreadCount = currentCount;
-
-                console.log("load thành công", currentUnreadOrders);
             })
             .catch(function (error) {
                 console.error("Lỗi khi tải đơn chưa đọc:", error);
             });
     }
+    
+    $scope.checkInvoiceChanges = function () {
+        $http.get('https://localhost:7196/api/Hoadons').then(function (response) {
+            const newInvoices = response.data
+                .filter(invoice => [0, 1, 2, 3, 4, 6].includes(invoice.trangthaidonhang) && invoice.trangthai == 0)
+                .sort((a, b) => b.id - a.id);
+    
+            if (!isSameInvoices(previousInvoices, newInvoices)) {
+                // Nếu dữ liệu khác nhau thì gọi loadInvoices để xử lý chi tiết hơn
+                $scope.loadInvoices();
+            } else {
+                console.log("Không có thay đổi về chi tiết hoá đơn.");
+            }
+        }).catch(function (error) {
+            console.error("Lỗi khi kiểm tra hoá đơn:", error);
+        });
+    };   
 
+    function isSameInvoices(oldList, newList) {
+        if (oldList.length !== newList.length) return false;
+    
+        for (let i = 0; i < newList.length; i++) {
+            const oldInv = oldList[i];
+            const newInv = newList[i];
+    
+            if (oldInv.id !== newInv.id ||
+                oldInv.trangthai !== newInv.trangthai ||
+                oldInv.trangthaidonhang !== newInv.trangthaidonhang ||
+                oldInv.updatedAt !== newInv.updatedAt) {
+                return false;
+            }
+        }
+        return true;
+    }    
 
     // Hàm tải đơn đã đọc
     function loadReadOrders() {
