@@ -168,7 +168,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="editVoucherModalLabel">Sửa Voucher</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                <button type="button" class="btn-close" aria-label="Close" ng-click="closeModal()"></button>
             </div>
             <div class="modal-body">
                 <form name="editVoucherForm" novalidate>
@@ -184,7 +184,7 @@
                             <label class="form-label">Đơn vị</label>
                             <select class="form-select" ng-model="editingVoucher.donvi" required>
                                 <option value="%">Phần trăm (%)</option>
-                                <option value="VND">Số tiền (VNĐ)</option>
+                                <option value="VNĐ">Số tiền (VNĐ)</option>
                             </select>
                         </div>
                         <div class="col-md-6">
@@ -240,33 +240,13 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-secondary" ng-click="closeModal()">Hủy</button>
                 <button type="button" class="btn btn-primary" ng-click="updateVoucher()">Cập nhật</button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal Xác nhận xóa -->
-<div class="modal fade" id="deleteVoucherModal" tabindex="-1" aria-labelledby="deleteVoucherModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteVoucherModalLabel">Xác nhận xóa</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>Bạn có chắc chắn muốn xóa voucher này không?</p>
-                <input type="hidden" id="deleteVoucherId">
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Xóa</button>
-            </div>
-        </div>
-    </div>
-</div>
 
 <style>
     .datepicker-dropdown {

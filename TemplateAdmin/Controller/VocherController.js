@@ -60,16 +60,16 @@ app.controller("VoucherController", function ($http, $scope, $timeout, $q) {
       var rankNames = [];
 
       rankCheckboxes.forEach(function (checkbox) {
-          var rankId = checkbox.id.replace('rank_', ''); // lấy ra id thôi (bỏ prefix)
-          
-          // Tìm trong ranks list (biến ranks AngularJS) cái rank có id tương ứng
-          var selectedRank = $scope.ranks.find(function (rank) {
-              return rank.id == rankId;
-          });
+        var rankId = checkbox.id.replace('rank_', ''); // lấy ra id thôi (bỏ prefix)
 
-          if (selectedRank) {
-              rankNames.push(selectedRank.tenrank);
-          }
+        // Tìm trong ranks list (biến ranks AngularJS) cái rank có id tương ứng
+        var selectedRank = $scope.ranks.find(function (rank) {
+          return rank.id == rankId;
+        });
+
+        if (selectedRank) {
+          rankNames.push(selectedRank.tenrank);
+        }
       });
 
 
@@ -138,51 +138,51 @@ app.controller("VoucherController", function ($http, $scope, $timeout, $q) {
   // Khi bấm nút sửa voucher
   $scope.editVoucher = function (voucher) {
     $scope.editingVoucher = angular.copy(voucher);
-    
+
     // Chuyển ngày về định dạng phù hợp
     $scope.editingVoucher.ngaybatdau = formatDateTimeLocal(voucher.ngaybatdau);
     $scope.editingVoucher.ngayketthuc = formatDateTimeLocal(voucher.ngayketthuc);
-    
+
     // Load all ranks
     $http.get("https://localhost:7196/api/Ranks").then(function (res) {
-        $scope.allRanks = res.data.map(function(rank) {
-            // Khởi tạo selectedEdit = false cho tất cả rank
-            return angular.extend({}, rank, { selectedEdit: false });
+      $scope.allRanks = res.data.map(function (rank) {
+        // Khởi tạo selectedEdit = false cho tất cả rank
+        return angular.extend({}, rank, { selectedEdit: false });
+      });
+
+      // Get voucher-rank relationships
+      $http.get("https://localhost:7196/api/Giamgia_rank").then(function (response) {
+        console.log('Data từ Giamgia_rank:', response.data); // Debug
+
+        // Lưu toàn bộ dữ liệu quan hệ voucher-rank vào $scope.voucherRanks
+        $scope.voucherRanks = response.data.filter(function (item) {
+          // Kiểm tra cả null/undefined
+          return item && item.iDgiamgia === $scope.editingVoucher.id;
         });
-        
-        // Get voucher-rank relationships
-        $http.get("https://localhost:7196/api/Giamgia_rank").then(function (response) {
-            console.log('Data từ Giamgia_rank:', response.data); // Debug
-            
-            // Lưu toàn bộ dữ liệu quan hệ voucher-rank vào $scope.voucherRanks
-            $scope.voucherRanks = response.data.filter(function(item) {
-                // Kiểm tra cả null/undefined
-                return item && item.iDgiamgia === $scope.editingVoucher.id;
-            });
-            
-            console.log('voucherRanks đã lọc:', $scope.voucherRanks); // Debug
-            
-            // Lấy danh sách ID rank áp dụng
-            var appliedRankIds = $scope.voucherRanks.map(function(item) {
-                return item && item.idrank; // Kiểm tra null/undefined
-            }).filter(function(id) { 
-                return id !== undefined && id !== null; // Lọc bỏ undefined/null
-            });
-            
-            console.log('appliedRankIds:', appliedRankIds); // Debug
-            
-            // Đánh dấu các rank được chọn
-            $scope.allRanks.forEach(function(rank) {
-                rank.selectedEdit = appliedRankIds.includes(rank.id);
-            });
-            
-            // Hiển thị modal
-            var modalElement = document.getElementById('editVoucherModal');
-            var modal = new bootstrap.Modal(modalElement);
-            modal.show();
+
+        console.log('voucherRanks đã lọc:', $scope.voucherRanks); // Debug
+
+        // Lấy danh sách ID rank áp dụng
+        var appliedRankIds = $scope.voucherRanks.map(function (item) {
+          return item && item.idrank; // Kiểm tra null/undefined
+        }).filter(function (id) {
+          return id !== undefined && id !== null; // Lọc bỏ undefined/null
         });
+
+        console.log('appliedRankIds:', appliedRankIds); // Debug
+
+        // Đánh dấu các rank được chọn
+        $scope.allRanks.forEach(function (rank) {
+          rank.selectedEdit = appliedRankIds.includes(rank.id);
+        });
+
+        // Hiển thị modal
+        var modalElement = document.getElementById('editVoucherModal');
+        var modal = new bootstrap.Modal(modalElement);
+        modal.show();
+      });
     });
-};
+  };
 
   // Hàm kiểm tra rank có được chọn không
   $scope.isRankSelected = function (rankId) {
@@ -205,18 +205,18 @@ app.controller("VoucherController", function ($http, $scope, $timeout, $q) {
   }
 
 
-  $scope.updateVoucher = function() {
+  $scope.updateVoucher = function () {
     // Thu thập các rank đã chọn hiện tại
     var newlySelectedRanks = $scope.allRanks.filter(r => r.selectedEdit).map(r => r.id);
-    
+
     if (newlySelectedRanks.length === 0) {
-        alert("Vui lòng chọn ít nhất một Rank!");
-        return;
+      alert("Vui lòng chọn ít nhất một Rank!");
+      return;
     }
 
     // So sánh với danh sách rank ban đầu
     var originalSelectedRanks = $scope.voucherRanks.map(r => r.idrank);
-    
+
     var ranksToAdd = newlySelectedRanks.filter(id => !originalSelectedRanks.includes(id));
     var ranksToRemove = originalSelectedRanks.filter(id => !newlySelectedRanks.includes(id));
 
@@ -224,132 +224,135 @@ app.controller("VoucherController", function ($http, $scope, $timeout, $q) {
 
     // Xóa các rank không còn chọn
     ranksToRemove.forEach(rankId => {
-        updateChain = updateChain.then(() => {
-            return $http.delete(`https://localhost:7196/api/Giamgia_rank/idgiamgia/${$scope.editingVoucher.id}/idrank/${rankId}`)
-                .catch(err => {
-                    console.error('Lỗi khi xóa rank:', err);
-                    return $q.resolve(); // Bỏ qua lỗi để tiếp tục
-                });
-        });
+      updateChain = updateChain.then(() => {
+        return $http.delete(`https://localhost:7196/api/Giamgia_rank/idgiamgia/${$scope.editingVoucher.id}/idrank/${rankId}`)
+          .catch(err => {
+            console.error('Lỗi khi xóa rank:', err);
+            return $q.resolve(); // Bỏ qua lỗi để tiếp tục
+          });
+      });
     });
 
     // Thêm các rank mới chọn
     ranksToAdd.forEach(rankId => {
-        updateChain = updateChain.then(() => {
-            var newRelation = {
-                iDgiamgia: $scope.editingVoucher.id,
-                iDrank: rankId
-            };
-            return $http.post('https://localhost:7196/api/Giamgia_rank', newRelation)
-                .catch(err => {
-                    console.error('Lỗi khi thêm rank:', err);
-                    return $q.resolve();
-                });
-        });
+      updateChain = updateChain.then(() => {
+        var newRelation = {
+          iDgiamgia: $scope.editingVoucher.id,
+          iDrank: rankId
+        };
+        return $http.post('https://localhost:7196/api/Giamgia_rank', newRelation)
+          .catch(err => {
+            console.error('Lỗi khi thêm rank:', err);
+            return $q.resolve();
+          });
+      });
     });
 
     // Sau khi hoàn tất thêm/xóa rank, cập nhật thông tin voucher
     updateChain = updateChain.then(() => {
-        var updatedVoucher = angular.copy($scope.editingVoucher);
-        delete updatedVoucher.rankIds;
+      var updatedVoucher = angular.copy($scope.editingVoucher);
+      delete updatedVoucher.rankIds;
 
-        // Chuyển đổi trạng thái
-        switch (updatedVoucher.trangthai) {
-            case "Đang phát hành": updatedVoucher.trangthai = 0; break;
-            case "Chuẩn bị phát hành": updatedVoucher.trangthai = 1; break;
-            case "Dừng phát hành": updatedVoucher.trangthai = 2; break;
-            default: updatedVoucher.trangthai = 1;
-        }
+      // Chuyển đổi trạng thái
+      switch (updatedVoucher.trangthai) {
+        case "Đang phát hành": updatedVoucher.trangthai = 0; break;
+        case "Chuẩn bị phát hành": updatedVoucher.trangthai = 1; break;
+        case "Dừng phát hành": updatedVoucher.trangthai = 2; break;
+        default: updatedVoucher.trangthai = 1;
+      }
 
-        updatedVoucher.ngaybatdau = convertToISODate(updatedVoucher.ngaybatdau);
-        updatedVoucher.ngayketthuc = convertToISODate(updatedVoucher.ngayketthuc);
-        updatedVoucher.donvi = updatedVoucher.donvi === "VND" ? 1 : 0;
-        updatedVoucher.rankNames = $scope.allRanks
-            .filter(r => r.selectedEdit)
-            .map(r => r.tenrank);
+      updatedVoucher.ngaybatdau = convertToISODate(updatedVoucher.ngaybatdau);
+      updatedVoucher.ngayketthuc = convertToISODate(updatedVoucher.ngayketthuc);
+      updatedVoucher.donvi = updatedVoucher.donvi === "VNĐ" ? 0 : 1;
+      updatedVoucher.rankNames = $scope.allRanks
+        .filter(r => r.selectedEdit)
+        .map(r => r.tenrank);
 
-        return $http.put(`https://localhost:7196/api/Giamgia/${updatedVoucher.id}/Admin`, {
-            mota: updatedVoucher.mota,
-            donvi: updatedVoucher.donvi,
-            soluong: updatedVoucher.soluong,
-            giatri: updatedVoucher.giatri,
-            ngaybatdau: updatedVoucher.ngaybatdau,
-            ngayketthuc: updatedVoucher.ngayketthuc,
-            trangthai: updatedVoucher.trangthai,
-            rankNames: updatedVoucher.rankNames
-        });
+      return $http.put(`https://localhost:7196/api/Giamgia/${updatedVoucher.id}/Admin`, {
+        mota: updatedVoucher.mota,
+        donvi: updatedVoucher.donvi,
+        soluong: updatedVoucher.soluong,
+        giatri: updatedVoucher.giatri,
+        ngaybatdau: updatedVoucher.ngaybatdau,
+        ngayketthuc: updatedVoucher.ngayketthuc,
+        trangthai: updatedVoucher.trangthai,
+        rankNames: updatedVoucher.rankNames
+      });
     });
+
+
+
 
     // Xử lý kết quả cuối cùng
     updateChain.then(response => {
-        if (response && (response.status === 200 || response.status === 204)) {
-            alert("Cập nhật mã giảm giá thành công!");
-            var modal = bootstrap.Modal.getInstance(document.getElementById("editVoucherModal"));
-            modal.hide();
-            loadVouchers();
-        } else {
-            alert("Cập nhật thất bại. Vui lòng thử lại.");
-        }
+      if (response && (response.status === 200 || response.status === 204)) {
+        alert("Cập nhật mã giảm giá thành công!");
+        var modal = bootstrap.Modal.getInstance(document.getElementById("editVoucherModal"));
+        modal.hide();
+        loadVouchers();
+      } else {
+        alert("Cập nhật thất bại. Vui lòng thử lại.");
+      }
     }).catch(err => {
-        console.error("Lỗi tổng khi cập nhật:", err);
-        alert("Có lỗi xảy ra trong quá trình cập nhật!");
+      console.error("Lỗi tổng khi cập nhật:", err);
+      alert("Có lỗi xảy ra trong quá trình cập nhật!");
     });
-};
+  };
 
 
 
-function convertToISODate(dateString) {
-  if (!dateString) return null;
-  
-  // Kiểm tra nếu đã là định dạng ISO thì giữ nguyên
-  if (dateString.includes('T')) return dateString;
-  
-  // Xử lý định dạng dd/MM/yyyy HH:mm
-  const [datePart, timePart] = dateString.split(' ');
-  const [day, month, year] = datePart.split('/');
-  const [hours, minutes] = timePart.split(':');
-  
-  return new Date(year, month-1, day, hours, minutes).toISOString();
-}
+  function convertToISODate(dateString) {
+    if (!dateString) return null;
+
+    // Kiểm tra nếu đã là định dạng ISO thì giữ nguyên
+    if (dateString.includes('T')) return dateString;
+
+    // Xử lý định dạng dd/MM/yyyy HH:mm
+    const [datePart, timePart] = dateString.split(' ');
+    const [day, month, year] = datePart.split('/');
+    const [hours, minutes] = timePart.split(':');
+
+    return new Date(year, month - 1, day, hours, minutes).toISOString();
+  }
 
 
 
   // Xóa voucher và các quan hệ rank
-$scope.deleteVoucher = function(id) {
-  if (!confirm("Bạn có chắc chắn muốn xóa mã giảm giá này không?")) {
+  $scope.deleteVoucher = function (id) {
+    if (!confirm("Bạn có chắc chắn muốn xóa mã giảm giá này không?")) {
       return;
-  }
+    }
 
-  // Tạo promise chain
-  var deleteChain = $q.when();
+    // Tạo promise chain
+    var deleteChain = $q.when();
 
-  // 1. Xóa tất cả quan hệ trong Giamgia_rank trước
-  deleteChain = deleteChain.then(() => {
+    // 1. Xóa tất cả quan hệ trong Giamgia_rank trước
+    deleteChain = deleteChain.then(() => {
       return $http.delete(`https://localhost:7196/api/Giamgia_rank/idgg/${id}`)
-          .catch(err => {
-              console.error('Lỗi khi xóa quan hệ rank:', err);
-              // Vẫn tiếp tục dù có lỗi xóa quan hệ
-              return $q.resolve();
-          });
-  });
+        .catch(err => {
+          console.error('Lỗi khi xóa quan hệ rank:', err);
+          // Vẫn tiếp tục dù có lỗi xóa quan hệ
+          return $q.resolve();
+        });
+    });
 
-  // 2. Xóa voucher chính
-  deleteChain = deleteChain.then(() => {
+    // 2. Xóa voucher chính
+    deleteChain = deleteChain.then(() => {
       return $http.delete(`https://localhost:7196/api/Giamgia/${id}`);
-  });
+    });
 
-  // Xử lý kết quả
-  deleteChain.then(() => {
+    // Xử lý kết quả
+    deleteChain.then(() => {
       alert("Đã xóa voucher và các quan hệ thành công!");
       loadVouchers(); // gọi lại hàm load
       $timeout(() => {
-          $scope.message = "";
+        $scope.message = "";
       }, 3000);
-  }).catch(err => {
+    }).catch(err => {
       console.error('Lỗi khi xóa voucher:', err);
       alert("Xóa voucher thất bại! Vui lòng thử lại.");
-  });
-};
+    });
+  };
 
 
   // Phân trang
@@ -374,6 +377,26 @@ $scope.deleteVoucher = function(id) {
     loadVouchers();
     loadRanks();
   }
+
+  $scope.closeModal = function () {
+    const modalElement = document.getElementById('editVoucherModal');
+    let modalInstance = bootstrap.Modal.getInstance(modalElement);
+
+    if (!modalInstance) {
+        modalInstance = new bootstrap.Modal(modalElement);
+    }
+
+    modalInstance.hide();
+
+    // Đảm bảo loại bỏ backdrop thủ công nếu nó còn sót lại
+    const backdrops = document.querySelectorAll('.modal-backdrop');
+    backdrops.forEach(bd => bd.remove());
+
+    // Xoá class làm mờ giao diện
+    document.body.classList.remove('modal-open');
+    document.body.style = ''; // reset scroll lock nếu có
+};
+
 
   init();
 });
