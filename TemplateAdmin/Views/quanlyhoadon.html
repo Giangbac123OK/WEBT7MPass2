@@ -653,6 +653,10 @@
                     </button>
 
 
+                    <button class="btn btn-sm btn-danger" ng-if="invoice.trangthaidonhang === 2"
+                        ng-click="giaohangthatbai(invoice.id)">
+                        <i class="fas fa-check-circle"></i> Giao hàng thất bại
+                    </button>
                     <button class="btn btn-sm btn-danger" 
                             ng-if="invoice.trangthaidonhang === 0 || invoice.trangthaidonhang === 1"
                             ng-click="updateInvoicestatus(invoice.id, 4)">
@@ -743,7 +747,11 @@
                         ng-click="updateInvoicestatus(invoice.id, 3)">
                         <i class="fas fa-check-circle"></i> Hoàn thành
                     </button>
-
+                    
+                    <button class="btn btn-sm btn-danger" ng-if="invoice.trangthaidonhang === 2"
+                        ng-click="giaohangthatbai(invoice.id)">
+                        <i class="fas fa-check-circle"></i> Giao hàng thất bại
+                    </button>
                     <button class="btn btn-sm btn-danger" 
                             ng-if="invoice.trangthaidonhang === 0 || invoice.trangthaidonhang === 1"
                             ng-click="updateInvoicestatus(invoice.id, 4)">
@@ -835,7 +843,11 @@
                         ng-click="updateInvoicestatus(invoice.id, 3)">
                         <i class="fas fa-check-circle"></i> Hoàn thành
                     </button>
-
+                    
+                    <button class="btn btn-sm btn-danger" ng-if="invoice.trangthaidonhang === 2"
+                        ng-click="giaohangthatbai(invoice.id)">
+                        <i class="fas fa-check-circle"></i> Giao hàng thất bại
+                    </button>
                     <button class="btn btn-sm btn-danger" 
                             ng-if="invoice.trangthaidonhang === 0 || invoice.trangthaidonhang === 1"
                             ng-click="updateInvoicestatus(invoice.id, 4)">
@@ -928,6 +940,10 @@
                         <i class="fas fa-check-circle"></i> Hoàn thành
                     </button>
 
+                    <button class="btn btn-sm btn-danger" ng-if="invoice.trangthaidonhang === 2"
+                        ng-click="giaohangthatbai(invoice.id)">
+                        <i class="fas fa-check-circle"></i> Giao hàng thất bại
+                    </button>
                     <button class="btn btn-sm btn-danger" 
                             ng-if="invoice.trangthaidonhang === 0 || invoice.trangthaidonhang === 1"
                             ng-click="updateInvoicestatus(invoice.id, 4)">
@@ -1020,6 +1036,10 @@
                         <i class="fas fa-check-circle"></i> Hoàn thành
                     </button>
 
+                    <button class="btn btn-sm btn-danger" ng-if="invoice.trangthaidonhang === 2"
+                        ng-click="giaohangthatbai(invoice.id)">
+                        <i class="fas fa-check-circle"></i> Giao hàng thất bại
+                    </button>
                     <button class="btn btn-sm btn-danger" 
                             ng-if="invoice.trangthaidonhang === 0 || invoice.trangthaidonhang === 1"
                             ng-click="updateInvoicestatus(invoice.id, 4)">
@@ -1112,6 +1132,10 @@
                         <i class="fas fa-check-circle"></i> Hoàn thành
                     </button>
 
+                    <button class="btn btn-sm btn-danger" ng-if="invoice.trangthaidonhang == 2"
+                        ng-click="giaohangthatbai(invoice.id)">
+                        <i class="fas fa-check-circle"></i> Giao hàng thất bại
+                    </button>
                     <button class="btn btn-sm btn-danger" 
                             ng-if="invoice.trangthaidonhang === 0 || invoice.trangthaidonhang === 1"
                             ng-click="updateInvoicestatus(invoice.id, 4)">
