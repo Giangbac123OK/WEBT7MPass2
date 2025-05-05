@@ -1,8 +1,17 @@
-app.controller("ADDtrahangCtrl", function ($http, $scope, $location, $routeParams, $timeout) {
+app.controller("addTrahangCtrl", function ($http, $scope, $location, $routeParams, $timeout) {
     $scope.idhd = $routeParams.id;
+    $http.get(`https://localhost:7196/api/Hoadons/${$scope.idhd}`)
+        .then(function (response) {
+            $scope.hoadonmua = response.data;
+            console.log($scope.hoadon);
+        })
+        .catch(function (error) {
+            console.error("Lỗi khi lấy thông tin hóa đơn:", error);
+        });
     window.scrollTo(0, 0);
     console.log($scope.idhd);
-    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+    const userInfoString = localStorage.getItem("userInfo1");
+    const userInfo = JSON.parse(userInfoString);
     console.log(userInfo);
 
     // Initialize variables
@@ -335,21 +344,12 @@ app.controller("ADDtrahangCtrl", function ($http, $scope, $location, $routeParam
     $scope.btnAdd = function () {
         let errorMessages = [];
     
-        const diachi = document.getElementById("diachi")?.innerText.trim();
-        if (diachi == "...") {
-            Swal.fire("Lỗi", "Bạn chưa thêm địa chỉ, vui lòng tạo địa chỉ giao hàng", "error");
-            return;
-        }
-    
         // === 1. Kiểm tra hợp lệ dữ liệu đầu vào ===
         if (!$scope.selectedProducts || $scope.selectedProducts.length === 0) {
             errorMessages.push("Vui lòng chọn ít nhất một sản phẩm.");
         }
         if (!$scope.returnReason) {
             errorMessages.push("Vui lòng nhập lý do trả hàng.");
-        }
-        if (!$scope.refundMethod) {
-            errorMessages.push("Vui lòng chọn phương thức hoàn tiền.");
         }
         if (!$scope.images || $scope.images.length === 0) {
             errorMessages.push("Vui lòng tải lên ít nhất một hình ảnh làm bằng chứng.");
@@ -376,10 +376,6 @@ app.controller("ADDtrahangCtrl", function ($http, $scope, $location, $routeParam
         }).then((result) => {
             if (!result.isConfirmed) return;
 
-            let stk = "";
-            let nganhang = "";
-            let tentaikhoan = "";
-
             if ($scope.refundMethod === "Thẻ tín dụng/ghi nợ/Tài khoản ngân hàng") {
                 stk = $scope.accountNumber || "";
                 tentaikhoan = ($scope.accountName || "").toUpperCase();
@@ -387,24 +383,24 @@ app.controller("ADDtrahangCtrl", function ($http, $scope, $location, $routeParam
             }
 
             const data = {
-                tenkhachhang: userInfo?.ten || "Không xác định",
-                idnv: 0,
-                idkh: userInfo?.id || 0,
+                tenkhachhang: $scope.tenkhachang || "Khách vãng lai",
+                idnv: userInfo?.id || 0,
+                idkh: $scope.hoadonmua.idkh||0,
                 sotienhoan: $scope.tongtien ?? 0,
                 lydotrahang: $scope.returnReason || "Không có lý do",
                 trangthai: 1,
                 phuongthuchoantien: "Thẻ tín dụng/ghi nợ/Tài khoản ngân hàng",
-                ngaytrahangthucte: null,
+                ngaytrahangthucte: new Date(),
                 chuthich: $scope.mota || "Không có chú thích",
                 hinhthucxuly: $scope.hinhthucxuly || "Không xác định",
-                tennganhang: nganhang,
-                sotaikhoan: stk,
-                tentaikhoan: tentaikhoan,
-                trangthaihoantien: 0,
+                tennganhang: $scope.selectedBank.shortName,
+                sotaikhoan: $scope.accountNumber,
+                tentaikhoan: $scope.accountName,
+                trangthaihoantien: 1,
                 diachiship: "8 Lê Quang Đạo - Phú Đô - Nam Từ Liêm - Hà Nội",
                 ngaytaodon: new Date()
             };
-
+            console.log("Dữ liệu gửi lên Trahang:", data);
             // Gửi dữ liệu
             $http.post("https://localhost:7196/api/Trahangs", data)
                 .then(response => {
@@ -436,7 +432,7 @@ app.controller("ADDtrahangCtrl", function ($http, $scope, $location, $routeParam
                     Swal.fire("Đã gửi!", "Yêu cầu trả hàng của bạn đã được gửi thành công.", "success")
                         .then(() => {
                             $timeout(() => {
-                                $location.path("/donhangcuaban");
+                                $location.path("/quanlyhoadon");
                             });
                         });
                 })
