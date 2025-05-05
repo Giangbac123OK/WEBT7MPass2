@@ -406,9 +406,9 @@
 
                                 <div ng-show="isPriceFieldVisible" class="position-relative mb-1">
                                     <input type="number" class="form-control pe-5"
-                                        ng-model="newVariant.Giathoidiemhientai" placeholder="Giá bán"
-                                        name="Giathoidiemhientai" min="0" max="100000000"
-                                        ng-required="isPriceFieldVisible" ng-keydown="blockInvalidKeys($event)">
+                                    ng-model="newVariant.Giathoidiemhientai" placeholder="Giá bán"
+                                    name="Giathoidiemhientai" ng-min="1000" ng-max="100000000"
+                                    ng-required="isPriceFieldVisible" ng-keydown="blockInvalidKeys($event)">
 
                                     <button type="button"
                                         class="btn btn-outline-secondary position-absolute top-50 end-0 translate-middle-y me-1 py-1 px-2"
@@ -424,7 +424,7 @@
                                     </div>
                                     <div
                                         ng-show="variantForm.Giathoidiemhientai.$touched && variantForm.Giathoidiemhientai.$error.min">
-                                        Giá bán phải lớn hơn hoặc bằng 0
+                                        Giá bán phải lớn hơn hoặc bằng 1000
                                     </div>
                                     <div
                                         ng-show="variantForm.Giathoidiemhientai.$touched && variantForm.Giathoidiemhientai.$error.max">

@@ -429,9 +429,12 @@ app.controller('QuanLySanPhamController', function ($scope, $http, $location, $t
     };
     // Xóa biến thể
     $scope.removeVariant = function (index) {
+        const confirmDelete = window.confirm("Bạn có chắc chắn muốn xóa biến thể này?");
+    if (confirmDelete) {
         $scope.product.variants.splice(index, 1);
         $scope.product.variants[0].Giathoidiemhientai = $scope.product.giaBan;
         console.log("Danh sách sau xóa" + $scope.product.variants);
+    }
 
     };
     // Hàm để chuyển đổi trạng thái hiển thị trường nhập liệu
