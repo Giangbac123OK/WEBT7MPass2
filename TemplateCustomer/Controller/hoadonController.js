@@ -787,6 +787,7 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
         const diemsudungElement = document.getElementById('diemsudung');
         const tongHoaDonElement = document.getElementById('tongHoaDon');
         const diemSuDungHienThiElement = document.getElementById('diemSuDungHienThi');
+        const diemSuDungCheckbox = this;
     
         const diemsudung = parseInt(diemsudungElement.innerText.replace(/[VNĐ.,]/g, "").trim() || "0", 10);
         let tongHoaDon = parseInt(tongHoaDonElement.innerText.replace(/[VNĐ.,]/g, "") || "0", 10);
@@ -800,18 +801,21 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
                 tongHoaDon -= diemsudung;
             }
     
-            diemSuDungHienThiElement.innerText = `Sử dụng: ${diemTru.toLocaleString()} VNĐ`;
+            diemSuDungHienThiElement.innerText = `Sử dụng: ${diemTru.toLocaleString('vi-VN')} VNĐ`;
         } else {
             tongHoaDon += diemTru;
             diemTru = 0;
             diemSuDungHienThiElement.innerText = '';
         }
     
-        tongHoaDonElement.innerText = `${tongHoaDon.toLocaleString()} VNĐ`;
+        tongHoaDonElement.innerText = `${tongHoaDon.toLocaleString('vi-VN')} VNĐ`;
     
-        // Nếu tổng hóa đơn = 0 thì disable checkbox
-        const diemSuDungCheckbox = document.getElementById('diemsudungcheckbox');
-        diemSuDungCheckbox.disabled = (tongHoaDon === 0);
+        // Chỉ disable checkbox nếu tổng hóa đơn = 0 và checkbox đang không được chọn
+        if (tongHoaDon === 0 && !diemSuDungCheckbox.checked) {
+            diemSuDungCheckbox.disabled = true;
+        } else {
+            diemSuDungCheckbox.disabled = false;
+        }
     });
     
     document.querySelectorAll('.voucher-card').forEach(card => {
@@ -899,7 +903,7 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
                     const updatengaybatdauDate = new Date(data.ngaybatdau);
                     const updatengayketthucDate = new Date(data.ngayketthuc);
 
-                    if (data.trangthai !== "Đang phát hành") {
+                    if (data.trangthaistring !== "Đang phát hành") {
                         continue;
                     }
                     if (updatengaybatdauDate > formattedDate) {
@@ -1042,6 +1046,7 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
 
     document.querySelector('#btnAddVoucher').addEventListener('click', function () {
         const selectedVoucher = document.querySelector('input[name="voucher"]:checked');
+        const diemSuDungCheckbox = document.getElementById('diemsudungcheckbox');
     
         if (!selectedVoucher) {
             Swal.fire('Thông báo', 'Vui lòng chọn một voucher.', 'warning');
@@ -1049,10 +1054,9 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
         }
     
         // Vô hiệu hóa checkbox trước khi thực hiện tính toán
-        const diemSuDungCheckbox = document.getElementById('diemsudungcheckbox');
         if (diemSuDungCheckbox.checked) {
             diemSuDungCheckbox.checked = false;
-            diemSuDungCheckbox.dispatchEvent(new Event('change')); // Cập nhật tổng hóa đơn
+            diemSuDungCheckbox.dispatchEvent(new Event('change'));
         }
     
         const selectedVoucherId = selectedVoucher.dataset.value;
@@ -1083,24 +1087,26 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
     
                             const tongSanPhamValue = parseInt(tongSanPhamElement.textContent.replace(/[^0-9]/g, '')) || 0;
                             const vanchuyenValue = parseInt(vanChuyenElement.textContent.replace(/[^0-9]/g, '')) || 0;
+                            const tongHoaDonTruocGiam = tongSanPhamValue + vanchuyenValue;
                             let soTienGiam = 0;
     
                             if (voucher.donvi === 'VNĐ') {
-                                soTienGiam = voucher.giatri;
+                                soTienGiam = Math.min(Math.round(voucher.giatri), tongHoaDonTruocGiam);
                             } else if (voucher.donvi === '%') {
-                                soTienGiam = tongSanPhamValue * (voucher.giatri / 100);
+                                soTienGiam = Math.round(tongHoaDonTruocGiam * (voucher.giatri / 100));
                             }
     
-                            soTienGiamGia.textContent = soTienGiam > 0 ? `-${soTienGiam.toLocaleString()} VNĐ` : '0 VNĐ';
+                            // Đảm bảo số tiền giảm không âm và là số nguyên
+                            soTienGiam = Math.max(0, soTienGiam);
+    
+                            soTienGiamGia.textContent = soTienGiam > 0 ? `-${soTienGiam.toLocaleString('vi-VN')} VNĐ` : '0 VNĐ';
                             soTienGiamGia.style.color = soTienGiam > 0 ? 'red' : 'black';
     
-                            updateTotals();
+                            const tongHoaDonSauGiam = Math.max(0, tongHoaDonTruocGiam - soTienGiam);
+                            tongHoaDonElement.textContent = `${tongHoaDonSauGiam.toLocaleString('vi-VN')} VNĐ`;
     
-                            const tongHoaDonValue = Math.max(0, tongSanPhamValue + vanchuyenValue - soTienGiam);
-                            tongHoaDonElement.textContent = `${tongHoaDonValue.toLocaleString()} VNĐ`;
-    
-                            // Kiểm tra nếu tổng hóa đơn = 0 thì disable checkbox
-                            diemSuDungCheckbox.disabled = (tongHoaDonValue === 0);
+                            // Cập nhật trạng thái checkbox
+                            diemSuDungCheckbox.disabled = (tongHoaDonSauGiam === 0 && !diemSuDungCheckbox.checked);
     
                             document.getElementById("btnRestoreVoucher").style.display = 'inline-block';
                             Swal.fire(
@@ -1116,14 +1122,20 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
                         Swal.fire('Lỗi', 'Có lỗi xảy ra khi tải dữ liệu voucher. Vui lòng thử lại.', 'error');
                         console.error(error);
                     });
-            } else {
-                Swal.close();
             }
         });
     });
-
-
+    
     document.getElementById("btnRestoreVoucher").addEventListener("click", function () {
+        const diemSuDungCheckbox = document.getElementById('diemsudungcheckbox');
+        const diemSuDungHienThiElement = document.getElementById('diemSuDungHienThi');
+        
+        // Reset checkbox điểm sử dụng trước khi thực hiện các thao tác khác
+        if (diemSuDungCheckbox.checked) {
+            diemSuDungCheckbox.checked = false;
+            diemSuDungCheckbox.dispatchEvent(new Event('change'));
+        }
+    
         Swal.fire({
             title: 'Xác nhận huỷ voucher?',
             text: "Bạn có chắc chắn muốn huỷ voucher đã chọn?",
@@ -1138,45 +1150,47 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
                 const soTienGiamGia = document.getElementById('soTienGiamGia');
                 const tongHoaDonElement = document.getElementById('tongHoaDon');
                 const tongSanPhamElement = document.getElementById('tongSanPham');
-                const diemSuDungCheckbox = document.getElementById('diemsudungcheckbox');
+                const vanChuyenElement = document.getElementById('phiVanCHuyen');
     
-                // Khôi phục trạng thái ban đầu
+                // Reset hiển thị voucher
                 voucherCodeDisplay.textContent = 'Chưa chọn voucher';
                 voucherCodeDisplay.setAttribute('data-voucher-code', '');
                 voucherCodeDisplay.classList.remove('active');
                 voucherCodeDisplay.removeAttribute('data-value');
                 voucherCodeDisplay.setAttribute('placeholder', 'Nhập mã giảm giá');
     
-                // Reset số tiền giảm
+                // Reset số tiền giảm giá
                 soTienGiamGia.textContent = '0 VNĐ';
                 soTienGiamGia.style.color = '';
-
     
-                // Lấy giá trị tổng sản phẩm
+                // Tính lại tổng hóa đơn (bao gồm cả phí vận chuyển)
                 const tongSanPhamValue = parseInt(tongSanPhamElement.textContent.replace(/[VNĐ.]/g, '')) || 0;
-                tongHoaDonElement.textContent = `${tongSanPhamValue.toLocaleString()} VNĐ`;
+                const vanchuyenValue = parseInt(vanChuyenElement.textContent.replace(/[VNĐ.]/g, '')) || 0;
+                const tongHoaDonValue = tongSanPhamValue + vanchuyenValue;
+                tongHoaDonElement.textContent = `${tongHoaDonValue.toLocaleString('vi-VN')} VNĐ`;
     
-                // Mở lại checkbox nếu tổng hóa đơn > 0
-                if (tongSanPhamValue > 0) {
-                    diemSuDungCheckbox.disabled = false;
+                // Cập nhật trạng thái checkbox
+                diemSuDungCheckbox.disabled = (tongHoaDonValue === 0 && !diemSuDungCheckbox.checked);
+    
+                // Reset hiển thị điểm sử dụng nếu có
+                if (diemSuDungHienThiElement) {
+                    diemSuDungHienThiElement.innerText = '';
                 }
     
-                // Ẩn nút "Khôi phục voucher"
+                // Ẩn nút khôi phục voucher
                 document.getElementById("btnRestoreVoucher").style.display = 'none';
-    
+                
+                // Cập nhật tổng số tiền
                 updateTotals();
     
                 // Đóng modal nếu có
                 var modal = bootstrap.Modal.getInstance(document.getElementById("addVoucherButton"));
                 if (modal) modal.hide();
     
-                // Thông báo thành công
                 Swal.fire("Thành Công", "Huỷ áp dụng voucher thành công.", "success");
-            } else {
-                Swal.close();
             }
         });
-    });    
+    });
 
     // API endpoint
     const apiUrl = "https://localhost:7196/api/Phuongthucthanhtoans";

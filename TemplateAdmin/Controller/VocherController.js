@@ -11,10 +11,16 @@ app.controller("VoucherController", function ($http, $scope, $timeout, $q) {
   // Lấy danh sách voucher
   function loadVouchers() {
     $http.get("https://localhost:7196/api/Giamgia").then(function (res) {
-      $scope.vouchers = res.data;
-      $scope.applyFilters(); // Áp dụng bộ lọc sau khi tải dữ liệu
+        // Lọc chỉ các voucher có trạng thái từ 0 đến 3 (3 trở xuống)
+        $scope.vouchers = res.data.filter(function(voucher) {
+            return voucher.trangthai >= 0 && voucher.trangthai <= 3;
+        });
+        $scope.applyFilters(); // Áp dụng bộ lọc sau khi tải dữ liệu
+    }).catch(function(error) {
+        console.error('Lỗi khi tải dữ liệu voucher:', error);
+        alert('Không thể tải dữ liệu voucher');
     });
-  }
+}
 
   // Lấy danh sách rank
   function loadRanks() {
@@ -408,9 +414,20 @@ app.controller("VoucherController", function ($http, $scope, $timeout, $q) {
       alert("Có lỗi xảy ra trong quá trình cập nhật!");
     });
   };
-  
 
-
+  $scope.changeStatus = function(id) {
+    if (confirm('Bạn có chắc chắn muốn thay đổi trạng thái của voucher này?')) {
+        $http.put('https://localhost:7196/api/Giamgia/change-status/' + id + '/Admin')
+            .then(function(response) {
+                alert(response.data);
+                // Cập nhật lại danh sách voucher hoặc tìm và cập nhật trạng thái của voucher cụ thể
+                window.location.reload();  // Reload lại toàn bộ trang
+            })
+            .catch(function(error) {
+                alert(error.data || 'Có lỗi xảy ra khi thay đổi trạng thái');
+            });
+    }
+};
 
   function convertToISODate(dateString) {
     if (!dateString) return null;
@@ -437,19 +454,9 @@ app.controller("VoucherController", function ($http, $scope, $timeout, $q) {
     // Tạo promise chain
     var deleteChain = $q.when();
 
-    // 1. Xóa tất cả quan hệ trong Giamgia_rank trước
-    deleteChain = deleteChain.then(() => {
-      return $http.delete(`https://localhost:7196/api/Giamgia_rank/idgg/${id}`)
-        .catch(err => {
-          console.error('Lỗi khi xóa quan hệ rank:', err);
-          // Vẫn tiếp tục dù có lỗi xóa quan hệ
-          return $q.resolve();
-        });
-    });
-
     // 2. Xóa voucher chính
     deleteChain = deleteChain.then(() => {
-      return $http.delete(`https://localhost:7196/api/Giamgia/${id}`);
+      return $http.delete(`https://localhost:7196/api/Giamgia/${id}/Admin`);
     });
 
     // Xử lý kết quả
