@@ -438,7 +438,7 @@
                         >
                       
                           <div>
-                            <strong> Mã SP: {{ formatProductCode(product.id) }} - {{ product.tenSanpham }}</strong>
+                            <strong> {{ formatProductCode(product.id) }} - {{ product.tenSanpham }}</strong>
                             <br />
                             {{ formatCurrency(product.giaBan) }}
                             <br />
@@ -489,14 +489,14 @@
                           </td>
                           <td>
                             <input
-                              type="number"
-                              class="form-control form-control-sm quantity-input"
-                              v-model.number="item.quantity"
-                              @input="updateTotal(activeInvoice.id)"
-                              :max="item.selectedAttribute.soluong"
-                              min="1"
-                              style="width: 80px;"
-                            />
+                            type="number"
+                            class="form-control form-control-sm quantity-input"
+                            v-model.number="item.quantity"
+                            @input="onQuantityInput(activeInvoice.id, item, $event)"
+                            @blur="onQuantityBlur(activeInvoice.id, item)"   
+                            min="1"
+                          />
+
                           </td>
                           <td>{{ formatCurrency(item.totalPrice) }}</td>
                           <td>
@@ -742,7 +742,7 @@
   return `https://img.vietqr.io/image/${BANK_CODE}-${ACCOUNT_NO}-qr_only.png?${params}`;
 }
 
-      // Hàm loại bỏ sản phẩm
+
       function removeProduct(invoiceId, productId) {
         const invoice = invoices.value.find(inv => inv.id === invoiceId);
         if (invoice) {
@@ -769,7 +769,8 @@
         const invoice = invoices.value.find(inv => inv.id === invoiceId);
         if (invoice) {
           invoice.products.forEach(product => {
-            product.totalPrice = product.giagiam * product.quantity;
+            const qty = Number(product.quantity) || 0;   // ép sang số, '' → 0
+  product.totalPrice = product.giagiam * qty;
           });
         }
       }
@@ -913,7 +914,13 @@
         invoice.customer.cashGiven = numericValue;
         invoice.customer.cashGivenFormatted = numericValue.toLocaleString('vi-VN');
       }
-
+function onQuantityBlur(invoiceId, product) {
+  // Nếu người dùng bỏ trống rồi click ra ngoài → set về 1
+  if (product.quantity === '' || product.quantity === null || product.quantity === undefined) {
+    product.quantity = 1;
+  }
+  updateTotal(invoiceId);    // luôn tính lại thành tiền
+}
       // Gửi yêu cầu tạo hóa đơn
       async function submitInvoice() {
         const invoice = activeInvoice.value;
@@ -1109,8 +1116,26 @@
         activeInvoiceId.value = newId;
         invoiceCount.value++;
       }
+      function onQuantityInput(invoiceId, product, e) {
+  const valStr = e.target.value;          // giá trị gốc chuỗi
+  if (valStr === '') {
+    // Cho phép rỗng tạm thời để người dùng chỉnh sửa
+    product.quantity = '';                // giữ chuỗi rỗng (không 0)
+    return;
+  }
 
-      // Xóa hóa đơn
+  const raw = Number(valStr);
+  const maxQty = product.selectedAttribute.soluong || 0;
+
+  // Kẹp trần & sàn
+  if (raw > maxQty)      product.quantity = maxQty;
+  else if (raw < 1)      product.quantity = 1;
+  else                   product.quantity = raw;
+
+  updateTotal(invoiceId);
+}
+
+
       function removeInvoice(invoiceId) {
         invoices.value = invoices.value.filter(inv => inv.id !== invoiceId);
         if (activeInvoiceId.value === invoiceId && invoices.value.length > 0) {
@@ -1178,11 +1203,12 @@
         totalDiscount,
         totalAmount,
         changeAmount,
+        onQuantityInput           ,
         paymentMethods,
         loadPaymentMethods,
 
         formatProductCode,
-
+        onQuantityBlur,
         formatCurrency,
         addProductToInvoice,
         removeProduct,
