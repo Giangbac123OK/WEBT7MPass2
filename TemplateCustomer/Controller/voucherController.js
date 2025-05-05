@@ -145,13 +145,13 @@ app.controller('voucherController', function ($location, $scope) {
                     }
 
                     // Phân loại voucher
-                    if (voucher.trangthai === 'Đang phát hành') {
+                    if (voucher.trangthaistring === 'Đang phát hành') {
                         if (startDate <= currentDate && currentDate <= endDate) {
                             activeVouchers.push(voucher);
                         } else if (currentDate > endDate) {
                             expiredVouchers.push(voucher);
                         }
-                    } else if (voucher.trangthai === 'Chuẩn bị phát hành') {
+                    } else if (voucher.trangthaistring === 'Chuẩn bị phát hành') {
                         preparingVouchers.push(voucher);
                     }
 
@@ -201,7 +201,7 @@ app.controller('voucherController', function ($location, $scope) {
                                     <p class="mb-2"><span class="fw-semibold">Giá trị:</span> 
                                         ${voucher.giatri >= 1000 ? voucher.giatri.toLocaleString('vi-VN') : voucher.giatri} ${voucher.donvi}
                                     </p>
-                                    <p class="mb-0"><span class="fw-semibold">${voucher.trangthai === 'Chuẩn bị phát hành' ? 'Kích hoạt sau:' : 'HSD:'}</span> 
+                                    <p class="mb-0"><span class="fw-semibold">${voucher.trangthaistring === 'Chuẩn bị phát hành' ? 'Kích hoạt sau:' : 'HSD:'}</span> 
                                         ${formatDate(voucher.ngayketthuc)}
                                     </p>
                                 </div>
