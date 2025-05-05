@@ -19,7 +19,7 @@ app.controller('SanPhamSaleController', function ($scope, $http) {
     $http.get("https://localhost:7196/api/Sanphams/GetALLSanPhamGiamGia")
         .then(function (response) {
             $scope.sanPhamSale = response.data
-            .filter(sp => sp.sanphamchitiets && sp.sanphamchitiets.length > 0)
+            .filter(sp => sp.sanphamchitiets && sp.sanphamchitiets.length > 0 && sp.soluong > 0)
             .map(sp => {
                 sp.hinhAnh = "default-image.jpg"; // Ảnh mặc định
 
