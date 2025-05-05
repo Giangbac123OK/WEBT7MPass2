@@ -127,13 +127,10 @@ app.controller('thongtintaikhoanController', function ($http, $scope) {
                 }
             }
 
-            const date = new Date($scope.dataTttk.ngaysinh);
-            const isoDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 19);
-
             const data = {
                 ten: $scope.dataTttk.ten,
                 sdt: $scope.dataTttk.sdt,
-                ngaysinh: date,
+                ngaysinh: $scope.dataTttk.ngaysinh,
                 email: $scope.dataTttk.email,
                 gioitinh: $scope.dataTttk.gioitinh,
                 avatar: $scope.dataTttk.avatar || $scope.originalAvatar // Giữ avatar cũ nếu không có mới
