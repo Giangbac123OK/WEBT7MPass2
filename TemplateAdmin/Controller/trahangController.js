@@ -112,6 +112,7 @@ app.controller('trahangController', function ($scope, $http, $location, $interva
 
         // 1) Lấy thông tin chung của trả hàng
         $http.get(`https://localhost:7196/api/Trahangs/thongtinn/${idth}`)
+
             .then(function (res) {
                 $scope.dataTrahang = res.data;
                 // 2) Lấy hình ảnh
