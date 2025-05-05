@@ -64,6 +64,20 @@
         width: 50px;
         height: 24px;
     }
+/* === Chi tiết chương trình Sale – giữ đồng bộ giao diện chung === */
+#viewSaleModal .modal-content {
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+#viewSaleModal .badge {
+  font-size: 90%;
+  padding: .45em .6em;
+}
+
+#viewSaleModal .table thead th {
+  vertical-align: middle;
+}
 
     .toggle-switch input { 
         opacity: 0;
@@ -186,28 +200,85 @@
             </tbody>
         </table>
     </div>
-    <div id="viewSaleModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="viewSaleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Chi tiết chương trình Sale</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Đóng">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p><strong>Tên:</strong> <span id="viewSaleName"></span></p>
-                    <p><strong>Mô tả:</strong> <span id="viewSaleDescription"></span></p>
-                    <p><strong>Trạng thái:</strong> <span id="viewSaleStatus"></span></p>
-                    <p><strong>Ngày bắt đầu:</strong> <span id="viewSaleStartDate"></span></p>
-                    <p><strong>Ngày kết thúc:</strong> <span id="viewSaleEndDate"></span></p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                </div>
+<!-- ========== VIEW‑SALE MODAL (redesigned) ========== -->
+<div id="viewSaleModal" class="modal fade" tabindex="-1" role="dialog"
+     aria-labelledby="viewSaleModalLabel" aria-hidden="true">
+  <div class="modal-dialog custom-modal-xl custom-modal-dialog" role="document">
+    <div class="modal-content">
+      <!-- Header -->
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title font-weight-bold" id="viewSaleModalLabel">
+          Chi tiết chương trình Sale
+        </h5>
+        <button type="button" class="close text-white" data-dismiss="modal"
+                aria-label="Đóng">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body">
+        <!-- Thông tin chung -->
+        <div class="card mb-4 border-0 shadow-sm">
+          <div class="card-header bg-dark text-white font-weight-bold">
+            Thông tin chương trình Sale
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6 mb-2">
+                <strong>Tên:</strong> <span id="viewSaleName"></span>
+              </div>
+              <div class="col-md-6 mb-2">
+                <strong>Trạng thái:</strong> <span id="viewSaleStatus"></span>
+              </div>
+              <div class="col-12 mb-2">
+                <strong>Mô tả:</strong> <span id="viewSaleDescription"></span>
+              </div>
+              <div class="col-md-6 mb-2">
+                <strong>Ngày bắt đầu:</strong> <span id="viewSaleStartDate"></span>
+              </div>
+              <div class="col-md-6 mb-2">
+                <strong>Ngày kết thúc:</strong> <span id="viewSaleEndDate"></span>
+              </div>
             </div>
+          </div>
         </div>
+
+        <!-- Thông báo không có sản phẩm -->
+        <div id="viewSaleNoProduct" class="alert alert-info d-none">
+          Chưa có sản phẩm nào được thêm vào chương trình Sale này.
+        </div>
+
+        <!-- Bảng sản phẩm -->
+        <div id="viewSaleTableWrap" class="d-none">
+          <h5 class="mb-3 font-weight-bold">Sản phẩm trong chương trình Sale</h5>
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover mb-0">
+              <thead class="thead-dark">
+                <tr>
+                  <th>Tên sản phẩm</th>
+                  <th>Đơn vị</th>
+                  <th>Giá gốc</th>
+                  <th>Giảm giá</th>
+                  <th>Giá bán</th>
+                </tr>
+              </thead>
+              <tbody id="viewSaleProductsBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer bg-light">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          Đóng
+        </button>
+      </div>
     </div>
+  </div>
+</div>
+
     <div id="addEditSaleModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addEditSaleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
@@ -309,66 +380,124 @@
             $('#addEditSaleModal').modal('show');
         };
 
-        window.viewSale = function(id) {
-            console.log('Viewing sale with ID:', id);
-            $.ajax({
-                url: 'https://localhost:7196/api/Sales/' + id+'/Admin', // API lấy chi tiết sale
-                method: 'GET',
-                success: function(sale) {
-                    console.log('Sale details:', sale);
-                    $('#viewSaleName').text(sale.ten);
-                    $('#viewSaleDescription').text(sale.mota || 'Không có mô tả');
-                    $('#viewSaleStatus').html(getStatusBadge(sale.trangthai));
-                    $('#viewSaleStartDate').text(new Date(sale.ngaybatdau).toLocaleString());
-                    $('#viewSaleEndDate').text(new Date(sale.ngayketthuc).toLocaleString());
-                    $('#viewSaleModal').modal('show');
-                },
-                error: function(err) {
-                    console.error('Lỗi khi lấy chi tiết sale:', err);
-                    showAlert('Không thể lấy chi tiết chương trình Sale.', 'danger');
-                }
-            });
-        };
+        window.viewSale = function (id) {
+  // 1. Lấy thông tin chương trình
+  $.ajax({
+    url: `https://localhost:7196/api/Sales/${id}/Admin`,
+    method: 'GET',
+    success: function (sale) {
+      // Điền thông tin chung
+      $('#viewSaleName').text(sale.ten);
+      $('#viewSaleDescription').text(sale.mota || 'Không có mô tả');
+      $('#viewSaleStatus').html(getStatusBadge(sale.trangthai));
+      $('#viewSaleStartDate').text(new Date(sale.ngaybatdau).toLocaleString());
+      $('#viewSaleEndDate').text(new Date(sale.ngayketthuc).toLocaleString());
 
-        window.editSale = function(id) {
-            console.log('Editing sale with ID:', id);
-            isEditMode = true;
-            editSaleId = id;
-            $('#modalTitle').text('Sửa chương trình Sale');
-            $('#error-message').addClass('d-none');
-            $.ajax({
-                url: `https://localhost:7196/api/Sales/${id}/Admin`,
-                method: 'GET',
-                success: function(sale) {
-                    console.log('Sale data for editing:', sale);
-                    $('#ten').val(sale.ten);
-                    $('#mota').val(sale.mota);
-                    $('#ngaybatdau').val(formatDateForInput(sale.ngaybatdau));
-                    $('#ngayketthuc').val(formatDateForInput(sale.ngayketthuc));
-                    loadProducts(sale.products); // Pass selectedProducts
-                    let newTrangThai = sale.trangthai; // Trạng thái cũ
-                    if (sale.trangthai !== 'Dừng phát hành') { // Sửa điều kiện nếu trangthai là string
-                        const now = new Date();
-                        const ngayBatDau = new Date(sale.ngaybatdau);
-                        const ngayKetThuc = new Date(sale.ngayketthuc);
-                        
-                        if (ngayKetThuc < now) {
-                            newTrangThai = 'Chuẩn bị diễn ra'; // Cập nhật trạng thái theo logic
-                        } else if (ngayBatDau <= now && now <= ngayKetThuc) {
-                            newTrangThai = 'Đang diễn ra';
-                        } else if (ngayBatDau > now) {
-                            newTrangThai = 'Đã diễn ra';
-                        }
-                    }
-                    $('#addEditSaleForm').data('new-trangthai', newTrangThai);
-                    $('#addEditSaleModal').modal('show');
-                },
-                error: function(err) {
-                    console.error('Lỗi khi lấy dữ liệu sale:', err);
-                    showAlert('Không thể lấy dữ liệu chương trình Sale.', 'danger');
-                }
-            });
-        };
+      // 2. Lấy chi tiết sản phẩm
+      $.ajax({
+        url: `https://localhost:7196/api/Sales/details/${id}/Admin`,
+        method: 'GET',
+        success: function (details) {
+          if (details.length === 0) {
+            $('#viewSaleNoProduct').removeClass('d-none');
+            $('#viewSaleTableWrap').addClass('d-none');
+          } else {
+            const rows = details.map(p => `
+              <tr>
+                <td>${p.productName}</td>
+                <td>${p.unit}</td>
+                <td>${formatCurrency(p.price)}</td>
+                <td>${formatCurrency(p.discount)}</td>
+                <td>${formatCurrency(p.salePrice)}</td>
+              </tr>
+            `).join('');
+            $('#viewSaleProductsBody').html(rows);
+            $('#viewSaleNoProduct').addClass('d-none');
+            $('#viewSaleTableWrap').removeClass('d-none');
+          }
+          $('#viewSaleModal').modal('show');
+        },
+        error: function (err) {
+          if (err.status === 404) {
+            // Không có sản phẩm
+            $('#viewSaleNoProduct').removeClass('d-none');
+            $('#viewSaleTableWrap').addClass('d-none');
+            $('#viewSaleModal').modal('show');
+          } else {
+            console.error('Lỗi khi lấy chi tiết sản phẩm:', err);
+            showAlert('Không thể lấy chi tiết sản phẩm.', 'danger');
+          }
+        }
+      });
+    },
+    error: function (err) {
+      console.error('Lỗi khi lấy dữ liệu sale:', err);
+      showAlert('Không thể lấy dữ liệu chương trình Sale.', 'danger');
+    }
+  });
+};
+
+        /* =================== EDIT SALE (sửa chương trình) =================== */
+window.editSale = function (id) {
+  isEditMode = true;
+  editSaleId = id;
+  $('#modalTitle').text('Sửa chương trình Sale');
+  $('#error-message').addClass('d-none');
+
+  /* 1. Lấy thông tin chung của Sale ------------------------------- */
+  $.getJSON(`https://localhost:7196/api/Sales/${id}/Admin`)
+    .done(function (sale) {
+      // Điền form
+      $('#ten').val(sale.ten);
+      $('#mota').val(sale.mota);
+      $('#ngaybatdau').val(formatDateForInput(sale.ngaybatdau));
+      $('#ngayketthuc').val(formatDateForInput(sale.ngayketthuc));
+
+      /* 2. Lấy chi tiết sản phẩm của Sale -------------------------- */
+      $.getJSON(`https://localhost:7196/api/Sales/details/${id}/Admin`)
+        .done(function (details) {
+         
+            const selectedProducts = details.map(d => ({
+      idspct : d.idspct,
+      donvi  : d.unit.trim() === '%' ? 1 : 0,     // 0 = VND, 1 = %
+      giamgia: d.discount,                        // giá trị giảm
+      giasale: d.salePrice    
+          }));
+
+          loadProducts(selectedProducts);        // bảng sẽ tick ✔ & điền số liệu
+          $('#addEditSaleModal').modal('show');
+        })
+        .fail(function (err) {
+          /* Nếu chưa có sản phẩm → show bảng rỗng */
+          if (err.status === 404) {
+            loadProducts([]);                    // không tick sp nào
+            addAlert('Chưa có sản phẩm nào được thêm vào chương trình sale này.', 'warning');
+            $('#addEditSaleModal').modal('show');
+          } else {
+            console.error('Lỗi lấy chi tiết sản phẩm:', err);
+            showAlert('Không thể lấy chi tiết sản phẩm.', 'danger');
+          }
+        });
+
+      /* 3. Xử lý trạng thái (giữ nguyên logic cũ) ------------------ */
+      let newTrangThai = sale.trangthai;
+      if (sale.trangthai !== 'Dừng phát hành') {
+        const now        = new Date(),
+              startDate  = new Date(sale.ngaybatdau),
+              endDate    = new Date(sale.ngayketthuc);
+
+        if (endDate < now)             newTrangThai = 'Đã diễn ra';
+        else if (startDate > now)      newTrangThai = 'Chuẩn bị diễn ra';
+        else /* đang trong khoảng */   newTrangThai = 'Đang diễn ra';
+      }
+      $('#addEditSaleForm').data('new-trangthai', newTrangThai);
+
+    })
+    .fail(function (err) {
+      console.error('Lỗi khi lấy dữ liệu sale:', err);
+      showAlert('Không thể lấy dữ liệu chương trình Sale.', 'danger');
+    });
+};
 
         window.deleteSale = function(id) {
             console.log('Deleting sale with ID:', id);
@@ -412,12 +541,10 @@
         };
 
         window.getSales = function() {
-            console.log('Fetching sales list...');
             $.ajax({
                 url: 'https://localhost:7196/api/Sales/Admin',
                 method: 'GET',
                 success: function(data) {
-                    console.log('Sales data received:', data);
                     var rows = '';
                     data.forEach(function(sale, index) {
                         rows += '<tr>';
@@ -647,7 +774,12 @@
             }
             return `<span class="badge ${badgeClass}">${trangthai}</span>`;
         }
-
+        function formatCurrency(amount) {
+    return Number(amount || 0).toLocaleString('vi-VN', {
+      style   : 'currency',
+      currency: 'VND'
+    });
+  }
         function formatDateForInput(date) {
             const d = new Date(date);
             const year = d.getFullYear();
@@ -659,76 +791,95 @@
         }
 
         $(document).ready(function() {
-            $('#btnSaveSale').on('click', function(event) {
-                event.preventDefault(); 
-                const saleData = {
-                    ten: $('#ten').val().trim(),
-                    mota: $('#mota').val().trim(),
-                    ngaybatdau: $('#ngaybatdau').val(),
-                    ngayketthuc: $('#ngayketthuc').val(),
-                    products: []
-                };
-                if (!saleData.ten || !saleData.ngaybatdau || !saleData.ngayketthuc) {
-                    $('#error-message').text('Vui lòng điền đầy đủ các trường bắt buộc.').removeClass('d-none');
-                    return;
-                }
-                if (new Date(saleData.ngaybatdau) >= new Date(saleData.ngayketthuc)) {
-                    $('#error-message').text('Ngày kết thúc phải sau ngày bắt đầu.').removeClass('d-none');
-                    return;
-                }
-                $('#productsTable tbody tr').each(function() {
-                    var checkbox = $(this).find('.product-checkbox');
-                    if (checkbox.is(':checked')) {
-                        var idspct = checkbox.data('idspct');
-                        var soluong = parseInt($(this).find('.soluong-input').val());
-                        var donvi = parseInt($(this).find('.donvi-select').val());
-                        var giamgia = parseFloat($(this).find('.giamgia-input').val());
-                        var giasaleText = $(this).find('.giasale-input').val();
-                        var giasale = parseCurrency(giasaleText); // Hàm chuyển đổi chuỗi thành số
+         // ---------- LƯU / CẬP‑NHẬT CHƯƠNG TRÌNH SALE + CHI TIẾT SẢN PHẨM ----------
+$('#btnSaveSale').off('click').on('click', function (e) {
+  e.preventDefault();
 
-                        saleData.products.push({
-                            idspct: idspct,
-                            soluong: soluong,
-                            donvi: donvi,
-                            giamgia: giamgia,
-                            giasale: giasale
-                        });
-                    }
-                });
-                if (saleData.products.length === 0) {
-                    $('#error-message').text('Vui lòng chọn ít nhất một sản phẩm để thêm vào chương trình Sale.').removeClass('d-none');
-                    return;
-                }
+  /* 1. Thu thập dữ liệu form ─────────────────────────────────────────── */
+  const ten          = $('#ten').val().trim();
+  const mota         = $('#mota').val().trim();
+  const ngaybatdau   = $('#ngaybatdau').val();
+  const ngayketthuc  = $('#ngayketthuc').val();
 
-                const url = isEditMode 
-                    ? `https://localhost:7196/api/Sales/${editSaleId}/Admin`
-                    : 'https://localhost:7196/api/Sales/Admin';
-                const method = isEditMode ? 'PUT' : 'POST';
-                console.log('Saving sale:', saleData, 'Method:', method, 'URL:', url);
-                $.ajax({
-                    url: url,
-                    method: method,
-                    contentType: 'application/json',
-                    data: JSON.stringify(saleData),
-                    success: function() {
-                        const action = isEditMode ? 'sửa' : 'thêm';
-                        showAlert(`Đã ${action} chương trình Sale thành công.`, 'success');
-                        $('#addEditSaleModal').modal('hide');
-                        getSales();
-                        isEditMode = false;
-                        editSaleId = null;
-                        $('#addEditSaleForm')[0].reset();
-                        $('#error-message').addClass('d-none');
-                    },
-                    error: function(err) {
-                        console.error('Lỗi khi lưu chương trình sale:', err);
-                        $('#error-message').text('Có lỗi xảy ra khi lưu dữ liệu. Vui lòng thử lại.').removeClass('d-none');
-                    }
-                });
-            });
+  // Validate trường bắt buộc
+  if (!ten || !ngaybatdau || !ngayketthuc) {
+    $('#error-message').text('Vui lòng điền đầy đủ các trường bắt buộc.')
+                       .removeClass('d-none');
+    return;
+  }
+  if (new Date(ngaybatdau) >= new Date(ngayketthuc)) {
+    $('#error-message').text('Ngày kết thúc phải sau ngày bắt đầu.')
+                       .removeClass('d-none');
+    return;
+  }
+
+  /* 2. Thu thập chi tiết sản phẩm đã chọn ─────────────────────────────── */
+  const saleDetails = [];
+  $('#productsTable tbody tr').each(function () {
+    const $row     = $(this);
+    const chk      = $row.find('.product-checkbox');
+    if (!chk.is(':checked')) return;                         // Bỏ qua chưa chọn
+
+    const idspct   = chk.data('idspct');
+    const soluong  = parseInt($row.find('.soluong-input').val()) || 1;
+    const donvi    = parseInt($row.find('.donvi-select').val());
+    const giatrigiam = parseFloat($row.find('.giamgia-input').val()) || 0;
+
+    saleDetails.push({ idspct, soluong, donvi, giatrigiam });
+  });
+
+  if (saleDetails.length === 0) {
+    $('#error-message').text('Vui lòng chọn ít nhất một sản phẩm.')
+                       .removeClass('d-none');
+    return;
+  }
+  $('#error-message').addClass('d-none');                    // Ẩn lỗi cũ (nếu có)
+
+  /* 3. Ghép object gửi API ────────────────────────────────────────────── */
+  const saleData = {
+    ten,
+    mota,
+    trangthai   : isEditMode ? ($('#addEditSaleForm').data('new-trangthai') ?? 0) : 0,
+    ngaybatdau,
+    ngayketthuc,
+    saleDetails                               // ← ĐÚNG tên theo API .NET
+  };
+
+  /* 4. Chọn endpoint & phương thức ───────────────────────────────────── */
+  const base = 'https://localhost:7196/api/Sales';
+  const url  = isEditMode
+               ? `${base}/${editSaleId}/update-sale-with-details/Admin`
+               : `${base}/add-sale-with-details/Admin`;
+  const method = isEditMode ? 'PUT' : 'POST';
+
+  /* 5. Gửi lên server ────────────────────────────────────────────────── */
+  $.ajax({
+    url,
+    method,
+    contentType : 'application/json',
+    data        : JSON.stringify(saleData),
+    success : function () {
+      const msg = isEditMode ? 'Cập nhật chương trình Sale thành công.'
+                             : 'Thêm mới chương trình Sale thành công.';
+      showAlert(msg, 'success');
+      $('#addEditSaleModal').modal('hide');
+      getSales();                                            // Refresh danh sách
+      isEditMode = false;
+      editSaleId = null;
+      $('#addEditSaleForm')[0].reset();
+    },
+    error   : function (err) {
+      console.error('Lỗi khi lưu Sale:', err);
+      $('#error-message').text(
+        isEditMode
+          ? 'Có lỗi xảy ra khi cập nhật chương trình Sale.'
+          : 'Có lỗi xảy ra khi thêm chương trình Sale.'
+      ).removeClass('d-none');
+    }
+  });
+});
 
             function updateAllSalesStatus() {
-                console.log('Updating status of all sales...');
                 $.ajax({
                     url: 'https://localhost:7196/api/Sales/Admin',
                     method: 'GET',
@@ -746,12 +897,11 @@
             }
 
             function updateSaleStatus(saleId) {
-                console.log('Updating status for sale ID:', saleId);
+          
                 $.ajax({
                     url: 'https://localhost:7196/api/Sales/' + saleId + '/update-status-load/Admin',
                     method: 'PUT',
                     success: function() {
-                        console.log('Status updated for sale ID:', saleId);
                         getSales();
                     },
                     error: function(err) {
