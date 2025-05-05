@@ -58,14 +58,23 @@
                             <td>{{ v.soluong }}</td>
                             <td>{{ v.ngaybatdau | date:'dd/MM/yyyy' }} - {{ v.ngayketthuc | date:'dd/MM/yyyy' }}</td>
                             <td>
-
-                                {{ v.trangthai }}
+                                <span ng-switch="v.trangthai">
+                                    <span ng-switch-when="0" class="badge bg-success">Đang phát hành</span>
+                                    <span ng-switch-when="1" class="badge bg-info">Chuẩn bị phát hành</span>
+                                    <span ng-switch-when="2" class="badge bg-warning">Dừng phát hành</span>
+                                    <span ng-switch-when="3" class="badge bg-secondary">Đã phát hành</span>
+                                    <span ng-switch-default class="badge bg-dark">Không xác định</span>
+                                </span>
                             </td>
-
                             <td class="text-end">
                                 <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
                                     data-bs-target="#editVoucherModal" ng-click="editVoucher(v)">Sửa</button>
                                 <button class="btn btn-sm btn-danger" ng-click="deleteVoucher(v.id)">Xoá</button>
+                                <button class="btn btn-sm" 
+                                    ng-class="{'btn-success': v.trangthai == 2, 'btn-warning': v.trangthai != 2}"
+                                    ng-click="changeStatus(v.id)">
+                                    {{ v.trangthai == 2 ? 'Kích hoạt' : 'Dừng' }}
+                                </button>
                             </td>
                         </tr>
                     </tbody>
@@ -119,24 +128,17 @@
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="ngaybatdau" class="form-label">Ngày bắt đầu <span
-                                    class="text-danger">*</span></label>
-                            <input type="datetime-local" class="form-control" id="ngaybatdau" required>
+                            <label for="ngaybatdau" class="form-label">Ngày bắt đầu <span class="text-danger">*</span></label>
+                            <input type="datetime-local" class="form-control" id="ngaybatdau" required 
+                                   onkeydown="return false;" inputmode="none">
                         </div>
                         <div class="col-md-6">
-                            <label for="ngayketthuc" class="form-label">Ngày kết thúc <span
-                                    class="text-danger">*</span></label>
-                            <input type="datetime-local" class="form-control" id="ngayketthuc" required>
+                            <label for="ngayketthuc" class="form-label">Ngày kết thúc <span class="text-danger">*</span></label>
+                            <input type="datetime-local" class="form-control" id="ngayketthuc" required 
+                                   onkeydown="return false;" inputmode="none">
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="trangthaiadd" class="form-label">Trạng thái</label>
-                        <select class="form-select" id="trangthaiadd">
-                            <option value="0">Đang phát hành</option>
-                            <option value="1">Chuẩn bị phát hành</option>
-                            <option value="2">Dừng phát hành</option>
-                        </select>
-                    </div>
+                    
                     <div class="mb-3">
                         <label class="form-label">Áp dụng cho Rank <span class="text-danger">*</span></label>
                         <div class="row" id="rank_coupon">
@@ -213,17 +215,6 @@
                         </div>
                     </div>
 
-                    <!-- Trạng thái -->
-                    <div class="mb-3">
-                        <label class="form-label">Trạng thái</label>
-                        <select class="form-select" ng-model="editingVoucher.trangthai" required>
-                            <option value="Đang phát hành">Đang phát hành</option>
-                            <option value="Chuẩn bị phát hành">Chuẩn bị phát hành</option>
-                            <option value="Dừng phát hành">Dừng phát hành</option>
-                        </select>
-                    </div>
-
-                    <!-- Áp dụng cho Rank -->
                     <!-- Áp dụng cho Rank -->
                     <div class="mb-3">
                         <label class="form-label">Áp dụng cho Rank</label>

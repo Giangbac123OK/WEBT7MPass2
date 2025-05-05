@@ -836,6 +836,7 @@ app.controller("hoadongiohangCtr", function ($document, $rootScope, $routeParams
         const diemsudungElement = document.getElementById('diemsudung');
         const tongHoaDonElement = document.getElementById('tongHoaDon');
         const diemSuDungHienThiElement = document.getElementById('diemSuDungHienThi');
+        const diemSuDungCheckbox = this;
     
         const diemsudung = parseInt(diemsudungElement.innerText.replace(/[VNĐ.,]/g, "").trim() || "0", 10);
         let tongHoaDon = parseInt(tongHoaDonElement.innerText.replace(/[VNĐ.,]/g, "") || "0", 10);
@@ -849,18 +850,21 @@ app.controller("hoadongiohangCtr", function ($document, $rootScope, $routeParams
                 tongHoaDon -= diemsudung;
             }
     
-            diemSuDungHienThiElement.innerText = `Sử dụng: ${diemTru.toLocaleString()} VNĐ`;
+            diemSuDungHienThiElement.innerText = `Sử dụng: ${diemTru.toLocaleString('vi-VN')} VNĐ`;
         } else {
             tongHoaDon += diemTru;
             diemTru = 0;
             diemSuDungHienThiElement.innerText = '';
         }
     
-        tongHoaDonElement.innerText = `${tongHoaDon.toLocaleString()} VNĐ`;
+        tongHoaDonElement.innerText = `${tongHoaDon.toLocaleString('vi-VN')} VNĐ`;
     
-        // Nếu tổng hóa đơn = 0 thì disable checkbox
-        const diemSuDungCheckbox = document.getElementById('diemsudungcheckbox');
-        diemSuDungCheckbox.disabled = (tongHoaDon === 0);
+        // Chỉ disable checkbox nếu tổng hóa đơn = 0 và checkbox đang không được chọn
+        if (tongHoaDon === 0 && !diemSuDungCheckbox.checked) {
+            diemSuDungCheckbox.disabled = true;
+        } else {
+            diemSuDungCheckbox.disabled = false;
+        }
     });
     
     document.querySelectorAll('.voucher-card').forEach(card => {
@@ -948,7 +952,7 @@ app.controller("hoadongiohangCtr", function ($document, $rootScope, $routeParams
                     const updatengaybatdauDate = new Date(data.ngaybatdau);
                     const updatengayketthucDate = new Date(data.ngayketthuc);
 
-                    if (data.trangthai !== "Đang phát hành") {
+                    if (data.trangthaistring !== "Đang phát hành") {
                         continue;
                     }
                     if (updatengaybatdauDate > formattedDate) {
