@@ -68,8 +68,12 @@ app.controller('trahangController', function ($scope, $http, $location, $interva
                 if (result.isConfirmed) {
                     console.log('Phương án đã chọn:', result.value.option);
                     console.log('Ghi chú:', result.value.note);
-                    
+                    if(x.phuongthuchoantien=="Thẻ tín dụng/ghi nợ/Tài khoản ngân hàng"){
+                        if(result.value.option == "Trả hàng và hoàn tiền"){
+                            
+                    }
                 }
+            }
             });
             
         };
