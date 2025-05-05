@@ -131,6 +131,9 @@
                         <label class="form-label">Đến</label>
                         <input type="number" class="form-control mb-3" ng-model="searchParams.giaMax"
                                placeholder="Nhập giá cao nhất" >
+                               <div class="text-danger text-center mt-2" ng-if="errorMessage1">
+                                {{ errorMessage1 }}
+                            </div>
                       </div>
 
                     <!-- Brand Filter -->
@@ -188,8 +191,14 @@
                 </div>
 
                 <div class="row">
-
-                    <div class="col-md-4 mb-4" ng-repeat="product in getPagedProducts()">
+                    <div ng-if="errorMessage" class="alert alert-warning text-center mt-3">
+                        {{errorMessage}}
+                    </div>
+                    <div ng-if="!errorMessage && products.length === 0" class="alert alert-info text-center mt-3">
+                        Không có sản phẩm nào phù hợp với tiêu chí tìm kiếm của bạn.
+                    </div>
+                    
+                    <div class="col-md-4 mb-4" ng-if="!errorMessage" ng-repeat="product in getPagedProducts()">
                         <a href="#!SanpDetail/{{product.id}}" style="text-decoration: none;"
                         ng-class="{'disabled-link': product.soluong === 0}">
                             <div class="card rounded-0"
@@ -252,7 +261,7 @@
                 </div>
 
                 <!-- Pagination -->
-                <nav aria-label="Page navigation" class="mt-4">
+                <nav aria-label="Page navigation" class="mt-4" ng-if="!errorMessage">
                     <ul class="pagination justify-content-center">
                         <li class="page-item" ng-class="{disabled: currentPage === 1}">
                             <a class="page-link" ng-click="previousPage()">Trước</a>
