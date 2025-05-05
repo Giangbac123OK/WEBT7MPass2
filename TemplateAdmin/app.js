@@ -102,6 +102,9 @@ app.config(function ($routeProvider) {
             templateUrl: "./Views/dashboard.html",
             controller: "dashboardController"
         })
+        .when("/hoadonoff", {
+          templateUrl: "./Views/hoadonoff.html"
+      })
         .otherwise("/")
 });
 app.run(function($rootScope, $location) {
