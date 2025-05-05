@@ -73,7 +73,7 @@ app.controller('QuanLySanPhamController', function ($scope, $http, $location, $t
                             if (product.trangthai === 0 || product.trangthai === 1) {
                                 $scope.productsStatus0.push(product);
                             }
-                            if (product.trangthai === 1) {
+                            if (product.trangthai === 1 || product.soluong === 0) {
                                 $scope.productsStatus1.push(product);
                             }
                             if (product.trangthai === 2) {
