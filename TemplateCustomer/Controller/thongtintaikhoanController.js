@@ -104,7 +104,6 @@ app.controller('thongtintaikhoanController', function ($http, $scope) {
             console.error("Lỗi khi lấy dữ liệu:", error);
             Swal.fire("Lỗi!", "Không thể lấy thông tin tài khoản. Vui lòng thử lại!", "error");
         });
-
     // Hàm cập nhật thông tin
     $scope.btnLuu = async function () {
         try {
@@ -126,11 +125,12 @@ app.controller('thongtintaikhoanController', function ($http, $scope) {
                     throw new Error(uploadResult.message || "Lỗi khi upload ảnh");
                 }
             }
-
+            var d = new Date($scope.dataTttk.ngaysinh);  // Tạo đối tượng Date từ giá trị ngày ban đầu
+            d.setDate(d.getDate() + 1);
             const data = {
                 ten: $scope.dataTttk.ten,
                 sdt: $scope.dataTttk.sdt,
-                ngaysinh: $scope.dataTttk.ngaysinh,
+                ngaysinh: d,
                 email: $scope.dataTttk.email,
                 gioitinh: $scope.dataTttk.gioitinh,
                 avatar: $scope.dataTttk.avatar || $scope.originalAvatar // Giữ avatar cũ nếu không có mới
