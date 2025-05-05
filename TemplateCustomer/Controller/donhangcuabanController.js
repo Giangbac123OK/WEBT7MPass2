@@ -639,12 +639,12 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
                             sdt: dataHoaDon.sdt,
                             tonggiamgia: dataHoaDon.tonggiamgia,
                             idgg: dataHoaDon.idgg,
-                            trangthai: 4, // ✅ Cập nhật trạng thái
+                            trangthaidonhang: 4, // ✅ Cập nhật trạng thái
                             phivanchuyen: dataHoaDon.phivanchuyen,
                             idpttt: dataHoaDon.idpttt,
                             ghichu: "Huỷ đơn hàng với lý do: " + lydohuydon
                         };
-
+                        console.log(data);
                         // ✅ Gọi API PUT để cập nhật trạng thái đơn hàng
                         return $http.put(api, data);
                     })
