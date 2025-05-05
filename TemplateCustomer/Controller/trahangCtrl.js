@@ -375,17 +375,17 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
             cancelButtonText: "Hủy"
         }).then((result) => {
             if (!result.isConfirmed) return;
-    
+
             let stk = "";
             let nganhang = "";
             let tentaikhoan = "";
-    
+
             if ($scope.refundMethod === "Thẻ tín dụng/ghi nợ/Tài khoản ngân hàng") {
                 stk = $scope.accountNumber || "";
                 tentaikhoan = ($scope.accountName || "").toUpperCase();
                 nganhang = $scope.selectedBank ? $scope.selectedBank.name + ' (' + $scope.selectedBank.shortName + ')' : "";
             }
-    
+
             const data = {
                 tenkhachhang: userInfo?.ten || "Không xác định",
                 idnv: 0,
@@ -404,16 +404,12 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
                 diachiship: diachi,
                 ngaytaodon: new Date()
             };
-    
+
             // Gửi dữ liệu
             $http.post("https://localhost:7196/api/Trahangs", data)
-                .then(() => $http.get("https://localhost:7196/api/Trahangs"))
                 .then(response => {
-                    if (!response.data || response.data.length === 0) {
-                        throw new Error("Không có dữ liệu trả về từ API.");
-                    }
-                    const maxId = Math.max(...response.data.map(item => item.id));
-    
+                    const maxId = response.data.id; // Lấy trực tiếp từ kết quả POST
+
                     const promises = $scope.selectedProducts.map(element => {
                         const datathct = {
                             idth: maxId,
@@ -424,7 +420,7 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
                         console.log("Dữ liệu gửi lên Trahangchitiet:", datathct);
                         return $http.post("https://localhost:7196/api/Trahangchitiets", datathct);
                     });
-    
+
                     return Promise.all(promises).then(() => maxId);
                 })
                 .then(maxId => {
@@ -434,7 +430,6 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
                     return maxId;
                 })
                 .then(() => {
-                    // === 7. Cập nhật trạng thái hóa đơn ===
                     return $http.put(`https://localhost:7196/api/Trahangs/UpdateTrangThaiHd/${$scope.idhd}`);
                 })
                 .then(() => {
@@ -449,6 +444,7 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
                     console.error("Lỗi trong quá trình xử lý:", error);
                     Swal.fire("Thất bại!", "Đã xảy ra lỗi khi gửi yêu cầu. Vui lòng thử lại sau.", "error");
                 });
+
         });
     };
     
