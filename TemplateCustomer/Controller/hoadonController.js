@@ -920,8 +920,8 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
             // Sắp xếp danh sách voucher: Ưu tiên Donvi = 1 và sắp xếp giá trị (Giatri) tăng dần
             vouchers.sort((a, b) => {
                 // Kiểm tra điều kiện Donvi = 1
-                if (a.donvi === "%" && b.donvi === "VND") return -1;  // % lên trước VNĐ
-                if (a.donvi === "VND" && b.donvi === "%") return 1;   // VNĐ xuống sau
+                if (a.donvi === "%" && b.donvi === "VNĐ") return -1;  // % lên trước VNĐ
+                if (a.donvi === "VNĐ" && b.donvi === "%") return 1;   // VNĐ xuống sau
                 // Nếu cả hai đều có Donvi == 1 hoặc đều không, sắp xếp theo giá trị (Giatri) tăng dần
                 return a.giatri - b.giatri;
             });
@@ -966,7 +966,7 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
 
                     const cardText2 = document.createElement('p');
                     cardText2.classList.add('card-text');
-                    const donvi = voucher.donvi.replace("VND", "VNĐ"); // Chuẩn hóa đơn vị
+                    const donvi = voucher.donvi.replace("VNĐ", "VNĐ"); // Chuẩn hóa đơn vị
                     if (donvi === '%' || donvi === 'VNĐ') {
                         const formattedValue = voucher.giatri >= 1000
                             ? voucher.giatri.toLocaleString('vi-VN')
@@ -1085,7 +1085,7 @@ app.controller("hoadonCtr", function ($document, $rootScope, $routeParams, $scop
                             const vanchuyenValue = parseInt(vanChuyenElement.textContent.replace(/[^0-9]/g, '')) || 0;
                             let soTienGiam = 0;
     
-                            if (voucher.donvi === 'VND') {
+                            if (voucher.donvi === 'VNĐ') {
                                 soTienGiam = voucher.giatri;
                             } else if (voucher.donvi === '%') {
                                 soTienGiam = tongSanPhamValue * (voucher.giatri / 100);
