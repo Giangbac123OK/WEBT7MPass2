@@ -18,18 +18,12 @@
     rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
   />
-
   <style>
-    /* ====== Toàn bộ CSS được copy từ <style scoped> trong .vue ====== */
+    /* ==== Layout cơ bản ==== */
     .main {
       display: flex;
       min-height: 100vh;
-      background: linear-gradient(
-        225deg,
-        hsla(198, 87%, 6%, 1) 0%,
-        hsla(312, 92%, 5%, 1) 42%,
-        hsla(57, 45%, 8%, 1) 100%
-      );
+      background: #f4f4f6;     /* nền flat xám nhạt */
     }
     .main-content {
       margin-top: 60px;
@@ -41,11 +35,16 @@
     .main-content.open {
       margin-left: 0;
     }
+  
+    /* ==== Tiêu đề hóa đơn ==== */
     .invoice-title {
-      color: white;
+      color: #343a40;           /* đen đậm trên nền sáng */
       margin-bottom: 15px;
       font-weight: 700;
+      text-align: center;
     }
+  
+    /* ==== Tabs hóa đơn ==== */
     .invoice-tab-item {
       display: flex;
       align-items: center;
@@ -79,9 +78,11 @@
       align-items: center;
     }
     .nav-tabs .nav-link {
-      padding-right: 25px; /* Đảm bảo có đủ không gian cho nút "Xóa" */
+      padding-right: 25px; /* Đảm bảo không gian cho nút "X" */
       position: relative;
     }
+  
+    /* ==== Card body màu tối cho form chính ==== */
     .custom-card-body {
       padding: 20px;
       background-image: linear-gradient(#1f1f1f, #c10c9a2d);
@@ -90,14 +91,18 @@
       background-color: #C10C99;
       color: white;
     }
+  
+    /* ==== Nút chính ==== */
     .custom-btn-primary {
-      background-color: #C10C99;
-      border-color: #C10C99;
+      background-color: #28a745;   /* xanh lá */
+      border-color: #28a745;
     }
     .custom-btn-primary:hover {
-      background-color: #a00b85;
-      border-color: #a00b85;
+      background-color: #218838;
+      border-color: #1e7e34;
     }
+  
+    /* ==== Nút nhỏ thêm hóa đơn ==== */
     .custom-btn-success {
       border-radius: 50%;
       width: 40px;
@@ -114,6 +119,8 @@
     .custom-btn-success:disabled {
       color: #585257;
     }
+  
+    /* ==== Search và form-control ==== */
     .row.align-items-center {
       margin-top: 1rem;
     }
@@ -121,11 +128,15 @@
       width: calc(100% - 1rem);
       display: inline-block;
     }
+  
+    /* ==== Tên khách hàng hiển thị ==== */
     p.mb-0.customer-name {
       margin-left: 10px;
       display: inline-block;
-      color: white;
+      color: #343a40;           /* màu đen để nổi trên nền sáng */
     }
+  
+    /* ==== Danh sách kết quả tìm kiếm ==== */
     .search-results {
       max-width: 100%;
       width: 300px;
@@ -150,9 +161,21 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .table-light th {
-      background-color: #f8f9fa !important;
+  
+    /* ==== Bảng sản phẩm ==== */
+    .table-invoice thead th {
+      background: #343a40;       /* header tối để tương phản */
+      color: #fff;
+      vertical-align: middle;
     }
+    .table-invoice tbody td {
+      vertical-align: middle;
+    }
+    .quantity-input {
+      max-width: 70px;
+    }
+  
+    /* ==== Các nút cảnh báo & mặc định ==== */
     .btn-danger {
       background-color: #dc3545;
       border-color: #dc3545;
@@ -169,24 +192,34 @@
       background-color: #0b5ed7;
       border-color: #0a58ca;
     }
-    .card-header.custom-card-header-secondary {
-      background-color: #C10C99;
-      color: white;
-    }
-    .card {
+  
+    /* ==== Card chung ==== */
+    .card-flat {
+      border: 1px solid #dee2e6;
+      border-radius: .4rem;
+      background: #fff;
       margin-bottom: 1rem;
     }
-    .card-body {
+    .card-flat .card-header {
+      background: #343a40;
+      color: #fff;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .card-flat .card-body {
       padding: 1rem;
     }
-    .row.align-items-start {
-      margin-bottom: 1rem;
-    }
+  
+    /* ==== Container ==== */
     .container {
       max-width: 100vw;
       margin: 0;
       padding: 0;
     }
+  
+    /* ==== Close button trên tab ==== */
     .customCloseBtn {
       position: absolute;
       right: 10px;
@@ -194,16 +227,50 @@
       background-color: transparent !important;
       color: #C10C99 !important;
     }
+  
+    /* ==== Link tab ==== */
     .customNavlink {
       color: #C10C99;
     }
-    .attribute-select {
-      width: 100%;
-    }
-    .quantity-input {
-      width: 80px;
-    }
-  </style>
+    .custom-card-body {
+  background: #1f1f1f!important;
+  background-image: none !important;
+  padding: 100px; /* nếu bạn muốn padding của .card-body mặc định */
+}
+/* ==== Tab “Thêm hóa đơn chờ” ==== */
+.add-tab-item {
+  margin-right: 0; /* không cần khoảng cách thừa */
+}
+.add-tab-item .custom-add-tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid #dee2e6;
+  border-bottom-color: transparent;            /* để gắn với phần content */
+  border-top-left-radius: .25rem;
+  border-top-right-radius: .25rem;
+  background-color: #e9ecef;                   /* giống tab inactive */
+  color: #6c757d;                               /* xám đậm */
+  cursor: pointer;
+}
+
+/* hover */
+.add-tab-item .custom-add-tab:hover:not(:disabled) {
+  background-color: #dee2e6;
+  color: #495057;
+}
+
+/* trạng thái disabled */
+.add-tab-item .custom-add-tab:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+</style>
+  
 </head>
 <body>
   <div id="app">
@@ -212,7 +279,7 @@
       <main :class="{ open: !isSidebarOpen }" class="main-content">
         <div class="container">
           <h1 class="invoice-title">Tạo hóa đơn bán hàng</h1>
-          <div>
+          <div >
             <div class="card-body custom-card-body">
               <!-- Tabs for Invoices -->
               <ul class="nav nav-tabs mb-3" id="invoice-tabs" role="tablist">
@@ -229,6 +296,11 @@
                     style="padding-right: 35px;"
                   >
                     Hóa đơn {{ index + 1 }}
+                     <span
+        class="tab-close"
+        @click.stop.prevent="removeInvoice(invoice.id)"
+        title="Xóa hóa đơn"
+      >×</span>
                   </a>
                   <button
                     class="btn btn-danger btn-sm close-btn ms-2 customCloseBtn"
@@ -238,27 +310,28 @@
                     <i class="pi pi-times" style="font-size: 12px;"></i>
                   </button>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item add-tab-item">
                   <button
-                    class="btn custom-btn-success"
-                    title="Thêm Hóa đơn"
+                    class="nav-link custom-add-tab"
+                    title="Thêm hóa đơn chờ"
                     @click="addInvoice"
                     :disabled="invoices.length >= maxInvoices"
                   >
-                    <i class="pi pi-plus" style="font-size: 16px;"></i>
+                    <i class="bi bi-file-earmark-plus" style="font-size: 1.2rem;"></i>
                   </button>
                 </li>
+                
               </ul>
 
               <!-- Main Content Row -->
               <div class="row">
-                <!-- Customer Information Column -->
-                <div class="col-lg-3 col-md-4 col-sm-12">
-                  <div class="card mb-4">
-                    <div class="card-header custom-card-header-secondary d-flex justify-content-between align-items-center">
-                      <span class="card-header-title" style="font-weight: 700;">Thông tin khách hàng</span>
+                <div class="col-lg-4 col-md-5 col-sm-12">
+                  <div class="card card-flat mb-4">
+                    <div class="card-header header-dark">
+                      <span>Thông tin khách hàng</span>
                       <i class="bi bi-person-fill"></i>
                     </div>
+                
                     <div class="card-body">
                       <form>
                         <!-- Customer Type -->
@@ -356,8 +429,7 @@
 
                       <hr />
 
-                      <!-- Invoice Totals and Submit Button -->
-                      <div class="mt-3">
+                      <div class="invoice-summary">
                         <p>
                           <strong>Tổng tiền hàng:</strong>
                           <span class="float-end">{{ formatCurrency(totalAmountBeforeDiscount) }}</span>
@@ -413,9 +485,7 @@
                   </div> <!-- End of .row -->
                 </div>
 
-                <!-- Product Area Column -->
-                <div class="col-lg-9 col-md-8 col-sm-12">
-                  <!-- Product Search -->
+                <div class="col-lg-8 col-md-7 col-sm-12">
                   <div class="row align-items-center mb-3">
                     <div class="position-relative w-100">
                       <input
@@ -450,20 +520,25 @@
                     </div>
                   </div>
 
-                  <!-- Products Table -->
-                  <div class="table-responsive">
-                    <table class="table table-hover">
-                      <thead class="table-light">
-                        <tr>
-                          <th>Tên Sản Phẩm</th>
-                          <th>Giá bán</th>
-                          <th>Giá giảm</th>
-                          <th>Phân loại</th>
-                          <th>Số Lượng</th>
-                          <th>Thành Tiền</th>
-                          <th>Xóa</th>
-                        </tr>
-                      </thead>
+                  <div class="card card-flat">
+                    <div class="card-header header-dark">
+                      Danh sách sản phẩm
+                    </div>
+                    <div class="card-body p-0">
+                      <div class="table-responsive">
+                        <table class="table table-hover m-0 table-invoice">
+                          <thead>
+                            <tr>
+                              <th>Tên SP</th>
+                              <th>Giá bán</th>
+                              <th>Giá giảm</th>
+                              <th>Phân loại</th>
+                              <th class="text-center">SL</th>
+                              <th>Thành tiền</th>
+                              <th></th>
+                            </tr>
+                          </thead>
+                          
                       <tbody>
                         <tr
                           v-for="item in activeInvoice.products || []"
