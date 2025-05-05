@@ -562,6 +562,10 @@
           }
         }
       ]);
+      const ACCOUNT_NAME = 'DOAN THI PHUONG THAO';
+      const ACCOUNT_NO   = '1023577418';
+      const BANK_CODE    = 'VCB';       
+      const BANK_TRANSFER_ID = 2;
       const paymentMethods = ref([]); 
       const invoiceCount = ref(1);
       const maxInvoices = 3;
@@ -727,6 +731,16 @@
           );
         }
       }
+      function buildVietQR(amount, description = 'THANH TOAN HOA DON') {
+  const params = new URLSearchParams({
+    amount: amount,                                 // số tiền VND
+    addInfo: description.replace(/\s+/g, '%20'),    // nội dung chuyển khoản
+    accountName: ACCOUNT_NAME.replace(/\s+/g, '%20')
+  }).toString();
+
+  // URL tới ảnh QR dạng png, host bởi VietQR.io
+  return `https://img.vietqr.io/image/${BANK_CODE}-${ACCOUNT_NO}-qr_only.png?${params}`;
+}
 
       // Hàm loại bỏ sản phẩm
       function removeProduct(invoiceId, productId) {
@@ -915,10 +929,26 @@
           Swal.fire('Lỗi', 'Vui lòng chọn thông tin khách hàng thân thiết.', 'warning');
           return;
         }
-        if (invoice.customer.cashGiven < totalAmount.value) {
-          Swal.fire('Lỗi', 'Số tiền khách đưa không đủ để thanh toán.', 'error');
-          return;
-        }
+        if (invoice.customer.paymentMethod !== BANK_TRANSFER_ID &&
+      invoice.customer.cashGiven < totalAmount.value) {
+    Swal.fire('Lỗi', 'Số tiền khách đưa không đủ.', 'error'); return;
+  }
+  if (invoice.customer.paymentMethod === BANK_TRANSFER_ID) {
+    const qrUrl = buildVietQR(totalAmount.value);
+
+    const { isConfirmed } = await Swal.fire({
+      title: 'Quét mã để chuyển khoản',
+      html: `
+        <img src="${qrUrl}" style="width:260px;height:260px;margin-bottom:10px"/>
+        <p>👉 Vui lòng chuyển đúng <b>${formatCurrency(totalAmount.value)}</b><br/>
+           Nội dung: THANH TOAN HOA DON</p>`,
+      showCancelButton: true,
+      confirmButtonText: 'Đã chuyển xong',
+      cancelButtonText: 'Hủy'
+    });
+
+    if (!isConfirmed) return;   // Khách hủy thì dừng
+  }
 
         // Dữ liệu chi tiết sản phẩm
         const productDetails = invoice.products.map(product => ({
@@ -1149,7 +1179,7 @@
         totalAmount,
         changeAmount,
         paymentMethods,
-loadPaymentMethods,
+        loadPaymentMethods,
 
         formatProductCode,
 
