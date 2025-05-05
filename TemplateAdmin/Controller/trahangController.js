@@ -27,29 +27,21 @@ app.controller('trahangController', function ($scope, $http, $location, $interva
 
         })
 
-        $scope.updateCounts = function() {
-            $scope.counts = {
-                all: $scope.listTraHang.length,
-                pending: $scope.listTraHang.filter(x => x.trangthai == 0).length,
-                confirmed: $scope.listTraHang.filter(x => x.trangthai == 1).length,
-                shipping: $scope.listTraHang.filter(x => x.trangthai == 2).length,
-                success: 0,
-                failed: 0
-            };
+    $scope.updateCounts = function () {
+        $scope.counts = {
+            all: $scope.listTraHang.length,
+            pending: $scope.listTraHang.filter(x => x.trangthai == 0).length,
+            confirmed: $scope.listTraHang.filter(x => x.trangthai == 1).length,
+            shipping: $scope.listTraHang.filter(x => x.trangthai == 2).length,
+            success: 0,
+            failed: 0
         };
+    };
 
-        $scope.OpenModalXacNhan = function (x) {
-            if(x.idkh== null || x.idkh == undefined) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Lỗi',
-                    text: 'Đơn hàng này không có thông tin khách hàng trên hệ thống hoặc đây là khách vãng lai!',
-                });
-                return;
-            }
-            Swal.fire({
-                title: 'Bạn muốn xác nhận đơng hàng không?\nChọn một phương án xử lý:',
-                html: `
+    $scope.OpenModalXacNhan = function (x) {
+        Swal.fire({
+            title: 'Bạn muốn xác nhận đơng hàng không?\nChọn một phương án xử lý:',
+            html: `
                     <div style="text-align: left;">
                         <label><input type="radio" name="option" value="Trả hàng và hoàn tiền"> Trả hàng và hoàn tiền</label><br>
                         <label><input type="radio" name="option" value="Trả hàng không hoàn tiền"> Trả hàng không hoàn tiền</label><br>
@@ -58,34 +50,34 @@ app.controller('trahangController', function ($scope, $http, $location, $interva
                         <textarea id="ghichu" class="form-control" placeholder="Nhập chú thích (Nếu có)"></textarea>
                     </div>
                 `,
-                showCancelButton: true,
-                confirmButtonText: 'Xác nhận',
-                preConfirm: () => {
-                    const selected = document.querySelector('input[name="option"]:checked');
-                    const ghichu = document.getElementById('ghichu').value;
-                    if (!selected) {
-                        Swal.showValidationMessage('Bạn phải chọn một phương án');
-                        return false;
-                    }
-                    return {
-                        option: selected.value,
-                        note: ghichu
-                    };
+            showCancelButton: true,
+            confirmButtonText: 'Xác nhận',
+            preConfirm: () => {
+                const selected = document.querySelector('input[name="option"]:checked');
+                const ghichu = document.getElementById('ghichu').value;
+                if (!selected) {
+                    Swal.showValidationMessage('Bạn phải chọn một phương án');
+                    return false;
                 }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    console.log('Phương án đã chọn:', result.value.option);
-                    console.log('Ghi chú:', result.value.note);
-                    $http({
-                        method: 'PUT',
-                        url: 'https://localhost:7196/api/Trahangs/Xacnhan',
-                        params: {
-                            id: x.id,
-                            hinhthucxuly: result.value.option,
-                            idnv: userInfo.id,
-                            chuthich: result.value.note|| null
-                        }
-                    })
+                return {
+                    option: selected.value,
+                    note: ghichu
+                };
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                console.log('Phương án đã chọn:', result.value.option);
+                console.log('Ghi chú:', result.value.note);
+                $http({
+                    method: 'PUT',
+                    url: 'https://localhost:7196/api/Trahangs/Xacnhan',
+                    params: {
+                        id: x.id,
+                        hinhthucxuly: result.value.option,
+                        idnv: userInfo.id,
+                        chuthich: result.value.note || null
+                    }
+                })
                     .then(function (response) {
                         console.log("Kết quả:", response.data);
                         Swal.fire({
@@ -102,24 +94,25 @@ app.controller('trahangController', function ($scope, $http, $location, $interva
                         let msg = error.data?.message || "Đã xảy ra lỗi. Vui lòng thử lại sau!";
                         Swal.fire('Lỗi hệ thống', msg, 'error');
                     });
-                }
-            });
-            
-        };
-        
-        
+            }
+        });
+
+    };
+
+
     $scope.dataTrahang = {}
 
     $scope.OpenModalChiTiet = function (idth) {
         // Hiển thị modal
         $("#returnDetailModal").modal('show');
-        
+
         // Reset dữ liệu cũ
         $scope.dataTrahang = null;
         $scope.detailLoading = true;
 
         // 1) Lấy thông tin chung của trả hàng
-        $http.get(`https://localhost:7196/api/Trahangs/${idth}`)
+        $http.get(`https://localhost:7196/api/Trahangs/thongtinn/${idth}`)
+
             .then(function (res) {
                 $scope.dataTrahang = res.data;
                 // 2) Lấy hình ảnh
@@ -163,7 +156,17 @@ app.controller('trahangController', function ($scope, $http, $location, $interva
 
 
     $scope.huydon = function (x) {
-        var lyDoHuy = prompt("Bạn có chắc chắn muốn hủy đơn hàng này không?\nVui lòng nhập lý do hủy (có thể để trống):");
+        var lyDoHuy = prompt("Bạn có chắc chắn muốn hủy đơn hàng này không?\nVui lòng nhập lý do hủy:");
+    
+        // Kiểm tra nếu không nhập hoặc nhập toàn khoảng trắng
+        if (lyDoHuy == null || lyDoHuy.trim() === "") {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Lý do hủy bắt buộc',
+                text: 'Vui lòng nhập lý do hủy đơn hàng để tiếp tục.',
+            });
+            return; // Dừng xử lý nếu không có lý do
+        }
     
         Swal.fire({
             title: 'Xác nhận hủy đơn hàng?',
@@ -176,11 +179,7 @@ app.controller('trahangController', function ($scope, $http, $location, $interva
             if (result.isConfirmed) {
                 const id = x;
                 const idnv = userInfo.id;
-                let api = `https://localhost:7196/api/Trahangs/HuyDon?id=${id}&idnv=${idnv}`;
-    
-                if (lyDoHuy != null && lyDoHuy.trim() !== "") {
-                    api = `https://localhost:7196/api/Trahangs/HuyDon?id=${id}&idnv=${idnv}&chuthich=${encodeURIComponent(lyDoHuy)}`;
-                }
+                const api = `https://localhost:7196/api/Trahangs/HuyDon?id=${id}&idnv=${idnv}&chuthich=${encodeURIComponent(lyDoHuy)}`;
     
                 console.log("API gửi đi:", api);
     
@@ -204,6 +203,5 @@ app.controller('trahangController', function ($scope, $http, $location, $interva
             }
         });
     };
-    
-    
+
 });

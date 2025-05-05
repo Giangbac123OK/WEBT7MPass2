@@ -1,4 +1,11 @@
 <style>
+  .product-img {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid #eee;
+    }
   .tensp {
     color: black;
     text-decoration: none;
@@ -98,11 +105,11 @@
       <div class="profile-card">
         <div class="text-center mb-4">
           <img src="https://localhost:7196/picture/{{dataTttk.avatar}}"
-              class="rounded-circle object-fit-cover border border-3 border-white shadow" width="100"
-              height="100" alt="Profile">
+            class="rounded-circle object-fit-cover border border-3 border-white shadow" width="100" height="100"
+            alt="Profile">
           <h5 id="userName" class="mt-3 mb-1 fw-semibold">{{dataTttk.ten}}</h5>
           <p id="userRank" class="text-muted small">Thành Viên {{datarank.tenrank}}</p>
-      </div>
+        </div>
 
         <nav class="nav flex-column gap-2">
           <a class="nav-link rounded-3" href="#!thongtintaikhoan">
@@ -168,12 +175,16 @@
       <!-- Nội Dung Tab -->
       <div class="tab-content mt-3 py-3" id="myTabContent">
         <div class="tab-pane fade show active" id="tab1" role="tabpanel">
-          <div ng-repeat="x in dataHoaDon | filter:{idkh: idkh} | limitTo: itemsPerPage : (currentPage - 1) * itemsPerPage" class="mb-3 bg-light">
+          <div
+            ng-repeat="x in dataHoaDon | filter:{idkh: idkh} | limitTo: itemsPerPage : (currentPage - 1) * itemsPerPage"
+            class="mb-3 bg-light">
             <div class="row border-bottom">
               <div class="col m-3 text-uppercase text-en fw-semibold">
-                <span>Mã hóa đơn: #{{x.id}}</span> 
+                <span>Mã hóa đơn: #{{x.id}}</span>
               </div>
               <div class="col m-3 text-uppercase text-end" style="color: orangered;">
+                <span ng-if="x.trangthai ==0">Online</span>
+                <span ng-if="x.trangthai ==1">Tại quầy</span> |
                 <span ng-if="x.trangthaidonhang==0">Chờ xác nhận</span>
                 <span ng-if="x.trangthaidonhang==1">Đã xác nhận</span>
                 <span ng-if="x.trangthaidonhang==2">Đang giao</span>
@@ -184,32 +195,34 @@
             </div>
             <div class="row" ng-init="showMore={}">
               <div class="row border-bottom py-3"
-                ng-repeat="hdct in dataHoaDonCT | filter:{idhd: x.id} | limitTo: (showMore[x.id] ? dataHoaDonCT.length : 2)" >
+                ng-repeat="hdct in dataHoaDonCT | filter:{idhd: x.id} | limitTo: (showMore[x.id] ? dataHoaDonCT.length : 2)">
                 <div class="col-3 ps-3" ng-repeat="spct in sanphamct | filter:{id: hdct.idspct}">
-                  <img  
-                    src="https://localhost:7196/picture/{{spct.urlHinhanh}}" width="100%" height="120px">
+                  <img src="https://localhost:7196/picture/{{spct.urlHinhanh}}" width="100%" height="120px">
                 </div>
-                <div class="col-7" ng-repeat="spct in sanphamct"  ng-if="spct.id==hdct.idspct">
+                <div class="col-7" ng-repeat="spct in sanphamct" ng-if="spct.id==hdct.idspct">
                   <a href="#!SanpDetail/{{spct.idsp}}" class="fs-5 tensp">{{SelectTenTH(spct.idsp)}} -
                     {{SelecttenSp(spct.idsp)}}</a>
-                  <p class="text-secondary">Phân loại: <span ng-repeat="chatlieu in listChatlieu" ng-if="spct.idChatLieu==chatlieu.id">{{chatlieu.tenchatlieu}}</span> - <span ng-repeat="mau in listColor" ng-if="spct.idMau==mau.id">{{mau.tenmau}}</span> - <span ng-repeat="size in listSize" ng-if="spct.idSize==size.id">{{size.sosize}}</span></p>
+                  <p class="text-secondary">Phân loại: <span ng-repeat="chatlieu in listChatlieu"
+                      ng-if="spct.idChatLieu==chatlieu.id">{{chatlieu.tenchatlieu}}</span> - <span
+                      ng-repeat="mau in listColor" ng-if="spct.idMau==mau.id">{{mau.tenmau}}</span> - <span
+                      ng-repeat="size in listSize" ng-if="spct.idSize==size.id">{{size.sosize}}</span></p>
                   <p>x{{hdct.soluong}}</p>
                   <button type="button" class="btn btn-success" ng-click="openRatingModal(hdct)"
-                  ng-if="( danhgiaById[hdct.id].success === false) && x.trangthaidonhang === 3">
-                  Đánh giá
-                </button>
+                    ng-if="( danhgiaById[hdct.id].success === false) && x.trangthaidonhang === 3">
+                    Đánh giá
+                  </button>
 
-                <!-- Nút Sửa đánh giá -->
-                <button type="button" class="btn btn-warning" ng-click="openEditRatingModal(hdct)"
-                  ng-if=" danhgiaById[hdct.id].success !== false && x.trangthaidonhang === 3">
-                  Sửa đánh giá
-                </button>
+                  <!-- Nút Sửa đánh giá -->
+                  <button type="button" class="btn btn-warning" ng-click="openEditRatingModal(hdct)"
+                    ng-if=" danhgiaById[hdct.id].success !== false && x.trangthaidonhang === 3">
+                    Sửa đánh giá
+                  </button>
 
-                <!-- Nút Xóa đánh giá -->
-                <button type="button" class="btn btn-danger" ng-click="deleteRating(danhgiaById[hdct.id].id)"
-                  ng-if=" danhgiaById[hdct.id].success !== false && x.trangthaidonhang === 3">
-                  Xóa đánh giá
-                </button>
+                  <!-- Nút Xóa đánh giá -->
+                  <button type="button" class="btn btn-danger" ng-click="deleteRating(danhgiaById[hdct.id].id)"
+                    ng-if=" danhgiaById[hdct.id].success !== false && x.trangthaidonhang === 3">
+                    Xóa đánh giá
+                  </button>
                 </div>
 
                 <div class="col-2 d-flex justify-content-center align-items-center">
@@ -243,10 +256,14 @@
                   <div class="d-flex justify-content-between">
                     <div class="p-2 bd-highlight text-secondary"></div>
                     <div class="p-2 bd-highlight">
-                      <a class="btn btn-danger" ng-if="x.trangthaithanhtoan == 0 && x.tenpttt == 1 && x.trangthaidonhang == 0" ng-click="thanhtoan(x.id)">Thanh toán</a>
-                      <a class="btn btn-danger" ng-if="x.trangthaidonhang==3" href="#!trahang/{{x.id}}">Trả hàng</a>
+                      <a class="btn btn-danger" ng-if="x.trangthaithanhtoan == 0 && x.tenpttt == 1 && x.trangthaidonhang == 0"
+                        ng-click="thanhtoan(x.id)">Thanh toán</a>
+                        <a class="btn btn-danger" 
+                            ng-if="x.trangthaidonhang==3 && !x.checktrahang" 
+                            href="#!trahang/{{x.id}}">Trả hàng</a>
                       <a class="btn btn-danger" ng-if="x.trangthaidonhang==4">Mua lại</a>
-                      <button class="btn btn-danger" ng-if="x.trangthaidonhang==0" ng-click="huydh(x.id)">Hủy đơn</button>
+                      <button class="btn btn-danger" ng-if="x.trangthaidonhang==0" ng-click="huydh(x.id)">Hủy
+                        đơn</button>
                       <button class="btn btn-outline-dark" ng-click="chitietdh(x.id)">Chi tiết</button>
                       <a class="btn btn-outline-dark" href="tel:0867812095">Liên hệ người bán</a>
                     </div>
@@ -272,160 +289,98 @@
 
         </div>
 
-        <div class="tab-pane fade" id="tab2" role="tabpanel"><div ng-repeat="x in dataHoaDon | filter:{idkh: idkh} | limitTo: itemsPerPage : (currentPage - 1) * itemsPerPage" class="mb-3 bg-light">
-          <div class="row border-bottom">
-            <div class="col m-3 text-uppercase text-en fw-semibold">
-              <span>Mã hóa đơn: #{{x.id}}</span> 
-            </div>
-            <div class="col m-3 text-uppercase text-end" style="color: orangered;">
-              <span ng-if="x.trangthai ==0">Online</span>
-              <span ng-if="x.trangthai ==1">Tại quầy</span> | 
-              
-            </div>
-          </div>
-          <div class="row" ng-init="showMore={}">
-            <div class="row border-bottom py-3"
-              ng-repeat="hdct in dataHoaDonCT | filter:{idhd: x.id} | limitTo: (showMore[x.id] ? dataHoaDonCT.length : 2)" >
-              <div class="col-3 ps-3" ng-repeat="spct in sanphamct | filter:{id: hdct.idspct}">
-                <img  
-                  src="https://localhost:7196/picture/{{spct.urlHinhanh}}" width="100%" height="120px">
-              </div>
-              <div class="col-7" ng-repeat="spct in sanphamct"  ng-if="spct.id==hdct.idspct">
-                <a href="#!SanpDetail/{{spct.idsp}}" class="fs-5 tensp">{{SelectTenTH(spct.idsp)}} -
-                  {{SelecttenSp(spct.idsp)}}</a>
-                <p class="text-secondary">Phân loại: <span ng-repeat="chatlieu in listChatlieu" ng-if="spct.idChatLieu==chatlieu.id">{{chatlieu.tenchatlieu}}</span> - <span ng-repeat="mau in listColor" ng-if="spct.idMau==mau.id">{{mau.tenmau}}</span> - <span ng-repeat="size in listSize" ng-if="spct.idSize==size.id">{{size.sosize}}</span></p>
-                <p>x{{hdct.soluong}}</p>
-                <button type="button" class="btn btn-success" ng-click="openRatingModal(hdct)"
-                ng-if="( danhgiaById[hdct.id].success === false) && x.trangthaidonhang === 3">
-                Đánh giá
-              </button>
-
-              <!-- Nút Sửa đánh giá -->
-              <button type="button" class="btn btn-warning" ng-click="openEditRatingModal(hdct)"
-                ng-if=" danhgiaById[hdct.id].success !== false && x.trangthaidonhang === 3">
-                Sửa đánh giá
-              </button>
-
-              <!-- Nút Xóa đánh giá -->
-              <button type="button" class="btn btn-danger" ng-click="deleteRating(danhgiaById[hdct.id].id)"
-                ng-if=" danhgiaById[hdct.id].success !== false && x.trangthaidonhang === 3">
-                Xóa đánh giá
-              </button>
-              </div>
-
-              <div class="col-2 d-flex justify-content-center align-items-center">
-                <div class="text-center">
-                  <span ng-if="hdct.giamgia && hdct.giamgia > 0" class="text-secondary text-decoration-line-through">
-                    {{ hdct.giamgia | currency:"₫":0 }}
-                  </span>
-                  <span style="color: orangered;">{{ hdct.giasp | currency:"₫":0 }}</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Hiển thị nút "Xem thêm" hoặc "Thu gọn" -->
-            <div class="text-center mt-2" ng-if="(dataHoaDonCT | filter:{idhd: x.id}).length > 2">
-              <button class="btn btn-outline-primary" ng-click="showMore[x.id] = !showMore[x.id]">
-                {{ showMore[x.id] ? 'Thu gọn' : 'Xem thêm' }}
-              </button>
-            </div>
-          </div>
-
-          <div class="row py-3">
-            <div class="d-flex flex-column bd-highlight">
-              <div class="p-2 bd-highlight">
-                <div class="text-end">
-                  Thành tiền: <span style="color: orangered; font-size: 24px;">{{ x.tongtiencantra |
-                    currency:"₫":0
-                    }}</span>
-                </div>
-              </div>
-              <div class="p-2 bd-highlight">
-                <div class="d-flex justify-content-between">
-                  <div class="p-2 bd-highlight text-secondary"></div>
-                  <div class="p-2 bd-highlight">
-                    <a class="btn btn-danger" ng-if="x.trangthaithanhtoan == 0 && x.tenpttt == 1 && x.trangthaidonhang == 0" ng-click="thanhtoan(x.id)">Thanh toán</a>
-                    <a class="btn btn-danger" ng-if="doitra(x)" href="#!trahang/{{x.id}}">Trả hàng</a>
-                    <a class="btn btn-danger" ng-if="x.trangthaidonhang==4">Mua lại</a>
-                    <button class="btn btn-danger" ng-if="x.trangthaidonhang==0" ng-click="huydh(x.id)">Hủy đơn</button>
-                    <button class="btn btn-outline-dark" ng-click="chitietdh(x.id)">Chi tiết</button>
-                    <a class="btn btn-outline-dark" href="tel:0867812095">Liên hệ người bán</a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- PHÂN TRANG -->
-        <nav class="mt-4" ng-if="dataHoaDon.length > 5">
-          <ul class="pagination justify-content-center">
-            <li class="page-item" ng-class="{disabled: currentPage === 1}">
-              <a class="page-link" href="" ng-click="prevPage()">Trước</a>
-            </li>
-            <li class="page-item" ng-repeat="n in getPageNumbers()" ng-class="{active: currentPage === n}">
-              <a class="page-link" href="" ng-click="setPage(n)">{{n}}</a>
-            </li>
-            <li class="page-item" ng-class="{disabled: currentPage === totalPages}">
-              <a class="page-link" href="" ng-click="nextPage()">Sau</a>
-            </li>
-          </ul>
-        </nav>
-        </div>
-
-        <div class="tab-pane fade" id="tab3" role="tabpanel">
-          
-        </div>
-        <div class="tab-pane fade" id="tab4" role="tabpanel">
-          
-        </div>
-        <div class="tab-pane fade" id="tab5" role="tabpanel">
-          
-        </div>
-        <div class="tab-pane fade" id="tab6" role="tabpanel">
-          
-        </div>
-        <div class="tab-pane fade" id="tab7" role="tabpanel">
-          <div class="mb-3 bg-light"ng-repeat="x in dataTraHang | filter:{idkh: idkh} | limitTo: itemsPerPage : (currentPage - 1) * itemsPerPage" ng-if="x.trangthaidonhang==1">
+        <div class="tab-pane fade" id="tab2" role="tabpanel">
+          <div
+          ng-repeat="x in dataHoaDon | filter:{idkh: idkh, trangthaidonhang: 0} | limitTo: itemsPerPage : (currentPage - 1) * itemsPerPage"
+            class="mb-3 bg-light">
             <div class="row border-bottom">
               <div class="col m-3 text-uppercase text-en fw-semibold">
                 <span>Mã hóa đơn: #{{x.id}}</span>
               </div>
               <div class="col m-3 text-uppercase text-end" style="color: orangered;">
-                <span>Trả hàng - Hoàn tiền</span>
+                <span ng-if="x.trangthai ==0">Online</span>
+                <span ng-if="x.trangthai ==1">Tại quầy</span> |
+                <span ng-if="x.trangthaidonhang==0">Chờ xác nhận</span>
+                <span ng-if="x.trangthaidonhang==1">Đã xác nhận</span>
+                <span ng-if="x.trangthaidonhang==2">Đang giao</span>
+                <span ng-if="x.trangthaidonhang==3">Hoàn thành</span>
+                <span ng-if="x.trangthaidonhang==4">Đã huỷ</span>
+                <span ng-if="x.trangthaidonhang==5">Trả hàng - Hoàn tiền</span>
+
               </div>
             </div>
-          
-            <!-- Chi tiết từng sản phẩm trong đơn trả hàng -->
-            <div class="row border-bottom py-3" ng-repeat="thct in chitietTraHang" ng-if="thct.idth==x.id">
-              <div class="col-3 ps-3">
-                <img ng-src="https://localhost:7196/picture/{{thct.urlAnh}}" width="100%" height="120px">
-              </div>
-              <div class="col-7">
-                <a href="#!SanpDetail/{{thct.idsp}}" class="fs-5 tensp">
-                  [{{thct.tenchatlieu}}] - {{thct.tensp}}
-                </a>
-                <p class="text-secondary">
-                  Phân loại: {{thct.tenchatlieu}} - {{thct.tenmau}} - {{thct.tensize}}
-                </p>
-                <p>x{{thct.soluong}}</p>
-              </div>
-              <div class="col-2 d-flex justify-content-center align-items-center">
-                <div class="text-center">
-                  <span style="color: orangered;">{{thct.giasp | currency:"₫":0}}</span>
+            <div class="row" ng-init="showMore={}">
+              <div class="row border-bottom py-3"
+                ng-repeat="hdct in dataHoaDonCT | filter:{idhd: x.id} | limitTo: (showMore[x.id] ? dataHoaDonCT.length : 2)">
+                <div class="col-3 ps-3" ng-repeat="spct in sanphamct | filter:{id: hdct.idspct}">
+                  <img src="https://localhost:7196/picture/{{spct.urlHinhanh}}" width="100%" height="120px">
+                </div>
+                <div class="col-7" ng-repeat="spct in sanphamct" ng-if="spct.id==hdct.idspct">
+                  <a href="#!SanpDetail/{{spct.idsp}}" class="fs-5 tensp">{{SelectTenTH(spct.idsp)}} -
+                    {{SelecttenSp(spct.idsp)}}</a>
+                  <p class="text-secondary">Phân loại: <span ng-repeat="chatlieu in listChatlieu"
+                      ng-if="spct.idChatLieu==chatlieu.id">{{chatlieu.tenchatlieu}}</span> - <span
+                      ng-repeat="mau in listColor" ng-if="spct.idMau==mau.id">{{mau.tenmau}}</span> - <span
+                      ng-repeat="size in listSize" ng-if="spct.idSize==size.id">{{size.sosize}}</span></p>
+                  <p>x{{hdct.soluong}}</p>
+                  <button type="button" class="btn btn-success" ng-click="openRatingModal(hdct)"
+                    ng-if="( danhgiaById[hdct.id].success === false) && x.trangthaidonhang === 3">
+                    Đánh giá
+                  </button>
+
+                  <!-- Nút Sửa đánh giá -->
+                  <button type="button" class="btn btn-warning" ng-click="openEditRatingModal(hdct)"
+                    ng-if=" danhgiaById[hdct.id].success !== false && x.trangthaidonhang === 3">
+                    Sửa đánh giá
+                  </button>
+
+                  <!-- Nút Xóa đánh giá -->
+                  <button type="button" class="btn btn-danger" ng-click="deleteRating(danhgiaById[hdct.id].id)"
+                    ng-if=" danhgiaById[hdct.id].success !== false && x.trangthaidonhang === 3">
+                    Xóa đánh giá
+                  </button>
+                </div>
+
+                <div class="col-2 d-flex justify-content-center align-items-center">
+                  <div class="text-center">
+                    <span ng-if="hdct.giamgia && hdct.giamgia > 0" class="text-secondary text-decoration-line-through">
+                      {{ hdct.giamgia | currency:"₫":0 }}
+                    </span>
+                    <span style="color: orangered;">{{ hdct.giasp | currency:"₫":0 }}</span>
+                  </div>
                 </div>
               </div>
+
+              <!-- Hiển thị nút "Xem thêm" hoặc "Thu gọn" -->
+              <div class="text-center mt-2" ng-if="(dataHoaDonCT | filter:{idhd: x.id}).length > 2">
+                <button class="btn btn-outline-primary" ng-click="showMore[x.id] = !showMore[x.id]">
+                  {{ showMore[x.id] ? 'Thu gọn' : 'Xem thêm' }}
+                </button>
+              </div>
             </div>
-          
-            <!-- Thành tiền -->
+
             <div class="row py-3">
               <div class="d-flex flex-column bd-highlight">
-                <div class="p-2 bd-highlight text-end">
-                  Thành tiền: <span style="color: orangered; font-size: 24px;">{{x.sotienhoan | currency:"₫":0}}</span>
+                <div class="p-2 bd-highlight">
+                  <div class="text-end">
+                    Thành tiền: <span style="color: orangered; font-size: 24px;">{{ x.tongtiencantra |
+                      currency:"₫":0
+                      }}</span>
+                  </div>
                 </div>
                 <div class="p-2 bd-highlight">
                   <div class="d-flex justify-content-between">
-                    <div></div>
-                    <div>
+                    <div class="p-2 bd-highlight text-secondary"></div>
+                    <div class="p-2 bd-highlight">
+                      <a class="btn btn-danger"
+                        ng-if="x.trangthaithanhtoan == 0 && x.tenpttt == 1 && x.trangthaidonhang == 0"
+                        ng-click="thanhtoan(x.id)">Thanh toán</a>
+                        <a class="btn btn-danger" 
+                            ng-if="x.trangthaidonhang==3 && !x.checktrahang" 
+                            href="#!trahang/{{x.id}}">Trả hàng</a>
+                      <a class="btn btn-danger" ng-if="x.trangthaidonhang==4">Mua lại</a>
+                      <button class="btn btn-danger" ng-if="x.trangthaidonhang==0" ng-click="huydh(x.id)">Hủy
+                        đơn</button>
                       <button class="btn btn-outline-dark" ng-click="chitietdh(x.id)">Chi tiết</button>
                       <a class="btn btn-outline-dark" href="tel:0867812095">Liên hệ người bán</a>
                     </div>
@@ -434,7 +389,8 @@
               </div>
             </div>
           </div>
-          <nav class="mt-4" ng-if="dataTraHang.length > 5">
+          <!-- PHÂN TRANG -->
+          <nav class="mt-4" ng-if="(dataHoaDon | filter:{idkh: idkh, trangthaidonhang: 0}).length > itemsPerPage">
             <ul class="pagination justify-content-center">
               <li class="page-item" ng-class="{disabled: currentPage === 1}">
                 <a class="page-link" href="" ng-click="prevPage()">Trước</a>
@@ -448,6 +404,541 @@
             </ul>
           </nav>
         </div>
+
+        <div class="tab-pane fade" id="tab3" role="tabpanel">
+          <div
+          ng-repeat="x in dataHoaDon | filter:{idkh: idkh, trangthaidonhang: 1} | limitTo: itemsPerPage : (currentPage - 1) * itemsPerPage"
+            class="mb-3 bg-light">
+            <div class="row border-bottom">
+              <div class="col m-3 text-uppercase text-en fw-semibold">
+                <span>Mã hóa đơn: #{{x.id}}</span>
+              </div>
+              <div class="col m-3 text-uppercase text-end" style="color: orangered;">
+                <span ng-if="x.trangthai ==0">Online</span>
+                <span ng-if="x.trangthai ==1">Tại quầy</span> |
+                <span ng-if="x.trangthaidonhang==0">Chờ xác nhận</span>
+                <span ng-if="x.trangthaidonhang==1">Đã xác nhận</span>
+                <span ng-if="x.trangthaidonhang==2">Đang giao</span>
+                <span ng-if="x.trangthaidonhang==3">Hoàn thành</span>
+                <span ng-if="x.trangthaidonhang==4">Đã huỷ</span>
+                <span ng-if="x.trangthaidonhang==5">Trả hàng - Hoàn tiền</span>
+
+              </div>
+            </div>
+            <div class="row" ng-init="showMore={}">
+              <div class="row border-bottom py-3"
+                ng-repeat="hdct in dataHoaDonCT | filter:{idhd: x.id} | limitTo: (showMore[x.id] ? dataHoaDonCT.length : 2)">
+                <div class="col-3 ps-3" ng-repeat="spct in sanphamct | filter:{id: hdct.idspct}">
+                  <img src="https://localhost:7196/picture/{{spct.urlHinhanh}}" width="100%" height="120px">
+                </div>
+                <div class="col-7" ng-repeat="spct in sanphamct" ng-if="spct.id==hdct.idspct">
+                  <a href="#!SanpDetail/{{spct.idsp}}" class="fs-5 tensp">{{SelectTenTH(spct.idsp)}} -
+                    {{SelecttenSp(spct.idsp)}}</a>
+                  <p class="text-secondary">Phân loại: <span ng-repeat="chatlieu in listChatlieu"
+                      ng-if="spct.idChatLieu==chatlieu.id">{{chatlieu.tenchatlieu}}</span> - <span
+                      ng-repeat="mau in listColor" ng-if="spct.idMau==mau.id">{{mau.tenmau}}</span> - <span
+                      ng-repeat="size in listSize" ng-if="spct.idSize==size.id">{{size.sosize}}</span></p>
+                  <p>x{{hdct.soluong}}</p>
+                  <button type="button" class="btn btn-success" ng-click="openRatingModal(hdct)"
+                    ng-if="( danhgiaById[hdct.id].success === false) && x.trangthaidonhang === 3">
+                    Đánh giá
+                  </button>
+
+                  <!-- Nút Sửa đánh giá -->
+                  <button type="button" class="btn btn-warning" ng-click="openEditRatingModal(hdct)"
+                    ng-if=" danhgiaById[hdct.id].success !== false && x.trangthaidonhang === 3">
+                    Sửa đánh giá
+                  </button>
+
+                  <!-- Nút Xóa đánh giá -->
+                  <button type="button" class="btn btn-danger" ng-click="deleteRating(danhgiaById[hdct.id].id)"
+                    ng-if=" danhgiaById[hdct.id].success !== false && x.trangthaidonhang === 3">
+                    Xóa đánh giá
+                  </button>
+                </div>
+
+                <div class="col-2 d-flex justify-content-center align-items-center">
+                  <div class="text-center">
+                    <span ng-if="hdct.giamgia && hdct.giamgia > 0" class="text-secondary text-decoration-line-through">
+                      {{ hdct.giamgia | currency:"₫":0 }}
+                    </span>
+                    <span style="color: orangered;">{{ hdct.giasp | currency:"₫":0 }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Hiển thị nút "Xem thêm" hoặc "Thu gọn" -->
+              <div class="text-center mt-2" ng-if="(dataHoaDonCT | filter:{idhd: x.id}).length > 2">
+                <button class="btn btn-outline-primary" ng-click="showMore[x.id] = !showMore[x.id]">
+                  {{ showMore[x.id] ? 'Thu gọn' : 'Xem thêm' }}
+                </button>
+              </div>
+            </div>
+
+            <div class="row py-3">
+              <div class="d-flex flex-column bd-highlight">
+                <div class="p-2 bd-highlight">
+                  <div class="text-end">
+                    Thành tiền: <span style="color: orangered; font-size: 24px;">{{ x.tongtiencantra |
+                      currency:"₫":0
+                      }}</span>
+                  </div>
+                </div>
+                <div class="p-2 bd-highlight">
+                  <div class="d-flex justify-content-between">
+                    <div class="p-2 bd-highlight text-secondary"></div>
+                    <div class="p-2 bd-highlight">
+                      <a class="btn btn-danger"
+                        ng-if="x.trangthaithanhtoan == 0 && x.tenpttt == 1 && x.trangthaidonhang == 0"
+                        ng-click="thanhtoan(x.id)">Thanh toán</a>
+                        <a class="btn btn-danger" 
+                            ng-if="x.trangthaidonhang==3 && !x.checktrahang" 
+                            href="#!trahang/{{x.id}}">Trả hàng</a>
+                      <a class="btn btn-danger" ng-if="x.trangthaidonhang==4">Mua lại</a>
+                      <button class="btn btn-danger" ng-if="x.trangthaidonhang==0" ng-click="huydh(x.id)">Hủy
+                        đơn</button>
+                      <button class="btn btn-outline-dark" ng-click="chitietdh(x.id)">Chi tiết</button>
+                      <a class="btn btn-outline-dark" href="tel:0867812095">Liên hệ người bán</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- PHÂN TRANG -->
+          <nav class="mt-4" ng-if="(dataHoaDon | filter:{idkh: idkh, trangthaidonhang: 1}).length > itemsPerPage">
+            <ul class="pagination justify-content-center">
+              <li class="page-item" ng-class="{disabled: currentPage === 1}">
+                <a class="page-link" href="" ng-click="prevPage()">Trước</a>
+              </li>
+              <li class="page-item" ng-repeat="n in getPageNumbers()" ng-class="{active: currentPage === n}">
+                <a class="page-link" href="" ng-click="setPage(n)">{{n}}</a>
+              </li>
+              <li class="page-item" ng-class="{disabled: currentPage === totalPages}">
+                <a class="page-link" href="" ng-click="nextPage()">Sau</a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+
+        <div class="tab-pane fade" id="tab4" role="tabpanel">
+          <div
+          ng-repeat="x in dataHoaDon | filter:{idkh: idkh, trangthaidonhang: 2} | limitTo: itemsPerPage : (currentPage - 1) * itemsPerPage"
+            class="mb-3 bg-light">
+            <div class="row border-bottom">
+              <div class="col m-3 text-uppercase text-en fw-semibold">
+                <span>Mã hóa đơn: #{{x.id}}</span>
+              </div>
+              <div class="col m-3 text-uppercase text-end" style="color: orangered;">
+                <span ng-if="x.trangthai ==0">Online</span>
+                <span ng-if="x.trangthai ==1">Tại quầy</span> |
+                <span ng-if="x.trangthaidonhang==0">Chờ xác nhận</span>
+                <span ng-if="x.trangthaidonhang==1">Đã xác nhận</span>
+                <span ng-if="x.trangthaidonhang==2">Đang giao</span>
+                <span ng-if="x.trangthaidonhang==3">Hoàn thành</span>
+                <span ng-if="x.trangthaidonhang==4">Đã huỷ</span>
+                <span ng-if="x.trangthaidonhang==5">Trả hàng - Hoàn tiền</span>
+
+              </div>
+            </div>
+            <div class="row" ng-init="showMore={}">
+              <div class="row border-bottom py-3"
+                ng-repeat="hdct in dataHoaDonCT | filter:{idhd: x.id} | limitTo: (showMore[x.id] ? dataHoaDonCT.length : 2)">
+                <div class="col-3 ps-3" ng-repeat="spct in sanphamct | filter:{id: hdct.idspct}">
+                  <img src="https://localhost:7196/picture/{{spct.urlHinhanh}}" width="100%" height="120px">
+                </div>
+                <div class="col-7" ng-repeat="spct in sanphamct" ng-if="spct.id==hdct.idspct">
+                  <a href="#!SanpDetail/{{spct.idsp}}" class="fs-5 tensp">{{SelectTenTH(spct.idsp)}} -
+                    {{SelecttenSp(spct.idsp)}}</a>
+                  <p class="text-secondary">Phân loại: <span ng-repeat="chatlieu in listChatlieu"
+                      ng-if="spct.idChatLieu==chatlieu.id">{{chatlieu.tenchatlieu}}</span> - <span
+                      ng-repeat="mau in listColor" ng-if="spct.idMau==mau.id">{{mau.tenmau}}</span> - <span
+                      ng-repeat="size in listSize" ng-if="spct.idSize==size.id">{{size.sosize}}</span></p>
+                  <p>x{{hdct.soluong}}</p>
+                  <button type="button" class="btn btn-success" ng-click="openRatingModal(hdct)"
+                    ng-if="( danhgiaById[hdct.id].success === false) && x.trangthaidonhang === 3">
+                    Đánh giá
+                  </button>
+
+                  <!-- Nút Sửa đánh giá -->
+                  <button type="button" class="btn btn-warning" ng-click="openEditRatingModal(hdct)"
+                    ng-if=" danhgiaById[hdct.id].success !== false && x.trangthaidonhang === 3">
+                    Sửa đánh giá
+                  </button>
+
+                  <!-- Nút Xóa đánh giá -->
+                  <button type="button" class="btn btn-danger" ng-click="deleteRating(danhgiaById[hdct.id].id)"
+                    ng-if=" danhgiaById[hdct.id].success !== false && x.trangthaidonhang === 3">
+                    Xóa đánh giá
+                  </button>
+                </div>
+
+                <div class="col-2 d-flex justify-content-center align-items-center">
+                  <div class="text-center">
+                    <span ng-if="hdct.giamgia && hdct.giamgia > 0" class="text-secondary text-decoration-line-through">
+                      {{ hdct.giamgia | currency:"₫":0 }}
+                    </span>
+                    <span style="color: orangered;">{{ hdct.giasp | currency:"₫":0 }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Hiển thị nút "Xem thêm" hoặc "Thu gọn" -->
+              <div class="text-center mt-2" ng-if="(dataHoaDonCT | filter:{idhd: x.id}).length > 2">
+                <button class="btn btn-outline-primary" ng-click="showMore[x.id] = !showMore[x.id]">
+                  {{ showMore[x.id] ? 'Thu gọn' : 'Xem thêm' }}
+                </button>
+              </div>
+            </div>
+
+            <div class="row py-3">
+              <div class="d-flex flex-column bd-highlight">
+                <div class="p-2 bd-highlight">
+                  <div class="text-end">
+                    Thành tiền: <span style="color: orangered; font-size: 24px;">{{ x.tongtiencantra |
+                      currency:"₫":0
+                      }}</span>
+                  </div>
+                </div>
+                <div class="p-2 bd-highlight">
+                  <div class="d-flex justify-content-between">
+                    <div class="p-2 bd-highlight text-secondary"></div>
+                    <div class="p-2 bd-highlight">
+                      <a class="btn btn-danger"
+                        ng-if="x.trangthaithanhtoan == 0 && x.tenpttt == 1 && x.trangthaidonhang == 0"
+                        ng-click="thanhtoan(x.id)">Thanh toán</a>
+                        <a class="btn btn-danger" 
+                            ng-if="x.trangthaidonhang==3 && !x.checktrahang" 
+                            href="#!trahang/{{x.id}}">Trả hàng</a>
+                      <a class="btn btn-danger" ng-if="x.trangthaidonhang==4">Mua lại</a>
+                      <button class="btn btn-danger" ng-if="x.trangthaidonhang==0" ng-click="huydh(x.id)">Hủy
+                        đơn</button>
+                      <button class="btn btn-outline-dark" ng-click="chitietdh(x.id)">Chi tiết</button>
+                      <a class="btn btn-outline-dark" href="tel:0867812095">Liên hệ người bán</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- PHÂN TRANG -->
+          <nav class="mt-4" ng-if="(dataHoaDon | filter:{idkh: idkh, trangthaidonhang: 2}).length > itemsPerPage">
+            <ul class="pagination justify-content-center">
+              <li class="page-item" ng-class="{disabled: currentPage === 1}">
+                <a class="page-link" href="" ng-click="prevPage()">Trước</a>
+              </li>
+              <li class="page-item" ng-repeat="n in getPageNumbers()" ng-class="{active: currentPage === n}">
+                <a class="page-link" href="" ng-click="setPage(n)">{{n}}</a>
+              </li>
+              <li class="page-item" ng-class="{disabled: currentPage === totalPages}">
+                <a class="page-link" href="" ng-click="nextPage()">Sau</a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+
+        <div class="tab-pane fade" id="tab5" role="tabpanel">
+          <div
+          ng-repeat="x in dataHoaDon | filter:{idkh: idkh, trangthaidonhang: 3} | limitTo: itemsPerPage : (currentPage - 1) * itemsPerPage"
+            class="mb-3 bg-light">
+            <div class="row border-bottom">
+              <div class="col m-3 text-uppercase text-en fw-semibold">
+                <span>Mã hóa đơn: #{{x.id}}</span>
+              </div>
+              <div class="col m-3 text-uppercase text-end" style="color: orangered;">
+                <span ng-if="x.trangthai ==0">Online</span>
+                <span ng-if="x.trangthai ==1">Tại quầy</span> |
+                <span ng-if="x.trangthaidonhang==0">Chờ xác nhận</span>
+                <span ng-if="x.trangthaidonhang==1">Đã xác nhận</span>
+                <span ng-if="x.trangthaidonhang==2">Đang giao</span>
+                <span ng-if="x.trangthaidonhang==3">Hoàn thành</span>
+                <span ng-if="x.trangthaidonhang==4">Đã huỷ</span>
+                <span ng-if="x.trangthaidonhang==5">Trả hàng - Hoàn tiền</span>
+
+              </div>
+            </div>
+            <div class="row" ng-init="showMore={}">
+              <div class="row border-bottom py-3"
+                ng-repeat="hdct in dataHoaDonCT | filter:{idhd: x.id} | limitTo: (showMore[x.id] ? dataHoaDonCT.length : 2)">
+                <div class="col-3 ps-3" ng-repeat="spct in sanphamct | filter:{id: hdct.idspct}">
+                  <img src="https://localhost:7196/picture/{{spct.urlHinhanh}}" width="100%" height="120px">
+                </div>
+                <div class="col-7" ng-repeat="spct in sanphamct" ng-if="spct.id==hdct.idspct">
+                  <a href="#!SanpDetail/{{spct.idsp}}" class="fs-5 tensp">{{SelectTenTH(spct.idsp)}} -
+                    {{SelecttenSp(spct.idsp)}}</a>
+                  <p class="text-secondary">Phân loại: <span ng-repeat="chatlieu in listChatlieu"
+                      ng-if="spct.idChatLieu==chatlieu.id">{{chatlieu.tenchatlieu}}</span> - <span
+                      ng-repeat="mau in listColor" ng-if="spct.idMau==mau.id">{{mau.tenmau}}</span> - <span
+                      ng-repeat="size in listSize" ng-if="spct.idSize==size.id">{{size.sosize}}</span></p>
+                  <p>x{{hdct.soluong}}</p>
+                  <button type="button" class="btn btn-success" ng-click="openRatingModal(hdct)"
+                    ng-if="( danhgiaById[hdct.id].success === false) && x.trangthaidonhang === 3">
+                    Đánh giá
+                  </button>
+
+                  <!-- Nút Sửa đánh giá -->
+                  <button type="button" class="btn btn-warning" ng-click="openEditRatingModal(hdct)"
+                    ng-if=" danhgiaById[hdct.id].success !== false && x.trangthaidonhang === 3">
+                    Sửa đánh giá
+                  </button>
+
+                  <!-- Nút Xóa đánh giá -->
+                  <button type="button" class="btn btn-danger" ng-click="deleteRating(danhgiaById[hdct.id].id)"
+                    ng-if=" danhgiaById[hdct.id].success !== false && x.trangthaidonhang === 3">
+                    Xóa đánh giá
+                  </button>
+                </div>
+
+                <div class="col-2 d-flex justify-content-center align-items-center">
+                  <div class="text-center">
+                    <span ng-if="hdct.giamgia && hdct.giamgia > 0" class="text-secondary text-decoration-line-through">
+                      {{ hdct.giamgia | currency:"₫":0 }}
+                    </span>
+                    <span style="color: orangered;">{{ hdct.giasp | currency:"₫":0 }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Hiển thị nút "Xem thêm" hoặc "Thu gọn" -->
+              <div class="text-center mt-2" ng-if="(dataHoaDonCT | filter:{idhd: x.id}).length > 2">
+                <button class="btn btn-outline-primary" ng-click="showMore[x.id] = !showMore[x.id]">
+                  {{ showMore[x.id] ? 'Thu gọn' : 'Xem thêm' }}
+                </button>
+              </div>
+            </div>
+
+            <div class="row py-3">
+              <div class="d-flex flex-column bd-highlight">
+                <div class="p-2 bd-highlight">
+                  <div class="text-end">
+                    Thành tiền: <span style="color: orangered; font-size: 24px;">{{ x.tongtiencantra |
+                      currency:"₫":0
+                      }}</span>
+                  </div>
+                </div>
+                <div class="p-2 bd-highlight">
+                  <div class="d-flex justify-content-between">
+                    <div class="p-2 bd-highlight text-secondary"></div>
+                    <div class="p-2 bd-highlight">
+                      <a class="btn btn-danger"
+                        ng-if="x.trangthaithanhtoan == 0 && x.tenpttt == 1 && x.trangthaidonhang == 0"
+                        ng-click="thanhtoan(x.id)">Thanh toán</a>
+                        <a class="btn btn-danger" 
+                            ng-if="x.trangthaidonhang==3 && !x.checktrahang" 
+                            href="#!trahang/{{x.id}}">Trả hàng</a>
+                      <a class="btn btn-danger" ng-if="x.trangthaidonhang==4">Mua lại</a>
+                      <button class="btn btn-danger" ng-if="x.trangthaidonhang==0" ng-click="huydh(x.id)">Hủy
+                        đơn</button>
+                      <button class="btn btn-outline-dark" ng-click="chitietdh(x.id)">Chi tiết</button>
+                      <a class="btn btn-outline-dark" href="tel:0867812095">Liên hệ người bán</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- PHÂN TRANG -->
+          <nav class="mt-4" ng-if="(dataHoaDon | filter:{idkh: idkh, trangthaidonhang: 3}).length > itemsPerPage">
+            <ul class="pagination justify-content-center">
+              <li class="page-item" ng-class="{disabled: currentPage === 1}">
+                <a class="page-link" href="" ng-click="prevPage()">Trước</a>
+              </li>
+              <li class="page-item" ng-repeat="n in getPageNumbers()" ng-class="{active: currentPage === n}">
+                <a class="page-link" href="" ng-click="setPage(n)">{{n}}</a>
+              </li>
+              <li class="page-item" ng-class="{disabled: currentPage === totalPages}">
+                <a class="page-link" href="" ng-click="nextPage()">Sau</a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+
+        <div class="tab-pane fade" id="tab6" role="tabpanel">
+          <div
+          ng-repeat="x in dataHoaDon | filter:{idkh: idkh, trangthaidonhang: 4} | limitTo: itemsPerPage : (currentPage - 1) * itemsPerPage"
+            class="mb-3 bg-light">
+            <div class="row border-bottom">
+              <div class="col m-3 text-uppercase text-en fw-semibold">
+                <span>Mã hóa đơn: #{{x.id}}</span>
+              </div>
+              <div class="col m-3 text-uppercase text-end" style="color: orangered;">
+                <span ng-if="x.trangthai ==0">Online</span>
+                <span ng-if="x.trangthai ==1">Tại quầy</span> |
+                <span ng-if="x.trangthaidonhang==0">Chờ xác nhận</span>
+                <span ng-if="x.trangthaidonhang==1">Đã xác nhận</span>
+                <span ng-if="x.trangthaidonhang==2">Đang giao</span>
+                <span ng-if="x.trangthaidonhang==3">Hoàn thành</span>
+                <span ng-if="x.trangthaidonhang==4">Đã huỷ</span>
+                <span ng-if="x.trangthaidonhang==5">Trả hàng - Hoàn tiền</span>
+
+              </div>
+            </div>
+            <div class="row" ng-init="showMore={}">
+              <div class="row border-bottom py-3"
+                ng-repeat="hdct in dataHoaDonCT | filter:{idhd: x.id} | limitTo: (showMore[x.id] ? dataHoaDonCT.length : 2)">
+                <div class="col-3 ps-3" ng-repeat="spct in sanphamct | filter:{id: hdct.idspct}">
+                  <img src="https://localhost:7196/picture/{{spct.urlHinhanh}}" width="100%" height="120px">
+                </div>
+                <div class="col-7" ng-repeat="spct in sanphamct" ng-if="spct.id==hdct.idspct">
+                  <a href="#!SanpDetail/{{spct.idsp}}" class="fs-5 tensp">{{SelectTenTH(spct.idsp)}} -
+                    {{SelecttenSp(spct.idsp)}}</a>
+                  <p class="text-secondary">Phân loại: <span ng-repeat="chatlieu in listChatlieu"
+                      ng-if="spct.idChatLieu==chatlieu.id">{{chatlieu.tenchatlieu}}</span> - <span
+                      ng-repeat="mau in listColor" ng-if="spct.idMau==mau.id">{{mau.tenmau}}</span> - <span
+                      ng-repeat="size in listSize" ng-if="spct.idSize==size.id">{{size.sosize}}</span></p>
+                  <p>x{{hdct.soluong}}</p>
+                  <button type="button" class="btn btn-success" ng-click="openRatingModal(hdct)"
+                    ng-if="( danhgiaById[hdct.id].success === false) && x.trangthaidonhang === 3">
+                    Đánh giá
+                  </button>
+
+                  <!-- Nút Sửa đánh giá -->
+                  <button type="button" class="btn btn-warning" ng-click="openEditRatingModal(hdct)"
+                    ng-if=" danhgiaById[hdct.id].success !== false && x.trangthaidonhang === 3">
+                    Sửa đánh giá
+                  </button>
+
+                  <!-- Nút Xóa đánh giá -->
+                  <button type="button" class="btn btn-danger" ng-click="deleteRating(danhgiaById[hdct.id].id)"
+                    ng-if=" danhgiaById[hdct.id].success !== false && x.trangthaidonhang === 3">
+                    Xóa đánh giá
+                  </button>
+                </div>
+
+                <div class="col-2 d-flex justify-content-center align-items-center">
+                  <div class="text-center">
+                    <span ng-if="hdct.giamgia && hdct.giamgia > 0" class="text-secondary text-decoration-line-through">
+                      {{ hdct.giamgia | currency:"₫":0 }}
+                    </span>
+                    <span style="color: orangered;">{{ hdct.giasp | currency:"₫":0 }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Hiển thị nút "Xem thêm" hoặc "Thu gọn" -->
+              <div class="text-center mt-2" ng-if="(dataHoaDonCT | filter:{idhd: x.id}).length > 2">
+                <button class="btn btn-outline-primary" ng-click="showMore[x.id] = !showMore[x.id]">
+                  {{ showMore[x.id] ? 'Thu gọn' : 'Xem thêm' }}
+                </button>
+              </div>
+            </div>
+
+            <div class="row py-3">
+              <div class="d-flex flex-column bd-highlight">
+                <div class="p-2 bd-highlight">
+                  <div class="text-end">
+                    Thành tiền: <span style="color: orangered; font-size: 24px;">{{ x.tongtiencantra |
+                      currency:"₫":0
+                      }}</span>
+                  </div>
+                </div>
+                <div class="p-2 bd-highlight">
+                  <div class="d-flex justify-content-between">
+                    <div class="p-2 bd-highlight text-secondary"></div>
+                    <div class="p-2 bd-highlight">
+                      <a class="btn btn-danger"
+                        ng-if="x.trangthaithanhtoan == 0 && x.tenpttt == 1 && x.trangthaidonhang == 0"
+                        ng-click="thanhtoan(x.id)">Thanh toán</a>
+                        <a class="btn btn-danger" 
+                            ng-if="x.trangthaidonhang==3 && !x.checktrahang" 
+                            href="#!trahang/{{x.id}}">Trả hàng</a>
+                      <a class="btn btn-danger" ng-if="x.trangthaidonhang==4">Mua lại</a>
+                      <button class="btn btn-danger" ng-if="x.trangthaidonhang==0" ng-click="huydh(x.id)">Hủy
+                        đơn</button>
+                      <button class="btn btn-outline-dark" ng-click="chitietdh(x.id)">Chi tiết</button>
+                      <a class="btn btn-outline-dark" href="tel:0867812095">Liên hệ người bán</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- PHÂN TRANG -->
+          <nav class="mt-4" ng-if="(dataHoaDon | filter:{idkh: idkh, trangthaidonhang: 4}).length > itemsPerPage">
+            <ul class="pagination justify-content-center">
+              <li class="page-item" ng-class="{disabled: currentPage === 1}">
+                <a class="page-link" href="" ng-click="prevPage()">Trước</a>
+              </li>
+              <li class="page-item" ng-repeat="n in getPageNumbers()" ng-class="{active: currentPage === n}">
+                <a class="page-link" href="" ng-click="setPage(n)">{{n}}</a>
+              </li>
+              <li class="page-item" ng-class="{disabled: currentPage === totalPages}">
+                <a class="page-link" href="" ng-click="nextPage()">Sau</a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+
+        <div class="tab-pane fade" id="tab7" role="tabpanel">
+          <!-- Danh sách đơn trả hàng -->
+          <div class="mb-3 bg-light"
+              ng-repeat="x in filteredTraHang = (dataTraHang | filter:{idkh: idkh}) | limitTo: itemsPerPage : (currentPage - 1) * itemsPerPage">
+              <div class="row border-bottom">
+                  <div class="col m-3 text-uppercase text-en fw-semibold">
+                      <span>Mã trả hàng: #{{x.id}} - Mã hoá đơn : #{{x.idhd}}</span>
+                  </div>
+                  <div class="col m-3 text-uppercase text-end" style="color: orangered;">
+                    <span ng-if="x.trangthai === 2">Trả hàng/Hoàn tiền - Đã hủy</span>
+                    <span ng-if="x.trangthai === 1">Trả hàng/Hoàn tiền - Hoàn thành</span>
+                    <span ng-if="x.trangthai === 0">Trả hàng/Hoàn tiền - Chờ trả hàng</span>
+                  </div>
+              </div>
+      
+              <!-- Chi tiết từng sản phẩm trong đơn trả hàng -->
+              <div class="row border-bottom py-3" ng-repeat="thct in chitietTraHang" ng-if="thct.idth==x.id">
+                  <div class="col-3 ps-3">
+                      <img ng-src="https://localhost:7196/picture/{{thct.urlAnh}}" width="100%" height="120px">
+                  </div>
+                  <div class="col-7">
+                      <a href="#!SanpDetail/{{thct.idsp}}" class="fs-5 tensp">
+                          [{{thct.tenchatlieu}}] - {{thct.tensp}}
+                      </a>
+                      <p class="text-secondary">
+                          Phân loại: {{thct.tenchatlieu}} - {{thct.tenmau}} - {{thct.tensize}}
+                      </p>
+                      <p>x{{thct.soluong}}</p>
+                  </div>
+                  <div class="col-2 d-flex justify-content-center align-items-center">
+                      <div class="text-center">
+                          <span style="color: orangered;">{{thct.giasp | currency:"₫":0}}</span>
+                      </div>
+                  </div>
+              </div>
+      
+              <!-- Thành tiền -->
+              <div class="row py-3">
+                  <div class="d-flex flex-column bd-highlight">
+                      <div class="p-2 bd-highlight text-end">
+                          Thành tiền: <span style="color: orangered; font-size: 24px;">{{x.sotienhoan | currency:"₫":0}}</span>
+                      </div>
+                      <div class="p-2 bd-highlight">
+                          <div class="d-flex justify-content-between">
+                              <div></div>
+                              <div>
+                                  <button class="btn btn-outline-dark" ng-click="OpenModalChiTiet(x.id)">Chi tiết</button>
+                                  <a class="btn btn-outline-dark" href="tel:0867812095">Liên hệ người bán</a>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      
+          <!-- Phân trang -->
+          <nav class="mt-4" ng-if="filteredTraHang.length > itemsPerPage">
+              <ul class="pagination justify-content-center">
+                  <li class="page-item" ng-class="{disabled: currentPage === 1}">
+                      <a class="page-link" href="" ng-click="prevPage()">Trước</a>
+                  </li>
+                  <li class="page-item" ng-repeat="n in range(1, totalPages) track by n" ng-class="{active: currentPage === n}">
+                      <a class="page-link" href="" ng-click="setPage(n)">{{n}}</a>
+                  </li>
+                  <li class="page-item" ng-class="{disabled: currentPage === totalPages}">
+                      <a class="page-link" href="" ng-click="nextPage()">Sau</a>
+                  </li>
+              </ul>
+          </nav>
+      </div>
       </div>
     </div>
   </div>
@@ -455,7 +946,7 @@
 <!-- Chi tiết đơn hàng -->
 <div class="modal fade" id="chitietModal" tabindex="-1" aria-labelledby="chitietModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-xl">
-    <div class="modal-content"  ng-repeat="x in dataHoaDon" ng-if="x.id == idhd">
+    <div class="modal-content" ng-repeat="x in dataHoaDon" ng-if="x.id == idhd">
       <div class="modal-header">
         <h5 class="modal-title" id="chitietModalLabel">Chi tiết đơn hàng - Mã đơn hàng: #{{idhd}}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -490,7 +981,8 @@
                 <div class="row">
                   <div class="col-3">
                     <img ng-repeat="spct in sanphamct" ng-if="spct.id == hdct.idspct"
-                      ng-src="https://localhost:7196/picture/{{spct.urlHinhanh}}" width="250px" height="250px" class="img-fluid rounded border">
+                      ng-src="https://localhost:7196/picture/{{spct.urlHinhanh}}" width="250px" height="250px"
+                      class="img-fluid rounded border">
                   </div>
                   <div class="col-6">
                     <p class="fw-bold mb-1">Giày</p>
@@ -531,7 +1023,8 @@
             </div>
             <div class="row py-1">
               <div class="col-9 text-end text-muted">Phương thức thanh toán:</div>
-              <div class="col-3 text-end" ng-repeat="pttt in ListPttt" ng-if="pttt.id==x.trangthaithanhtoan">{{pttt.tenpttt}}</div>
+              <div class="col-3 text-end" ng-repeat="pttt in ListPttt" ng-if="pttt.id==x.trangthaithanhtoan">
+                {{pttt.tenpttt}}</div>
             </div>
             <div class="row py-1">
               <div class="col-9 text-end text-muted">Địa chỉ giao hàng:</div>
@@ -547,7 +1040,7 @@
 
       </div>
       <div class="modal-footer">
-        <a class="btn btn-danger" ng-if="doitra(x)" href="#!trahang/{{x.id}}">Trả hàng</a>
+        <a class="btn btn-danger" ng-if="x.trangthaidonhang==3 && !x.checktrahang"  href="#!trahang/{{x.id}}">Trả hàng</a>
         <button class="btn btn-danger" ng-if="x.trangthai==4">Mua lại</button>
         <a class="btn btn-outline-dark" href="tel:0867812095">Liên hệ người bán</a>
       </div>
@@ -574,7 +1067,10 @@
 
               <div ng-repeat="spct in sanphamct" ng-if="spct.id == selectedProduct.idspct" class="product-info ms-3">
                 <p class="fs-5 tensp">{{SelectTenTH(spct.idsp)}} - {{SelecttenSp(spct.idsp)}}</p>
-                <p class="text-secondary">Phân loại: <span ng-repeat="chatlieu in listChatlieu" ng-if="spct.idChatLieu==chatlieu.id">{{chatlieu.tenchatlieu}}</span> - <span ng-repeat="mau in listColor" ng-if="spct.idMau==mau.id">{{mau.tenmau}}</span> - <span ng-repeat="size in listSize" ng-if="spct.idSize==size.id">{{size.sosize}}</span></p>
+                <p class="text-secondary">Phân loại: <span ng-repeat="chatlieu in listChatlieu"
+                    ng-if="spct.idChatLieu==chatlieu.id">{{chatlieu.tenchatlieu}}</span> - <span
+                    ng-repeat="mau in listColor" ng-if="spct.idMau==mau.id">{{mau.tenmau}}</span> - <span
+                    ng-repeat="size in listSize" ng-if="spct.idSize==size.id">{{size.sosize}}</span></p>
               </div>
             </div>
 
@@ -636,6 +1132,157 @@
     </div>
   </div>
 </div>
+
+<!-- Modal Chi tiết đơn hàng -->
+<div class="modal fade" id="returnDetailModal" tabindex="-1" aria-labelledby="returnDetailModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+          <!-- Header luôn hiển thị -->
+          <div class="modal-header">
+              <h5 class="modal-title">
+                  <div ng-if="!dataTrahang || dataTrahang.id <= 0">
+                      Đang tải...
+                  </div>
+                  <div ng-if="dataTrahang && dataTrahang.id > 0">
+                      Chi tiết đơn trả hàng: #{{dataTrahang.id}} - mã hoá đơn : #{{dataTrahang.idhd}}
+                  </div>
+              </h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <!-- Body với các trạng thái -->
+          <div class="modal-body">
+              <div class="row mb-4">
+                  <div class="col-md-6">
+                      <p><strong><i class="fas fa-user me-2"></i>Khách hàng:</strong> {{dataTrahang.tenkhachhang || 'Khách vãng lai'}}</p>
+                      <p><strong><i class="fas fa-tags me-2"></i>Trạng thái:</strong>
+                          <span class="badge bg-danger" ng-if="dataTrahang.trangthai === 2">Đã hủy</span>
+                          <span class="badge bg-success" ng-if="dataTrahang.trangthai === 1">Hoàn thành</span>
+                          <span class="badge bg-warning" ng-if="dataTrahang.trangthai === 0">Chờ trả hàng</span>
+                      </p>
+                      <p><strong><i class="fas fa-calendar-day me-2"></i>Ngày trả hàng:</strong> 
+                          {{dataTrahang.ngaytrahangthucte ? (dataTrahang.ngaytrahangthucte | date:'dd/MM/yyyy') : 'Chưa có ngày trả hàng'}}
+                      </p>
+                  </div>
+                  <div class="col-md-6">
+                      <p><strong><i class="fas fa-comment me-2"></i>Lý do trả hàng:</strong> {{dataTrahang.lydotrahang || 'Không có'}}</p>
+                      <p ng-if="dataTrahang.trangthai !== 0"><strong><i class="fas fa-tasks me-2"></i>Hình thức xử lý:</strong> {{dataTrahang.hinhthucxuly || 'Không có'}}</p>
+                      <p><strong><i class="fas fa-money-bill-wave me-2"></i>Phương thức hoàn tiền:</strong> {{dataTrahang.phuongthuchoantien || 'Không có'}}</p>
+                  </div>
+              </div>
+
+              <!-- Thông tin ngân hàng (chỉ hiển thị khi phương thức hoàn tiền phù hợp) -->
+              <div class="row mb-4" ng-if="dataTrahang.phuongthuchoantien === 'Thẻ tín dụng/ghi nợ/Tài khoản ngân hàng'">
+                  <div class="col-md-12">
+                      <div class="card">
+                          <div class="card-header">
+                              <h5><i class="fas fa-university me-2"></i>Thông tin ngân hàng</h5>
+                          </div>
+                          <div class="card-body">
+                              <div class="row">
+                                  <div class="col-md-4">
+                                      <p><strong>Tên ngân hàng:</strong> {{dataTrahang.tennganhang || 'Không có'}}</p>
+                                  </div>
+                                  <div class="col-md-4">
+                                      <p><strong>Số tài khoản:</strong> {{dataTrahang.sotaikhoan || 'Không có'}}</p>
+                                  </div>
+                                  <div class="col-md-4">
+                                      <p><strong>Tên tài khoản:</strong> {{dataTrahang.tentaikhoan || 'Không có'}}</p>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+              <!-- Phần Tổng tiền hoàn trả - Giữ nguyên CSS cũ nhưng điều chỉnh layout -->
+              <div class="row mb-4">
+                  <div class="col-md-12">
+                      <div class="summary-card">
+                          <div class="card-body d-flex justify-content-between align-items-center">
+                              <h6 class="card-title mb-0"><i class="fas fa-money-bill-transfer me-2"></i>Tổng tiền hoàn trả</h6>
+                              <p class="card-text mb-0">{{dataTrahang.sotienhoan | currency:"":0}} VNĐ</p>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+              <!-- Hình ảnh trả hàng -->
+              <div class="row mb-4" ng-if="dataTrahang.hinhanhs && dataTrahang.hinhanhs.length > 0">
+                  <div class="col-md-12">
+                      <div class="card">
+                          <div class="card-header">
+                              <h5><i class="fas fa-images me-2"></i>Hình ảnh trả hàng</h5>
+                          </div>
+                          <div class="card-body">
+                              <div class="row">
+                                  <div class="col-md-4" ng-repeat="image in dataTrahang.hinhanhs | limitTo:3">
+                                      <img ng-src="{{image.url}}" alt="Hình ảnh trả hàng" class="img-thumbnail" style="max-height: 150px;">
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+              <!-- Danh sách sản phẩm trả hàng -->
+              <h5 class="mb-3"><i class="fas fa-boxes me-2"></i>Danh sách sản phẩm trả hàng</h5>
+              <div class="table-responsive">
+                  <table class="table table-return">
+                      <thead>
+                          <tr>
+                              <th class="text-center">Ảnh</th>
+                              <th class="product-name">Tên sản phẩm</th>
+                              <th class="text-center">Màu</th>
+                              <th class="text-center">Size</th>
+                              <th class="text-center">Chất liệu</th>
+                              <th class="text-center">Số lượng trả</th>
+                              <th class="text-center">Giá sản phẩm</th>
+                              <th class="text-center">Tổng giá sản phẩm</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <tr ng-repeat="item in dataTrahang.trahangchitiets">
+                              <td class="text-center">
+                                  <img ng-src="{{item.anh}}" 
+                                       alt="{{item.tensanpham}}"
+                                       class="product-img">
+                              </td>
+                              <td class="product-name">
+                                  <div class="product-name-content">{{item.tensanpham || '-'}}</div>
+                              </td>
+                              <td class="text-center">{{item.mau || '-'}}</td>
+                              <td class="text-center">{{item.size || '-'}}</td>
+                              <td class="text-center">{{item.chatlieu || '-'}}</td>
+                              <td class="text-center">{{item.soluong || 0}}</td>
+                              <td class="text-center">{{item.giasp | currency:"":0 || 0}} VNĐ</td>
+                              <td class="text-center">{{item.giasp * item.soluong | currency:"":0  || 0}} VNĐ</td>
+                          </tr>                            
+                          <tr ng-if="!dataTrahang.trahangchitiets || dataTrahang.trahangchitiets.length === 0">
+                              <td colspan="5" class="text-center text-muted py-4 no-products">
+                                  <div ng-if="detailLoading">
+                                      <i class="fas fa-spinner fa-spin"></i> Đang tải sản phẩm...
+                                  </div>
+                                  <div ng-if="!detailLoading">
+                                      Không có sản phẩm trả hàng nào
+                                  </div>
+                              </td>
+                          </tr>
+                      </tbody>
+                  </table>
+              </div>
+          </div>
+          
+          <!-- Footer với các action -->
+          <div class="modal-footer" ng-if="dataTrahang && !detailLoading && !detailError">
+              <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                  <i class="fas fa-times me-2"></i>Đóng
+              </button>
+          </div>
+      </div>
+  </div>
+</div>
+
 <!-- Modal -->
 <div class="modal fade" id="HuyDonModal" tabindex="-1" aria-labelledby="HuyDonModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -646,13 +1293,15 @@
       </div>
       <div class="modal-body">
         <div class="form-check">
-          <input class="form-check-input" type="radio" name="flexRadioDefault" ng-model="lydohuy" value="Tôi muốn cập nhật địa chỉ/số điện thoại nhận hàng" checked>
+          <input class="form-check-input" type="radio" name="flexRadioDefault" ng-model="lydohuy"
+            value="Tôi muốn cập nhật địa chỉ/số điện thoại nhận hàng" checked>
           <label class="form-check-label" for="flexRadioDefault1">
             Tôi muốn cập nhật địa chỉ/số điện thoại nhận hàng
           </label>
         </div>
         <div class="form-check">
-          <input class="form-check-input" type="radio" name="flexRadioDefault"   ng-model="lydohuy" value="Tôi muốn thêm/thay đổi mã giảm giá">
+          <input class="form-check-input" type="radio" name="flexRadioDefault" ng-model="lydohuy"
+            value="Tôi muốn thêm/thay đổi mã giảm giá">
           <label class="form-check-label" for="flexRadioDefault2">
             Tôi muốn thêm/thay đổi mã giảm giá
           </label>
@@ -664,19 +1313,22 @@
           </label>
         </div>
         <div class="form-check">
-          <input class="form-check-input" type="radio" name="flexRadioDefault" ng-model="lydohuy" value="Thủ tục thanh toán rắc dối">
+          <input class="form-check-input" type="radio" name="flexRadioDefault" ng-model="lydohuy"
+            value="Thủ tục thanh toán rắc dối">
           <label class="form-check-label" for="flexRadioDefault1">
             Thủ tục thanh toán rắc dối
           </label>
         </div>
         <div class="form-check">
-          <input class="form-check-input" type="radio" name="flexRadioDefault" ng-model="lydohuy" value="Tôi tìm chỗ mua khác tốt hơn">
+          <input class="form-check-input" type="radio" name="flexRadioDefault" ng-model="lydohuy"
+            value="Tôi tìm chỗ mua khác tốt hơn">
           <label class="form-check-label" for="flexRadioDefault2">
             Tôi tìm chỗ mua khác tốt hơn
           </label>
         </div>
         <div class="form-check">
-          <input class="form-check-input" type="radio" name="flexRadioDefault" ng-model="lydohuy" value="Tôi không có nhu cầu mua nữa">
+          <input class="form-check-input" type="radio" name="flexRadioDefault" ng-model="lydohuy"
+            value="Tôi không có nhu cầu mua nữa">
           <label class="form-check-label" for="flexRadioDefault2">
             Tôi không có nhu cầu mua nữa
           </label>
