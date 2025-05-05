@@ -263,17 +263,8 @@
           </div>
           <div class="card-body">
 
-            <div class="mt-4">
-              <label for="refundMethod" class="form-label fw-medium">Phương thức hoàn tiền:</label>
-              <select class="form-select" id="refundMethod" ng-model="refundMethod">
-                <option disabled selected>Chọn phương thức hoàn tiền</option>
-                <option value="Đổi điểm">Đổi điểm</option>
-                <option value="Thẻ tín dụng/ghi nợ/Tài khoản ngân hàng">Thẻ tín dụng/ghi nợ/Tài khoản ngân hàng</option>
-              </select>
-            </div>
-
             <!-- Hiển thị khi chọn "Tài khoản ngân hàng" -->
-            <div class="mt-4" ng-show="refundMethod == 'Thẻ tín dụng/ghi nợ/Tài khoản ngân hàng'">
+            <div class="mt-4">
               <div class="row mb-4">
                 <div class="col">
                   <label for="bank" class="form-label fw-medium">Ngân hàng</label>
@@ -380,34 +371,4 @@
         </div>
       </div>
   </form>
-</div>
-<!-- Modal Địa Chỉ -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Thay đổi địa chỉ</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <!-- Tùy chọn chọn địa chỉ hoặc thêm mới -->
-        <div class="mb-3">
-          <label for="addressSelect" class="form-label">Chọn Địa Chỉ</label>
-          <select class="form-select" id="addressSelect">
-            <!-- Các tùy chọn sẽ được thêm bằng JavaScript -->
-          </select>
-        </div>
-        <p class="d-inline-flex gap-1">
-          <a class="btn btn-primary" data-bs-toggle="collapse" role="button" aria-expanded="false"
-            aria-controls="collapseExample" id="AddNewAddressExample">
-            Cập Nhật Địa Chỉ
-          </a>
-        </p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" id="btnRestoreAddress" style="display: none;">Khôi phục</button>
-        <button type="button" class="btn btn-primary" id="btnSaveAddress">Lưu</button>
-      </div>
-    </div>
-  </div>
 </div>

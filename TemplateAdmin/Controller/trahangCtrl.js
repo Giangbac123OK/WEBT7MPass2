@@ -393,7 +393,7 @@ app.controller("ADDtrahangCtrl", function ($http, $scope, $location, $routeParam
                 sotienhoan: $scope.tongtien ?? 0,
                 lydotrahang: $scope.returnReason || "Không có lý do",
                 trangthai: 1,
-                phuongthuchoantien: $scope.refundMethod || "Đổi điểm",
+                phuongthuchoantien: "Thẻ tín dụng/ghi nợ/Tài khoản ngân hàng",
                 ngaytrahangthucte: null,
                 chuthich: $scope.mota || "Không có chú thích",
                 hinhthucxuly: $scope.hinhthucxuly || "Không xác định",
