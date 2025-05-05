@@ -51,6 +51,28 @@
         margin: 0;
     }
 
+    /* Nút quay lại */
+    .btn-back {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .btn-back:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateX(-2px);
+    }
+
+    
+
     /* Notification */
     .notification-btn {
         position: absolute;
@@ -408,11 +430,18 @@
 
 <div class="container mt-4">
     <div class="page-header">
-        <h2>Quản Lý Hóa Đơn</h2>
-        <button class="notification-btn" id="notificationBtn" ng-click="loadUnreadOrdersAndShowModal()">
-            <i class="fas fa-bell"></i>
-            <span class="badge" ng-if="unreadNotifications > 0">{{unreadNotifications}}</span>
-        </button>
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+                <button class="btn-back me-3" onclick="history.back()">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h2>Quản Lý Hóa Đơn</h2>
+            </div>
+            <button class="notification-btn" id="notificationBtn" ng-click="loadUnreadOrdersAndShowModal()">
+                <i class="fas fa-bell"></i>
+                <span class="badge" ng-if="unreadNotifications > 0">{{unreadNotifications}}</span>
+            </button>
+        </div>
     </div>
 
     <div class="modal fade" id="notificationModal" tabindex="-1" role="dialog">

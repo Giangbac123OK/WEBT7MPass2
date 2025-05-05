@@ -443,7 +443,7 @@
             <div class="order-card" ng-repeat="x in listTraHang">
                 <div class="order-header">
                     <div>
-                        <h5>Đơn hàng #HD-{{x.id}}</h5>
+                        <h5>Mã trả hàng: #{{x.id}} - Mã hoá đơn : #{{x.idhd}}</h5>
                         <span ng-switch="x.trangthai">
                             <span ng-switch-when="2" class="badge bg-danger">Đã hủy</span>
                             <span ng-switch-when="1" class="badge bg-success">Hoàn thành</span>
@@ -495,7 +495,7 @@
             <div class="order-card" ng-repeat="x in listTraHang" ng-if="x.trangthai==0">
                 <div class="order-header">
                     <div>
-                        <h5>Đơn hàng #HD-{{x.id}}</h5>
+                        <h5>Mã trả hàng: #{{x.id}} - Mã hoá đơn : #{{x.idhd}}</h5>
                         <span ng-switch="x.trangthai">
                             <span ng-switch-when="2" class="badge bg-danger">Đã hủy</span>
                             <span ng-switch-when="1" class="badge bg-success">Hoàn thành</span>
@@ -547,7 +547,7 @@
             <div class="order-card" ng-repeat="x in listTraHang" ng-if="x.trangthai==1">
                 <div class="order-header">
                     <div>
-                        <h5>Đơn hàng #HD-{{x.id}}</h5>
+                        <h5>Mã trả hàng: #{{x.id}} - Mã hoá đơn : #{{x.idhd}}</h5>
                         <span ng-switch="x.trangthai">
                             <span ng-switch-when="2" class="badge bg-danger">Đã hủy</span>
                             <span ng-switch-when="1" class="badge bg-success">Hoàn thành</span>
@@ -599,7 +599,7 @@
             <div class="order-card" ng-repeat="x in listTraHang" ng-if="x.trangthai==2">
                 <div class="order-header">
                     <div>
-                        <h5>Đơn hàng #HD-{{x.id}}</h5>
+                        <h5>Mã trả hàng: #{{x.id}} - Mã hoá đơn : #{{x.idhd}}</h5>
                         <span ng-switch="x.trangthai">
                             <span ng-switch-when="2" class="badge bg-danger">Đã hủy</span>
                             <span ng-switch-when="1" class="badge bg-success">Hoàn thành</span>
@@ -658,7 +658,7 @@
                         Đang tải...
                     </div>
                     <div ng-if="dataTrahang && dataTrahang.id > 0">
-                        Chi tiết đơn trả hàng #HD-{{dataTrahang.id}}
+                        Chi tiết đơn trả hàng: #{{x.id}} - mã hoá đơn : #{{x.idhd}}
                     </div>
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

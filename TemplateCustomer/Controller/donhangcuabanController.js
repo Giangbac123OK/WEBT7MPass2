@@ -84,27 +84,36 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
         if ($scope.searchText && $scope.searchText.trim() !== "") {
             api += `?search=${encodeURIComponent($scope.searchText)}`;
         }
-
+    
         $http.get(api)
             .then(function (response) {
-                $scope.dataHoaDon = response.data;
-                console.log($scope.dataHoaDon);
+                // Thêm thuộc tính checktrahang vào mỗi hóa đơn
+                $scope.dataHoaDon = response.data.map(function(hd) {
+                    // Kiểm tra xem có trả hàng nào thuộc hóa đơn này không
+                    hd.checktrahang = $scope.dataTraHang.some(function(item) {
+                        return item.idhd === hd.id;
+                    });
+                    console.log(`Hóa đơn ${hd.id} - checktrahang: ${hd.checktrahang}`);
+                    return hd;
+                });
+                
+                console.log("Danh sách hóa đơn sau khi thêm checktrahang:", $scope.dataHoaDon);
+                
                 // Gọi API lấy danh sách phương thức thanh toán
                 return $http.get("https://localhost:7196/api/PhuongThucThanhToans");
             })
             .then(function (response) {
-                const dataPTTT = response.data; // Danh sách tất cả phương thức thanh toán
+                const dataPTTT = response.data;
                 
-
                 // Gán tên phương thức thanh toán tương ứng vào từng hóa đơn
                 $scope.dataHoaDon.forEach(async function (hd) {
                     const pttt = dataPTTT.find(pt => pt.id === hd.idpttt);
                     if (pttt && pttt.tenpttt === "Chuyển khoản ngân hàng") {
-                        hd.tenpttt = 1; // Hoặc `pttt.name` nếu tên property là name
+                        hd.tenpttt = 1;
                     } else {
                         hd.tenpttt = 0;
                     }
-
+    
                     if (hd.diachiship) {
                         const parts = hd.diachiship.split(' - ');
                         if (parts.length === 4) {
@@ -133,15 +142,12 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
                     } else {
                         hd.diachiship_display = "Không có địa chỉ";
                     }
-
                 });
-                
             })
             .catch(function (error) {
                 console.error("Lỗi khi lấy dữ liệu:", error);
             });
-
-        // Thông báo nếu không tìm thấy dữ liệu
+    
         if ($scope.dataHoaDon == null) {
             return $scope.thongbaotimkiem = "Không tìm thấy mã hóa đơn " + $scope.searchText;
         }
@@ -481,9 +487,6 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
         $scope.loadHoaDonCT();
     };
 
-    // Gọi API ngay khi trang được load
-    $scope.loadHoaDon();
-    //select hóa đơn chi tiết theo mã hóa đơn
 
     $http.get('https://localhost:7196/api/Hoadonchitiets')
         .then(function (response) {
@@ -715,6 +718,8 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
     $http.get("https://localhost:7196/api/Trahangs")
         .then(function(response) {
             $scope.dataTraHang = response.data;
+            console.log("$scope.dataTraHang", $scope.dataTraHang );
+            $scope.loadHoaDon();
         })
         .catch(function(error) {
             console.error("Lỗi lấy danh sách trả hàng: ", error);
@@ -764,73 +769,73 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
     };
 
     // Hàm lấy tên tỉnh/thành phố
-    async function getProvinceName(id) {
-        try {
-            const response = await fetch(apiProvince, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Token": apiKey // 🔹 Thêm Token vào headers
-                },
-                body: JSON.stringify({}) // Thêm body nếu cần
-            });
+async function getProvinceName(id) {
+    try {
+        const response = await fetch(apiProvince, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Token": apiKey
+            },
+            body: JSON.stringify({})
+        });
 
-            const data = await response.json();
-            if (data.code === 200) {
-                const province = data.data.find(p => p.ProvinceID == id);
-                return province ? province.NameExtension[1] : "Không xác định";
-            }
-        } catch (error) {
-            console.error("Lỗi lấy tỉnh/thành phố:", error);
+        const data = await response.json();
+        if (data.code === 200) {
+            const province = data.data.find(p => p.ProvinceID == id);
+            return province ? province.NameExtension[1] : "Không xác định";
         }
-        return "Không xác định";
+    } catch (error) {
+        // Không log lỗi ra console
     }
+    return "Không xác định";
+}
 
-    // Hàm lấy tên quận/huyện
-    async function getDistrictName(province_id, district_id) {
-        try {
-            const response = await fetch(apiDistrict, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Token": apiKey
-                },
-                body: JSON.stringify({ province_id: Number(province_id) }) // Sửa lại biến truyền đúng
-            });
+// Hàm lấy tên quận/huyện
+async function getDistrictName(province_id, district_id) {
+    try {
+        const response = await fetch(apiDistrict, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Token": apiKey
+            },
+            body: JSON.stringify({ province_id: Number(province_id) })
+        });
 
-            const data = await response.json();
-            if (data.code === 200) {
-                const district = data.data.find(d => d.DistrictID == district_id);
-                return district ? district.DistrictName : "Không xác định";
-            }
-        } catch (error) {
-            console.error("Lỗi lấy quận/huyện:", error);
+        const data = await response.json();
+        if (data.code === 200) {
+            const district = data.data.find(d => d.DistrictID == district_id);
+            return district ? district.DistrictName : "Không xác định";
         }
-        return "Không xác định";
+    } catch (error) {
+        // Không log lỗi ra console
     }
+    return "Không xác định";
+}
 
-    // Hàm lấy tên phường/xã
-    async function getWardName(district_id, ward_id) {
-        try {
-            const response = await fetch(apiWard, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Token": apiKey
-                },
-                body: JSON.stringify({ district_id: Number(district_id) }) // Sửa lại biến truyền đúng
-            });
+// Hàm lấy tên phường/xã
+async function getWardName(district_id, ward_id) {
+    try {
+        const response = await fetch(apiWard, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Token": apiKey
+            },
+            body: JSON.stringify({ district_id: Number(district_id) })
+        });
 
-            const data = await response.json();
-            if (data.code === 200) {
-                const ward = data.data.find(w => w.WardCode == ward_id);
-                return ward ? ward.WardName : "Không xác định";
-            }
-        } catch (error) {
-            console.error("Lỗi lấy phường/xã:", error);
+        const data = await response.json();
+        if (data.code === 200) {
+            const ward = data.data.find(w => w.WardCode == ward_id);
+            return ward ? ward.WardName : "Không xác định";
         }
-        return "Không xác định";
-    };
+    } catch (error) {
+        // Không log lỗi ra console
+    }
+    return "Không xác định";
+}
 
     $scope.doitra = function(x) {
         if (!x.ngaygiaothucte) {
@@ -849,10 +854,58 @@ app.controller('donhangcuabanController', function ($scope, $http, $location) {
         if((khoangThoiGian <= bayNgay && khoangThoiGian >= 0)&&x.trangthai==3){
             return true;
         }
-        console.log("Ngày giao:", ngayGiao.toLocaleString());
-        console.log("Hôm nay:", homNay.toLocaleString());
-        console.log("Khoảng thời gian:", khoangThoiGian, "ms");
         return false;
     }
+
+    $scope.OpenModalChiTiet = function (idth) {
+        // Hiển thị modal
+        $("#returnDetailModal").modal('show');
+
+        // Reset dữ liệu cũ
+        $scope.dataTrahang = null;
+        $scope.detailLoading = true;
+
+        // 1) Lấy thông tin chung của trả hàng
+        $http.get(`https://localhost:7196/api/Trahangs/thongtinn/${idth}`)
+            .then(function (res) {
+                $scope.dataTrahang = res.data;
+                // 2) Lấy hình ảnh
+                return $http.get(`https://localhost:7196/api/Hinhanh/TraHang/${idth}`);
+            })
+            .then(function (imgRes) {
+                // Gán hình ảnh (nếu có)
+                $scope.dataTrahang.hinhanhs = imgRes.data.map(img => {
+                    if (img.url && !img.url.startsWith('http')) {
+                        img.url = 'https://localhost:7196/' + img.url.replace(/^\/+/, '');
+                    }
+                    return img;
+                });
+                // 3) Lấy danh sách sản phẩm trả hàng
+                return $http.get(`https://localhost:7196/api/Trahangchitiets/ListSanPhamByIdth/${idth}`);
+            })
+            .then(function (prodRes) {
+                // Gán danh sách chi tiết trả hàng
+                // Giả sử ViewModel của bạn có các trường:
+                //   urlHinhanh, tensp, mau, size, soluong, lydo
+                $scope.dataTrahang.trahangchitiets = prodRes.data.map(item => ({
+                    anh: `https://localhost:7196/picture/${item.urlHinhanh}`,
+                    tensanpham: item.tensp,
+                    mau: item.mau,
+                    size: item.size,
+                    chatlieu: item.chatlieu,
+                    soluong: item.soluong,
+                    giasp: item.giasp,
+                }));
+            })
+            .catch(function (error) {
+                console.error("Lỗi API: ", error);
+                let msg = error.data?.message || "Đã xảy ra lỗi. Vui lòng thử lại sau!";
+                Swal.fire('Lỗi hệ thống', msg, 'error');
+            })
+            .finally(function () {
+                $scope.detailLoading = false;
+                console.log("$scope.dataTrahang.trahangchitiets: ", $scope.dataTrahang.trahangchitiets);
+            });
+    };
 });
 
