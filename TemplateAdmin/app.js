@@ -29,7 +29,7 @@ app.config(function ($routeProvider) {
               controller: "doimatkhauController"
         })
         .when("/sale", {
-            templateUrl: "./Views/sale.html",
+            templateUrl: "./Views/sale1.html",
             controller: "saleController"
         })
         .when("/quanlyhoadon", {
