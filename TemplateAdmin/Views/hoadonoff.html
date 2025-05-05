@@ -351,23 +351,7 @@
                           </select>
                         </div>
 
-                        <!-- Points Used for Loyal Customers -->
-                        <div class="mb-3" v-if="activeInvoice.customer.type === 'loyal'">
-                          <label for="pointsUsed" class="form-label"><strong>Điểm Sử Dụng:</strong></label>
-                          <div class="d-flex justify-content-between align-items-center">
-                            <span>Điểm có thể sử dụng: {{ activeInvoice.customer.availablePoints }}</span>
-                            <input
-                              type="number"
-                              class="form-control w-50"
-                              id="pointsUsed"
-                              v-model.number="activeInvoice.customer.pointsUsed"
-                              @input="applyPoints(activeInvoice.id)"
-                              min="0"
-                              :max="activeInvoice.customer.availablePoints"
-                              placeholder="0"
-                            />
-                          </div>
-                        </div>
+                       
                       </form>
 
                       <hr />
@@ -386,6 +370,23 @@
                           <strong>Tổng tiền thanh toán:</strong>
                           <span class="float-end">{{ formatCurrency(totalAmount) }}</span>
                         </p>
+                         <!-- Points Used for Loyal Customers -->
+                         <div class="mb-3" v-if="activeInvoice.customer.type === 'loyal'">
+                          <label for="pointsUsed" class="form-label"><strong>Điểm Sử Dụng:</strong></label>
+                          <div class="d-flex justify-content-between align-items-center">
+                            <span>Điểm có thể sử dụng: {{ activeInvoice.customer.availablePoints }}</span>
+                            <input
+                              type="number"
+                              class="form-control w-50"
+                              id="pointsUsed"
+                              v-model.number="activeInvoice.customer.pointsUsed"
+                              @input="applyPoints(activeInvoice.id)"
+                              min="0"
+                              :max="activeInvoice.customer.availablePoints"
+                              placeholder="0"
+                            />
+                          </div>
+                        </div>
                         <div class="mb-3 mt-3">
                           <label for="cashGiven" class="form-label"><strong>Số Tiền Khách Đưa:</strong></label>
                           <input
@@ -572,46 +573,38 @@
       const activeInvoiceId = ref(1);
       const isSidebarOpen = ref(true);
 
-      // Computed property để lấy hóa đơn hiện tại
-      const activeInvoice = computed(() => {
-        return invoices.value.find(inv => inv.id === activeInvoiceId.value);
-      });
-
-      // Tính tổng tiền trước giảm giá
+      const activeInvoice = computed(() => invoices.value.find(inv => inv.id === activeInvoiceId.value));
       const totalAmountBeforeDiscount = computed(() => {
         if (!activeInvoice.value) return 0;
-        return activeInvoice.value.products.reduce((sum, product) => sum + product.totalPrice, 0);
+        return activeInvoice.value.products.reduce((sum, p) => sum + p.totalPrice, 0);
       });
-
-      // Tính tổng giảm giá
-      const totalDiscount = computed(() => {
+      const voucherDiscount = computed(() => {
         if (!activeInvoice.value) return 0;
-        let discount = 0;
         const invoice = activeInvoice.value;
+        let discount = 0;
         if (invoice.customer.selectedVoucher) {
-          const voucher = invoice.customer.selectedVoucher;
-          if (voucher.donvi === 0) {
-            // Giảm giá cố định
-            discount += voucher.giatri;
-          } else if (voucher.donvi === 1) {
-            // Giảm giá theo %
-            discount += (totalAmountBeforeDiscount.value * voucher.giatri) / 100;
+          const v = invoice.customer.selectedVoucher;
+          if (v.donvi === 0) {
+            discount = v.giatri;
+          } else if (v.donvi === 1) {
+            discount = (totalAmountBeforeDiscount.value * v.giatri) / 100;
           }
         }
-        discount += invoice.customer.pointsUsed;
         return Math.min(discount, totalAmountBeforeDiscount.value);
       });
-
-      // Tính tổng tiền thanh toán
-      const totalAmount = computed(() => {
-        return totalAmountBeforeDiscount.value - totalDiscount.value;
+      const totalDiscount = computed(() => {
+        if (!activeInvoice.value) return 0;
+        return Math.min(voucherDiscount.value + activeInvoice.value.customer.pointsUsed, totalAmountBeforeDiscount.value);
       });
 
-      // Tính tiền thừa
+      const totalAmount = computed(() => totalAmountBeforeDiscount.value - totalDiscount.value);
+
       const changeAmount = computed(() => {
         if (!activeInvoice.value) return 0;
         return (activeInvoice.value.customer.cashGiven || 0) - totalAmount.value;
       });
+
+      
       async function loadPaymentMethods() {
         try {
           const res = await fetch(
@@ -882,21 +875,15 @@
           }
         }
       }
-
-      // Áp dụng điểm (points) sử dụng
       function applyPoints(invoiceId) {
         const invoice = invoices.value.find(inv => inv.id === invoiceId);
-        if (invoice) {
-          const totalPayment = totalAmount.value;
-          const availablePoints = invoice.customer.availablePoints;
-
-          if (totalPayment <= availablePoints) {
-            invoice.customer.pointsUsed = totalPayment;
-          } else {
-            invoice.customer.pointsUsed = availablePoints;
-          }
-        }
+        if (!invoice) return;
+        const available = invoice.customer.availablePoints;
+        const maxByAmount = totalAmountBeforeDiscount.value - voucherDiscount.value;
+        const requested = Number(invoice.customer.pointsUsed) || 0;
+        invoice.customer.pointsUsed = Math.max(0, Math.min(requested, available, maxByAmount));
       }
+
 
       // Xử lý nhập số tiền khách đưa
       function onCashGivenInput(invoiceId) {
