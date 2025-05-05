@@ -1,6 +1,7 @@
 app.controller('quanlyhoadonController', function ($scope, $http, $q, $timeout) {
     // Biến quản lý trạng thái
     
+    let previousInvoices = [];
     $scope.loading = true;
     $scope.showNotifications = false;
     $scope.selectedTab = 'unread';
@@ -37,7 +38,7 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q, $timeout) 
 
     // Hàm khởi tạo
     $scope.init = function () {
-        setInterval(loadUnreadOrders, 2000);
+        setInterval(loadUnreadOrders, 3000);
         $scope.loadInvoices();
     };
 
@@ -46,8 +47,6 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q, $timeout) 
     const apiDistrict = "https://online-gateway.ghn.vn/shiip/public-api/master-data/district";
     const apiWard = "https://online-gateway.ghn.vn/shiip/public-api/master-data/ward";
     
-    let previousInvoices = [];
-
     // Hàm tải danh sách hóa đơn từ API
     $scope.loadInvoices = function () {
         $scope.loading = true;
@@ -742,23 +741,6 @@ app.controller('quanlyhoadonController', function ($scope, $http, $q, $timeout) 
             console.error("Lỗi khi kiểm tra hoá đơn:", error);
         });
     };   
-
-    function isSameInvoices(oldList, newList) {
-        if (oldList.length !== newList.length) return false;
-    
-        for (let i = 0; i < newList.length; i++) {
-            const oldInv = oldList[i];
-            const newInv = newList[i];
-    
-            if (oldInv.id !== newInv.id ||
-                oldInv.trangthai !== newInv.trangthai ||
-                oldInv.trangthaidonhang !== newInv.trangthaidonhang ||
-                oldInv.updatedAt !== newInv.updatedAt) {
-                return false;
-            }
-        }
-        return true;
-    }    
 
     // Hàm tải đơn đã đọc
     function loadReadOrders() {
