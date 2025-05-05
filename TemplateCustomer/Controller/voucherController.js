@@ -202,7 +202,7 @@ app.controller('voucherController', function ($location, $scope) {
                                         ${voucher.giatri >= 1000 ? voucher.giatri.toLocaleString('vi-VN') : voucher.giatri} ${voucher.donvi}
                                     </p>
                                     <p class="mb-0"><span class="fw-semibold">${voucher.trangthaistring === 'Chuẩn bị phát hành' ? 'Kích hoạt sau:' : 'HSD:'}</span> 
-                                        ${formatDate(voucher.ngayketthuc)}
+                                        ${formatDate(voucher.ngaybatdau)}
                                     </p>
                                 </div>
                             </div>
