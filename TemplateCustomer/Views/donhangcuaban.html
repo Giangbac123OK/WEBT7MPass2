@@ -197,7 +197,8 @@
               <div class="row border-bottom py-3"
                 ng-repeat="hdct in dataHoaDonCT | filter:{idhd: x.id} | limitTo: (showMore[x.id] ? dataHoaDonCT.length : 2)">
                 <div class="col-3 ps-3" ng-repeat="spct in sanphamct | filter:{id: hdct.idspct}">
-                  <img src="https://localhost:7196/picture/{{spct.urlHinhanh}}" width="100%" height="120px">
+                  <img  
+                    src="https://localhost:7196/picture/{{spct.urlHinhanh}}" width="100%" height="120px">
                 </div>
                 <div class="col-7" ng-repeat="spct in sanphamct" ng-if="spct.id==hdct.idspct">
                   <a href="#!SanpDetail/{{spct.idsp}}" class="fs-5 tensp">{{SelectTenTH(spct.idsp)}} -
