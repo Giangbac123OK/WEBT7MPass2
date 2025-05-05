@@ -53,7 +53,63 @@ app.controller("VoucherController", function ($http, $scope, $timeout, $q) {
       var soluong = parseInt(document.getElementById("soluong").value);
       var ngaybatdau = document.getElementById("ngaybatdau").value;
       var ngayketthuc = document.getElementById("ngayketthuc").value;
-      var trangthai = parseInt(document.getElementById("trangthaiadd").value);
+      var now = new Date();
+
+      if (mota.length === 0 || mota.length > 50) {
+        alert("Mô tả không được để trống và tối đa 50 ký tự.");
+        return;
+      }
+
+      // Validate Giá trị
+      if (isNaN(giatri)) {
+          alert("Vui lòng nhập giá trị hợp lệ.");
+          return;
+      }
+
+      if (donvi === 0) { // VNĐ
+          if (giatri < 1000 || giatri > 9999999) {
+              alert("Giá trị VNĐ phải từ 1.000 đến 9.999.999.");
+              return;
+          }
+      } else if (donvi === 1) { // %
+          if (giatri < 1 || giatri > 100) {
+              alert("Giá trị phần trăm phải từ 1 đến 100.");
+              return;
+          }
+      }
+
+      // Validate Số lượng
+      if (isNaN(soluong) || soluong < 10 || soluong > 999) {
+          alert("Số lượng phải từ 10 đến 999.");
+          return;
+      }
+
+      if (!ngaybatdau || ngaybatdau.trim() === "") {
+        alert("Ngày bắt đầu không được để trống.");
+        return;
+    }
+
+      // Validate ngày
+      if (ngaybatdau < now) {
+          alert("Ngày bắt đầu không được nhỏ hơn hiện tại.");
+          return;
+      }
+      
+    
+        if (!ngayketthuc || ngayketthuc.trim() === "") {
+          alert("Ngày kết thúc không được để trống.");
+          return;
+      }
+
+      if (ngayketthuc < now) {
+          alert("Ngày kết thúc không được nhỏ hơn hiện tại.");
+          return;
+      }
+
+      if (formatDateTimeLocal(ngayketthuc) < formatDateTimeLocal(ngaybatdau)) {
+          alert("Ngày kết thúc không được nhỏ hơn ngày bắt đầu.");
+          return;
+      }
 
       // Lấy danh sách rank đã chọn
       var rankCheckboxes = document.querySelectorAll("#rank_coupon input[type='checkbox']:checked");
@@ -86,7 +142,6 @@ app.controller("VoucherController", function ($http, $scope, $timeout, $q) {
         Soluong: soluong,
         Ngaybatdau: ngaybatdau,
         Ngayketthuc: ngayketthuc,
-        Trangthai: trangthai,
         RankNames: rankNames
       };
 
@@ -106,21 +161,15 @@ app.controller("VoucherController", function ($http, $scope, $timeout, $q) {
         })
         .then(data => {
           alert("Thêm mã giảm giá thành công!");
-          var modal = bootstrap.Modal.getInstance(document.getElementById("addVoucherModal"));
-          modal.hide();
+          
+          // Reload trang sau khi cập nhật thành công
+          window.location.reload();  // Reload lại toàn bộ trang
         })
         .catch(error => {
           console.error("Lỗi khi tạo voucher:", error);
           alert("Có lỗi xảy ra khi tạo mã giảm giá.");
         });
     });
-
-  // Hàm chuyển đổi ngày từ dd/mm/yyyy thành yyyy-MM-ddTHH:mm:ss
-  function convertDate(dateStr) {
-    var parts = dateStr.split("/");
-    var date = new Date(parts[2], parts[1] - 1, parts[0]);
-    return date.toISOString();
-  }
 
   // Áp dụng bộ lọc
   $scope.applyFilters = function () {
@@ -138,6 +187,7 @@ app.controller("VoucherController", function ($http, $scope, $timeout, $q) {
   // Khi bấm nút sửa voucher
   $scope.editVoucher = function (voucher) {
     $scope.editingVoucher = angular.copy(voucher);
+    
 
     // Chuyển ngày về định dạng phù hợp
     $scope.editingVoucher.ngaybatdau = formatDateTimeLocal(voucher.ngaybatdau);
@@ -204,40 +254,108 @@ app.controller("VoucherController", function ($http, $scope, $timeout, $q) {
     return `${dd}/${MM}/${yyyy} ${HH}:${mm}`;
   }
 
+  function isValidDate(dateString) {
+    const date = new Date(dateString);
+    return !isNaN(date.getTime());  // Trả về true nếu ngày hợp lệ, ngược lại false
+}
+
 
   $scope.updateVoucher = function () {
-    // Thu thập các rank đã chọn hiện tại
+    var updatedVoucher = angular.copy($scope.editingVoucher);
+    delete updatedVoucher.rankIds;
+  
+    // Validate Mô tả
+    if (!updatedVoucher.mota || updatedVoucher.mota.length === 0 || updatedVoucher.mota.length > 50) {
+      alert("Mô tả không được để trống và tối đa 50 ký tự.");
+      return;
+    }
+  
+    // Validate Giá trị
+    var giatri = parseFloat(updatedVoucher.giatri);
+    var donvi = updatedVoucher.donvi === "VNĐ" ? 0 : 1;
+  
+    if (isNaN(giatri)) {
+      alert("Vui lòng nhập giá trị hợp lệ.");
+      return;
+    }
+  
+    if (donvi === 0 && (giatri < 1000 || giatri > 9999999)) {
+      alert("Giá trị VNĐ phải từ 1.000 đến 9.999.999.");
+      return;
+    }
+  
+    if (donvi === 1 && (giatri < 1 || giatri > 100)) {
+      alert("Giá trị phần trăm phải từ 1 đến 100.");
+      return;
+    }
+  
+    // Validate Số lượng
+    var soluong = parseInt(updatedVoucher.soluong);
+    if (isNaN(soluong) || soluong < 10 || soluong > 999) {
+      alert("Số lượng phải từ 10 đến 999.");
+      return;
+    }
+  
+    var now = new Date();
+    var ngaybatdau = new Date(updatedVoucher.ngaybatdau);
+    var ngayketthuc = new Date(updatedVoucher.ngayketthuc);
+  
+    // Validate Ngày bắt đầu
+    if (!updatedVoucher.ngaybatdau || updatedVoucher.ngaybatdau.trim() === "") {
+      alert("Ngày bắt đầu không được để trống.");
+      return;
+    }
+  
+    if (ngaybatdau < now) {
+      alert("Ngày bắt đầu không được nhỏ hơn hiện tại.");
+      return;
+    }
+  
+    // Validate Ngày kết thúc
+    if (!updatedVoucher.ngayketthuc || updatedVoucher.ngayketthuc.trim() === "") {
+      alert("Ngày kết thúc không được để trống.");
+      return;
+    }
+  
+    if (ngayketthuc < now) {
+      alert("Ngày kết thúc không được nhỏ hơn hiện tại.");
+      return;
+    }
+  
+    if (ngayketthuc < ngaybatdau) {
+      alert("Ngày kết thúc không được nhỏ hơn ngày bắt đầu.");
+      return;
+    }
+  
+    // Validate Rank
     var newlySelectedRanks = $scope.allRanks.filter(r => r.selectedEdit).map(r => r.id);
-
     if (newlySelectedRanks.length === 0) {
       alert("Vui lòng chọn ít nhất một Rank!");
       return;
     }
-
-    // So sánh với danh sách rank ban đầu
+  
     var originalSelectedRanks = $scope.voucherRanks.map(r => r.idrank);
-
     var ranksToAdd = newlySelectedRanks.filter(id => !originalSelectedRanks.includes(id));
     var ranksToRemove = originalSelectedRanks.filter(id => !newlySelectedRanks.includes(id));
-
+  
     var updateChain = $q.when();
-
+  
     // Xóa các rank không còn chọn
     ranksToRemove.forEach(rankId => {
       updateChain = updateChain.then(() => {
-        return $http.delete(`https://localhost:7196/api/Giamgia_rank/idgiamgia/${$scope.editingVoucher.id}/idrank/${rankId}`)
+        return $http.delete(`https://localhost:7196/api/Giamgia_rank/idgiamgia/${updatedVoucher.id}/idrank/${rankId}`)
           .catch(err => {
             console.error('Lỗi khi xóa rank:', err);
             return $q.resolve(); // Bỏ qua lỗi để tiếp tục
           });
       });
     });
-
+  
     // Thêm các rank mới chọn
     ranksToAdd.forEach(rankId => {
       updateChain = updateChain.then(() => {
         var newRelation = {
-          iDgiamgia: $scope.editingVoucher.id,
+          iDgiamgia: updatedVoucher.id,
           iDrank: rankId
         };
         return $http.post('https://localhost:7196/api/Giamgia_rank', newRelation)
@@ -247,27 +365,20 @@ app.controller("VoucherController", function ($http, $scope, $timeout, $q) {
           });
       });
     });
-
-    // Sau khi hoàn tất thêm/xóa rank, cập nhật thông tin voucher
+  
+    // Chuẩn bị cập nhật
+    updatedVoucher.trangthai = (updatedVoucher.trangthai === "Đang phát hành") ? 0 :
+      (updatedVoucher.trangthai === "Chuẩn bị phát hành") ? 1 :
+        (updatedVoucher.trangthai === "Dừng phát hành") ? 2 : 1;
+  
+    updatedVoucher.ngaybatdau = convertToISODate(updatedVoucher.ngaybatdau);
+    updatedVoucher.ngayketthuc = convertToISODate(updatedVoucher.ngayketthuc);
+    updatedVoucher.donvi = donvi;
+    updatedVoucher.rankNames = $scope.allRanks
+      .filter(r => r.selectedEdit)
+      .map(r => r.tenrank);
+  
     updateChain = updateChain.then(() => {
-      var updatedVoucher = angular.copy($scope.editingVoucher);
-      delete updatedVoucher.rankIds;
-
-      // Chuyển đổi trạng thái
-      switch (updatedVoucher.trangthai) {
-        case "Đang phát hành": updatedVoucher.trangthai = 0; break;
-        case "Chuẩn bị phát hành": updatedVoucher.trangthai = 1; break;
-        case "Dừng phát hành": updatedVoucher.trangthai = 2; break;
-        default: updatedVoucher.trangthai = 1;
-      }
-
-      updatedVoucher.ngaybatdau = convertToISODate(updatedVoucher.ngaybatdau);
-      updatedVoucher.ngayketthuc = convertToISODate(updatedVoucher.ngayketthuc);
-      updatedVoucher.donvi = updatedVoucher.donvi === "VNĐ" ? 0 : 1;
-      updatedVoucher.rankNames = $scope.allRanks
-        .filter(r => r.selectedEdit)
-        .map(r => r.tenrank);
-
       return $http.put(`https://localhost:7196/api/Giamgia/${updatedVoucher.id}/Admin`, {
         mota: updatedVoucher.mota,
         donvi: updatedVoucher.donvi,
@@ -275,29 +386,29 @@ app.controller("VoucherController", function ($http, $scope, $timeout, $q) {
         giatri: updatedVoucher.giatri,
         ngaybatdau: updatedVoucher.ngaybatdau,
         ngayketthuc: updatedVoucher.ngayketthuc,
-        trangthai: updatedVoucher.trangthai,
         rankNames: updatedVoucher.rankNames
       });
     });
-
-
-
-
-    // Xử lý kết quả cuối cùng
+  
     updateChain.then(response => {
       if (response && (response.status === 200 || response.status === 204)) {
         alert("Cập nhật mã giảm giá thành công!");
-        var modal = bootstrap.Modal.getInstance(document.getElementById("editVoucherModal"));
-        modal.hide();
-        loadVouchers();
-      } else {
+        
+        // Reload trang sau khi cập nhật thành công
+        window.location.reload();  // Reload lại toàn bộ trang
+        
+        // Nếu bạn chỉ muốn reload lại một phần dữ liệu (ví dụ: danh sách mã giảm giá)
+        // loadVouchers(); // Gọi lại hàm tải dữ liệu sau khi cập nhật thành công
+    } else {
         alert("Cập nhật thất bại. Vui lòng thử lại.");
-      }
+    }
+    
     }).catch(err => {
       console.error("Lỗi tổng khi cập nhật:", err);
       alert("Có lỗi xảy ra trong quá trình cập nhật!");
     });
   };
+  
 
 
 
@@ -344,10 +455,8 @@ app.controller("VoucherController", function ($http, $scope, $timeout, $q) {
     // Xử lý kết quả
     deleteChain.then(() => {
       alert("Đã xóa voucher và các quan hệ thành công!");
-      loadVouchers(); // gọi lại hàm load
-      $timeout(() => {
-        $scope.message = "";
-      }, 3000);
+      // Reload trang sau khi cập nhật thành công
+      window.location.reload();  // Reload lại toàn bộ trang
     }).catch(err => {
       console.error('Lỗi khi xóa voucher:', err);
       alert("Xóa voucher thất bại! Vui lòng thử lại.");
