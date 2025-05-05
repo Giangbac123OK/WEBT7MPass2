@@ -652,6 +652,10 @@
                         <i class="fas fa-check-circle"></i> Hoàn thành
                     </button>
 
+                    <button type="button" class="btn btn-danger" ng-if="invoice.trangthaidonhang === 2"
+                        ng-click="updateInvoicestatus(invoice.id, 6)">
+                        <i class="fas fa-times me-2"></i>Hủy đơn hàng giao hàng
+                    </button>
 
                     <button class="btn btn-sm btn-danger" ng-if="invoice.trangthaidonhang === 2"
                         ng-click="giaohangthatbai(invoice.id)">
@@ -747,10 +751,10 @@
                         ng-click="updateInvoicestatus(invoice.id, 3)">
                         <i class="fas fa-check-circle"></i> Hoàn thành
                     </button>
-                    
-                    <button class="btn btn-sm btn-danger" ng-if="invoice.trangthaidonhang === 2"
-                        ng-click="giaohangthatbai(invoice.id)">
-                        <i class="fas fa-check-circle"></i> Giao hàng thất bại
+
+                    <button type="button" class="btn btn-danger" ng-if="invoice.trangthaidonhang === 2"
+                        ng-click="updateInvoicestatus(invoice.id, 6)">
+                        <i class="fas fa-times me-2"></i>Hủy đơn hàng giao hàng
                     </button>
                     <button class="btn btn-sm btn-danger" 
                             ng-if="invoice.trangthaidonhang === 0 || invoice.trangthaidonhang === 1"
@@ -843,11 +847,12 @@
                         ng-click="updateInvoicestatus(invoice.id, 3)">
                         <i class="fas fa-check-circle"></i> Hoàn thành
                     </button>
-                    
-                    <button class="btn btn-sm btn-danger" ng-if="invoice.trangthaidonhang === 2"
-                        ng-click="giaohangthatbai(invoice.id)">
-                        <i class="fas fa-check-circle"></i> Giao hàng thất bại
+
+                    <button type="button" class="btn btn-danger" ng-if="invoice.trangthaidonhang === 2"
+                        ng-click="updateInvoicestatus(invoice.id, 6)">
+                        <i class="fas fa-times me-2"></i>Hủy đơn hàng giao hàng
                     </button>
+              
                     <button class="btn btn-sm btn-danger" 
                             ng-if="invoice.trangthaidonhang === 0 || invoice.trangthaidonhang === 1"
                             ng-click="updateInvoicestatus(invoice.id, 4)">
@@ -940,10 +945,11 @@
                         <i class="fas fa-check-circle"></i> Hoàn thành
                     </button>
 
-                    <button class="btn btn-sm btn-danger" ng-if="invoice.trangthaidonhang === 2"
-                        ng-click="giaohangthatbai(invoice.id)">
-                        <i class="fas fa-check-circle"></i> Giao hàng thất bại
+                    <button type="button" class="btn btn-danger" ng-if="invoice.trangthaidonhang === 2"
+                        ng-click="updateInvoicestatus(invoice.id, 6)">
+                        <i class="fas fa-times me-2"></i>Hủy đơn hàng giao hàng
                     </button>
+              
                     <button class="btn btn-sm btn-danger" 
                             ng-if="invoice.trangthaidonhang === 0 || invoice.trangthaidonhang === 1"
                             ng-click="updateInvoicestatus(invoice.id, 4)">
@@ -1035,11 +1041,12 @@
                         ng-click="updateInvoicestatus(invoice.id, 3)">
                         <i class="fas fa-check-circle"></i> Hoàn thành
                     </button>
-
-                    <button class="btn btn-sm btn-danger" ng-if="invoice.trangthaidonhang === 2"
-                        ng-click="giaohangthatbai(invoice.id)">
-                        <i class="fas fa-check-circle"></i> Giao hàng thất bại
+                  
+                    <button type="button" class="btn btn-danger" ng-if="invoice.trangthaidonhang === 2"
+                        ng-click="updateInvoicestatus(invoice.id, 6)">
+                        <i class="fas fa-times me-2"></i>Hủy đơn hàng giao hàng
                     </button>
+
                     <button class="btn btn-sm btn-danger" 
                             ng-if="invoice.trangthaidonhang === 0 || invoice.trangthaidonhang === 1"
                             ng-click="updateInvoicestatus(invoice.id, 4)">
@@ -1132,10 +1139,11 @@
                         <i class="fas fa-check-circle"></i> Hoàn thành
                     </button>
 
-                    <button class="btn btn-sm btn-danger" ng-if="invoice.trangthaidonhang == 2"
-                        ng-click="giaohangthatbai(invoice.id)">
-                        <i class="fas fa-check-circle"></i> Giao hàng thất bại
+                    <button type="button" class="btn btn-danger" ng-if="invoice.trangthaidonhang === 2"
+                        ng-click="updateInvoicestatus(invoice.id, 6)">
+                        <i class="fas fa-times me-2"></i>Hủy đơn hàng giao hàng
                     </button>
+              
                     <button class="btn btn-sm btn-danger" 
                             ng-if="invoice.trangthaidonhang === 0 || invoice.trangthaidonhang === 1"
                             ng-click="updateInvoicestatus(invoice.id, 4)">
@@ -1312,6 +1320,11 @@
                     ng-click="updateInvoicestatus(selectedInvoice.id, 3)">
                     <i class="fas fa-check-circle me-2"></i>Xác nhận hoàn thành
                 </button>
+
+                <button type="button" class="btn btn-danger" ng-if="selectedInvoice.trangthaidonhang === 2"
+                        ng-click="updateInvoicestatus(selectedInvoice.id, 6)">
+                        <i class="fas fa-times me-2"></i>Hủy đơn hàng giao hàng
+                    </button>
             
                 <button type="button" class="btn btn-danger" ng-if="selectedInvoice.trangthaidonhang === 0 || selectedInvoice.trangthaidonhang === 1"
                     ng-click="updateInvoicestatus(selectedInvoice.id, 4)">
@@ -1469,6 +1482,12 @@
                     ng-click="updateInvoicestatus(selectedInvoice.id, 3)">
                     <i class="fas fa-check-circle me-2"></i>Xác nhận hoàn thành
                 </button>
+
+                <button type="button" class="btn btn-danger" ng-if="selectedInvoice.trangthaidonhang === 2"
+                        ng-click="updateInvoicestatus(selectedInvoice.id, 6)">
+                        <i class="fas fa-times me-2"></i>Hủy đơn hàng giao hàng
+                    </button>
+                    
                 <button type="button" class="btn btn-danger" ng-if="selectedInvoice.trangthaidonhang === 0 || selectedInvoice.trangthaidonhang === 1"
                     ng-click="updateInvoicestatus(selectedInvoice.id, 4)">
                     <i class="fas fa-times me-2"></i>Hủy đơn hàng
