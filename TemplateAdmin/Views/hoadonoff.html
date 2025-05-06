@@ -608,6 +608,9 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
+    
+    const userInfoString = localStorage.getItem("userInfo1");
+          const userInfo = JSON.parse(userInfoString);
   // ====== Code logic, thay thế "script setup" bằng createApp() ======
   const { createApp, ref, computed, onMounted } = Vue;
 
@@ -1039,7 +1042,7 @@ function onQuantityBlur(invoiceId, product) {
           apiUrl = `https://localhost:7196/api/Hoadons/create/khtt?diemSuDung=${diemSuDung}`;
 
           requestData = {
-            idnv: 1,
+            idnv: userInfo.id,
             idkh: invoice.customer.selectedCustomerId || null,
             
             idpttt: invoice.customer.paymentMethod,
@@ -1054,7 +1057,7 @@ function onQuantityBlur(invoiceId, product) {
         } else {
           apiUrl = 'https://localhost:7196/api/Hoadons/create/Admin';
           requestData = {
-            idnv: 1,
+            idnv: userInfo.id,
             idpttt: invoice.customer.paymentMethod,
             tongtiencantra: totalAmount.value,
             tongtiensanpham: totalAmountBeforeDiscount.value,
