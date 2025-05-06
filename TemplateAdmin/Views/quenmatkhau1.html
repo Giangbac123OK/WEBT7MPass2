@@ -38,7 +38,7 @@
         const data = await resp.json();
         if (data.success) {
           // truyền email và mã OTP sang trang verify
-          window.location.href = `verify-otp.html?email=${encodeURIComponent(email)}&sentOtp=${data.otp}`;
+          window.location.href = `Views/verify-otp.html?email=${encodeURIComponent(email)}`;
         } else {
           msgEl.textContent = data.message || 'Gửi mã thất bại.';
         }

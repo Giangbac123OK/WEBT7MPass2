@@ -154,9 +154,8 @@
     
     <div class="error-message" ng-if="errorMessage">{{errorMessage}}</div>
     
-    <p class="back-to-login"><a href="#!quenmatkhau">Quên mật khẩu?</a></p>
     
-    <button type="submit" ng-disabled="isLoading">
+    <button type="submit" ng-disabled="isLoading" style="margin-top: 32px;">
         <span ng-if="!isLoading">Đăng nhập</span>
         <span ng-if="isLoading">Đang xử lý...</span>
     </button>
