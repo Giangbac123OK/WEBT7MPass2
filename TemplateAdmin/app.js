@@ -109,6 +109,10 @@ app.config(function ($routeProvider) {
         .when("/hoadonoff", {
           templateUrl: "./Views/hoadonoff.html"
       })
+      .when("/banhangtaiquay", {
+        templateUrl: "./Views/banhangtaiquay.html"
+    })
+
         .otherwise("/")
 });
 app.run(function($rootScope, $location) {
