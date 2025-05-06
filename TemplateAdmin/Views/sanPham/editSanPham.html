@@ -164,10 +164,20 @@
                                 👞 {{ getSizeName(variant.IdSize) }} |
                                 🏭 {{ getMaterialName(variant.IdChatLieu) }}
                             </p>
-                            <span class="badge"
-                                ng-class="{'bg-success': variant.Trangthai === 0, 'bg-secondary': variant.Trangthai === 2}">
-                                {{ variant.Trangthai === 0 ? '🟢 Đang bán' : '⚫ Ngừng bán' }}
-                            </span>
+                            <span class="badge" ng-class="{
+                                'bg-success': variant.Trangthai === 0 && variant.Soluong > 0,
+                                'bg-danger': variant.Trangthai === 1 || variant.Soluong === 0,
+                                'bg-secondary': variant.Trangthai === 2
+                                }">
+                                    {{
+                                    variant.Trangthai === 0 && variant.Soluong > 0
+                                    ? '🟢 Đang bán'
+                                    : (variant.Trangthai === 2
+                                    ? '⚫ Ngừng bán '
+                                    : '🔴 Hết hàng')
+                                    }}
+                                </span>
+                      
 
                             <div class="d-flex justify-content-between mt-2">
                                 <button class="btn btn-warning btn-sm" ng-click="showEditVariantModal(variant, $index)"

@@ -114,7 +114,7 @@
         <table class="table table-bordered table-hover">
           <thead class="table-light">
             <tr>
-              <th><input type="checkbox"></th>
+              <th>STT</th>
               <th>Tên sản phẩm</th>
               <th>Ảnh</th>
               <th>Số lượng</th>
@@ -129,7 +129,8 @@
             <tr
               ng-repeat="product in filteredProducts = (productsALL | searchByName:searchText) | startFrom:(currentPage-1)*entriesPerPage | limitTo:entriesPerPage"
               ng-click="goToProductDetail(product.id)" style="cursor: pointer;">
-              <td><input type="checkbox"></td>
+              <td>{{ ($index + 1) + (currentPage - 1) * entriesPerPage }}</td>
+
               <td>{{product.tenSanpham}}</td>
               <td>
                 <img ng-src="https://localhost:7196/picture/{{product.image}}" alt="Ảnh sản phẩm"
@@ -189,7 +190,7 @@
         <table class="table table-bordered table-hover mt-5" ng-if="productsStatus0.length > 0">
           <thead class="table-light">
             <tr>
-              <th><input type="checkbox"></th>
+              <th>STT</th>
               <th>Tên sản phẩm</th>
               <th>Ảnh</th>
               <th>Số lượng</th>
@@ -202,7 +203,8 @@
           </thead>
           <tbody ng-repeat="product in productsStatus0">
             <tr ng-click="goToProductDetail(product.id)" style="cursor: pointer;">
-              <td><input type="checkbox"></td>
+              <td>{{ ($index + 1) + (currentPage - 1) * entriesPerPage }}</td>
+
               <td>{{product.tenSanpham}}</td>
               <td><img src="https://localhost:7196/picture/{{product.image}}" alt="Ảnh sản phẩm"
                   class="img-thumbnail product-img">
@@ -245,7 +247,7 @@
         <table class="table table-bordered table-hover mt-5" ng-if="productsStatus1.length > 0">
           <thead class="table-light">
             <tr>
-              <th><input type="checkbox"></th>
+              <th>STT</th>
               <th>Tên sản phẩm</th>
               <th>Ảnh</th>
               <th>Số lượng</th>
@@ -258,7 +260,8 @@
           </thead>
           <tbody ng-repeat="product in productsStatus1">
             <tr ng-click="goToProductDetail(product.id)" style="cursor: pointer;">
-              <td><input type="checkbox"></td>
+              <td>{{ ($index + 1) + (currentPage - 1) * entriesPerPage }}</td>
+
               <td>{{product.tenSanpham}}</td>
               <td><img src="https://localhost:7196/picture/{{product.image}}" alt="Ảnh sản phẩm"
                   class="img-thumbnail product-img">
@@ -302,7 +305,7 @@
         <table class="table table-bordered table-hover mt-5" ng-if="productsStatus2.length > 0">
           <thead class="table-light">
             <tr>
-              <th><input type="checkbox"></th>
+              <th>STT</th>
               <th>Tên sản phẩm</th>
               <th>Ảnh</th>
               <th>Số lượng</th>
@@ -315,7 +318,8 @@
           </thead>
           <tbody ng-repeat="product in productsStatus2">
             <tr ng-click="goToProductDetail(product.id)" style="cursor: pointer;">
-              <td><input type="checkbox"></td>
+              <td>{{ ($index + 1) + (currentPage - 1) * entriesPerPage }}</td>
+
               <td>{{product.tenSanpham}}</td>
               <td><img src="https://localhost:7196/picture/{{product.image}}" alt="Ảnh sản phẩm"
                   class="img-thumbnail product-img">

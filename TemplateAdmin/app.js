@@ -102,6 +102,10 @@ app.config(function ($routeProvider) {
             templateUrl: "./Views/dashboard.html",
             controller: "dashboardController"
         })
+        .when("/addTrahang/:id", {
+          templateUrl: "./Views/addTrahang.html",
+          controller: "addTrahangCtrl"
+      })
         .when("/hoadonoff", {
           templateUrl: "./Views/hoadonoff.html"
       })
