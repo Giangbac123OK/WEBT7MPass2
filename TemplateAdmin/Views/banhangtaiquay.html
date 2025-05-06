@@ -234,7 +234,7 @@
       try {
         const res = await fetch("https://localhost:7196/api/Hoadons/Admin/Off");
         const data = await res.json();
-        invoices = data.filter((inv) => inv.donvitrangthai === 1);
+        invoices = data.filter((inv) => inv.trangthai === 1);
         const ids = [...new Set(invoices.map((i) => i.idkh))];
         await Promise.all(ids.map((id) => fetchCustomer(id)));
         renderInvoices();
@@ -250,10 +250,10 @@
         );
         if (res.ok) {
           const cust = await res.json();
-          customerMap[id] = cust.ten || "Không xác định";
+          customerMap[id] = cust.ten || "Khách lẻ";
         }
       } catch {
-        customerMap[id] = "Không xác định";
+        customerMap[id] = "Khách lẻ";
       }
     }
 
@@ -338,41 +338,38 @@
       );
 
       list.forEach((invoice, idx) => {
-        const col = document.createElement("div");
-        col.className = "col-md-6 col-lg-4";
-        col.innerHTML = `
-          <div class="card h-100 shadow-sm">
-            <div class="card-body">
-              <h5 class="card-title">
-                Hóa đơn #${idx + 1} - ${
-          customerMap[invoice.idkh] || "Không xác định"
-        }
-              </h5>
-              <p class="card-text">
-                <strong>Thời gian mua:</strong> ${formatDate(
-                  invoice.thoigiandathang
-                )}
-              </p>
-              <p class="card-text">
-                <strong>Tổng tiền:</strong> ${formatCurrency(
-                  invoice.tongtiencantra
-                )}
-              </p>
-              <div class="d-flex justify-content-between mt-4">
-                <button class="btn btn-info btn-sm" data-id="${
-                  invoice.id
-                }" onclick="onViewDetails(this)">
-                  Xem Chi Tiết
-                </button>
-                <button class="btn btn-danger btn-sm" data-id="${
-                  invoice.id
-                }" onclick="onDeleteInvoice(this)">
-                  Xóa
-                </button>
-              </div>
-            </div>
-          </div>`;
-        container.appendChild(col);
+    const col = document.createElement("div");
+    col.className = "col-md-6 col-lg-4";
+    col.innerHTML = `
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">
+            Hóa đơn #${idx + 1} - ${customerMap[invoice.idkh] || "Khách lẻ"}
+          </h5>
+          <p class="card-text">
+            <strong>Thời gian mua:</strong> ${formatDate(invoice.thoigiandathang)}
+          </p>
+          <p class="card-text">
+            <strong>Tổng tiền:</strong> ${formatCurrency(invoice.tongtiencantra)}
+          </p>
+          <div class="d-flex justify-content-between mt-4">
+            <button
+              class="btn btn-info btn-sm"
+              data-id="${invoice.id}"
+              onclick="onViewDetails(this)"
+            >
+              Xem Chi Tiết
+            </button>
+            <a
+    href="#!addTrahang/${invoice.id}"
+    class="btn btn-danger btn-sm"
+  >
+    Trả hàng
+  </a>
+          </div>
+        </div>
+      </div>`;
+    container.appendChild(col);
       });
     }
 
@@ -493,7 +490,7 @@
       document
         .getElementById("addInvoiceBtn")
         .addEventListener("click", () => {
-          window.location.href = "themhoadontaiquay.html";
+          window.location.href = "hoadonoff.html";
         });
 
       // Khởi tạo dữ liệu
