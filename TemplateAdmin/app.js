@@ -19,7 +19,7 @@ app.config(function ($routeProvider) {
             controller: "trahangController"
         })
         .when("/quenmatkhau", {
-            templateUrl: "./Views/quenmatkhau.html"
+            templateUrl: "./Views/quenmatkhau1.html"
         })
         .when("/datlaimatkhau", {
             templateUrl: "./Views/datlaimatkhau.html"
@@ -35,6 +35,9 @@ app.config(function ($routeProvider) {
         .when("/quanlyhoadon", {
             templateUrl: "./Views/quanlyhoadon.html",
             controller: "quanlyhoadonController"
+        })
+        .when("/passwordChanging", {
+            templateUrl: "./Views/passwordChanging.html"
         })
         .when("/nhanvien", {
             templateUrl: "./Views/nhanvien.html",
