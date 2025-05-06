@@ -768,6 +768,15 @@ app.controller("trahangController", function ($http, $scope, $location, $routePa
             alert("Có lỗi xảy ra khi tải thông tin khách hàng. Vui lòng thử lại.");
         }
     }
-
+    $scope.validateQuantity = function(sp) {
+        const min = 1;
+        const max = sp.maxsoluong;
+    
+        if (!sp.soluong || sp.soluong < min) {
+            sp.soluong = min;
+        } else if (sp.soluong > max) {
+            sp.soluong = max;
+        }
+    };
     loadAddressesByIdKH();
 });

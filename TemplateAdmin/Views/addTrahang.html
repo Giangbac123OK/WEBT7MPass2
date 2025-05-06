@@ -188,7 +188,7 @@
                   <button ng-click="decrease(sp)" type="button" class="btn btn-sm btn-outline-dark"
                     ng-disabled="sp.soluong <= 1">-</button>
                   <input type="number" class="form-control text-center mx-2" ng-model="sp.soluong" min="1"
-                    max="{{sp.maxsoluong}}" ng-change="updateQuantity(sp)" disabled>
+                    max="{{sp.maxsoluong}}" ng-change="updateQuantity(sp)" ng-blur="validateQuantity(sp)">
 
                   <button ng-click="increase(sp)" type="button" class="btn btn-sm btn-outline-dark"
                     ng-disabled="sp.soluong >= sp.maxsoluong">+</button>
