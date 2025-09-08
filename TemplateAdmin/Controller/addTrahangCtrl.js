@@ -104,7 +104,16 @@ app.controller("addTrahangCtrl", function ($http, $scope, $location, $routeParam
         console.log("Danh sách sản phẩm đã chọn:", $scope.selectedProducts);
         $scope.tinhTongTien();
     };
-
+    $scope.validateQuantity = function(sp) {
+        const min = 1;
+        const max = sp.maxsoluong;
+    
+        if (!sp.soluong || sp.soluong < min) {
+            sp.soluong = min;
+        } else if (sp.soluong > max) {
+            sp.soluong = max;
+        }
+    };
     $scope.updateQuantity = function (sp) {
         if (sp.soluong < 1) {
             sp.soluong = 1; // Không cho số lượng nhỏ hơn 1

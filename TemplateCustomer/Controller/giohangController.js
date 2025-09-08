@@ -310,7 +310,7 @@ app.controller("GiohangCtrl", function ($document, $rootScope, $scope, $compile,
         let currentQuantity = parseInt(quantityDisplay.textContent);
 
         for (const sp of product) {
-            const maxQuantity = sp.soluong - 1;
+            const maxQuantity = sp.soluong;
 
             if (isIncrease) {
                 if (currentQuantity < maxQuantity) {
